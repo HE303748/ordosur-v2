@@ -1,0 +1,142 @@
+[
+  {
+    "medicament_a": "Doliprane",
+    "medicament_b": "Paracétamol",
+    "severity": "dangerous",
+    "description": "Même principe actif - Risque de surdosage et d'hépatotoxicité grave. Ne JAMAIS associer.",
+    "alternatives": ["Ibuprofène", "Tramadol", "Aspirine"]
+  },
+  {
+    "medicament_a": "Paracétamol",
+    "medicament_b": "Codoliprane",
+    "severity": "dangerous",
+    "description": "Le Codoliprane contient déjà du paracétamol - Risque de surdosage en paracétamol pouvant entraîner une hépatite fulminante.",
+    "alternatives": ["Tramadol seul", "Ibuprofène"]
+  },
+  {
+    "medicament_a": "Aspirine",
+    "medicament_b": "Ibuprofène",
+    "severity": "attention",
+    "description": "Deux AINS - Risque hémorragique accru, ulcères gastroduodénaux. Association généralement déconseillée sauf cas particuliers.",
+    "alternatives": ["Paracétamol", "Un seul AINS à dose optimale"]
+  },
+  {
+    "medicament_a": "Tramadol",
+    "medicament_b": "Codoliprane",
+    "severity": "dangerous",
+    "description": "Association de deux opioïdes - Risque majeur de dépression respiratoire, somnolence excessive, dépendance accrue.",
+    "alternatives": ["Un seul opioïde à dose adaptée", "Paracétamol + Ibuprofène"]
+  },
+  {
+    "medicament_a": "Metformine",
+    "medicament_b": "Ibuprofène",
+    "severity": "attention",
+    "description": "L'ibuprofène peut altérer la fonction rénale et augmenter le risque d'acidose lactique chez les patients sous metformine, surtout si insuffisance rénale préexistante.",
+    "alternatives": ["Paracétamol"]
+  },
+  {
+    "medicament_a": "Aspirine",
+    "medicament_b": "Lisinopril",
+    "severity": "attention",
+    "description": "Les AINS (dont aspirine à dose anti-inflammatoire) peuvent réduire l'efficacité des IEC et augmenter le risque d'insuffisance rénale.",
+    "alternatives": ["Paracétamol si besoin antalgique"]
+  },
+  {
+    "medicament_a": "Ibuprofène",
+    "medicament_b": "Lisinopril",
+    "severity": "attention",
+    "description": "Les AINS peuvent diminuer l'effet antihypertenseur des IEC et majorer le risque d'insuffisance rénale aiguë, surtout chez personnes âgées ou déshydratées.",
+    "alternatives": ["Paracétamol"]
+  },
+  {
+    "medicament_a": "Atorvastatine",
+    "medicament_b": "Oméprazole",
+    "severity": "safe",
+    "description": "Pas d'interaction cliniquement significative. Association fréquente et bien tolérée.",
+    "alternatives": []
+  },
+  {
+    "medicament_a": "Lisinopril",
+    "medicament_b": "Amlodipine",
+    "severity": "safe",
+    "description": "Association synergique pour traitement de l'hypertension. Surveiller la tension artérielle.",
+    "alternatives": []
+  },
+  {
+    "medicament_a": "Levothyrox",
+    "medicament_b": "Oméprazole",
+    "severity": "attention",
+    "description": "Les IPP peuvent diminuer l'absorption du Levothyrox. Espacer les prises d'au moins 4 heures si possible.",
+    "alternatives": ["Prendre Levothyrox à jeun, Oméprazole au repas"]
+  },
+  {
+    "medicament_a": "Tramadol",
+    "medicament_b": "Cetirizine",
+    "severity": "attention",
+    "description": "Majoration de la somnolence et des effets sédatifs. Prudence en cas de conduite automobile.",
+    "alternatives": ["Paracétamol"]
+  },
+  {
+    "medicament_a": "Metformine",
+    "medicament_b": "Lisinopril",
+    "severity": "safe",
+    "description": "Pas d'interaction majeure. Association fréquente chez les diabétiques hypertendus. Surveiller fonction rénale.",
+    "alternatives": []
+  },
+  {
+    "medicament_a": "Atorvastatine",
+    "medicament_b": "Amlodipine",
+    "severity": "attention",
+    "description": "L'amlodipine peut augmenter les concentrations d'atorvastatine. Risque accru de toxicité musculaire. Surveillance clinique recommandée.",
+    "alternatives": ["Surveiller CPK et symptômes musculaires"]
+  },
+  {
+    "medicament_a": "Amoxicilline",
+    "medicament_b": "Metformine",
+    "severity": "safe",
+    "description": "Pas d'interaction significative. Association courante et bien tolérée.",
+    "alternatives": []
+  },
+  {
+    "medicament_a": "Ventoline",
+    "medicament_b": "Amlodipine",
+    "severity": "safe",
+    "description": "Pas d'interaction cliniquement significative.",
+    "alternatives": []
+  },
+  {
+    "medicament_a": "Aspirine",
+    "medicament_b": "Oméprazole",
+    "severity": "safe",
+    "description": "L'oméprazole protège contre les effets gastrotoxiques de l'aspirine. Association recommandée en cas d'antécédents d'ulcère.",
+    "alternatives": []
+  },
+  {
+    "medicament_a": "Codoliprane",
+    "medicament_b": "Ibuprofène",
+    "severity": "attention",
+    "description": "Association possible mais nécessite surveillance. Risque d'effets secondaires cumulés (digestifs, rénaux).",
+    "alternatives": ["Augmenter dose d'un seul antalgique"]
+  },
+  {
+    "medicament_a": "Paracétamol",
+    "medicament_b": "Ibuprofène",
+    "severity": "safe",
+    "description": "Association synergique bien tolérée. Peut être utilisée en alternance ou simultanément pour une analgésie optimale.",
+    "alternatives": []
+  },
+  {
+    "medicament_a": "Tramadol",
+    "medicament_b": "Oméprazole",
+    "severity": "safe",
+    "description": "Pas d'interaction significative.",
+    "alternatives": []
+  },
+  {
+    "medicament_a": "Levothyrox",
+    "medicament_b": "Metformine",
+    "severity": "safe",
+    "description": "Pas d'interaction. Association fréquente chez patients diabétiques avec hypothyroïdie.",
+    "alternatives": []
+  }
+]
