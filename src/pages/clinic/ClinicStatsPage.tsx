@@ -42,59 +42,41 @@ export function ClinicStatsPage() {
     try {
       setLoading(true);
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('clinic_id')
-        .eq('id', user?.id)
-        .maybeSingle();
-
-      if (!profile?.clinic_id) {
+      const orgId = user?.org_id;
+      if (!orgId) {
         setLoading(false);
         return;
       }
 
       const { data: doctors } = await supabase
-        .from('doctor_profiles')
-        .select('id, full_name')
-        .eq('clinic_id', profile.clinic_id);
+        .from('doctors')
+        .select('id, user_id, specialite')
+        .eq('org_id', orgId);
 
-      if (doctors) {
+      if (doctors && doctors.length > 0) {
+        const userIds = doctors.map((d: any) => d.user_id).filter(Boolean);
+        const { data: profiles } = await supabase
+          .from('user_profiles')
+          .select('user_id, prenom, nom')
+          .in('user_id', userIds);
+
         const doctorStatsData = await Promise.all(
-          doctors.map(async (doctor) => {
+          doctors.map(async (doctor: any) => {
+            const profile = profiles?.find((p: any) => p.user_id === doctor.user_id);
+            const name = profile ? `Dr. ${profile.prenom} ${profile.nom}` : 'Médecin';
             const { count } = await supabase
               .from('ordonnances')
               .select('id', { count: 'exact', head: true })
               .eq('doctor_id', doctor.id);
 
-            return {
-              name: doctor.full_name || 'Médecin',
-              ordonnances: count || 0,
-            };
+            return { name, ordonnances: count || 0 };
           })
         );
 
         setDoctorStats(doctorStatsData.filter(d => d.ordonnances > 0));
       }
 
-      const { data: interactions } = await supabase
-        .from('detected_interactions')
-        .select('severity')
-        .eq('clinic_id', profile.clinic_id);
-
-      if (interactions) {
-        const severityCounts = interactions.reduce((acc, curr) => {
-          const severity = curr.severity || 'Mineure';
-          acc[severity] = (acc[severity] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
-
-        setInteractionStats(
-          Object.entries(severityCounts).map(([name, value]) => ({
-            name,
-            value,
-          }))
-        );
-      }
+      setInteractionStats([]);
 
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -102,7 +84,7 @@ export function ClinicStatsPage() {
       const { data: ordonnances } = await supabase
         .from('ordonnances')
         .select('created_at')
-        .eq('clinic_id', profile.clinic_id)
+        .eq('org_id', orgId)
         .gte('created_at', thirtyDaysAgo.toISOString());
 
       if (ordonnances) {

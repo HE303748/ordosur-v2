@@ -2,10 +2,24 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Stethoscope, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { validatePassword, validateEmail, validatePhoneNumber, validateRPPSNumber, sanitizeInput, sanitizeInputFinal, validateFullName } from '../lib/validation';
+import { validatePassword, validateEmail, validatePhoneNumber, validateRPPSNumber, sanitizeInput, sanitizeInputFinal } from '../lib/validation';
 import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+
+const SPECIALITES = [
+  'Médecin généraliste',
+  'Cardiologue',
+  'Pédiatre',
+  'Chirurgien',
+  'Pharmacien',
+  'Dermatologue',
+  'Ophtalmologue',
+  'Gynécologue',
+  'Psychiatre',
+  'Radiologue',
+  'Autre',
+];
 
 export function DoctorRegistrationPage() {
   const navigate = useNavigate();
@@ -16,14 +30,17 @@ export function DoctorRegistrationPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
+    prenom: '',
+    nom: '',
     email: '',
     password: '',
     confirmPassword: '',
-    full_name: '',
-    medical_license_number: '',
-    specialization: '',
-    rpps_number: '',
-    phone_number: '',
+    rpps: '',
+    specialite: '',
+    ordre_number: '',
+    nom_cabinet: '',
+    adresse: '',
+    telephone: '',
     acceptTerms: false,
   });
 
@@ -32,7 +49,6 @@ export function DoctorRegistrationPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : sanitizeInput(value),
@@ -44,8 +60,8 @@ export function DoctorRegistrationPage() {
     e.preventDefault();
     setError('');
 
-    if (!validateFullName(formData.full_name)) {
-      setError('Le nom complet doit contenir au moins un prénom et un nom de famille');
+    if (!formData.prenom.trim() || !formData.nom.trim()) {
+      setError('Prénom et nom sont obligatoires');
       return;
     }
 
@@ -64,12 +80,22 @@ export function DoctorRegistrationPage() {
       return;
     }
 
-    if (!validateRPPSNumber(formData.rpps_number)) {
+    if (!validateRPPSNumber(formData.rpps)) {
       setError('Numéro RPPS invalide (11 chiffres requis)');
       return;
     }
 
-    if (!validatePhoneNumber(formData.phone_number)) {
+    if (!formData.specialite) {
+      setError('Veuillez sélectionner une spécialité');
+      return;
+    }
+
+    if (!formData.nom_cabinet.trim()) {
+      setError('Le nom du cabinet est obligatoire');
+      return;
+    }
+
+    if (!validatePhoneNumber(formData.telephone)) {
       setError('Numéro de téléphone invalide');
       return;
     }
@@ -83,16 +109,24 @@ export function DoctorRegistrationPage() {
 
     try {
       await signUp(formData.email, formData.password, 'doctor', {
-        full_name: sanitizeInputFinal(formData.full_name),
-        medical_license_number: formData.medical_license_number,
-        specialization: formData.specialization.split(',').map(s => s.trim()).filter(Boolean),
-        rpps_number: formData.rpps_number,
-        phone_number: formData.phone_number,
+        prenom: sanitizeInputFinal(formData.prenom),
+        nom: sanitizeInputFinal(formData.nom),
+        org_name: sanitizeInputFinal(formData.nom_cabinet),
+        org_type: 'cabinet',
+        adresse: sanitizeInputFinal(formData.adresse),
+        telephone: formData.telephone,
+        rpps: formData.rpps,
+        specialite: formData.specialite,
+        ordre_number: formData.ordre_number || undefined,
       });
 
       navigate('/registration-success', { state: { email: formData.email } });
     } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue lors de l\'inscription');
+      if (err.message?.includes('already registered')) {
+        setError('Cette adresse email est déjà utilisée');
+      } else {
+        setError(err.message || 'Une erreur est survenue lors de l\'inscription');
+      }
     } finally {
       setLoading(false);
     }
@@ -100,6 +134,7 @@ export function DoctorRegistrationPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex">
+      {/* Panneau gauche */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-secondary-500 to-secondary-600 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30"></div>
 
@@ -132,6 +167,7 @@ export function DoctorRegistrationPage() {
         </div>
       </div>
 
+      {/* Formulaire */}
       <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
         <div className="w-full max-w-md">
           <button
@@ -153,15 +189,27 @@ export function DoctorRegistrationPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="Nom complet"
-                name="full_name"
-                type="text"
-                value={formData.full_name}
-                onChange={handleChange}
-                required
-                placeholder="Dr. Jean Dupont"
-              />
+              {/* Identité */}
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Prénom"
+                  name="prenom"
+                  type="text"
+                  value={formData.prenom}
+                  onChange={handleChange}
+                  required
+                  placeholder="Jean"
+                />
+                <Input
+                  label="Nom"
+                  name="nom"
+                  type="text"
+                  value={formData.nom}
+                  onChange={handleChange}
+                  required
+                  placeholder="Dupont"
+                />
+              </div>
 
               <Input
                 label="Email professionnel"
@@ -170,9 +218,10 @@ export function DoctorRegistrationPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                placeholder="jean.dupont@hopital.fr"
+                placeholder="jean.dupont@cabinet.fr"
               />
 
+              {/* Mot de passe */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Mot de passe
@@ -220,42 +269,70 @@ export function DoctorRegistrationPage() {
                 </div>
               </div>
 
+              {/* Infos professionnelles */}
               <Input
                 label="Numéro RPPS"
-                name="rpps_number"
+                name="rpps"
                 type="text"
-                value={formData.rpps_number}
+                value={formData.rpps}
                 onChange={handleChange}
                 required
                 placeholder="12345678901"
                 maxLength={11}
               />
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Spécialité
+                </label>
+                <select
+                  name="specialite"
+                  value={formData.specialite}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                >
+                  <option value="">Sélectionner une spécialité</option>
+                  {SPECIALITES.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+
               <Input
-                label="Numéro de licence médicale"
-                name="medical_license_number"
+                label="Numéro Ordre (optionnel)"
+                name="ordre_number"
                 type="text"
-                value={formData.medical_license_number}
+                value={formData.ordre_number}
+                onChange={handleChange}
+                placeholder="Numéro d'ordre du conseil médical"
+              />
+
+              {/* Cabinet */}
+              <Input
+                label="Nom du cabinet"
+                name="nom_cabinet"
+                type="text"
+                value={formData.nom_cabinet}
                 onChange={handleChange}
                 required
-                placeholder="Numéro de licence"
+                placeholder="Cabinet Médical Dupont"
               />
 
               <Input
-                label="Spécialisation(s)"
-                name="specialization"
+                label="Adresse du cabinet"
+                name="adresse"
                 type="text"
-                value={formData.specialization}
+                value={formData.adresse}
                 onChange={handleChange}
-                required
-                placeholder="Cardiologie, Médecine Générale"
+                placeholder="123 Rue de la Santé, 75001 Paris"
               />
 
               <Input
-                label="Numéro de téléphone"
-                name="phone_number"
+                label="Téléphone"
+                name="telephone"
                 type="tel"
-                value={formData.phone_number}
+                value={formData.telephone}
                 onChange={handleChange}
                 required
                 placeholder="+33 6 12 34 56 78"

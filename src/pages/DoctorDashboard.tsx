@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, LogOut, UserPlus, Search, Plus, X, AlertTriangle, Heart, Droplets, Weight, Ruler, TestTube, CheckCircle2, Pill, Users, CreditCard as Edit, Trash2, ClipboardList, FileText, Shield, TrendingUp, Clock, BarChart3, CircleUser as UserCircle } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Activity, LogOut, UserPlus, Search, Plus, X, AlertTriangle, Phone, Mail, MapPin, CheckCircle2, Pill, Users, CreditCard as Edit, Trash2, ClipboardList, FileText, Shield, TrendingUp, Clock, BarChart3, CircleUser as UserCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase, Patient, Medication } from '../lib/supabase';
+import { supabase, Patient, Medicament } from '../lib/supabase';
 import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { PatientForm } from '../components/PatientForm';
@@ -15,26 +14,17 @@ import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
 import { MonthlyInteractionsChart, RiskDistributionChart, TopMedicationsSection, RecentActivityTimeline, AllMedicationsHistory } from '../components/DoctorAnalytics';
 import { EmailVerificationBanner } from '../components/EmailVerificationBanner';
 
-interface MedicationDetail {
-  id: string;
-  nom: string;
-  effets_secondaires_frequents?: string[];
-  effets_secondaires_rares?: string[];
-  precautions?: string[];
-  contre_indications_relatives?: string[];
-}
-
 interface InteractionResult {
   severity: 'safe' | 'attention' | 'dangerous';
   description: string;
   alternatives: string[];
   reasons: string[];
-  medications: MedicationDetail[];
+  medications: any[];
   patientPrecautions: string[];
 }
 
 export function DoctorDashboard() {
-  const { user, signOut, doctorProfile } = useAuth();
+  const { user, signOut, doctorProfile, clinicProfile } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'patients' | 'checker'>('checker');
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -45,7 +35,7 @@ export function DoctorDashboard() {
   const [showPatientDropdown, setShowPatientDropdown] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const [medications, setMedications] = useState<Medication[]>([]);
+  const [medications, setMedications] = useState<Medicament[]>([]);
   const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string }>>([]);
   const [medSearchTerm, setMedSearchTerm] = useState('');
   const [showMedDropdown, setShowMedDropdown] = useState(false);
@@ -59,18 +49,9 @@ export function DoctorDashboard() {
   const [stats, setStats] = useState({
     totalPatients: 0,
     ordonnances: 0,
-    safetyRate: 0,
+    safetyRate: 100,
     evolution: 0,
   });
-  const [weeklyData, setWeeklyData] = useState([
-    { jour: 'Lun', consultations: 12 },
-    { jour: 'Mar', consultations: 18 },
-    { jour: 'Mer', consultations: 15 },
-    { jour: 'Jeu', consultations: 20 },
-    { jour: 'Ven', consultations: 16 },
-    { jour: 'Sam', consultations: 8 },
-    { jour: 'Dim', consultations: 0 },
-  ]);
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -97,48 +78,45 @@ export function DoctorDashboard() {
     const { data } = await supabase
       .from('patients')
       .select('*')
-      .eq('doctor_id', user.id)
+      .eq('org_id', user.org_id)
       .order('created_at', { ascending: false });
     if (data) setPatients(data);
   };
 
   const loadMedications = async () => {
-    const { data } = await supabase.from('medications').select('*').order('nom');
+    const { data } = await supabase.from('medicaments').select('*').order('nom');
     if (data) setMedications(data);
   };
 
   const loadStats = async () => {
     if (!user) return;
 
-    const { data: consultationsData } = await supabase
-      .from('consultations')
-      .select('*')
-      .eq('doctor_id', user.id);
+    const { count: patientCount } = await supabase
+      .from('patients')
+      .select('id', { count: 'exact', head: true })
+      .eq('org_id', user.org_id);
 
-    const { data: logsData } = await supabase
-      .from('interaction_logs')
-      .select('*')
-      .eq('doctor_id', user.id);
-
-    const safeCount = logsData?.filter(log => log.risk_level === 'safe').length || 0;
-    const totalLogs = logsData?.length || 1;
+    const { count: ordCount } = await supabase
+      .from('ordonnances')
+      .select('id', { count: 'exact', head: true })
+      .eq('doctor_id', doctorProfile?.id || user.id);
 
     setStats({
-      totalPatients: patients.length,
-      ordonnances: consultationsData?.length || 0,
-      safetyRate: Math.round((safeCount / totalLogs) * 100),
-      evolution: 12,
+      totalPatients: patientCount || 0,
+      ordonnances: ordCount || 0,
+      safetyRate: 100,
+      evolution: 0,
     });
   };
 
-  const handleSavePatient = async (patientData: Omit<Patient, 'id' | 'doctor_id' | 'created_at'>) => {
+  const handleSavePatient = async (patientData: Omit<Patient, 'id' | 'org_id' | 'created_at'>) => {
     if (!user) return;
     try {
       if (editingPatient) {
         await supabase.from('patients').update(patientData).eq('id', editingPatient.id);
         setToast({ message: 'Patient mis à jour', type: 'success' });
       } else {
-        await supabase.from('patients').insert({ ...patientData, doctor_id: user.id });
+        await supabase.from('patients').insert({ ...patientData, org_id: user.org_id });
         setToast({ message: 'Patient ajouté', type: 'success' });
       }
       setShowPatientModal(false);
@@ -167,8 +145,7 @@ export function DoctorDashboard() {
 
   const filteredPatientsForDropdown = patientSearchTerm.length >= 1
     ? patients.filter(p =>
-        p.nom_complet.toLowerCase().includes(patientSearchTerm.toLowerCase()) ||
-        p.maladies_chroniques.some(m => m.toLowerCase().includes(patientSearchTerm.toLowerCase()))
+        `${p.prenom} ${p.nom}`.toLowerCase().includes(patientSearchTerm.toLowerCase())
       ).slice(0, 8)
     : [];
 
@@ -176,7 +153,7 @@ export function DoctorDashboard() {
     ? medications.filter(m => m.nom.toLowerCase().includes(medSearchTerm.toLowerCase())).slice(0, 8)
     : [];
 
-  const addMedication = (med: Medication) => {
+  const addMedication = (med: Medicament) => {
     if (!selectedMeds.some(m => m.id === med.id)) {
       setSelectedMeds([...selectedMeds, { id: med.id, nom: med.nom }]);
     }
@@ -190,67 +167,63 @@ export function DoctorDashboard() {
 
   const loadPatientOrdonnances = async (patientId: string) => {
     try {
-      const { data: ordonnancesData, error } = await supabase
+      const { data, error } = await supabase
         .from('ordonnances')
-        .select('*')
+        .select(`
+          id, date, statut, doctor_id, created_at,
+          ordonnance_lignes(id, medicament_nom, posologie, duree, instructions)
+        `)
         .eq('patient_id', patientId)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error loading ordonnances:', error);
+      if (error || !data || data.length === 0) {
         setPatientOrdonnances([]);
         return;
       }
 
-      if (ordonnancesData && ordonnancesData.length > 0) {
-        const doctorIds = [...new Set(ordonnancesData.map((ord: any) => ord.doctor_id))];
+      const doctorIds = [...new Set(data.map((ord: any) => ord.doctor_id))].filter(Boolean);
 
-        const { data: usersData } = await supabase
-          .from('users')
-          .select('id, doctor_name')
-          .in('id', doctorIds);
-
+      let doctorMap = new Map();
+      if (doctorIds.length > 0) {
         const { data: doctorsData } = await supabase
           .from('doctors')
-          .select('id, nom, prenom, specialites');
-
-        const doctorMap = new Map();
-
-        if (usersData) {
-          usersData.forEach((user: any) => {
-            doctorMap.set(user.id, {
-              name: user.doctor_name || 'Dr. Médecin',
-              specialty: 'Médecine Générale'
-            });
-          });
-        }
+          .select('id, user_id, specialite')
+          .in('id', doctorIds);
 
         if (doctorsData) {
+          const userIds = doctorsData.map((d: any) => d.user_id).filter(Boolean);
+          const { data: profilesData } = await supabase
+            .from('user_profiles')
+            .select('user_id, prenom, nom')
+            .in('user_id', userIds);
+
           doctorsData.forEach((doctor: any) => {
+            const profile = profilesData?.find((p: any) => p.user_id === doctor.user_id);
             doctorMap.set(doctor.id, {
-              name: `Dr. ${doctor.prenom} ${doctor.nom}`,
-              specialty: doctor.specialites?.[0] || 'Médecine Générale'
+              name: profile ? `Dr. ${profile.prenom} ${profile.nom}` : 'Dr. Médecin',
+              specialty: doctor.specialite || ''
             });
           });
         }
-
-        const ordonnances = ordonnancesData.map((ord: any) => {
-          const doctorInfo = doctorMap.get(ord.doctor_id) || {
-            name: 'Dr. Médecin',
-            specialty: 'Médecine Générale'
-          };
-
-          return {
-            ...ord,
-            doctor_name: doctorInfo.name,
-            doctor_specialty: doctorInfo.specialty
-          };
-        });
-
-        setPatientOrdonnances(ordonnances);
-      } else {
-        setPatientOrdonnances([]);
       }
+
+      const ordonnances = data.map((ord: any) => {
+        const doctorInfo = doctorMap.get(ord.doctor_id) || { name: 'Dr. Médecin', specialty: '' };
+        const lignes = ord.ordonnance_lignes || [];
+        return {
+          ...ord,
+          doctor_name: doctorInfo.name,
+          doctor_specialty: doctorInfo.specialty,
+          medications: lignes.map((l: any) => ({
+            nom: l.medicament_nom,
+            posologie: l.posologie || '',
+            duree: l.duree || '',
+            quantite: l.instructions || ''
+          }))
+        };
+      });
+
+      setPatientOrdonnances(ordonnances);
     } catch (error) {
       console.error('Error loading patient ordonnances:', error);
       setPatientOrdonnances([]);
@@ -269,119 +242,35 @@ export function DoctorDashboard() {
     }
 
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 600));
-
-    const { data: medsDetails } = await supabase
-      .from('medications')
-      .select('id, nom, effets_secondaires_frequents, effets_secondaires_rares, precautions, contre_indications_relatives')
-      .in('id', selectedMeds.map(m => m.id));
+    await new Promise(resolve => setTimeout(resolve, 400));
 
     let overallSeverity: 'safe' | 'attention' | 'dangerous' = 'safe';
     const allReasons: string[] = [];
-    const allAlternatives: string[] = [];
-    const patientPrecautions: string[] = [];
     let description = 'Analyse de compatibilité effectuée.';
 
+    // Check for duplicate medications
     for (let i = 0; i < selectedMeds.length; i++) {
       for (let j = i + 1; j < selectedMeds.length; j++) {
-        const medA = selectedMeds[i].nom;
-        const medB = selectedMeds[j].nom;
-
-        if (medA === medB) {
+        if (selectedMeds[i].nom === selectedMeds[j].nom) {
           overallSeverity = 'dangerous';
-          allReasons.push(`DUPLICATION: ${medA} prescrit en double`);
-          description = 'Duplication médicamenteuse - Risque de surdosage!';
-          continue;
-        }
-
-        const { data: interaction } = await supabase
-          .from('drug_interactions')
-          .select('*')
-          .or(`and(medicament_a.eq.${medA},medicament_b.eq.${medB}),and(medicament_a.eq.${medB},medicament_b.eq.${medA})`)
-          .maybeSingle();
-
-        if (interaction) {
-          if (interaction.severity === 'dangerous') overallSeverity = 'dangerous';
-          else if (interaction.severity === 'attention' && overallSeverity === 'safe') overallSeverity = 'attention';
-          allReasons.push(`${medA} ⇄ ${medB}: ${interaction.description}`);
-          allAlternatives.push(...interaction.alternatives);
+          allReasons.push(`DUPLICATION: ${selectedMeds[i].nom} prescrit en double`);
+          description = 'Duplication médicamenteuse détectée - Risque de surdosage!';
         }
       }
-    }
-
-    if (selectedPatient.maladies_chroniques.some(m => m.includes('Insuffisance Rénale'))) {
-      const nsaids = ['Ibuprofène', 'Naproxène', 'Kétoprofène', 'Advil'];
-      if (selectedMeds.some(m => nsaids.some(n => m.nom.includes(n)))) {
-        if (overallSeverity !== 'dangerous') overallSeverity = 'attention';
-        allReasons.push('⚠️ Insuffisance Rénale + AINS: Surveillance renforcée');
-        allAlternatives.push('Paracétamol', 'Tramadol');
-        patientPrecautions.push('Réduire la dose d\'AINS de 50%');
-        patientPrecautions.push('Surveillance fonction rénale recommandée');
-        patientPrecautions.push('Limiter la durée du traitement (max 5 jours)');
-        patientPrecautions.push('Bien hydrater le patient');
-      }
-      if (selectedMeds.some(m => m.nom.includes('Metformine'))) {
-        overallSeverity = 'dangerous';
-        allReasons.push('🔴 CONTRE-INDICATION: Metformine + Insuffisance Rénale');
-        allAlternatives.push('Glimépiride', 'Insuline');
-        patientPrecautions.push('ARRÊTER la Metformine immédiatement');
-        patientPrecautions.push('Consulter endocrinologue pour alternatives');
-      }
-    }
-
-    if (selectedPatient.maladies_chroniques.some(m => m.includes('Diabète'))) {
-      if (selectedMeds.some(m => ['Ibuprofène', 'AINS'].some(n => m.nom.includes(n)))) {
-        patientPrecautions.push('Surveiller la glycémie (AINS peuvent masquer hypoglycémie)');
-      }
-    }
-
-    if (selectedPatient.maladies_chroniques.some(m => m.includes('Asthme'))) {
-      if (selectedMeds.some(m => m.nom.includes('Aspirine'))) {
-        if (overallSeverity === 'safe') overallSeverity = 'attention';
-        allReasons.push('⚠️ Asthme + Aspirine: Risque de bronchospasme');
-        allAlternatives.push('Paracétamol');
-      }
-    }
-
-    selectedPatient.allergies.forEach(allergie => {
-      selectedMeds.forEach(med => {
-        if (allergie.toLowerCase().includes('pénicilline') &&
-           (med.nom.toLowerCase().includes('amoxicilline') || med.nom.toLowerCase().includes('augmentin'))) {
-          overallSeverity = 'dangerous';
-          allReasons.push(`🔴 ALLERGIE: ${allergie} ⇄ ${med.nom}`);
-          allAlternatives.push('Azithromycine');
-        }
-      });
-    });
-
-    if (selectedPatient.dfg && selectedPatient.dfg < 30) {
-      allReasons.push(`📊 DFG: ${selectedPatient.dfg} mL/min - Fonction rénale altérée`);
-      if (overallSeverity === 'safe') overallSeverity = 'attention';
     }
 
     if (allReasons.length === 0) {
-      description = `✓ Aucune interaction détectée entre les ${selectedMeds.length} médicaments`;
+      description = `✓ Aucune duplication détectée entre les ${selectedMeds.length} médicaments`;
     }
 
     setResult({
       severity: overallSeverity,
       description,
-      alternatives: [...new Set(allAlternatives)],
+      alternatives: [],
       reasons: allReasons,
-      medications: medsDetails || [],
-      patientPrecautions
+      medications: [],
+      patientPrecautions: []
     });
-
-    if (user && selectedPatient) {
-      await supabase.from('interaction_logs').insert({
-        doctor_id: user.id,
-        patient_id: selectedPatient.id,
-        medicament_a: selectedMeds[0]?.nom || '',
-        medicament_b: selectedMeds[1]?.nom || '',
-        risk_level: overallSeverity,
-        timestamp: new Date().toISOString(),
-      });
-    }
 
     setLoading(false);
   };
@@ -390,6 +279,16 @@ export function DoctorDashboard() {
     setSelectedMeds([]);
     setMedSearchTerm('');
     setResult(null);
+  };
+
+  const getPatientAge = (dateNaissance: string | null | undefined): number | null => {
+    if (!dateNaissance) return null;
+    const today = new Date();
+    const birth = new Date(dateNaissance);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
   };
 
   return (
@@ -405,7 +304,7 @@ export function DoctorDashboard() {
               </div>
               <div>
                 <h1 className="text-lg md:text-2xl font-bold text-slate-900">OrdoSur</h1>
-                <p className="text-xs md:text-sm text-slate-600">{doctorProfile?.full_name || user?.full_name || 'Médecin'}</p>
+                <p className="text-xs md:text-sm text-slate-600">{user?.full_name || 'Médecin'}</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -438,14 +337,14 @@ export function DoctorDashboard() {
             value={stats.ordonnances}
             icon={<FileText className="w-6 h-6" />}
             color="secondary"
-            subtitle="Ce mois-ci"
+            subtitle="Total"
           />
           <KPICard
-            title="Taux de Succès"
+            title="Taux de Sécurité"
             value={`${stats.safetyRate}%`}
             icon={<Shield className="w-6 h-6" />}
             color="safe"
-            subtitle="Interactions vérifiées"
+            subtitle="Prescriptions vérifiées"
           />
           <KPICard
             title="Évolution"
@@ -493,7 +392,7 @@ export function DoctorDashboard() {
             }`}
           >
             <Pill className="w-5 h-5 mr-2" />
-            Vérification d'Interactions
+            Vérification &amp; Prescription
           </button>
         </div>
 
@@ -511,32 +410,23 @@ export function DoctorDashboard() {
               <table className="w-full">
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
+                    <th className="text-left px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm font-semibold text-slate-700">Prénom</th>
                     <th className="text-left px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm font-semibold text-slate-700">Nom</th>
-                    <th className="text-left px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm font-semibold text-slate-700">Âge</th>
                     <th className="text-left px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm font-semibold text-slate-700 hidden md:table-cell">Sexe</th>
-                    <th className="text-left px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm font-semibold text-slate-700 hidden lg:table-cell">Pathologies</th>
+                    <th className="text-left px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm font-semibold text-slate-700 hidden lg:table-cell">Téléphone</th>
                     <th className="text-right px-4 md:px-6 py-3 md:py-4 text-xs md:text-sm font-semibold text-slate-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {patients.map((patient) => (
                     <tr key={patient.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-4 md:px-6 py-3 md:py-4 font-semibold text-slate-900 text-sm">{patient.nom_complet}</td>
-                      <td className="px-4 md:px-6 py-3 md:py-4 text-slate-600 text-sm">{patient.age} ans</td>
-                      <td className="px-4 md:px-6 py-3 md:py-4 text-slate-600 text-sm hidden md:table-cell">{patient.sexe}</td>
-                      <td className="px-4 md:px-6 py-3 md:py-4 hidden lg:table-cell">
-                        <div className="flex flex-wrap gap-1">
-                          {patient.maladies_chroniques.slice(0, 2).map((m, idx) => (
-                            <span key={idx} className="px-2 py-1 bg-danger-50 text-danger-700 rounded-lg text-xs font-medium">
-                              {m}
-                            </span>
-                          ))}
-                          {patient.maladies_chroniques.length > 2 && (
-                            <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium">
-                              +{patient.maladies_chroniques.length - 2}
-                            </span>
-                          )}
-                        </div>
+                      <td className="px-4 md:px-6 py-3 md:py-4 font-semibold text-slate-900 text-sm">{patient.prenom}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-slate-700 text-sm">{patient.nom}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-slate-600 text-sm hidden md:table-cell">
+                        {patient.sexe === 'M' ? 'Homme' : patient.sexe === 'F' ? 'Femme' : '-'}
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 text-slate-600 text-sm hidden lg:table-cell">
+                        {patient.telephone || '-'}
                       </td>
                       <td className="px-4 md:px-6 py-3 md:py-4 text-right">
                         <button
@@ -554,6 +444,13 @@ export function DoctorDashboard() {
                       </td>
                     </tr>
                   ))}
+                  {patients.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
+                        Aucun patient enregistré
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -582,7 +479,7 @@ export function DoctorDashboard() {
                           onMouseDown={(e) => {
                             e.preventDefault();
                             setSelectedPatient(patient);
-                            setPatientSearchTerm(patient.nom_complet);
+                            setPatientSearchTerm(`${patient.prenom} ${patient.nom}`);
                             setShowPatientDropdown(false);
                             resetAnalysis();
                             loadPatientOrdonnances(patient.id);
@@ -590,18 +487,20 @@ export function DoctorDashboard() {
                           className="w-full px-6 py-4 text-left hover:bg-slate-50 transition-all border-b border-slate-100 last:border-b-0 group"
                         >
                           <div className="font-bold text-slate-900 text-lg group-hover:text-primary-600 transition-colors">
-                            {patient.nom_complet}
+                            {patient.prenom} {patient.nom}
                           </div>
                           <div className="text-sm text-slate-600 mt-1 flex items-center flex-wrap gap-3">
-                            <span>{patient.age} ans</span>
-                            <span>•</span>
-                            <span>{patient.sexe}</span>
-                            {patient.maladies_chroniques.length > 0 && (
+                            {patient.sexe && <span>{patient.sexe === 'M' ? 'Homme' : 'Femme'}</span>}
+                            {patient.date_naissance && (
                               <>
                                 <span>•</span>
-                                <span className="text-danger-600 font-medium">
-                                  {patient.maladies_chroniques.slice(0, 2).join(', ')}
-                                </span>
+                                <span>{getPatientAge(patient.date_naissance)} ans</span>
+                              </>
+                            )}
+                            {patient.telephone && (
+                              <>
+                                <span>•</span>
+                                <span>{patient.telephone}</span>
                               </>
                             )}
                           </div>
@@ -627,118 +526,51 @@ export function DoctorDashboard() {
                   {selectedPatient ? (
                     <div className="space-y-6">
                       <div>
-                        <h2 className="text-3xl font-bold text-slate-900 mb-2">{selectedPatient.nom_complet}</h2>
+                        <h2 className="text-3xl font-bold text-slate-900 mb-2">
+                          {selectedPatient.prenom} {selectedPatient.nom}
+                        </h2>
                         <div className="flex items-center space-x-4 text-slate-600">
-                          <span className="text-lg font-semibold">{selectedPatient.age} ans</span>
-                          <span>•</span>
-                          <span className="text-lg">{selectedPatient.sexe}</span>
+                          {selectedPatient.sexe && (
+                            <span className="text-lg font-semibold">
+                              {selectedPatient.sexe === 'M' ? 'Homme' : 'Femme'}
+                            </span>
+                          )}
+                          {selectedPatient.date_naissance && (
+                            <>
+                              <span>•</span>
+                              <span className="text-lg">
+                                {getPatientAge(selectedPatient.date_naissance)} ans
+                              </span>
+                            </>
+                          )}
                         </div>
+                        {selectedPatient.date_naissance && (
+                          <p className="text-sm text-slate-500 mt-1">
+                            Né(e) le {new Date(selectedPatient.date_naissance).toLocaleDateString('fr-FR')}
+                          </p>
+                        )}
                       </div>
 
-                      {(selectedPatient.poids || selectedPatient.taille || selectedPatient.imc) && (
-                        <div className="grid grid-cols-3 gap-4">
-                          {selectedPatient.poids && (
-                            <div className="bg-slate-50 rounded-xl p-4">
-                              <div className="text-xs text-slate-600 mb-1 flex items-center">
-                                <Weight className="w-3 h-3 mr-1" /> Poids
-                              </div>
-                              <div className="text-xl font-bold text-slate-900">{selectedPatient.poids} kg</div>
+                      {(selectedPatient.telephone || selectedPatient.email || selectedPatient.adresse) && (
+                        <div className="bg-slate-50 rounded-xl p-4 space-y-2">
+                          {selectedPatient.telephone && (
+                            <div className="flex items-center space-x-2 text-sm text-slate-700">
+                              <Phone className="w-4 h-4 text-slate-500" />
+                              <span>{selectedPatient.telephone}</span>
                             </div>
                           )}
-                          {selectedPatient.taille && (
-                            <div className="bg-slate-50 rounded-xl p-4">
-                              <div className="text-xs text-slate-600 mb-1 flex items-center">
-                                <Ruler className="w-3 h-3 mr-1" /> Taille
-                              </div>
-                              <div className="text-xl font-bold text-slate-900">{selectedPatient.taille} cm</div>
+                          {selectedPatient.email && (
+                            <div className="flex items-center space-x-2 text-sm text-slate-700">
+                              <Mail className="w-4 h-4 text-slate-500" />
+                              <span>{selectedPatient.email}</span>
                             </div>
                           )}
-                          {selectedPatient.imc && (
-                            <div className={`rounded-xl p-4 ${
-                              selectedPatient.imc < 18.5 ? 'bg-caution-50' :
-                              selectedPatient.imc < 25 ? 'bg-safe-50' :
-                              selectedPatient.imc < 30 ? 'bg-caution-50' : 'bg-danger-50'
-                            }`}>
-                              <div className="text-xs text-slate-600 mb-1">IMC</div>
-                              <div className={`text-xl font-bold ${
-                                selectedPatient.imc < 18.5 ? 'text-caution-700' :
-                                selectedPatient.imc < 25 ? 'text-safe-700' :
-                                selectedPatient.imc < 30 ? 'text-caution-700' : 'text-danger-700'
-                              }`}>
-                                {selectedPatient.imc.toFixed(1)}
-                              </div>
+                          {selectedPatient.adresse && (
+                            <div className="flex items-center space-x-2 text-sm text-slate-700">
+                              <MapPin className="w-4 h-4 text-slate-500" />
+                              <span>{selectedPatient.adresse}</span>
                             </div>
                           )}
-                        </div>
-                      )}
-
-                      {selectedPatient.dfg && (
-                        <div className={`rounded-xl p-4 border-2 ${
-                          selectedPatient.dfg > 60 ? 'bg-safe-50 border-safe-200' :
-                          selectedPatient.dfg > 30 ? 'bg-caution-50 border-caution-200' : 'bg-danger-50 border-danger-200'
-                        }`}>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-sm font-medium text-slate-700 mb-1">
-                                <TestTube className="w-4 h-4 inline mr-1" />
-                                DFG estimé
-                              </div>
-                              <div className={`text-2xl font-bold ${
-                                selectedPatient.dfg > 60 ? 'text-safe-700' :
-                                selectedPatient.dfg > 30 ? 'text-caution-700' : 'text-danger-700'
-                              }`}>
-                                {selectedPatient.dfg} mL/min
-                              </div>
-                            </div>
-                            {selectedPatient.creatinine && (
-                              <div className="text-right">
-                                <div className="text-xs text-slate-600">Créatinine</div>
-                                <div className="text-lg font-semibold text-slate-800">{selectedPatient.creatinine} mg/dL</div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedPatient.maladies_chroniques.length > 0 && (
-                        <div>
-                          <h4 className="text-sm font-bold text-danger-900 mb-3 uppercase tracking-wide">
-                            PATHOLOGIES
-                          </h4>
-                          <div className="space-y-2">
-                            {selectedPatient.maladies_chroniques.map((maladie, idx) => (
-                              <div
-                                key={idx}
-                                className="flex items-center space-x-3 px-4 py-3 bg-danger-50 rounded-xl border-2 border-danger-200"
-                              >
-                                {maladie.includes('Diabète') && <Droplets className="w-5 h-5 text-danger-600" />}
-                                {maladie.includes('Cardiaque') && <Heart className="w-5 h-5 text-danger-600" />}
-                                {!maladie.includes('Diabète') && !maladie.includes('Cardiaque') && (
-                                  <AlertTriangle className="w-5 h-5 text-danger-600" />
-                                )}
-                                <span className="text-sm font-semibold text-danger-900">{maladie}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {selectedPatient.allergies.length > 0 && (
-                        <div>
-                          <h4 className="text-sm font-bold text-danger-900 mb-3 uppercase tracking-wide">
-                            ⚠️ ALLERGIES
-                          </h4>
-                          <div className="space-y-2">
-                            {selectedPatient.allergies.map((allergie, idx) => (
-                              <div
-                                key={idx}
-                                className="px-4 py-3 bg-danger-100 rounded-xl border-2 border-danger-400 font-bold text-sm text-danger-900 flex items-center"
-                              >
-                                <AlertTriangle className="w-5 h-5 mr-2 text-danger-600" />
-                                {allergie}
-                              </div>
-                            ))}
-                          </div>
                         </div>
                       )}
 
@@ -751,31 +583,34 @@ export function DoctorDashboard() {
                         {patientOrdonnances.length > 0 ? (
                           <div className="space-y-3">
                             {patientOrdonnances.slice(0, 3).map((ordonnance) => {
-                              const date = new Date(ordonnance.created_at);
-                              const formattedDate = date.toLocaleDateString('fr-FR', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric'
-                              });
+                              const dateStr = ordonnance.date || ordonnance.created_at;
+                              const formattedDate = dateStr
+                                ? new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                                : 'Date inconnue';
 
                               return (
                                 <div key={ordonnance.id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
                                   <div className="flex items-center space-x-2 mb-2">
                                     <Clock className="w-4 h-4 text-slate-500" />
                                     <span className="text-xs font-semibold text-slate-700">{formattedDate}</span>
-                                    <span className="text-xs text-slate-500">-</span>
-                                    <span className="text-xs text-slate-600">
-                                      {ordonnance.doctor_name}
-                                      {ordonnance.doctor_specialty && (
-                                        <span className="text-slate-500"> ({ordonnance.doctor_specialty})</span>
-                                      )}
-                                    </span>
+                                    {ordonnance.doctor_name && (
+                                      <>
+                                        <span className="text-xs text-slate-500">-</span>
+                                        <span className="text-xs text-slate-600">
+                                          {ordonnance.doctor_name}
+                                          {ordonnance.doctor_specialty && (
+                                            <span className="text-slate-500"> ({ordonnance.doctor_specialty})</span>
+                                          )}
+                                        </span>
+                                      </>
+                                    )}
                                   </div>
                                   <ul className="space-y-1 ml-6">
                                     {ordonnance.medications.slice(0, 3).map((med: any, idx: number) => (
                                       <li key={idx} className="text-xs text-slate-700">
                                         <span className="font-medium">{med.nom}</span>
-                                        <span className="text-slate-500"> - {med.posologie} - {med.duree}</span>
+                                        {med.posologie && <span className="text-slate-500"> - {med.posologie}</span>}
+                                        {med.duree && <span className="text-slate-500"> - {med.duree}</span>}
                                       </li>
                                     ))}
                                     {ordonnance.medications.length > 3 && (
@@ -840,7 +675,7 @@ export function DoctorDashboard() {
                               className="w-full px-4 py-3 text-left hover:bg-secondary-50 transition-colors border-b border-slate-100 last:border-b-0"
                             >
                               <div className="font-bold text-slate-900">{med.nom}</div>
-                              <div className="text-xs text-slate-500">{med.classe_therapeutique}</div>
+                              {med.dci && <div className="text-xs text-slate-500">{med.dci}</div>}
                             </button>
                           ))}
                         </div>
@@ -933,100 +768,6 @@ export function DoctorDashboard() {
                     </div>
                   )}
 
-                  {result.alternatives.length > 0 && (
-                    <div>
-                      <h4 className="font-bold text-slate-900 mb-4 text-lg">Alternatives Recommandées</h4>
-                      <div className="flex flex-wrap gap-3">
-                        {result.alternatives.map((alt, idx) => (
-                          <span key={idx} className="px-5 py-3 bg-gradient-to-r from-primary-100 to-primary-200 text-primary-800 rounded-xl font-bold text-sm border-2 border-primary-300">
-                            {alt}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {result.medications && result.medications.length > 0 && (
-                    <div className="bg-yellow-50 rounded-2xl p-6 border-2 border-yellow-200">
-                      <h4 className="font-bold text-slate-900 mb-4 text-lg flex items-center">
-                        <AlertTriangle className="w-5 h-5 mr-2 text-yellow-600" />
-                        Effets Secondaires à Surveiller
-                      </h4>
-                      {result.medications.map((med, idx) => (
-                        <div key={idx} className="mb-6 last:mb-0">
-                          <h5 className="font-bold text-slate-800 mb-3 flex items-center">
-                            <Pill className="w-4 h-4 mr-2 text-primary-600" />
-                            {med.nom}
-                          </h5>
-
-                          {med.effets_secondaires_frequents && med.effets_secondaires_frequents.length > 0 && (
-                            <div className="mb-3">
-                              <p className="text-sm font-semibold text-slate-700 mb-2">Fréquents (1-10%)</p>
-                              <ul className="space-y-1 ml-4">
-                                {med.effets_secondaires_frequents.map((effet, i) => (
-                                  <li key={i} className="text-sm text-slate-600 flex items-start">
-                                    <span className="text-yellow-600 mr-2">•</span>
-                                    {effet}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {med.effets_secondaires_rares && med.effets_secondaires_rares.length > 0 && (
-                            <div className="mb-3">
-                              <p className="text-sm font-semibold text-danger-700 mb-2 flex items-center">
-                                <span className="text-danger-600 mr-1">🔴</span>
-                                Rares mais graves (&lt;1%)
-                              </p>
-                              <ul className="space-y-1 ml-4">
-                                {med.effets_secondaires_rares.map((effet, i) => (
-                                  <li key={i} className="text-sm text-slate-600 flex items-start">
-                                    <span className="text-danger-600 mr-2">•</span>
-                                    {effet}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-
-                          {med.precautions && med.precautions.length > 0 && (
-                            <div className="bg-blue-50 rounded-lg p-3 mt-3">
-                              <p className="text-sm font-semibold text-blue-900 mb-2 flex items-center">
-                                <span className="mr-1">💡</span>
-                                Précautions
-                              </p>
-                              <ul className="space-y-1 ml-4">
-                                {med.precautions.map((precaution, i) => (
-                                  <li key={i} className="text-sm text-blue-800">
-                                    • {precaution}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {result.patientPrecautions && result.patientPrecautions.length > 0 && (
-                    <div className="bg-red-50 rounded-2xl p-6 border-2 border-red-200">
-                      <h4 className="font-bold text-danger-900 mb-4 text-lg flex items-center">
-                        <span className="mr-2">🔴</span>
-                        Précautions Spécifiques pour ce Patient
-                      </h4>
-                      <ul className="space-y-3">
-                        {result.patientPrecautions.map((precaution, idx) => (
-                          <li key={idx} className="flex items-start space-x-3">
-                            <span className="text-danger-600 font-bold text-lg mt-0.5">➤</span>
-                            <span className="font-medium text-danger-800">{precaution}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
                   <div className="bg-slate-100 rounded-xl p-5 border-l-4 border-slate-400">
                     <p className="text-xs text-slate-700 leading-relaxed">
                       <strong>Avertissement:</strong> Cette analyse est indicative. Consultez le Vidal et les recommandations HAS.
@@ -1068,8 +809,8 @@ export function DoctorDashboard() {
           isOpen={showPrescriptionForm}
           onClose={() => setShowPrescriptionForm(false)}
           patient={{
-            nom_complet: selectedPatient.nom_complet,
-            age: selectedPatient.age
+            prenom: selectedPatient.prenom,
+            nom: selectedPatient.nom,
           }}
           initialMedications={selectedMeds}
           onPreview={(data) => {
@@ -1093,72 +834,100 @@ export function DoctorDashboard() {
           }}
           onSave={async () => {
             try {
-              if (!selectedPatient || !selectedPatient.id) {
+              if (!selectedPatient?.id) {
                 setToast({ message: 'Patient non sélectionné', type: 'error' });
                 return;
               }
-
-              if (!user || !user.id) {
+              if (!user?.id) {
                 setToast({ message: 'Utilisateur non authentifié', type: 'error' });
                 return;
               }
-
-              if (!prescriptionData || !prescriptionData.medications || prescriptionData.medications.length === 0) {
+              if (!prescriptionData?.medications?.length) {
                 setToast({ message: 'Aucun médicament sélectionné', type: 'error' });
                 return;
               }
 
-              const ordonnanceData = {
-                patient_id: selectedPatient.id,
-                doctor_id: user.id,
-                medications: prescriptionData.medications,
-                remarks: prescriptionData.remarks || '',
-                next_appointment: prescriptionData.nextAppointment || null,
-                interaction_status: result?.message || 'Non analysé'
-              };
+              const today = new Date().toISOString().split('T')[0];
 
-              console.log('Saving ordonnance:', ordonnanceData);
+              // Créer la consultation
+              const { data: consultData, error: consultError } = await supabase
+                .from('consultations')
+                .insert({
+                  patient_id: selectedPatient.id,
+                  doctor_id: doctorProfile?.id || user.id,
+                  org_id: user.org_id,
+                  date: today,
+                  motif: prescriptionData.motif || null,
+                  notes: prescriptionData.remarks || null,
+                })
+                .select('id')
+                .single();
 
-              const { data, error } = await supabase
+              if (consultError) throw consultError;
+
+              // Créer l'ordonnance liée à la consultation
+              const { data: ordData, error: ordError } = await supabase
                 .from('ordonnances')
-                .insert([ordonnanceData])
-                .select();
+                .insert({
+                  consultation_id: consultData.id,
+                  patient_id: selectedPatient.id,
+                  doctor_id: doctorProfile?.id || user.id,
+                  org_id: user.org_id,
+                  date: today,
+                  statut: 'active',
+                })
+                .select('id')
+                .single();
 
-              if (error) {
-                console.error('Supabase error:', error);
-                throw error;
-              }
+              if (ordError) throw ordError;
 
-              console.log('Ordonnance saved:', data);
+              const lignes = prescriptionData.medications.map((med: any) => ({
+                ordonnance_id: ordData.id,
+                medicament_nom: med.nom,
+                posologie: med.posologie || null,
+                duree: med.duree || null,
+                instructions: med.quantite || null,
+              }));
+
+              const { error: lignesError } = await supabase
+                .from('ordonnance_lignes')
+                .insert(lignes);
+
+              if (lignesError) throw lignesError;
 
               setToast({ message: 'Ordonnance enregistrée avec succès', type: 'success' });
               setShowPrescriptionPreview(false);
               setPrescriptionData(null);
               setResult(null);
               loadPatientOrdonnances(selectedPatient.id);
+              loadStats();
             } catch (error: any) {
               console.error('Error saving ordonnance:', error);
               setToast({ message: error.message || 'Erreur lors de la sauvegarde', type: 'error' });
             }
           }}
           doctor={{
-            nom: user.nom || 'Dupont',
-            prenom: user.prenom || 'Laurent',
-            titre: 'Dr.',
-            specialites: ['Cardiologie'],
-            rpps: '10003456789',
-            telephone: '+33 6 12 34 56 78',
-            email: user.email || 'laurent.dupont@gmail.com'
+            nom: user.nom,
+            prenom: user.prenom,
+            specialite: doctorProfile?.specialite || null,
+            rpps: doctorProfile?.rpps || null,
+            ordre_number: doctorProfile?.ordre_number || null,
+            telephone: null,
+          }}
+          org={{
+            name: clinicProfile?.name || '',
+            adresse: clinicProfile?.adresse || null,
+            telephone: clinicProfile?.telephone || null,
           }}
           patient={{
-            nom_complet: selectedPatient.nom_complet,
-            date_naissance: '15/03/1957',
-            age: selectedPatient.age
+            prenom: selectedPatient.prenom,
+            nom: selectedPatient.nom,
+            date_naissance: selectedPatient.date_naissance,
           }}
+          motif={prescriptionData.motif}
           medications={prescriptionData.medications}
           remarks={prescriptionData.remarks}
           nextAppointment={prescriptionData.nextAppointment}
-          interactionStatus={result?.message}
         />
       )}
 
@@ -1167,17 +936,10 @@ export function DoctorDashboard() {
           isOpen={showMedicationHistory}
           onClose={() => setShowMedicationHistory(false)}
           patient={{
-            nom_complet: selectedPatient.nom_complet
+            prenom: selectedPatient.prenom,
+            nom: selectedPatient.nom,
           }}
           ordonnances={patientOrdonnances}
-        />
-      )}
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
         />
       )}
     </div>

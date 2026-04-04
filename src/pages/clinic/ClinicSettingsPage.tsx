@@ -9,10 +9,9 @@ import { Users, AlertTriangle, Building2 } from 'lucide-react';
 interface ClinicSettings {
   id: string;
   name: string;
-  address: string;
-  phone: string;
-  finess_number: string;
-  logo_url: string | null;
+  adresse: string;
+  telephone: string;
+  siret: string;
 }
 
 export function ClinicSettingsPage() {
@@ -21,10 +20,9 @@ export function ClinicSettingsPage() {
   const [settings, setSettings] = useState<ClinicSettings>({
     id: '',
     name: '',
-    address: '',
-    phone: '',
-    finess_number: '',
-    logo_url: null,
+    adresse: '',
+    telephone: '',
+    siret: '',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -39,33 +37,27 @@ export function ClinicSettingsPage() {
     try {
       setLoading(true);
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('clinic_id')
-        .eq('id', user?.id)
-        .maybeSingle();
-
-      if (!profile?.clinic_id) {
+      const orgId = user?.org_id;
+      if (!orgId) {
         setLoading(false);
         return;
       }
 
-      const { data: clinic, error: clinicError } = await supabase
-        .from('clinics')
+      const { data: org, error: orgError } = await supabase
+        .from('organizations')
         .select('*')
-        .eq('id', profile.clinic_id)
+        .eq('id', orgId)
         .maybeSingle();
 
-      if (clinicError) throw clinicError;
+      if (orgError) throw orgError;
 
-      if (clinic) {
+      if (org) {
         setSettings({
-          id: clinic.id,
-          name: clinic.name || '',
-          address: clinic.address || '',
-          phone: clinic.phone || '',
-          finess_number: clinic.finess_number || '',
-          logo_url: clinic.logo_url || null,
+          id: org.id,
+          name: org.name || '',
+          adresse: org.adresse || '',
+          telephone: org.telephone || '',
+          siret: org.siret || '',
         });
       }
     } catch (error: any) {
@@ -84,12 +76,12 @@ export function ClinicSettingsPage() {
 
     try {
       const { error: updateError } = await supabase
-        .from('clinics')
+        .from('organizations')
         .update({
           name: settings.name,
-          address: settings.address,
-          phone: settings.phone,
-          finess_number: settings.finess_number,
+          adresse: settings.adresse,
+          telephone: settings.telephone,
+          siret: settings.siret || null,
         })
         .eq('id', settings.id);
 
@@ -207,24 +199,21 @@ export function ClinicSettingsPage() {
 
                     <Input
                       label="Adresse"
-                      value={settings.address}
-                      onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-                      required
+                      value={settings.adresse}
+                      onChange={(e) => setSettings({ ...settings, adresse: e.target.value })}
                     />
 
                     <Input
                       label="Téléphone"
                       type="tel"
-                      value={settings.phone}
-                      onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
-                      required
+                      value={settings.telephone}
+                      onChange={(e) => setSettings({ ...settings, telephone: e.target.value })}
                     />
 
                     <Input
-                      label="Numéro FINESS"
-                      value={settings.finess_number}
-                      onChange={(e) => setSettings({ ...settings, finess_number: e.target.value })}
-                      required
+                      label="SIRET"
+                      value={settings.siret}
+                      onChange={(e) => setSettings({ ...settings, siret: e.target.value })}
                     />
 
                     <div className="flex justify-end">
@@ -233,31 +222,6 @@ export function ClinicSettingsPage() {
                       </Button>
                     </div>
                   </form>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-4">Logo de la clinique</h2>
-                  <div className="flex items-center gap-6">
-                    {settings.logo_url ? (
-                      <img
-                        src={settings.logo_url}
-                        alt="Logo de la clinique"
-                        className="w-24 h-24 object-cover rounded-lg border-2 border-gray-200"
-                      />
-                    ) : (
-                      <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-gray-200">
-                        <Building2 className="w-12 h-12 text-gray-400" />
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm text-gray-600 mb-2">
-                        Téléchargez un logo pour personnaliser votre clinique
-                      </p>
-                      <Button variant="secondary" disabled>
-                        Télécharger un logo
-                      </Button>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="bg-red-50 border border-red-200 rounded-xl p-6">

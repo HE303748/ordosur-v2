@@ -2,13 +2,15 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+type AppRole = 'super_admin' | 'clinic_admin' | 'doctor';
+
 interface ProtectedRouteProps {
   children: ReactNode;
-  requiredRole?: 'doctor' | 'clinic_admin' | 'clinic';
+  requiredRole?: AppRole;
 }
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
-  const { user, loading, requiresPasswordReset } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -20,10 +22,6 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   if (!user) {
     return <Navigate to="/" replace />;
-  }
-
-  if (requiresPasswordReset) {
-    return <Navigate to="/mandatory-password-reset" replace />;
   }
 
   if (requiredRole && user.role !== requiredRole) {

@@ -2,44 +2,56 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
+import { RegistrationTypePage } from './pages/RegistrationTypePage';
+import { DoctorRegistrationPage } from './pages/DoctorRegistrationPage';
+import { ClinicRegistrationPage } from './pages/ClinicRegistrationPage';
 import { RegistrationSuccessPage } from './pages/RegistrationSuccessPage';
 import { AuthCallbackPage } from './pages/AuthCallbackPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { MandatoryPasswordResetPage } from './pages/MandatoryPasswordResetPage';
-import OnboardingPage from './pages/OnboardingPage';
-import { ClinicDashboard } from './pages/ClinicDashboard';
+import { AcceptInvitationPage } from './pages/AcceptInvitationPage';
 import { DoctorDashboard } from './pages/DoctorDashboard';
 import DoctorProfilePage from './pages/DoctorProfilePage';
 import { ClinicAdminDashboard } from './pages/clinic/ClinicAdminDashboard';
 import { DoctorManagementPage } from './pages/clinic/DoctorManagementPage';
 import { ClinicStatsPage } from './pages/clinic/ClinicStatsPage';
 import { ClinicSettingsPage } from './pages/clinic/ClinicSettingsPage';
-import { AcceptInvitationPage } from './pages/AcceptInvitationPage';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Routes publiques */}
           <Route path="/" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register" element={<RegistrationTypePage />} />
+          <Route path="/register/doctor" element={<DoctorRegistrationPage />} />
+          <Route path="/register/clinic" element={<ClinicRegistrationPage />} />
           <Route path="/registration-success" element={<RegistrationSuccessPage />} />
           <Route path="/auth/callback" element={<AuthCallbackPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/mandatory-password-reset" element={<MandatoryPasswordResetPage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/accept-invitation" element={<AcceptInvitationPage />} />
 
+          {/* Dashboard médecin */}
           <Route
-            path="/clinic"
+            path="/doctor"
             element={
-              <ProtectedRoute requiredRole="clinic">
-                <ClinicDashboard />
+              <ProtectedRoute requiredRole="doctor">
+                <DoctorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <DoctorProfilePage />
               </ProtectedRoute>
             }
           />
 
+          {/* Dashboard clinic_admin */}
           <Route
             path="/clinic/admin"
             element={
@@ -73,22 +85,7 @@ function App() {
             }
           />
 
-          <Route
-            path="/doctor"
-            element={
-              <ProtectedRoute requiredRole="doctor">
-                <DoctorDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <DoctorProfilePage />
-              </ProtectedRoute>
-            }
-          />
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

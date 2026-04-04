@@ -23,7 +23,8 @@ interface MedicationHistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   patient: {
-    nom_complet: string;
+    prenom: string;
+    nom: string;
   };
   ordonnances: Ordonnance[];
 }
@@ -62,7 +63,7 @@ export function MedicationHistoryModal({ isOpen, onClose, patient, ordonnances }
   const mostRecentOrdonnance = ordonnances.length > 0 ? [ordonnances[0]] : [];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Ordonnance - ${patient.nom_complet}`} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} title={`Ordonnance - ${patient.prenom} ${patient.nom}`} size="xl">
       <div className="space-y-4 max-h-[600px] overflow-y-auto">
         {mostRecentOrdonnance.length === 0 ? (
           <div className="text-center py-12 text-slate-500">

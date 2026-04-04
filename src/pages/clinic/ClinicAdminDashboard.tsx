@@ -35,52 +35,43 @@ export function ClinicAdminDashboard() {
     try {
       setLoading(true);
 
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('clinic_id')
-        .eq('id', user?.id)
-        .maybeSingle();
-
-      if (!profile?.clinic_id) {
+      const orgId = user?.org_id;
+      if (!orgId) {
         setLoading(false);
         return;
       }
 
-      const { data: clinic } = await supabase
-        .from('clinics')
+      const { data: org } = await supabase
+        .from('organizations')
         .select('name')
-        .eq('id', profile.clinic_id)
+        .eq('id', orgId)
         .maybeSingle();
 
-      if (clinic?.name) {
-        setClinicName(clinic.name);
+      if (org?.name) {
+        setClinicName(org.name);
       }
 
-      const [doctorsRes, patientsRes, ordonnancesRes, interactionsRes] = await Promise.all([
+      const [doctorsRes, patientsRes, ordonnancesRes] = await Promise.all([
         supabase
-          .from('doctor_profiles')
+          .from('doctors')
           .select('id', { count: 'exact', head: true })
-          .eq('clinic_id', profile.clinic_id),
+          .eq('org_id', orgId),
         supabase
           .from('patients')
           .select('id', { count: 'exact', head: true })
-          .eq('clinic_id', profile.clinic_id),
+          .eq('org_id', orgId),
         supabase
           .from('ordonnances')
           .select('id', { count: 'exact', head: true })
-          .eq('clinic_id', profile.clinic_id)
+          .eq('org_id', orgId)
           .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
-        supabase
-          .from('detected_interactions')
-          .select('id', { count: 'exact', head: true })
-          .eq('clinic_id', profile.clinic_id),
       ]);
 
       setStats({
         totalDoctors: doctorsRes.count || 0,
         totalPatients: patientsRes.count || 0,
         ordonnancesThisMonth: ordonnancesRes.count || 0,
-        interactionsDetected: interactionsRes.count || 0,
+        interactionsDetected: 0,
       });
     } catch (error) {
       console.error('Error loading clinic data:', error);

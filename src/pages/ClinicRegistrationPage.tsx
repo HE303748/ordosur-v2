@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Building2, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { validatePassword, validateEmail, validatePhoneNumber, sanitizeInput, sanitizeInputFinal, validateFullName } from '../lib/validation';
+import { validatePassword, validateEmail, validatePhoneNumber, sanitizeInput, sanitizeInputFinal } from '../lib/validation';
 import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
@@ -16,17 +16,15 @@ export function ClinicRegistrationPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
+    prenom: '',
+    nom: '',
     email: '',
     password: '',
     confirmPassword: '',
-    clinic_name: '',
-    business_registration_number: '',
-    address_street: '',
-    address_city: '',
-    address_postal_code: '',
-    address_country: 'France',
-    primary_contact_name: '',
-    phone_number: '',
+    nom_clinique: '',
+    siret: '',
+    adresse: '',
+    telephone: '',
     acceptTerms: false,
   });
 
@@ -35,7 +33,6 @@ export function ClinicRegistrationPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : sanitizeInput(value),
@@ -43,12 +40,16 @@ export function ClinicRegistrationPage() {
     setError('');
   };
 
+  const validateSiret = (siret: string): boolean => {
+    return /^\d{14}$/.test(siret.replace(/\s/g, ''));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!validateFullName(formData.primary_contact_name)) {
-      setError('Le nom du contact doit contenir au moins un prénom et un nom de famille');
+    if (!formData.prenom.trim() || !formData.nom.trim()) {
+      setError('Prénom et nom du responsable sont obligatoires');
       return;
     }
 
@@ -67,7 +68,17 @@ export function ClinicRegistrationPage() {
       return;
     }
 
-    if (!validatePhoneNumber(formData.phone_number)) {
+    if (!formData.nom_clinique.trim()) {
+      setError('Le nom de la clinique est obligatoire');
+      return;
+    }
+
+    if (!validateSiret(formData.siret)) {
+      setError('Numéro SIRET invalide (14 chiffres requis)');
+      return;
+    }
+
+    if (!validatePhoneNumber(formData.telephone)) {
       setError('Numéro de téléphone invalide');
       return;
     }
@@ -80,20 +91,23 @@ export function ClinicRegistrationPage() {
     setLoading(true);
 
     try {
-      await signUp(formData.email, formData.password, 'clinic', {
-        clinic_name: sanitizeInputFinal(formData.clinic_name),
-        business_registration_number: formData.business_registration_number,
-        address_street: formData.address_street,
-        address_city: formData.address_city,
-        address_postal_code: formData.address_postal_code,
-        address_country: formData.address_country,
-        primary_contact_name: sanitizeInputFinal(formData.primary_contact_name),
-        phone_number: formData.phone_number,
+      await signUp(formData.email, formData.password, 'clinic_admin', {
+        prenom: sanitizeInputFinal(formData.prenom),
+        nom: sanitizeInputFinal(formData.nom),
+        org_name: sanitizeInputFinal(formData.nom_clinique),
+        org_type: 'clinique',
+        siret: formData.siret.replace(/\s/g, ''),
+        adresse: sanitizeInputFinal(formData.adresse),
+        telephone: formData.telephone,
       });
 
       navigate('/registration-success', { state: { email: formData.email } });
     } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue lors de l\'inscription');
+      if (err.message?.includes('already registered')) {
+        setError('Cette adresse email est déjà utilisée');
+      } else {
+        setError(err.message || 'Une erreur est survenue lors de l\'inscription');
+      }
     } finally {
       setLoading(false);
     }
@@ -101,6 +115,7 @@ export function ClinicRegistrationPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex">
+      {/* Panneau gauche */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-600 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30"></div>
 
@@ -133,6 +148,7 @@ export function ClinicRegistrationPage() {
         </div>
       </div>
 
+      {/* Formulaire */}
       <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
         <div className="w-full max-w-md">
           <button
@@ -154,25 +170,27 @@ export function ClinicRegistrationPage() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="Nom de la clinique"
-                name="clinic_name"
-                type="text"
-                value={formData.clinic_name}
-                onChange={handleChange}
-                required
-                placeholder="Clinique Saint-Martin"
-              />
-
-              <Input
-                label="Numéro SIRET"
-                name="business_registration_number"
-                type="text"
-                value={formData.business_registration_number}
-                onChange={handleChange}
-                required
-                placeholder="12345678901234"
-              />
+              {/* Responsable */}
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Prénom du responsable"
+                  name="prenom"
+                  type="text"
+                  value={formData.prenom}
+                  onChange={handleChange}
+                  required
+                  placeholder="Marie"
+                />
+                <Input
+                  label="Nom du responsable"
+                  name="nom"
+                  type="text"
+                  value={formData.nom}
+                  onChange={handleChange}
+                  required
+                  placeholder="Martin"
+                />
+              </div>
 
               <Input
                 label="Email professionnel"
@@ -184,6 +202,7 @@ export function ClinicRegistrationPage() {
                 placeholder="contact@clinique.fr"
               />
 
+              {/* Mot de passe */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Mot de passe
@@ -231,75 +250,46 @@ export function ClinicRegistrationPage() {
                 </div>
               </div>
 
+              {/* Infos clinique */}
               <Input
-                label="Nom du contact principal"
-                name="primary_contact_name"
+                label="Nom de la clinique"
+                name="nom_clinique"
                 type="text"
-                value={formData.primary_contact_name}
+                value={formData.nom_clinique}
                 onChange={handleChange}
                 required
-                placeholder="Directeur administratif"
+                placeholder="Clinique Saint-Martin"
               />
 
               <Input
-                label="Numéro de téléphone"
-                name="phone_number"
-                type="tel"
-                value={formData.phone_number}
+                label="Numéro SIRET"
+                name="siret"
+                type="text"
+                value={formData.siret}
                 onChange={handleChange}
                 required
-                placeholder="+33 1 23 45 67 89"
+                placeholder="12345678901234"
+                maxLength={14}
               />
 
               <Input
                 label="Adresse"
-                name="address_street"
+                name="adresse"
                 type="text"
-                value={formData.address_street}
+                value={formData.adresse}
                 onChange={handleChange}
-                required
-                placeholder="123 Rue de la Santé"
+                placeholder="123 Rue de la Santé, 75001 Paris"
               />
 
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Ville"
-                  name="address_city"
-                  type="text"
-                  value={formData.address_city}
-                  onChange={handleChange}
-                  required
-                  placeholder="Paris"
-                />
-
-                <Input
-                  label="Code postal"
-                  name="address_postal_code"
-                  type="text"
-                  value={formData.address_postal_code}
-                  onChange={handleChange}
-                  required
-                  placeholder="75001"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pays
-                </label>
-                <select
-                  name="address_country"
-                  value={formData.address_country}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
-                >
-                  <option value="France">France</option>
-                  <option value="Belgique">Belgique</option>
-                  <option value="Suisse">Suisse</option>
-                  <option value="Canada">Canada</option>
-                </select>
-              </div>
+              <Input
+                label="Téléphone"
+                name="telephone"
+                type="tel"
+                value={formData.telephone}
+                onChange={handleChange}
+                required
+                placeholder="+33 1 23 45 67 89"
+              />
 
               <div className="flex items-start space-x-2">
                 <input

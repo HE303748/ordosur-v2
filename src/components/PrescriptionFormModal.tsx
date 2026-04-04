@@ -16,11 +16,12 @@ interface PrescriptionFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   patient: {
-    nom_complet: string;
-    age: number;
+    prenom: string;
+    nom: string;
   };
   initialMedications: Array<{ nom: string }>;
   onPreview: (data: {
+    motif: string;
     medications: MedicationForm[];
     remarks: string;
     nextAppointment?: string;
@@ -67,6 +68,7 @@ export function PrescriptionFormModal({
   initialMedications,
   onPreview
 }: PrescriptionFormModalProps) {
+  const [motif, setMotif] = useState('');
   const [medications, setMedications] = useState<MedicationForm[]>([]);
   const [remarks, setRemarks] = useState('');
   const [appointmentDate, setAppointmentDate] = useState('');
@@ -121,6 +123,7 @@ export function PrescriptionFormModal({
       : undefined;
 
     onPreview({
+      motif,
       medications,
       remarks,
       nextAppointment
@@ -140,13 +143,24 @@ export function PrescriptionFormModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-semibold text-slate-700">Patient</label>
-              <p className="text-slate-900 font-medium">{patient.nom_complet}</p>
+              <p className="text-slate-900 font-medium">{patient.prenom} {patient.nom}</p>
             </div>
             <div>
               <label className="text-sm font-semibold text-slate-700">Date</label>
               <p className="text-slate-900 font-medium">{today}</p>
             </div>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-slate-700 mb-2">
+            Motif de consultation
+          </label>
+          <Input
+            value={motif}
+            onChange={(e) => setMotif(e.target.value)}
+            placeholder="Ex: Hypertension artérielle, contrôle de routine..."
+          />
         </div>
 
         <div className="space-y-4">

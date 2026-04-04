@@ -25,27 +25,26 @@ export function LoginPage() {
     rememberMe: false,
   });
 
+  // Redirection selon le rôle une fois authentifié
   useEffect(() => {
     if (user && !authLoading) {
-      // IMPORTANT: Do NOT redirect if we're on auth callback or reset password routes
       const currentPath = window.location.pathname;
       if (currentPath === '/auth/callback' || currentPath === '/reset-password') {
-        console.log('[LOGIN PAGE] Skipping redirect - on auth callback or reset password route');
         return;
       }
 
-      console.log('[LOGIN PAGE] User authenticated, redirecting to dashboard. Role:', user.role);
-      if (user.role === 'clinic_admin') {
+      console.log('[LOGIN] Redirection vers dashboard, rôle:', user.role);
+      if (user.role === 'super_admin') {
+        navigate('/super-admin', { replace: true });
+      } else if (user.role === 'clinic_admin') {
         navigate('/clinic/admin', { replace: true });
-      } else if (user.role === 'clinic') {
-        navigate('/clinic', { replace: true });
       } else if (user.role === 'doctor') {
         navigate('/doctor', { replace: true });
       }
     }
   }, [user, authLoading, navigate]);
 
-  // Show success message if coming from password reset
+  // Message de succès si retour depuis reset password
   useEffect(() => {
     if (searchParams.get('reset') === 'success') {
       setSuccessMessage('Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.');
@@ -89,9 +88,7 @@ export function LoginPage() {
     try {
       await signIn(formData.email, formData.password);
     } catch (err: any) {
-      if (err.message?.includes('verrouillé')) {
-        setError(err.message);
-      } else if (err.message?.includes('Invalid login credentials')) {
+      if (err.message?.includes('Invalid login credentials')) {
         setError('Email ou mot de passe incorrect');
       } else if (err.message?.includes('Email not confirmed') || err.message?.includes('email_not_verified')) {
         setUnverifiedEmail(formData.email);
@@ -107,6 +104,7 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex">
+      {/* Panneau gauche */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 to-secondary-600 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30"></div>
 
@@ -144,9 +142,17 @@ export function LoginPage() {
               <p className="text-white/80 text-sm">Base de données complète validée par des professionnels</p>
             </div>
           </div>
+          <div className="flex items-start space-x-4">
+            <Building2 className="w-6 h-6 text-white/80 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="text-white font-semibold mb-1">Multi-Organisations</h3>
+              <p className="text-white/80 text-sm">Cabinets individuels et cliniques multi-médecins</p>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Formulaire */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8">
@@ -173,9 +179,9 @@ export function LoginPage() {
             )}
 
             {successMessage && (
-              <div className="mb-4 p-4 bg-success-50 border border-success-200 rounded-xl flex items-start space-x-3">
-                <AlertCircle className="w-5 h-5 text-success-600 flex-shrink-0 mt-0.5" />
-                <span className="text-success-600 text-sm">{successMessage}</span>
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-start space-x-3">
+                <AlertCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <span className="text-green-600 text-sm">{successMessage}</span>
               </div>
             )}
 

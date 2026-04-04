@@ -7,77 +7,89 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-/*
- * SECURITY NOTE: Ensure "Leaked Password Protection" is enabled in
- * Supabase Dashboard > Authentication > Settings > Password Security
- *
- * This enables HaveIBeenPwned checks to prevent users from using
- * compromised passwords that have appeared in data breaches.
- *
- * EMAIL DELIVERY: To fix emails going to spam, configure custom SMTP in
- * Supabase Dashboard > Authentication > Email Settings.
- * Recommended providers: Resend.com or SendGrid with a verified custom domain.
- * This ensures better deliverability and prevents emails from being marked as spam.
- */
-
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export interface User {
+// ─── V2 SCHEMA INTERFACES ────────────────────────────────────────────────────
+
+export interface Organization {
   id: string;
-  email: string;
-  role: 'clinic' | 'doctor';
-  clinic_name?: string;
-  doctor_name?: string;
+  name: string;
+  type: 'cabinet' | 'clinique';
+  siret?: string | null;
+  adresse?: string | null;
+  telephone?: string | null;
+  email?: string | null;
+  created_at: string;
+}
+
+export interface UserProfile {
+  id: string;
+  user_id: string;
+  org_id: string;
+  role: 'super_admin' | 'clinic_admin' | 'doctor';
+  prenom: string;
+  nom: string;
+  created_at: string;
+}
+
+export interface Doctor {
+  id: string;
+  user_id: string;
+  org_id: string;
+  rpps?: string | null;
+  specialite?: string | null;
+  ordre_number?: string | null;
+  created_at: string;
 }
 
 export interface Patient {
   id: string;
-  doctor_id: string;
-  nom_complet: string;
-  age: number;
-  sexe: 'Homme' | 'Femme';
-  poids?: number;
-  taille?: number;
-  creatinine?: number;
-  imc?: number;
-  dfg?: number;
-  maladies_chroniques: string[];
-  allergies: string[];
+  org_id: string;
+  prenom: string;
+  nom: string;
+  date_naissance?: string | null;
+  sexe?: 'M' | 'F' | null;
+  telephone?: string | null;
+  email?: string | null;
+  adresse?: string | null;
   created_at: string;
 }
 
-export interface Medication {
+export interface Consultation {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  org_id: string;
+  date: string;
+  motif?: string | null;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface Ordonnance {
+  id: string;
+  consultation_id?: string | null;
+  patient_id: string;
+  doctor_id: string;
+  org_id: string;
+  date: string;
+  statut?: string | null;
+  created_at: string;
+}
+
+export interface OrdonnanceLigne {
+  id: string;
+  ordonnance_id: string;
+  medicament_nom: string;
+  posologie?: string | null;
+  duree?: string | null;
+  instructions?: string | null;
+}
+
+export interface Medicament {
   id: string;
   nom: string;
-  classe_therapeutique: string;
-  contraindications: string[];
-}
-
-export interface DrugInteraction {
-  id: string;
-  medicament_a: string;
-  medicament_b: string;
-  severity: 'safe' | 'attention' | 'dangerous';
-  description: string;
-  alternatives: string[];
-}
-
-export interface InteractionLog {
-  id: string;
-  doctor_id: string;
-  patient_id?: string;
-  medicament_a: string;
-  medicament_b: string;
-  risk_level: 'safe' | 'attention' | 'dangerous';
-  timestamp: string;
-}
-
-export interface DoctorPerformance {
-  id: string;
-  doctor_id: string;
-  patients_served: number;
-  interactions_resolved: number;
-  safety_rate: number;
-  month: number;
-  year: number;
+  dci?: string | null;
+  forme?: string | null;
+  dosage?: string | null;
 }

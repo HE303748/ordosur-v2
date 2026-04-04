@@ -1,6 +1,7 @@
-import { ArrowLeft, Save, Printer } from 'lucide-react';
+import { ArrowLeft, Save, Printer, Download } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
+import { generateOrdonnancePdf } from '../lib/pdfService';
 
 interface MedicationForm {
   id: string;
@@ -18,17 +19,22 @@ interface PrescriptionPreviewModalProps {
   doctor: {
     nom: string;
     prenom: string;
-    titre: string;
-    specialites: string[];
-    rpps: string;
-    telephone: string;
-    email: string;
+    specialite?: string | null;
+    rpps?: string | null;
+    ordre_number?: string | null;
+    telephone?: string | null;
+  };
+  org: {
+    name: string;
+    adresse?: string | null;
+    telephone?: string | null;
   };
   patient: {
-    nom_complet: string;
-    date_naissance?: string;
-    age: number;
+    prenom: string;
+    nom: string;
+    date_naissance?: string | null;
   };
+  motif?: string;
   medications: MedicationForm[];
   remarks: string;
   nextAppointment?: string;
@@ -41,7 +47,9 @@ export function PrescriptionPreviewModal({
   onBack,
   onSave,
   doctor,
+  org,
   patient,
+  motif,
   medications,
   remarks,
   nextAppointment,
@@ -53,38 +61,69 @@ export function PrescriptionPreviewModal({
     year: 'numeric'
   });
 
+  const todayIso = new Date().toISOString().split('T')[0];
+
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleDownloadPdf = () => {
+    generateOrdonnancePdf({
+      doctor,
+      org,
+      patient,
+      motif,
+      medications,
+      remarks,
+      nextAppointment,
+      date: todayIso,
+    });
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Aperçu de l'ordonnance">
       <div className="space-y-4">
         <div id="prescription-content" className="bg-white border-2 border-blue-600 rounded-lg p-6">
-          <div className="text-center mb-6 pb-4 border-b-2 border-blue-600">
-            <h2 className="text-2xl font-bold text-blue-600">ORDONNANCE MÉDICALE</h2>
-            <p className="text-sm text-gray-600 mt-1">Dr {doctor.prenom} {doctor.nom}</p>
-            <p className="text-xs text-gray-500">{doctor.specialites.join(', ')}</p>
+          {/* En-tête cabinet */}
+          <div className="mb-4 pb-4 border-b border-gray-200">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">{org.name}</h2>
+                {org.adresse && <p className="text-sm text-gray-600">{org.adresse}</p>}
+                {org.telephone && <p className="text-sm text-gray-600">Tél : {org.telephone}</p>}
+              </div>
+              <div className="text-right text-sm text-gray-600">
+                <p>Le {today}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="mb-4 text-sm">
-            <p><strong>RPPS :</strong> {doctor.rpps}</p>
-            <p><strong>Téléphone :</strong> {doctor.telephone}</p>
-          </div>
-
-          <div className="mb-4 p-3 bg-gray-50 rounded">
-            <p className="font-semibold">Patient : {patient.nom_complet}</p>
-            {patient.date_naissance && (
-              <p className="text-sm">Né(e) le : {patient.date_naissance} ({patient.age} ans)</p>
-            )}
-            {!patient.date_naissance && (
-              <p className="text-sm">Âge : {patient.age} ans</p>
-            )}
-            <p className="text-sm">Date : {today}</p>
-          </div>
-
+          {/* Médecin */}
           <div className="mb-4">
-            <h3 className="font-semibold mb-2">Médicaments prescrits :</h3>
+            <p className="text-xl font-bold text-blue-700">Dr {doctor.prenom} {doctor.nom}</p>
+            {doctor.specialite && <p className="text-sm text-gray-600">{doctor.specialite}</p>}
+            {doctor.rpps && <p className="text-sm text-gray-600">N° RPPS : {doctor.rpps}</p>}
+            {doctor.ordre_number && <p className="text-sm text-gray-600">N° Ordre : {doctor.ordre_number}</p>}
+          </div>
+
+          {/* Patient */}
+          <div className="mb-4 p-3 bg-gray-50 rounded">
+            <p className="font-semibold">Patient : {patient.prenom} {patient.nom}</p>
+            {patient.date_naissance && (
+              <p className="text-sm">Né(e) le : {new Date(patient.date_naissance).toLocaleDateString('fr-FR')}</p>
+            )}
+            {motif && <p className="text-sm mt-1">Motif : {motif}</p>}
+          </div>
+
+          {/* Titre */}
+          <div className="text-center mb-4">
+            <h3 className="text-base font-bold uppercase tracking-wide text-gray-800 border-b border-gray-300 pb-2">
+              Ordonnance médicale
+            </h3>
+          </div>
+
+          {/* Médicaments */}
+          <div className="mb-4">
             {medications.map((med, index) => (
               <div key={med.id} className="mb-3 pl-4 border-l-2 border-blue-300">
                 <p className="font-medium">{index + 1}. {med.nom}</p>
@@ -115,9 +154,8 @@ export function PrescriptionPreviewModal({
             </div>
           )}
 
-          <div className="mt-6 pt-4 border-t flex justify-between text-sm">
-            <p>Date : {today}</p>
-            <p>Signature : Dr {doctor.nom}</p>
+          <div className="mt-6 pt-4 border-t flex justify-end text-sm text-gray-600">
+            <p>Signature : Dr {doctor.prenom} {doctor.nom}</p>
           </div>
         </div>
 
@@ -133,6 +171,10 @@ export function PrescriptionPreviewModal({
           <Button onClick={handlePrint} variant="secondary">
             <Printer className="w-4 h-4 mr-2" />
             Imprimer
+          </Button>
+          <Button onClick={handleDownloadPdf} variant="secondary">
+            <Download className="w-4 h-4 mr-2" />
+            Télécharger PDF
           </Button>
         </div>
       </div>
