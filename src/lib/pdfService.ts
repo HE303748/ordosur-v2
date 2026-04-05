@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import QRCode from 'qrcode';
 
 interface MedicationLine {
   nom: string;
@@ -7,7 +8,15 @@ interface MedicationLine {
   quantite: string;
 }
 
-interface PdfOrdonnanceData {
+export interface PdfInteractionAlert {
+  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure';
+  description: string;
+  involved: string[];
+  type: 'drug_drug' | 'contraindication';
+}
+
+export interface PdfOrdonnanceData {
+  ordreNumber: string;
   doctor: {
     prenom: string;
     nom: string;
@@ -24,16 +33,18 @@ interface PdfOrdonnanceData {
     prenom: string;
     nom: string;
     date_naissance?: string | null;
+    pathologies?: string[] | null;
+    allergies_medicaments?: string[] | null;
   };
   motif?: string;
   medications: MedicationLine[];
   remarks?: string;
   nextAppointment?: string;
-  date: string; // format 'YYYY-MM-DD' ou 'DD/MM/YYYY'
+  date: string;
+  interactionAlerts?: PdfInteractionAlert[];
 }
 
 function formatDate(dateStr: string): string {
-  // Accepte 'YYYY-MM-DD' ou 'DD/MM/YYYY'
   if (dateStr.includes('-')) {
     const [y, m, d] = dateStr.split('-');
     return `${d}/${m}/${y}`;
@@ -41,187 +52,250 @@ function formatDate(dateStr: string): string {
   return dateStr;
 }
 
-export function generateOrdonnancePdf(data: PdfOrdonnanceData): void {
+function wrapText(doc: jsPDF, text: string, maxWidth: number): string[] {
+  return doc.splitTextToSize(text, maxWidth);
+}
+
+export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
+  // ── QR Code ────────────────────────────────────────────────────────────────
+  const qrContent = [
+    data.ordreNumber,
+    `Patient: ${data.patient.nom} ${data.patient.prenom}`,
+    `Médecin: Dr. ${data.doctor.prenom} ${data.doctor.nom}`,
+    `Date: ${formatDate(data.date)}`,
+    `Cabinet: ${data.org.name}`,
+  ].join('\n');
+
+  const qrDataUrl = await QRCode.toDataURL(qrContent, { width: 120, margin: 1, color: { dark: '#1e3a8a' } });
+
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageW = 210;
-  const marginL = 20;
-  const marginR = 20;
+  const marginL = 18;
+  const marginR = 18;
   const contentW = pageW - marginL - marginR;
-  let y = 20;
+  let y = 18;
 
-  // ── En-tête : infos cabinet (gauche) + date (droite) ──────────────────────
+  // ── En-tête cabinet ────────────────────────────────────────────────────────
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 64, 175); // blue-700
   doc.text(data.org.name, marginL, y);
+  y += 6;
 
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
-  y += 6;
-  if (data.org.adresse) {
-    doc.text(data.org.adresse, marginL, y);
-    y += 5;
-  }
-  if (data.org.telephone) {
-    doc.text(`Tél : ${data.org.telephone}`, marginL, y);
-    y += 5;
-  }
+  if (data.org.adresse) { doc.text(data.org.adresse, marginL, y); y += 5; }
+  if (data.org.telephone) { doc.text(`Tél : ${data.org.telephone}`, marginL, y); y += 5; }
 
-  // Date en haut à droite
-  doc.setFontSize(9);
-  doc.setTextColor(80, 80, 80);
+  // Date + numéro d'ordonnance — coin haut droit
   const dateFormatted = formatDate(data.date);
-  doc.text(`Le ${dateFormatted}`, pageW - marginR, 20, { align: 'right' });
+  doc.setFontSize(8.5);
+  doc.setTextColor(80, 80, 80);
+  doc.text(`Le ${dateFormatted}`, pageW - marginR, 18, { align: 'right' });
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 64, 175);
+  doc.text(data.ordreNumber, pageW - marginR, 24, { align: 'right' });
+
+  // QR Code — coin haut droit (sous le numéro)
+  const qrSize = 22;
+  doc.addImage(qrDataUrl, 'PNG', pageW - marginR - qrSize, 27, qrSize, qrSize);
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
-  y += 4;
-  doc.setDrawColor(180, 180, 180);
+  y = Math.max(y + 3, 53);
+  doc.setDrawColor(200, 210, 240);
+  doc.setLineWidth(0.5);
   doc.line(marginL, y, pageW - marginR, y);
-  y += 8;
+  y += 7;
 
   // ── Médecin ────────────────────────────────────────────────────────────────
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(30, 64, 175); // blue-700
+  doc.setTextColor(30, 64, 175);
   doc.text(`Dr. ${data.doctor.prenom} ${data.doctor.nom}`, marginL, y);
   y += 6;
 
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
-  if (data.doctor.specialite) {
-    doc.text(data.doctor.specialite, marginL, y);
-    y += 5;
-  }
-  if (data.doctor.rpps) {
-    doc.text(`N° RPPS : ${data.doctor.rpps}`, marginL, y);
-    y += 5;
-  }
-  if (data.doctor.ordre_number) {
-    doc.text(`N° Ordre : ${data.doctor.ordre_number}`, marginL, y);
-    y += 5;
-  }
+  if (data.doctor.specialite) { doc.text(data.doctor.specialite, marginL, y); y += 5; }
+  if (data.doctor.rpps) { doc.text(`N° RPPS : ${data.doctor.rpps}`, marginL, y); y += 5; }
+  if (data.doctor.ordre_number) { doc.text(`N° Ordre : ${data.doctor.ordre_number}`, marginL, y); y += 5; }
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
-  y += 4;
-  doc.setDrawColor(180, 180, 180);
+  y += 3;
+  doc.setDrawColor(200, 210, 240);
   doc.line(marginL, y, pageW - marginR, y);
-  y += 8;
+  y += 7;
 
   // ── Patient ────────────────────────────────────────────────────────────────
+  // Fond léger
+  const patientBlockStart = y;
+  doc.setFillColor(248, 250, 252); // slate-50
+  doc.roundedRect(marginL, y - 3, contentW, 10, 2, 2, 'F');
+
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 30, 30);
-  doc.text('Patient :', marginL, y);
-
+  doc.text('Patient :', marginL + 2, y + 4);
   doc.setFont('helvetica', 'normal');
-  doc.text(`${data.patient.prenom} ${data.patient.nom}`, marginL + 22, y);
-  y += 6;
+  doc.text(`${data.patient.prenom} ${data.patient.nom}`, marginL + 22, y + 4);
+  y += 12;
 
+  doc.setFontSize(8.5);
+  doc.setTextColor(80, 80, 80);
   if (data.patient.date_naissance) {
-    doc.setFontSize(9);
-    doc.setTextColor(80, 80, 80);
-    doc.text(`Date de naissance : ${formatDate(data.patient.date_naissance)}`, marginL, y);
+    doc.text(`Né(e) le ${formatDate(data.patient.date_naissance)}`, marginL + 2, y);
+    y += 5;
+  }
+  if (data.motif) {
+    doc.text(`Motif : ${data.motif}`, marginL + 2, y);
     y += 5;
   }
 
-  if (data.motif) {
-    doc.setFontSize(9);
-    doc.setTextColor(80, 80, 80);
-    doc.text(`Motif : ${data.motif}`, marginL, y);
-    y += 5;
+  // Pathologies
+  if (data.patient.pathologies && data.patient.pathologies.length > 0) {
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(37, 99, 235); // blue-600
+    doc.text('Pathologies :', marginL + 2, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    const pathoText = data.patient.pathologies.join(' · ');
+    const wrapped = wrapText(doc, pathoText, contentW - 35);
+    doc.text(wrapped, marginL + 30, y);
+    y += wrapped.length * 4.5 + 2;
+  }
+
+  // Allergies médicamenteuses
+  if (data.patient.allergies_medicaments && data.patient.allergies_medicaments.length > 0) {
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(220, 38, 38); // red-600
+    doc.text('⚠ Allergies :', marginL + 2, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 30, 30);
+    const allergyText = data.patient.allergies_medicaments.join(', ');
+    const wrapped = wrapText(doc, allergyText, contentW - 35);
+    doc.text(wrapped, marginL + 30, y);
+    y += wrapped.length * 4.5 + 2;
   }
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
-  y += 4;
-  doc.setDrawColor(180, 180, 180);
+  y += 3;
+  doc.setDrawColor(200, 210, 240);
   doc.line(marginL, y, pageW - marginR, y);
-  y += 10;
+  y += 8;
 
   // ── Titre ORDONNANCE ───────────────────────────────────────────────────────
-  doc.setFontSize(14);
+  doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 30, 30);
   doc.text('ORDONNANCE MÉDICALE', pageW / 2, y, { align: 'center' });
-  y += 12;
+  y += 10;
 
   // ── Médicaments ────────────────────────────────────────────────────────────
   data.medications.forEach((med, idx) => {
-    if (y > 240) {
-      doc.addPage();
-      y = 20;
-    }
+    if (y > 240) { doc.addPage(); y = 18; }
 
-    doc.setFontSize(11);
+    doc.setFontSize(10.5);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 30, 30);
     doc.text(`${idx + 1}. ${med.nom}`, marginL, y);
-    y += 6;
+    y += 5.5;
 
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(60, 60, 60);
 
-    const lines: string[] = [];
-    if (med.posologie) lines.push(`Posologie : ${med.posologie}`);
-    if (med.duree) lines.push(`Durée : ${med.duree}`);
-    if (med.quantite) lines.push(`Quantité : ${med.quantite}`);
-
-    lines.forEach(line => {
-      doc.text(line, marginL + 4, y);
-      y += 5;
-    });
-
-    y += 3;
+    if (med.posologie) { doc.text(`   Posologie : ${med.posologie}`, marginL, y); y += 4.5; }
+    if (med.duree)     { doc.text(`   Durée : ${med.duree}`,          marginL, y); y += 4.5; }
+    if (med.quantite)  { doc.text(`   Quantité : ${med.quantite}`,    marginL, y); y += 4.5; }
+    y += 2;
   });
+
+  // ── Alertes interactions ────────────────────────────────────────────────────
+  if (data.interactionAlerts && data.interactionAlerts.length > 0) {
+    const criticalAlerts = data.interactionAlerts.filter(a =>
+      a.severite === 'contre_indication' || a.severite === 'majeure'
+    );
+    if (criticalAlerts.length > 0) {
+      if (y > 230) { doc.addPage(); y = 18; }
+      y += 3;
+
+      // Fond rouge clair
+      const alertH = 8 + criticalAlerts.length * 8;
+      doc.setFillColor(254, 242, 242); // red-50
+      doc.setDrawColor(220, 38, 38);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(marginL, y - 3, contentW, alertH, 2, 2, 'FD');
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(153, 27, 27); // red-800
+      doc.text('⚠ ALERTES INTERACTIONS / CONTRE-INDICATIONS', marginL + 3, y + 3);
+      y += 8;
+
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica', 'normal');
+      criticalAlerts.forEach(alert => {
+        const icon = alert.severite === 'contre_indication' ? '🔴' : '🟠';
+        const label = alert.severite === 'contre_indication' ? 'CI' : 'MAJ';
+        const line = `${label} ${alert.involved.join(' + ')} : ${alert.description.substring(0, 90)}${alert.description.length > 90 ? '...' : ''}`;
+        doc.setTextColor(153, 27, 27);
+        doc.text(line, marginL + 3, y);
+        y += 6.5;
+      });
+      y += 3;
+    }
+  }
 
   // ── Remarques ──────────────────────────────────────────────────────────────
   if (data.remarks) {
-    if (y > 230) { doc.addPage(); y = 20; }
-    y += 4;
-    doc.setDrawColor(180, 180, 180);
+    if (y > 240) { doc.addPage(); y = 18; }
+    y += 3;
+    doc.setDrawColor(200, 210, 240);
     doc.line(marginL, y, pageW - marginR, y);
-    y += 8;
+    y += 7;
 
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 30, 30);
     doc.text('Remarques :', marginL, y);
-    y += 6;
+    y += 5.5;
 
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(60, 60, 60);
     const remarkLines = doc.splitTextToSize(data.remarks, contentW);
     doc.text(remarkLines, marginL, y);
-    y += remarkLines.length * 5 + 3;
+    y += remarkLines.length * 4.5 + 3;
   }
 
   // ── Prochain RDV ───────────────────────────────────────────────────────────
   if (data.nextAppointment) {
-    if (y > 240) { doc.addPage(); y = 20; }
-    doc.setFontSize(9);
+    if (y > 250) { doc.addPage(); y = 18; }
+    doc.setFontSize(8.5);
     doc.setFont('helvetica', 'italic');
     doc.setTextColor(80, 80, 80);
     doc.text(`Prochain rendez-vous : ${data.nextAppointment}`, marginL, y);
-    y += 8;
+    y += 7;
   }
 
   // ── Signature ──────────────────────────────────────────────────────────────
-  const sigY = Math.max(y + 20, 240);
-  doc.setFontSize(9);
+  const sigY = Math.max(y + 18, 248);
+  doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
-  doc.text('Signature du médecin :', pageW - marginR - 60, sigY);
+  doc.text('Signature du médecin :', pageW - marginR - 58, sigY);
   doc.setDrawColor(180, 180, 180);
-  doc.line(pageW - marginR - 60, sigY + 20, pageW - marginR, sigY + 20);
+  doc.line(pageW - marginR - 58, sigY + 18, pageW - marginR, sigY + 18);
 
   // ── Pied de page ───────────────────────────────────────────────────────────
-  doc.setFontSize(7);
-  doc.setTextColor(150, 150, 150);
-  doc.text('Ordonnance générée par OrdoSur', pageW / 2, 287, { align: 'center' });
+  doc.setFontSize(6.5);
+  doc.setTextColor(160, 160, 160);
+  doc.text(`Ordonnance générée par OrdoSur · ${data.ordreNumber}`, pageW / 2, 290, { align: 'center' });
 
-  // ── Téléchargement ─────────────────────────────────────────────────────────
+  // ── Sauvegarde ─────────────────────────────────────────────────────────────
   const fileName = `ordonnance_${data.patient.nom}_${data.patient.prenom}_${data.date}.pdf`
     .replace(/[^a-zA-Z0-9_.-]/g, '_');
   doc.save(fileName);

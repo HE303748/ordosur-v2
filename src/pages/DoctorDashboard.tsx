@@ -1063,7 +1063,11 @@ export function DoctorDashboard() {
           }}
           initialMedications={selectedMeds}
           onPreview={(data) => {
-            setPrescriptionData(data);
+            // Générer numéro d'ordonnance unique
+            const now = new Date();
+            const datePart = now.toISOString().split('T')[0].replace(/-/g, '');
+            const randPart = String(Math.floor(1000 + Math.random() * 9000));
+            setPrescriptionData({ ...data, ordreNumber: `ORD-${datePart}-${randPart}` });
             setShowPrescriptionForm(false);
             setShowPrescriptionPreview(true);
           }}
@@ -1124,6 +1128,7 @@ export function DoctorDashboard() {
                   org_id: user.org_id,
                   date: today,
                   statut: 'active',
+                  ordre_number: prescriptionData.ordreNumber || null,
                 })
                 .select('id')
                 .single();
@@ -1155,6 +1160,7 @@ export function DoctorDashboard() {
               setToast({ message: error.message || 'Erreur lors de la sauvegarde', type: 'error' });
             }
           }}
+          ordreNumber={prescriptionData.ordreNumber || ''}
           doctor={{
             nom: user.nom,
             prenom: user.prenom,
@@ -1172,11 +1178,14 @@ export function DoctorDashboard() {
             prenom: selectedPatient.prenom,
             nom: selectedPatient.nom,
             date_naissance: selectedPatient.date_naissance,
+            pathologies: selectedPatient.pathologies || null,
+            allergies_medicaments: selectedPatient.allergies_medicaments || null,
           }}
           motif={prescriptionData.motif}
           medications={prescriptionData.medications}
           remarks={prescriptionData.remarks}
           nextAppointment={prescriptionData.nextAppointment}
+          interactionAlerts={interactionAlerts}
         />
       )}
 
