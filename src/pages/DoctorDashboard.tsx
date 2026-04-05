@@ -23,6 +23,30 @@ interface InteractionResult {
   patientPrecautions: string[];
 }
 
+interface DbInteraction {
+  id: string;
+  dci_1_pattern: string;
+  dci_2_pattern: string;
+  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure';
+  description: string;
+}
+
+interface DbContraindication {
+  id: string;
+  dci_pattern: string;
+  condition_type: string;
+  condition_valeur: string;
+  severite: 'absolue' | 'relative';
+  description: string;
+}
+
+interface InteractionAlert {
+  type: 'drug_drug' | 'contraindication';
+  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure';
+  description: string;
+  involved: string[];
+}
+
 export function DoctorDashboard() {
   const { user, signOut, doctorProfile, clinicProfile } = useAuth();
   const navigate = useNavigate();
@@ -36,12 +60,15 @@ export function DoctorDashboard() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const [medSearchResults, setMedSearchResults] = useState<Medicament[]>([]);
-  const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string }>>([]);
+  const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string; dci?: string | null }>>([]);
   const [medSearchTerm, setMedSearchTerm] = useState('');
   const [showMedDropdown, setShowMedDropdown] = useState(false);
   const [medSearchLoading, setMedSearchLoading] = useState(false);
   const [result, setResult] = useState<InteractionResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [allInteractions, setAllInteractions] = useState<DbInteraction[]>([]);
+  const [allContraindications, setAllContraindications] = useState<DbContraindication[]>([]);
+  const [interactionAlerts, setInteractionAlerts] = useState<InteractionAlert[]>([]);
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
   const [showPrescriptionPreview, setShowPrescriptionPreview] = useState(false);
   const [prescriptionData, setPrescriptionData] = useState<any>(null);
@@ -62,6 +89,7 @@ export function DoctorDashboard() {
     } else {
       loadPatients();
       loadStats();
+      loadInteractionDb();
     }
   }, [user, navigate]);
 
@@ -73,6 +101,64 @@ export function DoctorDashboard() {
     }
   }, [result]);
 
+  // Real-time interaction checking
+  useEffect(() => {
+    if (selectedMeds.length === 0 || allInteractions.length === 0) {
+      setInteractionAlerts([]);
+      return;
+    }
+    const dcis = selectedMeds.map(m => (m.dci || m.nom).toLowerCase());
+    const alerts: InteractionAlert[] = [];
+
+    for (const interaction of allInteractions) {
+      const p1 = interaction.dci_1_pattern.toLowerCase();
+      const p2 = interaction.dci_2_pattern.toLowerCase();
+      const idx1 = dcis.findIndex(d => d.includes(p1));
+      const idx2 = dcis.findIndex(d => d.includes(p2));
+      if (idx1 !== -1 && idx2 !== -1 && idx1 !== idx2) {
+        alerts.push({
+          type: 'drug_drug',
+          severite: interaction.severite,
+          description: interaction.description,
+          involved: [selectedMeds[idx1].nom, selectedMeds[idx2].nom],
+        });
+      }
+    }
+
+    if (selectedPatient) {
+      const conditions = [
+        ...(selectedPatient.pathologies || []),
+        ...(selectedPatient.allergies_medicaments || []),
+      ].map(c => c.toLowerCase());
+
+      for (const contra of allContraindications) {
+        const dp = contra.dci_pattern.toLowerCase();
+        const cv = contra.condition_valeur.toLowerCase();
+        const matchedIdx = dcis.findIndex(d => d.includes(dp));
+        const condMatch = conditions.some(c => c.includes(cv) || cv.includes(c));
+        if (matchedIdx !== -1 && condMatch) {
+          alerts.push({
+            type: 'contraindication',
+            severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
+            description: contra.description,
+            involved: [selectedMeds[matchedIdx].nom],
+          });
+        }
+      }
+    }
+
+    // Deduplicate
+    const seen = new Set<string>();
+    const unique = alerts.filter(a => {
+      const key = `${a.type}|${[...a.involved].sort().join('+')}|${a.description.substring(0, 40)}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    setInteractionAlerts(unique);
+  }, [selectedMeds, selectedPatient, allInteractions, allContraindications]);
+
   const loadPatients = async () => {
     if (!user) return;
     const { data } = await supabase
@@ -81,6 +167,15 @@ export function DoctorDashboard() {
       .eq('org_id', user.org_id)
       .order('created_at', { ascending: false });
     if (data) setPatients(data);
+  };
+
+  const loadInteractionDb = async () => {
+    const [{ data: interactions }, { data: contras }] = await Promise.all([
+      supabase.from('drug_interactions').select('*'),
+      supabase.from('contraindications').select('*'),
+    ]);
+    if (interactions) setAllInteractions(interactions);
+    if (contras) setAllContraindications(contras);
   };
 
   const searchMedications = async (term: string) => {
@@ -159,7 +254,7 @@ export function DoctorDashboard() {
 
   const addMedication = (med: Medicament) => {
     if (!selectedMeds.some(m => m.id === med.id)) {
-      setSelectedMeds([...selectedMeds, { id: med.id, nom: med.nom_commercial || med.nom }]);
+      setSelectedMeds([...selectedMeds, { id: med.id, nom: med.nom_commercial || med.nom, dci: med.dci }]);
     }
     setMedSearchTerm('');
     setMedSearchResults([]);
@@ -235,54 +330,65 @@ export function DoctorDashboard() {
     }
   };
 
+  const getSeveriteLabel = (s: InteractionAlert['severite']) => {
+    if (s === 'contre_indication') return '🔴 CONTRE-INDICATION';
+    if (s === 'majeure') return '🟠 INTERACTION MAJEURE';
+    if (s === 'moderee') return '🔵 INTERACTION MODÉRÉE';
+    return '🟡 INTERACTION MINEURE';
+  };
+
   const checkInteractions = async () => {
     if (selectedMeds.length < 2) {
       setToast({ message: 'Sélectionnez au moins 2 médicaments', type: 'error' });
       return;
     }
-
     if (!selectedPatient) {
       setToast({ message: 'Sélectionnez un patient', type: 'error' });
       return;
     }
 
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 400));
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     let overallSeverity: 'safe' | 'attention' | 'dangerous' = 'safe';
-    const allReasons: string[] = [];
-    let description = 'Analyse de compatibilité effectuée.';
+    const reasons: string[] = [];
 
-    // Check for duplicate medications
+    // Duplicates
     for (let i = 0; i < selectedMeds.length; i++) {
       for (let j = i + 1; j < selectedMeds.length; j++) {
         if (selectedMeds[i].nom === selectedMeds[j].nom) {
           overallSeverity = 'dangerous';
-          allReasons.push(`DUPLICATION: ${selectedMeds[i].nom} prescrit en double`);
-          description = 'Duplication médicamenteuse détectée - Risque de surdosage!';
+          reasons.push(`DUPLICATION : ${selectedMeds[i].nom} prescrit en double — risque de surdosage`);
         }
       }
     }
 
-    if (allReasons.length === 0) {
-      description = `✓ Aucune duplication détectée entre les ${selectedMeds.length} médicaments`;
+    // DB alerts
+    for (const alert of interactionAlerts) {
+      if (alert.severite === 'contre_indication') overallSeverity = 'dangerous';
+      else if (alert.severite === 'majeure' && overallSeverity !== 'dangerous') overallSeverity = 'attention';
+      else if (alert.severite === 'moderee' && overallSeverity === 'safe') overallSeverity = 'attention';
+      const prefix = alert.type === 'contraindication' ? `Contre-indication patient (${alert.involved[0]})` : alert.involved.join(' + ');
+      reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
 
-    setResult({
-      severity: overallSeverity,
-      description,
-      alternatives: [],
-      reasons: allReasons,
-      medications: [],
-      patientPrecautions: []
-    });
+    const nbCI = interactionAlerts.filter(a => a.severite === 'contre_indication').length;
+    const nbMaj = interactionAlerts.filter(a => a.severite === 'majeure').length;
+    const description = overallSeverity === 'dangerous'
+      ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé`
+      : overallSeverity === 'attention'
+      ? `${nbMaj} interaction(s) majeure(s) — Précautions requises`
+      : reasons.length > 0 ? reasons[0]
+      : `✓ Aucune interaction connue entre les ${selectedMeds.length} médicaments sélectionnés`;
 
+    setResult({ severity: overallSeverity, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);
   };
 
   const resetAnalysis = () => {
     setSelectedMeds([]);
     setMedSearchTerm('');
+    setInteractionAlerts([]);
     setResult(null);
   };
 
@@ -787,6 +893,70 @@ export function DoctorDashboard() {
                       <p className="text-slate-400 text-center py-8 italic">Aucun médicament sélectionné</p>
                     )}
                   </div>
+
+                  {/* Alertes temps réel */}
+                  {selectedMeds.length >= 2 && (
+                    <div className="mb-6">
+                      {interactionAlerts.length === 0 ? (
+                        <div className="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-xl">
+                          <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                          <span className="text-sm text-green-800 font-medium">
+                            🟢 Aucune interaction connue entre les médicaments sélectionnés
+                            {!selectedPatient && <span className="text-green-600 font-normal"> — sélectionnez un patient pour vérifier les contre-indications</span>}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {interactionAlerts
+                            .sort((a, b) => {
+                              const order = { contre_indication: 0, majeure: 1, moderee: 2, mineure: 3 };
+                              return order[a.severite] - order[b.severite];
+                            })
+                            .map((alert, idx) => {
+                              const colors = {
+                                contre_indication: 'bg-red-50 border-red-300 text-red-900',
+                                majeure: 'bg-orange-50 border-orange-300 text-orange-900',
+                                moderee: 'bg-blue-50 border-blue-300 text-blue-900',
+                                mineure: 'bg-yellow-50 border-yellow-300 text-yellow-900',
+                              };
+                              const badges = {
+                                contre_indication: 'bg-red-100 text-red-800',
+                                majeure: 'bg-orange-100 text-orange-800',
+                                moderee: 'bg-blue-100 text-blue-800',
+                                mineure: 'bg-yellow-100 text-yellow-800',
+                              };
+                              const icons = {
+                                contre_indication: '🔴',
+                                majeure: '🟠',
+                                moderee: '🔵',
+                                mineure: '🟡',
+                              };
+                              return (
+                                <div key={idx} className={`px-4 py-3 border rounded-xl ${colors[alert.severite]}`}>
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-base flex-shrink-0 mt-0.5">{icons[alert.severite]}</span>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${badges[alert.severite]}`}>
+                                          {alert.severite === 'contre_indication' ? 'Contre-indication' :
+                                           alert.severite === 'majeure' ? 'Interaction majeure' :
+                                           alert.severite === 'moderee' ? 'Interaction modérée' : 'Interaction mineure'}
+                                        </span>
+                                        <span className="text-xs font-semibold">{alert.involved.join(' + ')}</span>
+                                        {alert.type === 'contraindication' && (
+                                          <span className="text-xs opacity-70">(patient)</span>
+                                        )}
+                                      </div>
+                                      <p className="text-xs leading-relaxed opacity-90">{alert.description}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-3">
                     <Button
