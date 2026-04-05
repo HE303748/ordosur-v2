@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, LogOut, UserPlus, Search, Plus, X, AlertTriangle, Phone, Mail, MapPin, CheckCircle2, Pill, Users, CreditCard as Edit, Trash2, ClipboardList, FileText, Shield, TrendingUp, Clock, BarChart3, CircleUser as UserCircle } from 'lucide-react';
+import { Activity, LogOut, UserPlus, Search, Plus, X, AlertTriangle, Phone, Mail, MapPin, CheckCircle2, Pill, Users, CreditCard as Edit, Trash2, ClipboardList, FileText, Shield, TrendingUp, Clock, BarChart3, CircleUser as UserCircle, Heart } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
 import { Button } from '../components/Button';
@@ -574,6 +574,72 @@ export function DoctorDashboard() {
                             <div className="flex items-center space-x-2 text-sm text-slate-700">
                               <MapPin className="w-4 h-4 text-slate-500" />
                               <span>{selectedPatient.adresse}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Informations médicales */}
+                      {(selectedPatient.groupe_sanguin || (selectedPatient.pathologies?.length ?? 0) > 0 || (selectedPatient.allergies_medicaments?.length ?? 0) > 0 || (selectedPatient.allergies_alimentaires?.length ?? 0) > 0 || selectedPatient.traitements_en_cours || selectedPatient.antecedents_chirurgicaux) && (
+                        <div className="bg-rose-50 rounded-xl p-4 space-y-3 border border-rose-100">
+                          <h4 className="text-xs font-bold text-rose-900 uppercase tracking-wide flex items-center gap-1.5">
+                            <Heart className="w-3.5 h-3.5 text-rose-500" />
+                            Informations médicales
+                          </h4>
+
+                          {selectedPatient.groupe_sanguin && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-slate-500 w-28 flex-shrink-0">Groupe sanguin</span>
+                              <span className="px-2.5 py-0.5 bg-rose-500 text-white text-xs font-bold rounded-full">
+                                {selectedPatient.groupe_sanguin}
+                              </span>
+                            </div>
+                          )}
+
+                          {(selectedPatient.pathologies?.length ?? 0) > 0 && (
+                            <div className="flex items-start gap-2">
+                              <span className="text-xs text-slate-500 w-28 flex-shrink-0 mt-0.5">Pathologies</span>
+                              <div className="flex flex-wrap gap-1">
+                                {selectedPatient.pathologies!.map(p => (
+                                  <span key={p} className="px-2 py-0.5 bg-blue-100 text-blue-800 border border-blue-200 text-xs rounded-full font-medium">{p}</span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {(selectedPatient.allergies_medicaments?.length ?? 0) > 0 && (
+                            <div className="flex items-start gap-2">
+                              <span className="text-xs text-slate-500 w-28 flex-shrink-0 mt-0.5">Allergies méd.</span>
+                              <div className="flex flex-wrap gap-1">
+                                {selectedPatient.allergies_medicaments!.map(a => (
+                                  <span key={a} className="px-2 py-0.5 bg-red-100 text-red-800 border border-red-200 text-xs rounded-full font-medium">⚠ {a}</span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {(selectedPatient.allergies_alimentaires?.length ?? 0) > 0 && (
+                            <div className="flex items-start gap-2">
+                              <span className="text-xs text-slate-500 w-28 flex-shrink-0 mt-0.5">Allergies alim.</span>
+                              <div className="flex flex-wrap gap-1">
+                                {selectedPatient.allergies_alimentaires!.map(a => (
+                                  <span key={a} className="px-2 py-0.5 bg-orange-100 text-orange-800 border border-orange-200 text-xs rounded-full font-medium">{a}</span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {selectedPatient.antecedents_chirurgicaux && (
+                            <div className="flex items-start gap-2">
+                              <span className="text-xs text-slate-500 w-28 flex-shrink-0 mt-0.5">Antéc. chir.</span>
+                              <span className="text-xs text-slate-700">{selectedPatient.antecedents_chirurgicaux}</span>
+                            </div>
+                          )}
+
+                          {selectedPatient.traitements_en_cours && (
+                            <div className="flex items-start gap-2">
+                              <span className="text-xs text-slate-500 w-28 flex-shrink-0 mt-0.5">Traitements</span>
+                              <span className="text-xs text-slate-700">{selectedPatient.traitements_en_cours}</span>
                             </div>
                           )}
                         </div>

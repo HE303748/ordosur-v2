@@ -52,6 +52,12 @@ export interface Patient {
   telephone?: string | null;
   email?: string | null;
   adresse?: string | null;
+  pathologies?: string[] | null;
+  allergies_medicaments?: string[] | null;
+  allergies_alimentaires?: string[] | null;
+  groupe_sanguin?: string | null;
+  antecedents_chirurgicaux?: string | null;
+  traitements_en_cours?: string | null;
   created_at: string;
 }
 
