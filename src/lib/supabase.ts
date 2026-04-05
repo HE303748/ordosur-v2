@@ -89,7 +89,10 @@ export interface OrdonnanceLigne {
 export interface Medicament {
   id: string;
   nom: string;
+  nom_commercial?: string | null;
   dci?: string | null;
   forme?: string | null;
   dosage?: string | null;
+  laboratoire?: string | null;
+  voie_administration?: string | null;
 }

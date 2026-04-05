@@ -35,10 +35,11 @@ export function DoctorDashboard() {
   const [showPatientDropdown, setShowPatientDropdown] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const [medications, setMedications] = useState<Medicament[]>([]);
+  const [medSearchResults, setMedSearchResults] = useState<Medicament[]>([]);
   const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string }>>([]);
   const [medSearchTerm, setMedSearchTerm] = useState('');
   const [showMedDropdown, setShowMedDropdown] = useState(false);
+  const [medSearchLoading, setMedSearchLoading] = useState(false);
   const [result, setResult] = useState<InteractionResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
@@ -60,7 +61,6 @@ export function DoctorDashboard() {
       navigate('/');
     } else {
       loadPatients();
-      loadMedications();
       loadStats();
     }
   }, [user, navigate]);
@@ -83,9 +83,17 @@ export function DoctorDashboard() {
     if (data) setPatients(data);
   };
 
-  const loadMedications = async () => {
-    const { data } = await supabase.from('medicaments').select('*').order('nom');
-    if (data) setMedications(data);
+  const searchMedications = async (term: string) => {
+    if (term.length < 2) { setMedSearchResults([]); return; }
+    setMedSearchLoading(true);
+    const { data } = await supabase
+      .from('medicaments')
+      .select('id, nom, nom_commercial, dci, forme, dosage, laboratoire')
+      .or(`nom_commercial.ilike.%${term}%,dci.ilike.%${term}%`)
+      .order('nom_commercial')
+      .limit(10);
+    setMedSearchResults(data || []);
+    setMedSearchLoading(false);
   };
 
   const loadStats = async () => {
@@ -149,15 +157,12 @@ export function DoctorDashboard() {
       ).slice(0, 8)
     : [];
 
-  const filteredMedications = medSearchTerm.length >= 2
-    ? medications.filter(m => m.nom.toLowerCase().includes(medSearchTerm.toLowerCase())).slice(0, 8)
-    : [];
-
   const addMedication = (med: Medicament) => {
     if (!selectedMeds.some(m => m.id === med.id)) {
-      setSelectedMeds([...selectedMeds, { id: med.id, nom: med.nom }]);
+      setSelectedMeds([...selectedMeds, { id: med.id, nom: med.nom_commercial || med.nom }]);
     }
     setMedSearchTerm('');
+    setMedSearchResults([]);
     setShowMedDropdown(false);
   };
 
@@ -659,23 +664,31 @@ export function DoctorDashboard() {
                       <input
                         type="text"
                         value={medSearchTerm}
-                        onChange={(e) => { setMedSearchTerm(e.target.value); setShowMedDropdown(true); }}
-                        onFocus={() => setShowMedDropdown(true)}
+                        onChange={(e) => { const v = e.target.value; setMedSearchTerm(v); setShowMedDropdown(true); searchMedications(v); }}
+                        onFocus={() => { setShowMedDropdown(true); if (medSearchTerm.length >= 2) searchMedications(medSearchTerm); }}
                         onBlur={() => setTimeout(() => setShowMedDropdown(false), 300)}
-                        placeholder="Ex: Doliprane, Aspirine..."
+                        placeholder="Ex: Doliprane, paracétamol..."
                         className="w-full px-4 py-4 pl-10 bg-slate-50 border-2 border-slate-200 rounded-xl focus:ring-4 focus:ring-secondary-100 focus:border-secondary-400 outline-none font-medium text-base touch-manipulation"
                       />
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      {showMedDropdown && filteredMedications.length > 0 && (
-                        <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto">
-                          {filteredMedications.map((med) => (
+                      {showMedDropdown && (medSearchResults.length > 0 || medSearchLoading) && (
+                        <div className="absolute z-[9999] w-full mt-2 bg-white border-2 border-slate-200 rounded-xl shadow-2xl max-h-72 overflow-y-auto">
+                          {medSearchLoading && (
+                            <div className="px-4 py-3 text-sm text-slate-400 text-center">Recherche...</div>
+                          )}
+                          {!medSearchLoading && medSearchResults.map((med) => (
                             <button
                               key={med.id}
                               onMouseDown={(e) => { e.preventDefault(); addMedication(med); }}
                               className="w-full px-4 py-3 text-left hover:bg-secondary-50 transition-colors border-b border-slate-100 last:border-b-0"
                             >
-                              <div className="font-bold text-slate-900">{med.nom}</div>
-                              {med.dci && <div className="text-xs text-slate-500">{med.dci}</div>}
+                              <div className="font-bold text-slate-900">{med.nom_commercial || med.nom}</div>
+                              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                {med.dci && <span className="text-xs text-slate-500">{med.dci}</span>}
+                                {med.dosage && <span className="text-xs text-secondary-600 font-medium">{med.dosage}</span>}
+                                {med.forme && <span className="text-xs text-slate-400 italic">{med.forme}</span>}
+                              </div>
+                              {med.laboratoire && <div className="text-xs text-slate-300 mt-0.5">{med.laboratoire}</div>}
                             </button>
                           ))}
                         </div>
