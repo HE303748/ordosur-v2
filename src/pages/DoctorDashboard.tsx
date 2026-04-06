@@ -31,6 +31,17 @@ interface DbInteraction {
   description: string;
 }
 
+// Normalise un nom de médicament pour le matching (identique à drug_name_normalize côté DB)
+function normalizeDrugName(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 interface DbContraindication {
   id: string;
   dci_pattern: string;
@@ -66,7 +77,6 @@ export function DoctorDashboard() {
   const [medSearchLoading, setMedSearchLoading] = useState(false);
   const [result, setResult] = useState<InteractionResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [allInteractions, setAllInteractions] = useState<DbInteraction[]>([]);
   const [allContraindications, setAllContraindications] = useState<DbContraindication[]>([]);
   const [interactionAlerts, setInteractionAlerts] = useState<InteractionAlert[]>([]);
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
@@ -101,73 +111,82 @@ export function DoctorDashboard() {
     }
   }, [result]);
 
-  // Real-time interaction checking
+  // Real-time interaction checking (server-side via RPC pour 160k interactions)
   useEffect(() => {
     if (selectedMeds.length === 0) {
       setInteractionAlerts([]);
       return;
     }
 
-    // CORRECTION BUG : on cherche dans DCI + nom commercial pour couvrir
-    // les cas où la DCI BDPM diffère du nom courant (ex: "ACIDE ACÉTYLSALICYLIQUE" ≠ "aspirine")
-    const matchStrings = selectedMeds.map(m =>
-      ((m.dci || '') + ' ' + m.nom).toLowerCase()
+    // Chaînes normalisées : accents retirés, minuscules — cohérent avec drug_name_normalize() côté DB
+    const normalizedStrings = selectedMeds.map(m =>
+      normalizeDrugName((m.dci || '') + ' ' + m.nom)
     );
 
     const alerts: InteractionAlert[] = [];
 
-    // ── Drug-drug interactions (nécessite 2+ médicaments) ─────────────────
-    if (selectedMeds.length >= 2 && allInteractions.length > 0) {
-      for (const interaction of allInteractions) {
-        const p1 = interaction.dci_1_pattern.toLowerCase();
-        const p2 = interaction.dci_2_pattern.toLowerCase();
-        const idx1 = matchStrings.findIndex(s => s.includes(p1));
-        const idx2 = matchStrings.findIndex(s => s.includes(p2));
-        if (idx1 !== -1 && idx2 !== -1 && idx1 !== idx2) {
-          alerts.push({
-            type: 'drug_drug',
-            severite: interaction.severite,
-            description: interaction.description,
-            involved: [selectedMeds[idx1].nom, selectedMeds[idx2].nom],
-          });
+    const runCheck = async () => {
+      // ── Drug-drug interactions via RPC server-side (évite de charger 160k lignes) ──
+      if (selectedMeds.length >= 2) {
+        const { data: interactions } = await supabase.rpc(
+          'check_drug_interactions_for_meds',
+          { p_med_strings: normalizedStrings }
+        );
+        if (interactions) {
+          for (const interaction of interactions as DbInteraction[]) {
+            const p1 = interaction.dci_1_pattern;
+            const p2 = interaction.dci_2_pattern;
+            const idx1 = normalizedStrings.findIndex(s => s.includes(p1));
+            const idx2 = normalizedStrings.findIndex(s => s.includes(p2) && s !== normalizedStrings[idx1]);
+            const i1 = idx1 !== -1 ? idx1 : 0;
+            const i2 = idx2 !== -1 ? idx2 : (idx1 === 0 ? 1 : 0);
+            alerts.push({
+              type: 'drug_drug',
+              severite: interaction.severite,
+              description: interaction.description,
+              involved: [selectedMeds[i1].nom, selectedMeds[i2].nom],
+            });
+          }
         }
       }
-    }
 
-    // ── Contre-indications patient (dès 1 médicament si patient sélectionné) ─
-    if (selectedPatient && allContraindications.length > 0) {
-      const conditions = [
-        ...(selectedPatient.pathologies || []),
-        ...(selectedPatient.allergies_medicaments || []),
-      ].map(c => c.toLowerCase());
+      // ── Contre-indications patient (dès 1 médicament, table locale ~20 lignes) ─
+      if (selectedPatient && allContraindications.length > 0) {
+        const conditions = [
+          ...(selectedPatient.pathologies || []),
+          ...(selectedPatient.allergies_medicaments || []),
+        ].map(c => c.toLowerCase());
 
-      for (const contra of allContraindications) {
-        const dp = contra.dci_pattern.toLowerCase();
-        const cv = contra.condition_valeur.toLowerCase();
-        const matchedIdx = matchStrings.findIndex(s => s.includes(dp));
-        const condMatch = conditions.some(c => c.includes(cv) || cv.includes(c));
-        if (matchedIdx !== -1 && condMatch) {
-          alerts.push({
-            type: 'contraindication',
-            severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
-            description: contra.description,
-            involved: [selectedMeds[matchedIdx].nom],
-          });
+        for (const contra of allContraindications) {
+          const dp = normalizeDrugName(contra.dci_pattern);
+          const cv = contra.condition_valeur.toLowerCase();
+          const matchedIdx = normalizedStrings.findIndex(s => s.includes(dp));
+          const condMatch = conditions.some(c => c.includes(cv) || cv.includes(c));
+          if (matchedIdx !== -1 && condMatch) {
+            alerts.push({
+              type: 'contraindication',
+              severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
+              description: contra.description,
+              involved: [selectedMeds[matchedIdx].nom],
+            });
+          }
         }
       }
-    }
 
-    // Déduplification
-    const seen = new Set<string>();
-    const unique = alerts.filter(a => {
-      const key = `${a.type}|${[...a.involved].sort().join('+')}|${a.description.substring(0, 40)}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+      // Déduplification
+      const seen = new Set<string>();
+      const unique = alerts.filter(a => {
+        const key = `${a.type}|${[...a.involved].sort().join('+')}|${a.description.substring(0, 40)}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
 
-    setInteractionAlerts(unique);
-  }, [selectedMeds, selectedPatient, allInteractions, allContraindications]);
+      setInteractionAlerts(unique);
+    };
+
+    runCheck();
+  }, [selectedMeds, selectedPatient, allContraindications]);
 
   const loadPatients = async () => {
     if (!user) return;
@@ -180,11 +199,9 @@ export function DoctorDashboard() {
   };
 
   const loadInteractionDb = async () => {
-    const [{ data: interactions }, { data: contras }] = await Promise.all([
-      supabase.from('drug_interactions').select('*'),
-      supabase.from('contraindications').select('*'),
-    ]);
-    if (interactions) setAllInteractions(interactions);
+    // Les interactions drug-drug (160k lignes) sont interrogées en temps réel via RPC.
+    // On précharge uniquement les contre-indications patient (~20 lignes).
+    const { data: contras } = await supabase.from('contraindications').select('*');
     if (contras) setAllContraindications(contras);
   };
 
