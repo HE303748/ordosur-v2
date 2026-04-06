@@ -103,29 +103,39 @@ export function DoctorDashboard() {
 
   // Real-time interaction checking
   useEffect(() => {
-    if (selectedMeds.length === 0 || allInteractions.length === 0) {
+    if (selectedMeds.length === 0) {
       setInteractionAlerts([]);
       return;
     }
-    const dcis = selectedMeds.map(m => (m.dci || m.nom).toLowerCase());
+
+    // CORRECTION BUG : on cherche dans DCI + nom commercial pour couvrir
+    // les cas où la DCI BDPM diffère du nom courant (ex: "ACIDE ACÉTYLSALICYLIQUE" ≠ "aspirine")
+    const matchStrings = selectedMeds.map(m =>
+      ((m.dci || '') + ' ' + m.nom).toLowerCase()
+    );
+
     const alerts: InteractionAlert[] = [];
 
-    for (const interaction of allInteractions) {
-      const p1 = interaction.dci_1_pattern.toLowerCase();
-      const p2 = interaction.dci_2_pattern.toLowerCase();
-      const idx1 = dcis.findIndex(d => d.includes(p1));
-      const idx2 = dcis.findIndex(d => d.includes(p2));
-      if (idx1 !== -1 && idx2 !== -1 && idx1 !== idx2) {
-        alerts.push({
-          type: 'drug_drug',
-          severite: interaction.severite,
-          description: interaction.description,
-          involved: [selectedMeds[idx1].nom, selectedMeds[idx2].nom],
-        });
+    // ── Drug-drug interactions (nécessite 2+ médicaments) ─────────────────
+    if (selectedMeds.length >= 2 && allInteractions.length > 0) {
+      for (const interaction of allInteractions) {
+        const p1 = interaction.dci_1_pattern.toLowerCase();
+        const p2 = interaction.dci_2_pattern.toLowerCase();
+        const idx1 = matchStrings.findIndex(s => s.includes(p1));
+        const idx2 = matchStrings.findIndex(s => s.includes(p2));
+        if (idx1 !== -1 && idx2 !== -1 && idx1 !== idx2) {
+          alerts.push({
+            type: 'drug_drug',
+            severite: interaction.severite,
+            description: interaction.description,
+            involved: [selectedMeds[idx1].nom, selectedMeds[idx2].nom],
+          });
+        }
       }
     }
 
-    if (selectedPatient) {
+    // ── Contre-indications patient (dès 1 médicament si patient sélectionné) ─
+    if (selectedPatient && allContraindications.length > 0) {
       const conditions = [
         ...(selectedPatient.pathologies || []),
         ...(selectedPatient.allergies_medicaments || []),
@@ -134,7 +144,7 @@ export function DoctorDashboard() {
       for (const contra of allContraindications) {
         const dp = contra.dci_pattern.toLowerCase();
         const cv = contra.condition_valeur.toLowerCase();
-        const matchedIdx = dcis.findIndex(d => d.includes(dp));
+        const matchedIdx = matchStrings.findIndex(s => s.includes(dp));
         const condMatch = conditions.some(c => c.includes(cv) || cv.includes(c));
         if (matchedIdx !== -1 && condMatch) {
           alerts.push({
@@ -147,7 +157,7 @@ export function DoctorDashboard() {
       }
     }
 
-    // Deduplicate
+    // Déduplification
     const seen = new Set<string>();
     const unique = alerts.filter(a => {
       const key = `${a.type}|${[...a.involved].sort().join('+')}|${a.description.substring(0, 40)}`;
@@ -895,13 +905,15 @@ export function DoctorDashboard() {
                   </div>
 
                   {/* Alertes temps réel */}
-                  {selectedMeds.length >= 2 && (
+                  {selectedMeds.length >= 1 && (
                     <div className="mb-6">
                       {interactionAlerts.length === 0 ? (
                         <div className="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-xl">
                           <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
                           <span className="text-sm text-green-800 font-medium">
-                            🟢 Aucune interaction connue entre les médicaments sélectionnés
+                            🟢 {selectedMeds.length === 1
+                              ? 'Aucune contre-indication connue pour ce médicament'
+                              : 'Aucune interaction connue entre les médicaments sélectionnés'}
                             {!selectedPatient && <span className="text-green-600 font-normal"> — sélectionnez un patient pour vérifier les contre-indications</span>}
                           </span>
                         </div>
