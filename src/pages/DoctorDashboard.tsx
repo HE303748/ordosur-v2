@@ -210,11 +210,18 @@ export function DoctorDashboard() {
     setMedSearchLoading(true);
     const { data } = await supabase
       .from('medicaments')
-      .select('id, nom, nom_commercial, dci, forme, dosage, laboratoire')
+      .select('id, nom, nom_commercial, dci, forme, dosage, laboratoire, pays, ppv_ma')
       .or(`nom_commercial.ilike.%${term}%,dci.ilike.%${term}%`)
+      .order('pays', { ascending: false, nullsFirst: false })
       .order('nom_commercial')
-      .limit(10);
-    setMedSearchResults(data || []);
+      .limit(15);
+    // Sort: MA first, then FR
+    const sorted = (data || []).sort((a, b) => {
+      if (a.pays === 'MA' && b.pays !== 'MA') return -1;
+      if (a.pays !== 'MA' && b.pays === 'MA') return 1;
+      return 0;
+    }).slice(0, 10);
+    setMedSearchResults(sorted);
     setMedSearchLoading(false);
   };
 
@@ -881,11 +888,17 @@ export function DoctorDashboard() {
                               onMouseDown={(e) => { e.preventDefault(); addMedication(med); }}
                               className="w-full px-4 py-3 text-left hover:bg-secondary-50 transition-colors border-b border-slate-100 last:border-b-0"
                             >
-                              <div className="font-bold text-slate-900">{med.nom_commercial || med.nom}</div>
+                              <div className="flex items-center gap-2">
+                                {med.pays === 'MA' && <span className="text-base leading-none">🇲🇦</span>}
+                                <span className="font-bold text-slate-900">{med.nom_commercial || med.nom}</span>
+                              </div>
                               <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                                 {med.dci && <span className="text-xs text-slate-500">{med.dci}</span>}
                                 {med.dosage && <span className="text-xs text-secondary-600 font-medium">{med.dosage}</span>}
                                 {med.forme && <span className="text-xs text-slate-400 italic">{med.forme}</span>}
+                                {med.ppv_ma != null && (
+                                  <span className="text-xs font-semibold text-emerald-600">PPV {med.ppv_ma.toFixed(2)} MAD</span>
+                                )}
                               </div>
                               {med.laboratoire && <div className="text-xs text-slate-300 mt-0.5">{med.laboratoire}</div>}
                             </button>

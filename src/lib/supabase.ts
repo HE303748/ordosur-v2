@@ -101,4 +101,6 @@ export interface Medicament {
   dosage?: string | null;
   laboratoire?: string | null;
   voie_administration?: string | null;
+  pays?: string | null;
+  ppv_ma?: number | null;
 }
