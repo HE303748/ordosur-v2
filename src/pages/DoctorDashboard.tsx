@@ -1,18 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
-  Search, Plus, X, AlertTriangle, Phone, Mail, MapPin,
+  Search, Plus, X, AlertTriangle,
   CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
   BarChart3, Heart, Users, Calendar, Trash2, CreditCard as Edit,
-  TrendingUp, ClipboardList,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
 import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { PatientForm } from '../components/PatientForm';
-import { Toast } from '../components/Toast';
 import { PrescriptionFormModal } from '../components/PrescriptionFormModal';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
@@ -28,6 +26,9 @@ import { AIChat } from '../components/ui/AIChat';
 import { PatientAvatar } from '../components/ui/PatientAvatar';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PageTransition } from '../components/ui/PageTransition';
+import { ToastManager, type ToastItem } from '../components/ui/Toast';
+import { PatientTabs } from '../components/ui/PatientTabs';
+import { AgendaView } from '../components/ui/AgendaView';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -388,8 +389,8 @@ function PatientsView({
         </div>
       </div>
 
-      {/* ── Right: patient detail ──────────────────────────────────────── */}
-      <div className="flex-1 overflow-y-auto bg-[#F8FAFC]">
+      {/* ── Right: patient detail with tabs ──────────────────────────── */}
+      <div className="flex-1 overflow-hidden bg-[#F8FAFC] flex flex-col">
         {!selectedPatient ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-8">
             <div className="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center mb-4">
@@ -401,193 +402,12 @@ function PatientsView({
             </p>
           </div>
         ) : (
-          <div className="p-6 max-w-3xl">
-            {/* Patient header */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-5">
-              <div className="flex items-start gap-5">
-                <PatientAvatar name={`${selectedPatient.prenom} ${selectedPatient.nom}`} size="xl" />
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-2xl font-bold text-slate-900 leading-tight">
-                    {selectedPatient.prenom} {selectedPatient.nom}
-                  </h2>
-                  <div className="flex flex-wrap items-center gap-3 mt-2 text-slate-500 text-sm">
-                    {selectedPatient.sexe && (
-                      <span>{selectedPatient.sexe === 'M' ? '♂ Homme' : '♀ Femme'}</span>
-                    )}
-                    {selectedPatient.date_naissance && (
-                      <>
-                        <span>•</span>
-                        <span>{getPatientAge(selectedPatient.date_naissance)} ans</span>
-                        <span>•</span>
-                        <span>Né(e) le {new Date(selectedPatient.date_naissance).toLocaleDateString('fr-FR')}</span>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Contact */}
-                  <div className="flex flex-wrap gap-4 mt-3">
-                    {selectedPatient.telephone && (
-                      <div className="flex items-center gap-1.5 text-sm text-slate-600">
-                        <Phone className="w-3.5 h-3.5 text-slate-400" />
-                        {selectedPatient.telephone}
-                      </div>
-                    )}
-                    {selectedPatient.email && (
-                      <div className="flex items-center gap-1.5 text-sm text-slate-600">
-                        <Mail className="w-3.5 h-3.5 text-slate-400" />
-                        {selectedPatient.email}
-                      </div>
-                    )}
-                    {selectedPatient.adresse && (
-                      <div className="flex items-center gap-1.5 text-sm text-slate-600">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                        {selectedPatient.adresse}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => onEditPatient(selectedPatient)}
-                    className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-colors"
-                  >
-                    Modifier
-                  </button>
-                  <button
-                    onClick={onNavigateToChecker}
-                    className="px-3.5 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold transition-colors"
-                  >
-                    💊 Prescrire
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Medical info */}
-            {((selectedPatient.pathologies?.length ?? 0) > 0 ||
-              (selectedPatient.allergies_medicaments?.length ?? 0) > 0 ||
-              (selectedPatient.allergies_alimentaires?.length ?? 0) > 0 ||
-              selectedPatient.groupe_sanguin ||
-              selectedPatient.traitements_en_cours ||
-              selectedPatient.antecedents_chirurgicaux) && (
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 mb-5">
-                <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2 mb-4">
-                  <Heart className="w-4 h-4 text-rose-500" />
-                  Informations médicales
-                </h3>
-                <div className="space-y-3">
-                  {selectedPatient.groupe_sanguin && (
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-slate-400 w-28 flex-shrink-0">Groupe sanguin</span>
-                      <span className="px-2.5 py-0.5 bg-rose-500 text-white text-xs font-bold rounded-full">
-                        {selectedPatient.groupe_sanguin}
-                      </span>
-                    </div>
-                  )}
-                  {(selectedPatient.pathologies?.length ?? 0) > 0 && (
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs text-slate-400 w-28 flex-shrink-0 mt-0.5">Pathologies</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {selectedPatient.pathologies!.map(p => (
-                          <span key={p} className="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium border border-blue-200">{p}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {(selectedPatient.allergies_medicaments?.length ?? 0) > 0 && (
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs text-slate-400 w-28 flex-shrink-0 mt-0.5">Allergies méd.</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {selectedPatient.allergies_medicaments!.map(a => (
-                          <span key={a} className="px-2.5 py-1 bg-red-100 text-red-800 text-xs rounded-full font-medium border border-red-200">⚠ {a}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {(selectedPatient.allergies_alimentaires?.length ?? 0) > 0 && (
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs text-slate-400 w-28 flex-shrink-0 mt-0.5">Allergies alim.</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {selectedPatient.allergies_alimentaires!.map(a => (
-                          <span key={a} className="px-2.5 py-1 bg-orange-100 text-orange-800 text-xs rounded-full font-medium border border-orange-200">{a}</span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {selectedPatient.antecedents_chirurgicaux && (
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs text-slate-400 w-28 flex-shrink-0 mt-0.5">Antéc. chir.</span>
-                      <span className="text-xs text-slate-700">{selectedPatient.antecedents_chirurgicaux}</span>
-                    </div>
-                  )}
-                  {selectedPatient.traitements_en_cours && (
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs text-slate-400 w-28 flex-shrink-0 mt-0.5">Traitements</span>
-                      <span className="text-xs text-slate-700">{selectedPatient.traitements_en_cours}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Ordonnances history */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-sky-500" />
-                  Historique des ordonnances
-                </h3>
-                {patientOrdonnances.length > 0 && (
-                  <button
-                    onClick={() => setShowMedicationHistory(true)}
-                    className="text-xs text-sky-600 hover:text-sky-700 font-semibold"
-                  >
-                    Voir tout →
-                  </button>
-                )}
-              </div>
-
-              {patientOrdonnances.length === 0 ? (
-                <div className="text-center py-8 text-slate-400">
-                  <FileText className="w-8 h-8 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm">Aucune ordonnance disponible</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {patientOrdonnances.slice(0, 4).map((ord) => {
-                    const dateStr = ord.date || ord.created_at;
-                    const dateLabel = dateStr
-                      ? new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })
-                      : 'Date inconnue';
-                    return (
-                      <div key={ord.id} className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Clock className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="text-xs font-semibold text-slate-600">{dateLabel}</span>
-                          {ord.doctor_name && (
-                            <span className="text-xs text-slate-400">• {ord.doctor_name}</span>
-                          )}
-                        </div>
-                        <ul className="space-y-1">
-                          {(ord.medications || []).slice(0, 3).map((med: any, idx: number) => (
-                            <li key={idx} className="text-xs text-slate-700">
-                              <span className="font-medium">{med.nom}</span>
-                              {med.posologie && <span className="text-slate-400"> – {med.posologie}</span>}
-                            </li>
-                          ))}
-                          {(ord.medications?.length || 0) > 3 && (
-                            <li className="text-xs text-slate-400 italic">+{ord.medications.length - 3} autre(s)</li>
-                          )}
-                        </ul>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
+          <PatientTabs
+            patient={selectedPatient}
+            ordonnances={patientOrdonnances}
+            onEdit={() => onEditPatient(selectedPatient)}
+            onNavigateToChecker={onNavigateToChecker}
+          />
         )}
       </div>
     </PageTransition>
@@ -1000,52 +820,114 @@ function StatsView({ userId }: { userId: string }) {
   );
 }
 
-// ─── AgendaView ──────────────────────────────────────────────────────────────
-
-function AgendaView() {
-  return (
-    <PageTransition>
-      <div className="flex flex-col items-center justify-center h-full py-24 text-center px-8">
-        <div className="w-20 h-20 bg-sky-100 rounded-3xl flex items-center justify-center mb-5">
-          <Calendar className="w-10 h-10 text-sky-500" />
-        </div>
-        <h2 className="text-xl font-bold text-slate-800 mb-2">Agenda — Bientôt disponible</h2>
-        <p className="text-slate-500 text-sm max-w-sm">
-          La gestion des rendez-vous avec calendrier hebdomadaire, créneaux horaires et notifications sera disponible prochainement.
-        </p>
-        <div className="mt-8 flex gap-3 text-xs text-slate-400">
-          <span className="px-3 py-1.5 bg-slate-100 rounded-full">Vue jour / semaine / mois</span>
-          <span className="px-3 py-1.5 bg-slate-100 rounded-full">Drag & drop</span>
-          <span className="px-3 py-1.5 bg-slate-100 rounded-full">Rappels SMS</span>
-        </div>
-      </div>
-    </PageTransition>
-  );
-}
-
 // ─── OrdonnancesView ─────────────────────────────────────────────────────────
 
-function OrdonnancesView({ onNavigate }: { onNavigate: (v: ViewType) => void }) {
+function OrdonnancesView({ onNavigate, doctorId }: { onNavigate: (v: ViewType) => void; doctorId: string }) {
+  const [ords, setOrds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!doctorId) return;
+    (async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from('ordonnances')
+        .select('id, date, created_at, statut, patient_id, ordonnance_lignes(medicament_nom, posologie)')
+        .eq('doctor_id', doctorId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      // fetch patient names
+      if (data && data.length > 0) {
+        const pIds = [...new Set(data.map((o: any) => o.patient_id).filter(Boolean))];
+        const { data: pats } = await supabase.from('patients').select('id, prenom, nom').in('id', pIds);
+        const pMap = new Map((pats || []).map((p: any) => [p.id, `${p.prenom} ${p.nom}`]));
+        setOrds(data.map((o: any) => ({ ...o, patient_nom: pMap.get(o.patient_id) || 'Patient inconnu' })));
+      } else {
+        setOrds([]);
+      }
+      setLoading(false);
+    })();
+  }, [doctorId]);
+
   return (
     <PageTransition>
-      <div className="p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Ordonnances</h2>
-          <p className="text-slate-500 text-sm mt-0.5">Historique de toutes vos prescriptions</p>
-        </div>
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-12 text-center">
-          <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-slate-700 mb-2">Créez une ordonnance</h3>
-          <p className="text-slate-400 text-sm mb-6 max-w-sm mx-auto">
-            Sélectionnez un patient dans le Vérificateur et analysez ses médicaments pour générer une ordonnance sécurisée.
-          </p>
+      <div className="p-6 max-w-4xl">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">Ordonnances</h2>
+            <p className="text-slate-500 text-sm mt-0.5">Historique de toutes vos prescriptions</p>
+          </div>
           <button
             onClick={() => onNavigate('checker')}
-            className="px-6 py-3 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
+            className="px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
           >
-            💊 Aller au Vérificateur
+            + Nouvelle ordonnance
           </button>
         </div>
+
+        {loading ? (
+          <div className="space-y-3">
+            {[1,2,3].map(i => (
+              <div key={i} className="bg-white rounded-2xl h-24 animate-pulse border border-slate-100" />
+            ))}
+          </div>
+        ) : ords.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-12 text-center">
+            <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-slate-700 mb-2">Aucune ordonnance</h3>
+            <p className="text-slate-400 text-sm mb-6 max-w-sm mx-auto">
+              Créez votre première ordonnance depuis le Vérificateur d'interactions.
+            </p>
+            <button
+              onClick={() => onNavigate('checker')}
+              className="px-6 py-3 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
+            >
+              💊 Aller au Vérificateur
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {ords.map(ord => {
+              const dateStr = ord.date || ord.created_at;
+              const dateLabel = dateStr
+                ? new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
+                : 'Date inconnue';
+              const meds = ord.ordonnance_lignes || [];
+              return (
+                <div key={ord.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:border-sky-200 transition-colors">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-sky-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-5 h-5 text-sky-500" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-900 text-sm">{ord.patient_nom}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">{dateLabel}</p>
+                      </div>
+                    </div>
+                    <span className={`text-[11px] px-2.5 py-1 rounded-full font-semibold flex-shrink-0 ${
+                      ord.statut === 'valide' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      {ord.statut || 'Créée'}
+                    </span>
+                  </div>
+                  {meds.length > 0 && (
+                    <div className="mt-3 pl-13 flex flex-wrap gap-1.5 pl-[52px]">
+                      {meds.slice(0, 4).map((m: any, i: number) => (
+                        <span key={i} className="px-2.5 py-1 bg-violet-50 text-violet-800 text-xs rounded-full font-medium border border-violet-100">
+                          {m.medicament_nom}
+                        </span>
+                      ))}
+                      {meds.length > 4 && (
+                        <span className="px-2.5 py-1 bg-slate-50 text-slate-500 text-xs rounded-full">+{meds.length - 4}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </PageTransition>
   );
@@ -1053,40 +935,141 @@ function OrdonnancesView({ onNavigate }: { onNavigate: (v: ViewType) => void }) 
 
 // ─── SettingsView ─────────────────────────────────────────────────────────────
 
-function SettingsView({ navigate }: { navigate: (path: string) => void }) {
+function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: string) => void; user: any; doctorProfile: any }) {
+  const [activeSection, setActiveSection] = useState<'profil' | 'cabinet' | 'securite' | 'ia'>('profil');
+
+  const sections = [
+    { id: 'profil',   label: '👤 Profil'   },
+    { id: 'cabinet',  label: '🏥 Cabinet'  },
+    { id: 'securite', label: '🔒 Sécurité' },
+    { id: 'ia',       label: '🤖 IA'       },
+  ] as const;
+
   return (
     <PageTransition>
-      <div className="p-6 max-w-2xl">
+      <div className="p-6 max-w-3xl">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">Paramètres</h2>
           <p className="text-slate-500 text-sm mt-0.5">Gérez votre compte et vos préférences</p>
         </div>
-        <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-slate-900">Mon profil</p>
-                <p className="text-sm text-slate-500">Modifier vos informations personnelles et professionnelles</p>
-              </div>
-              <button
-                onClick={() => navigate('/profile')}
-                className="px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
-              >
-                Modifier
-              </button>
+
+        <div className="flex gap-6">
+          {/* Sidebar nav */}
+          <div className="w-44 flex-shrink-0">
+            <div className="space-y-1">
+              {sections.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => setActiveSection(s.id)}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                    activeSection === s.id
+                      ? 'bg-sky-500 text-white'
+                      : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
             </div>
           </div>
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-slate-900">Assistant IA</p>
-                <p className="text-sm text-slate-500">
-                  Configurez votre clé API Anthropic dans{' '}
-                  <code className="text-xs bg-slate-100 px-1.5 py-0.5 rounded font-mono">.env</code> →{' '}
-                  <code className="text-xs bg-slate-100 px-1.5 py-0.5 rounded font-mono">VITE_ANTHROPIC_API_KEY</code>
-                </p>
+
+          {/* Content */}
+          <div className="flex-1 space-y-4">
+            {activeSection === 'profil' && (
+              <>
+                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                  <h3 className="font-bold text-slate-900 mb-4">Informations personnelles</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Prénom</label>
+                      <input defaultValue={user?.prenom || ''} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Nom</label>
+                      <input defaultValue={user?.nom || ''} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Email</label>
+                      <input defaultValue={user?.email || ''} type="email" className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Spécialité</label>
+                      <input defaultValue={doctorProfile?.specialite || ''} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="mt-4 px-5 py-2.5 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
+                  >
+                    Modifier le profil complet →
+                  </button>
+                </div>
+              </>
+            )}
+
+            {activeSection === 'cabinet' && (
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                <h3 className="font-bold text-slate-900 mb-4">Informations du cabinet</h3>
+                <div className="space-y-4">
+                  {[
+                    { label: 'Nom du cabinet', placeholder: 'Cabinet médical...' },
+                    { label: 'Adresse', placeholder: 'Adresse complète...' },
+                    { label: 'Téléphone', placeholder: '+212 ...' },
+                    { label: 'Ville', placeholder: 'Casablanca, Rabat...' },
+                  ].map(field => (
+                    <div key={field.label}>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">{field.label}</label>
+                      <input placeholder={field.placeholder} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                    </div>
+                  ))}
+                  <div className="text-xs text-slate-400 bg-slate-50 rounded-xl p-3">
+                    Ces informations apparaîtront sur les ordonnances imprimées.
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            {activeSection === 'securite' && (
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                <h3 className="font-bold text-slate-900 mb-4">Sécurité du compte</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Mot de passe actuel</label>
+                    <input type="password" className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Nouveau mot de passe</label>
+                    <input type="password" className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                  </div>
+                  <button className="px-5 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900 transition-colors">
+                    Changer le mot de passe
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'ia' && (
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+                <h3 className="font-bold text-slate-900 mb-2">Assistant IA (Claude)</h3>
+                <p className="text-sm text-slate-500 mb-4">
+                  L'Assistant IA utilise Claude d'Anthropic. Configurez votre clé API pour l'activer.
+                </p>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Clé API Anthropic</label>
+                  <input
+                    type="password"
+                    placeholder="sk-ant-..."
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 font-mono"
+                  />
+                  <p className="text-xs text-slate-400 mt-2">
+                    Variable d'environnement : <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono">VITE_ANTHROPIC_API_KEY</code>
+                  </p>
+                </div>
+                <div className="mt-4 p-3 bg-sky-50 rounded-xl border border-sky-100 text-xs text-sky-800">
+                  🤖 Modèle : <strong>claude-opus-4-5</strong> — Questions médicales, interactions, posologies, diagnostics différentiels
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1111,7 +1094,16 @@ export function DoctorDashboard() {
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
   const [patientSearchTerm, setPatientSearchTerm] = useState('');
   const [showPatientDropdown, setShowPatientDropdown] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+
+  const showToast = useCallback((message: string, type: ToastItem['type'] = 'success') => {
+    const id = Math.random().toString(36).slice(2);
+    setToasts(t => [...t, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id: string) => {
+    setToasts(t => t.filter(x => x.id !== id));
+  }, []);
 
   // Medications
   const [medSearchResults, setMedSearchResults] = useState<Medicament[]>([]);
@@ -1306,26 +1298,40 @@ export function DoctorDashboard() {
     if (!user) return;
     try {
       if (editingPatient) {
-        await supabase.from('patients').update(patientData).eq('id', editingPatient.id);
-        setToast({ message: 'Patient mis à jour', type: 'success' });
+        const { error } = await supabase.from('patients').update(patientData).eq('id', editingPatient.id);
+        if (error) throw error;
+        // BUG 1+2 FIX: optimistic update — instantly reflect changes in list + detail panel
+        const updated: Patient = { ...editingPatient, ...patientData };
+        setPatients(prev => prev.map(p => p.id === editingPatient.id ? updated : p));
+        if (selectedPatient?.id === editingPatient.id) setSelectedPatient(updated);
+        showToast('Patient mis à jour avec succès', 'success');
       } else {
-        await supabase.from('patients').insert({ ...patientData, org_id: user.org_id });
-        setToast({ message: 'Patient ajouté', type: 'success' });
+        const { data, error } = await supabase
+          .from('patients').insert({ ...patientData, org_id: user.org_id }).select().single();
+        if (error) throw error;
+        if (data) setPatients(prev => [data, ...prev]);
+        showToast('Patient ajouté', 'success');
       }
       setShowPatientModal(false);
       setEditingPatient(null);
-      loadPatients();
-    } catch { setToast({ message: 'Erreur', type: 'error' }); }
+      loadStats();
+    } catch (e: any) {
+      showToast(e?.message || 'Erreur lors de la sauvegarde', 'error');
+    }
   };
 
   const handleDeletePatient = async (patientId: string) => {
     if (!confirm('Supprimer ce patient ?')) return;
     try {
-      await supabase.from('patients').delete().eq('id', patientId);
+      const { error } = await supabase.from('patients').delete().eq('id', patientId);
+      if (error) throw error;
+      setPatients(prev => prev.filter(p => p.id !== patientId));
       if (selectedPatient?.id === patientId) setSelectedPatient(null);
-      setToast({ message: 'Patient supprimé', type: 'success' });
-      loadPatients();
-    } catch { setToast({ message: 'Erreur', type: 'error' }); }
+      showToast('Patient supprimé', 'info');
+      loadStats();
+    } catch (e: any) {
+      showToast(e?.message || 'Erreur', 'error');
+    }
   };
 
   const handleLogout = async () => { await signOut(); navigate('/'); };
@@ -1413,7 +1419,12 @@ export function DoctorDashboard() {
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopBar activeView={activeView} userInitials={userInitials} />
+        <TopBar
+          activeView={activeView}
+          userInitials={userInitials}
+          patients={patients}
+          onNavigate={v => setActiveView(v as ViewType)}
+        />
         <EmailVerificationBanner />
 
         <main className="flex-1 overflow-auto">
@@ -1482,17 +1493,19 @@ export function DoctorDashboard() {
             )}
 
             {activeView === 'ordonnances' && (
-              <OrdonnancesView key="ordonnances" onNavigate={setActiveView} />
+              <OrdonnancesView key="ordonnances" onNavigate={setActiveView} doctorId={doctorProfile?.id || user?.id || ''} />
             )}
 
             {activeView === 'stats' && (
               <StatsView key="stats" userId={user?.id || ''} />
             )}
 
-            {activeView === 'agenda' && <AgendaView key="agenda" />}
+            {activeView === 'agenda' && (
+              <AgendaView key="agenda" patients={patients} showToast={showToast} />
+            )}
 
             {activeView === 'settings' && (
-              <SettingsView key="settings" navigate={navigate} />
+              <SettingsView key="settings" navigate={navigate} user={user} doctorProfile={doctorProfile} />
             )}
           </AnimatePresence>
         </main>
@@ -1509,8 +1522,8 @@ export function DoctorDashboard() {
         )}
       </AnimatePresence>
 
-      {/* Toast */}
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      {/* Toasts */}
+      <ToastManager toasts={toasts} onRemove={removeToast} />
 
       {/* Modals */}
       <Modal

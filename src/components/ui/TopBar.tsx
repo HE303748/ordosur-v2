@@ -1,5 +1,8 @@
-import { Search, Bell, ChevronRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Search, ChevronRight, X, User, Pill } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { NotifBell, NotificationsPanel, useNotifications } from './NotificationsPanel';
 
 const LABELS: Record<string, string> = {
   home:        'Accueil',
@@ -14,13 +17,148 @@ const LABELS: Record<string, string> = {
 interface TopBarProps {
   activeView: string;
   userInitials?: string;
+  patients?: Array<{ id: string; prenom: string; nom: string; pathologies?: string[] }>;
+  onNavigate?: (v: string) => void;
 }
 
-export function TopBar({ activeView, userInitials }: TopBarProps) {
-  const navigate = useNavigate();
+/* ── Global Ctrl+K search ─────────────────────────────────────── */
+function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNavigate?: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Ctrl+K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setOpen(o => !o);
+      }
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  useEffect(() => {
+    if (open) { setQuery(''); setTimeout(() => inputRef.current?.focus(), 50); }
+  }, [open]);
+
+  const filteredPatients = query.length >= 1
+    ? patients.filter(p => `${p.prenom} ${p.nom}`.toLowerCase().includes(query.toLowerCase())).slice(0, 6)
+    : [];
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200/80 flex items-center px-6 gap-4 flex-shrink-0 z-20">
+    <>
+      {/* Trigger bar */}
+      <button
+        onClick={() => setOpen(true)}
+        className="flex-1 max-w-lg mx-auto flex items-center gap-2.5 pl-3 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-400 hover:border-sky-300 hover:bg-white transition-all cursor-pointer text-left"
+      >
+        <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+        <span className="flex-1">Rechercher...</span>
+        <span className="text-[11px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded font-mono hidden sm:block">
+          Ctrl K
+        </span>
+      </button>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {open && (
+          <div className="fixed inset-0 z-[9995] flex items-start justify-center pt-20 px-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: -10 }}
+              animate={{ opacity: 1, scale: 1,    y: 0   }}
+              exit={{    opacity: 0, scale: 0.96, y: -10  }}
+              transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+              className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden"
+            >
+              {/* Input */}
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100">
+                <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                <input
+                  ref={inputRef}
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder="Rechercher un patient, médicament..."
+                  className="flex-1 bg-transparent text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+                />
+                {query && (
+                  <button onClick={() => setQuery('')} className="p-1 hover:bg-slate-100 rounded-lg">
+                    <X className="w-4 h-4 text-slate-400" />
+                  </button>
+                )}
+                <kbd className="text-[11px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-mono">Esc</kbd>
+              </div>
+
+              {/* Results */}
+              {filteredPatients.length > 0 ? (
+                <div className="py-2">
+                  <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Patients</p>
+                  {filteredPatients.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => { onNavigate?.('patients'); setOpen(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-sky-50 transition-colors text-left"
+                    >
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        {p.prenom[0]}{p.nom[0]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">{p.prenom} {p.nom}</p>
+                        {p.pathologies?.[0] && <p className="text-xs text-slate-400">{p.pathologies[0]}</p>}
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-300 ml-auto" />
+                    </button>
+                  ))}
+                </div>
+              ) : query.length >= 1 ? (
+                <div className="py-10 text-center text-slate-400 text-sm">
+                  Aucun résultat pour « {query} »
+                </div>
+              ) : (
+                <div className="py-6 px-4">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Accès rapide</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { label: 'Patients', icon: User, view: 'patients' },
+                      { label: 'Vérificateur', icon: Pill, view: 'checker' },
+                    ].map(item => (
+                      <button
+                        key={item.view}
+                        onClick={() => { onNavigate?.(item.view); setOpen(false); }}
+                        className="flex items-center gap-2.5 px-4 py-3 bg-slate-50 hover:bg-sky-50 rounded-xl transition-colors text-sm font-semibold text-slate-700"
+                      >
+                        <item.icon className="w-4 h-4 text-slate-400" />
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+/* ── Main TopBar ─────────────────────────────────────────────── */
+export function TopBar({ activeView, userInitials, patients = [], onNavigate }: TopBarProps) {
+  const navigate = useNavigate();
+  const [showNotifs, setShowNotifs] = useState(false);
+  const { notifications, unreadCount, markRead, markAllRead, deleteNotif } = useNotifications();
+
+  return (
+    <header className="h-16 bg-white border-b border-slate-200/80 flex items-center px-6 gap-4 flex-shrink-0 z-20 relative">
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-sm min-w-0 flex-shrink-0">
         <span className="text-slate-400 font-medium hidden sm:block">OrdoSur</span>
@@ -28,24 +166,12 @@ export function TopBar({ activeView, userInitials }: TopBarProps) {
         <span className="text-slate-800 font-semibold">{LABELS[activeView] || activeView}</span>
       </div>
 
-      {/* Search */}
-      <div className="flex-1 max-w-lg mx-auto">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Rechercher patients, médicaments, ordonnances..."
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 focus:bg-white transition-all placeholder-slate-400"
-          />
-        </div>
-      </div>
+      {/* Global search Ctrl+K */}
+      <GlobalSearch patients={patients} onNavigate={onNavigate} />
 
       {/* Actions */}
       <div className="flex items-center gap-2 flex-shrink-0">
-        <button className="relative p-2.5 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-xl transition-colors">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-        </button>
+        <NotifBell count={unreadCount} onClick={() => setShowNotifs(v => !v)} />
 
         <button
           onClick={() => navigate('/profile')}
@@ -54,6 +180,15 @@ export function TopBar({ activeView, userInitials }: TopBarProps) {
           {userInitials || 'MD'}
         </button>
       </div>
+
+      <NotificationsPanel
+        isOpen={showNotifs}
+        onClose={() => setShowNotifs(false)}
+        notifications={notifications}
+        onMarkRead={markRead}
+        onMarkAllRead={markAllRead}
+        onDelete={deleteNotif}
+      />
     </header>
   );
 }
