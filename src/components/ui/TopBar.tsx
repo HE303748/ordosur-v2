@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Search, ChevronRight, X, User, Pill } from 'lucide-react';
+import { Search, ChevronRight, X, User, Pill, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { NotifBell, NotificationsPanel, useNotifications } from './NotificationsPanel';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const LABELS: Record<string, string> = {
   home:        'Accueil',
@@ -53,7 +54,7 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
       {/* Trigger bar */}
       <button
         onClick={() => setOpen(true)}
-        className="flex-1 max-w-lg mx-auto flex items-center gap-2.5 pl-3 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-400 hover:border-sky-300 hover:bg-white transition-all cursor-pointer text-left"
+        className="flex-1 max-w-lg mx-auto flex items-center gap-2.5 pl-3 pr-4 py-2 bg-slate-50 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] rounded-xl text-sm text-slate-400 dark:text-slate-500 hover:border-sky-300 dark:hover:border-sky-500/40 hover:bg-white dark:hover:bg-white/[0.08] transition-all cursor-pointer text-left"
       >
         <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
         <span className="flex-1">Rechercher...</span>
@@ -156,14 +157,15 @@ export function TopBar({ activeView, userInitials, patients = [], onNavigate }: 
   const navigate = useNavigate();
   const [showNotifs, setShowNotifs] = useState(false);
   const { notifications, unreadCount, markRead, markAllRead, deleteNotif } = useNotifications();
+  const { isDark, toggleTheme } = useTheme();
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200/80 flex items-center px-6 gap-4 flex-shrink-0 z-20 relative">
+    <header className="h-16 bg-white dark:bg-[#0F172A] border-b border-slate-200/80 dark:border-white/[0.06] flex items-center px-6 gap-4 flex-shrink-0 z-20 relative">
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-sm min-w-0 flex-shrink-0">
-        <span className="text-slate-400 font-medium hidden sm:block">OrdoSur</span>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-300 hidden sm:block" />
-        <span className="text-slate-800 font-semibold">{LABELS[activeView] || activeView}</span>
+        <span className="text-slate-400 dark:text-slate-500 font-medium hidden sm:block">OrdoSur</span>
+        <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 hidden sm:block" />
+        <span className="text-slate-800 dark:text-white font-semibold">{LABELS[activeView] || activeView}</span>
       </div>
 
       {/* Global search Ctrl+K */}
@@ -171,6 +173,19 @@ export function TopBar({ activeView, userInitials, patients = [], onNavigate }: 
 
       {/* Actions */}
       <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Dark mode toggle */}
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={toggleTheme}
+          title={isDark ? 'Mode clair' : 'Mode sombre'}
+          className="p-2 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-xl transition-colors"
+        >
+          {isDark
+            ? <Sun className="w-5 h-5 text-amber-400" />
+            : <Moon className="w-5 h-5 text-slate-500" />
+          }
+        </motion.button>
+
         <NotifBell count={unreadCount} onClick={() => setShowNotifs(v => !v)} />
 
         <button

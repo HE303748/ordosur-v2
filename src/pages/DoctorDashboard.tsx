@@ -1401,10 +1401,38 @@ export function DoctorDashboard() {
     setShowPatientModal(true);
   };
 
+  // ── Global keyboard shortcuts ────────────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Skip if focus is inside an input / textarea / contenteditable
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable ||
+        e.ctrlKey || e.metaKey || e.altKey
+      ) return;
+
+      switch (e.key.toLowerCase()) {
+        case 'h': setActiveView('home'); break;
+        case 'p': setActiveView('patients'); break;
+        case 'c': setActiveView('checker'); break;
+        case 'o': setActiveView('ordonnances'); break;
+        case 'a': setActiveView('agenda'); break;
+        case 'escape':
+          setSelectedPatient(null);
+          setShowAIChat(false);
+          break;
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#F8FAFC] dark:bg-[#060D1A] overflow-hidden font-sans">
       {/* Sidebar */}
       <Sidebar
         activeView={activeView}
@@ -1427,7 +1455,7 @@ export function DoctorDashboard() {
         />
         <EmailVerificationBanner />
 
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A]">
           <AnimatePresence mode="wait">
             {activeView === 'home' && (
               <HomeView
