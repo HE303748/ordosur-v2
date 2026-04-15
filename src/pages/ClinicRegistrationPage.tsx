@@ -4,8 +4,16 @@ import { Heart, Building2, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext';
 import { validatePassword, validateEmail, validatePhoneNumber, sanitizeInput, sanitizeInputFinal } from '../lib/validation';
 import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
-import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+
+// Champ requis avec astérisque rouge
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span>
+      {children} <span className="text-red-500">*</span>
+    </span>
+  );
+}
 
 export function ClinicRegistrationPage() {
   const navigate = useNavigate();
@@ -22,7 +30,6 @@ export function ClinicRegistrationPage() {
     password: '',
     confirmPassword: '',
     nom_clinique: '',
-    siret: '',
     adresse: '',
     telephone: '',
     acceptTerms: false,
@@ -38,10 +45,6 @@ export function ClinicRegistrationPage() {
       [name]: type === 'checkbox' ? checked : sanitizeInput(value),
     }));
     setError('');
-  };
-
-  const validateSiret = (siret: string): boolean => {
-    return /^\d{14}$/.test(siret.replace(/\s/g, ''));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,13 +76,13 @@ export function ClinicRegistrationPage() {
       return;
     }
 
-    if (!validateSiret(formData.siret)) {
-      setError('Numéro SIRET invalide (14 chiffres requis)');
+    if (!formData.adresse.trim()) {
+      setError("L'adresse de la clinique est obligatoire");
       return;
     }
 
     if (!validatePhoneNumber(formData.telephone)) {
-      setError('Numéro de téléphone invalide');
+      setError('Numéro de téléphone invalide (format : +212 6XX XXX XXX)');
       return;
     }
 
@@ -96,7 +99,6 @@ export function ClinicRegistrationPage() {
         nom: sanitizeInputFinal(formData.nom),
         org_name: sanitizeInputFinal(formData.nom_clinique),
         org_type: 'clinique',
-        siret: formData.siret.replace(/\s/g, ''),
         adresse: sanitizeInputFinal(formData.adresse),
         telephone: formData.telephone,
       });
@@ -106,7 +108,7 @@ export function ClinicRegistrationPage() {
       if (err.message?.includes('already registered')) {
         setError('Cette adresse email est déjà utilisée');
       } else {
-        setError(err.message || 'Une erreur est survenue lors de l\'inscription');
+        setError(err.message || "Une erreur est survenue lors de l'inscription");
       }
     } finally {
       setLoading(false);
@@ -161,7 +163,9 @@ export function ClinicRegistrationPage() {
 
           <div className="glass-effect rounded-3xl p-8 shadow-2xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Créer un compte clinique</h2>
-            <p className="text-gray-600 mb-6">Remplissez les informations ci-dessous</p>
+            <p className="text-gray-500 text-sm mb-6">
+              Les champs marqués <span className="text-red-500 font-semibold">*</span> sont obligatoires
+            </p>
 
             {error && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
@@ -172,40 +176,55 @@ export function ClinicRegistrationPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Responsable */}
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Prénom du responsable"
-                  name="prenom"
-                  type="text"
-                  value={formData.prenom}
-                  onChange={handleChange}
-                  required
-                  placeholder="Marie"
-                />
-                <Input
-                  label="Nom du responsable"
-                  name="nom"
-                  type="text"
-                  value={formData.nom}
-                  onChange={handleChange}
-                  required
-                  placeholder="Martin"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <RequiredLabel>Prénom responsable</RequiredLabel>
+                  </label>
+                  <input
+                    name="prenom"
+                    type="text"
+                    value={formData.prenom}
+                    onChange={handleChange}
+                    required
+                    placeholder="Fatima"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <RequiredLabel>Nom responsable</RequiredLabel>
+                  </label>
+                  <input
+                    name="nom"
+                    type="text"
+                    value={formData.nom}
+                    onChange={handleChange}
+                    required
+                    placeholder="Alaoui"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                  />
+                </div>
               </div>
 
-              <Input
-                label="Email professionnel"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="contact@clinique.fr"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Email professionnel</RequiredLabel>
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="contact@clinique.ma"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
               {/* Mot de passe */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mot de passe
+                  <RequiredLabel>Mot de passe</RequiredLabel>
                 </label>
                 <div className="relative">
                   <input
@@ -229,7 +248,7 @@ export function ClinicRegistrationPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirmer le mot de passe
+                  <RequiredLabel>Confirmer le mot de passe</RequiredLabel>
                 </label>
                 <div className="relative">
                   <input
@@ -251,45 +270,50 @@ export function ClinicRegistrationPage() {
               </div>
 
               {/* Infos clinique */}
-              <Input
-                label="Nom de la clinique"
-                name="nom_clinique"
-                type="text"
-                value={formData.nom_clinique}
-                onChange={handleChange}
-                required
-                placeholder="Clinique Saint-Martin"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Nom de la clinique</RequiredLabel>
+                </label>
+                <input
+                  name="nom_clinique"
+                  type="text"
+                  value={formData.nom_clinique}
+                  onChange={handleChange}
+                  required
+                  placeholder="Clinique Al Amal"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
-              <Input
-                label="Numéro SIRET"
-                name="siret"
-                type="text"
-                value={formData.siret}
-                onChange={handleChange}
-                required
-                placeholder="12345678901234"
-                maxLength={14}
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Adresse</RequiredLabel>
+                </label>
+                <input
+                  name="adresse"
+                  type="text"
+                  value={formData.adresse}
+                  onChange={handleChange}
+                  required
+                  placeholder="45 Avenue Hassan II, Rabat"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
-              <Input
-                label="Adresse"
-                name="adresse"
-                type="text"
-                value={formData.adresse}
-                onChange={handleChange}
-                placeholder="123 Rue de la Santé, 75001 Paris"
-              />
-
-              <Input
-                label="Téléphone"
-                name="telephone"
-                type="tel"
-                value={formData.telephone}
-                onChange={handleChange}
-                required
-                placeholder="+33 1 23 45 67 89"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Téléphone</RequiredLabel>
+                </label>
+                <input
+                  name="telephone"
+                  type="tel"
+                  value={formData.telephone}
+                  onChange={handleChange}
+                  required
+                  placeholder="+212 6XX XXX XXX"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
               <div className="flex items-start space-x-2">
                 <input
@@ -300,7 +324,8 @@ export function ClinicRegistrationPage() {
                   className="mt-1 w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                 />
                 <label className="text-sm text-gray-600">
-                  J'accepte les conditions générales d'utilisation et la politique de confidentialité
+                  J'accepte les conditions générales d'utilisation et la politique de confidentialité{' '}
+                  <span className="text-red-500">*</span>
                 </label>
               </div>
 

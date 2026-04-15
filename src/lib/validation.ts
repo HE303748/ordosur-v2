@@ -62,8 +62,10 @@ export function validateEmail(email: string): boolean {
 }
 
 export function validatePhoneNumber(phone: string): boolean {
-  const phoneRegex = /^(\+33|0)[1-9](\d{2}){4}$/;
-  return phoneRegex.test(phone.replace(/\s/g, ''));
+  // Accepte le format marocain : +212 6XX XXX XXX ou 06XXXXXXXX / 07XXXXXXXX
+  const normalized = phone.replace(/[\s\-\.]/g, '');
+  const moroccanRegex = /^(\+212[5-9]\d{8}|0[5-9]\d{8})$/;
+  return moroccanRegex.test(normalized);
 }
 
 export function validateRPPSNumber(rpps: string): boolean {

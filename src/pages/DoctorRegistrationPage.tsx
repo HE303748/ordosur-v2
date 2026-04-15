@@ -21,6 +21,15 @@ const SPECIALITES = [
   'Autre',
 ];
 
+// Champ requis avec astérisque rouge
+function RequiredLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <span>
+      {children} <span className="text-red-500">*</span>
+    </span>
+  );
+}
+
 export function DoctorRegistrationPage() {
   const navigate = useNavigate();
   const { signUp } = useAuth();
@@ -95,8 +104,13 @@ export function DoctorRegistrationPage() {
       return;
     }
 
+    if (!formData.adresse.trim()) {
+      setError("L'adresse du cabinet est obligatoire");
+      return;
+    }
+
     if (!validatePhoneNumber(formData.telephone)) {
-      setError('Numéro de téléphone invalide');
+      setError('Numéro de téléphone invalide (format : +212 6XX XXX XXX)');
       return;
     }
 
@@ -125,7 +139,7 @@ export function DoctorRegistrationPage() {
       if (err.message?.includes('already registered')) {
         setError('Cette adresse email est déjà utilisée');
       } else {
-        setError(err.message || 'Une erreur est survenue lors de l\'inscription');
+        setError(err.message || "Une erreur est survenue lors de l'inscription");
       }
     } finally {
       setLoading(false);
@@ -180,7 +194,9 @@ export function DoctorRegistrationPage() {
 
           <div className="glass-effect rounded-3xl p-8 shadow-2xl">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Créer un compte médecin</h2>
-            <p className="text-gray-600 mb-6">Remplissez les informations ci-dessous</p>
+            <p className="text-gray-500 text-sm mb-6">
+              Les champs marqués <span className="text-red-500 font-semibold">*</span> sont obligatoires
+            </p>
 
             {error && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
@@ -191,40 +207,55 @@ export function DoctorRegistrationPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Identité */}
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Prénom"
-                  name="prenom"
-                  type="text"
-                  value={formData.prenom}
-                  onChange={handleChange}
-                  required
-                  placeholder="Jean"
-                />
-                <Input
-                  label="Nom"
-                  name="nom"
-                  type="text"
-                  value={formData.nom}
-                  onChange={handleChange}
-                  required
-                  placeholder="Dupont"
-                />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <RequiredLabel>Prénom</RequiredLabel>
+                  </label>
+                  <input
+                    name="prenom"
+                    type="text"
+                    value={formData.prenom}
+                    onChange={handleChange}
+                    required
+                    placeholder="Mohammed"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <RequiredLabel>Nom</RequiredLabel>
+                  </label>
+                  <input
+                    name="nom"
+                    type="text"
+                    value={formData.nom}
+                    onChange={handleChange}
+                    required
+                    placeholder="Benali"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                  />
+                </div>
               </div>
 
-              <Input
-                label="Email professionnel"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="jean.dupont@cabinet.fr"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Email professionnel</RequiredLabel>
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="m.benali@cabinet.ma"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
               {/* Mot de passe */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mot de passe
+                  <RequiredLabel>Mot de passe</RequiredLabel>
                 </label>
                 <div className="relative">
                   <input
@@ -248,7 +279,7 @@ export function DoctorRegistrationPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirmer le mot de passe
+                  <RequiredLabel>Confirmer le mot de passe</RequiredLabel>
                 </label>
                 <div className="relative">
                   <input
@@ -270,20 +301,25 @@ export function DoctorRegistrationPage() {
               </div>
 
               {/* Infos professionnelles */}
-              <Input
-                label="Numéro RPPS"
-                name="rpps"
-                type="text"
-                value={formData.rpps}
-                onChange={handleChange}
-                required
-                placeholder="12345678901"
-                maxLength={11}
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Numéro RPPS</RequiredLabel>
+                </label>
+                <input
+                  name="rpps"
+                  type="text"
+                  value={formData.rpps}
+                  onChange={handleChange}
+                  required
+                  placeholder="12345678901"
+                  maxLength={11}
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Spécialité
+                  <RequiredLabel>Spécialité</RequiredLabel>
                 </label>
                 <select
                   name="specialite"
@@ -299,44 +335,65 @@ export function DoctorRegistrationPage() {
                 </select>
               </div>
 
-              <Input
-                label="Numéro Ordre (optionnel)"
-                name="ordre_number"
-                type="text"
-                value={formData.ordre_number}
-                onChange={handleChange}
-                placeholder="Numéro d'ordre du conseil médical"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Numéro Ordre (optionnel)
+                </label>
+                <input
+                  name="ordre_number"
+                  type="text"
+                  value={formData.ordre_number}
+                  onChange={handleChange}
+                  placeholder="Numéro d'ordre du conseil médical"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
               {/* Cabinet */}
-              <Input
-                label="Nom du cabinet"
-                name="nom_cabinet"
-                type="text"
-                value={formData.nom_cabinet}
-                onChange={handleChange}
-                required
-                placeholder="Cabinet Médical Dupont"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Nom du cabinet</RequiredLabel>
+                </label>
+                <input
+                  name="nom_cabinet"
+                  type="text"
+                  value={formData.nom_cabinet}
+                  onChange={handleChange}
+                  required
+                  placeholder="Cabinet Médical Benali"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
-              <Input
-                label="Adresse du cabinet"
-                name="adresse"
-                type="text"
-                value={formData.adresse}
-                onChange={handleChange}
-                placeholder="123 Rue de la Santé, 75001 Paris"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Adresse du cabinet</RequiredLabel>
+                </label>
+                <input
+                  name="adresse"
+                  type="text"
+                  value={formData.adresse}
+                  onChange={handleChange}
+                  required
+                  placeholder="123 Boulevard Mohammed V, Casablanca"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
-              <Input
-                label="Téléphone"
-                name="telephone"
-                type="tel"
-                value={formData.telephone}
-                onChange={handleChange}
-                required
-                placeholder="+33 6 12 34 56 78"
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Téléphone</RequiredLabel>
+                </label>
+                <input
+                  name="telephone"
+                  type="tel"
+                  value={formData.telephone}
+                  onChange={handleChange}
+                  required
+                  placeholder="+212 6XX XXX XXX"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
 
               <div className="flex items-start space-x-2">
                 <input
@@ -347,7 +404,8 @@ export function DoctorRegistrationPage() {
                   className="mt-1 w-4 h-4 text-secondary-600 border-gray-300 rounded focus:ring-secondary-500"
                 />
                 <label className="text-sm text-gray-600">
-                  J'accepte les conditions générales d'utilisation et la politique de confidentialité
+                  J'accepte les conditions générales d'utilisation et la politique de confidentialité{' '}
+                  <span className="text-red-500">*</span>
                 </label>
               </div>
 

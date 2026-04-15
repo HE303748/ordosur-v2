@@ -27,7 +27,6 @@ interface SignUpProfileData {
   nom: string;
   org_name: string;
   org_type: 'cabinet' | 'clinique';
-  siret?: string;
   adresse?: string;
   telephone?: string;
   rpps?: string;
@@ -200,65 +199,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const userId = authData.user.id;
 
-    // 1. Créer l'organisation
-    const { data: orgData, error: orgError } = await supabase
-      .from('organizations')
-      .insert({
-        name: profileData.org_name,
-        type: profileData.org_type,
-        siret: profileData.siret ?? null,
-        adresse: profileData.adresse ?? null,
-        telephone: profileData.telephone ?? null,
-        email,
-      })
-      .select('id')
-      .single();
+    // Utilise un RPC SECURITY DEFINER pour créer org + profil + médecin en un appel sécurisé.
+    // Contourne le RLS (qui bloquerait les inserts anonymes) sans exposer la service_role key.
+    const { error: rpcError } = await supabase.rpc('complete_signup', {
+      p_user_id:      userId,
+      p_role:         role,
+      p_prenom:       profileData.prenom,
+      p_nom:          profileData.nom,
+      p_org_name:     profileData.org_name,
+      p_org_type:     profileData.org_type,
+      p_email:        email,
+      p_adresse:      profileData.adresse     ?? null,
+      p_telephone:    profileData.telephone   ?? null,
+      p_rpps:         profileData.rpps        ?? null,
+      p_specialite:   profileData.specialite  ?? null,
+      p_ordre_number: profileData.ordre_number ?? null,
+    });
 
-    if (orgError) {
-      console.error('[AUTH] Erreur création organisation:', orgError);
-      throw new Error('Erreur lors de la création de l\'organisation');
-    }
-
-    const orgId = orgData.id;
-
-    // 2. Créer le profil utilisateur
-    const { error: profileError } = await supabase
-      .from('user_profiles')
-      .upsert(
-        {
-          user_id: userId,
-          org_id: orgId,
-          role,
-          prenom: profileData.prenom,
-          nom: profileData.nom,
-        },
-        { onConflict: 'user_id' }
-      );
-
-    if (profileError) {
-      console.error('[AUTH] Erreur création profil utilisateur:', profileError);
-      throw new Error('Erreur lors de la création du profil utilisateur');
-    }
-
-    // 3. Créer le profil médecin si rôle doctor
-    if (role === 'doctor') {
-      const { error: doctorError } = await supabase
-        .from('doctors')
-        .upsert(
-          {
-            user_id: userId,
-            org_id: orgId,
-            rpps: profileData.rpps ?? null,
-            specialite: profileData.specialite ?? null,
-            ordre_number: profileData.ordre_number ?? null,
-          },
-          { onConflict: 'user_id' }
-        );
-
-      if (doctorError) {
-        console.error('[AUTH] Erreur création profil médecin:', doctorError);
-        throw new Error('Erreur lors de la création du profil médecin');
-      }
+    if (rpcError) {
+      console.error('[AUTH] Erreur complete_signup RPC:', rpcError);
+      throw new Error('Erreur lors de la création de votre compte. Veuillez réessayer.');
     }
   };
 
