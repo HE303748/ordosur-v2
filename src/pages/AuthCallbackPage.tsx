@@ -1,99 +1,161 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Activity, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+
+// Role → route mapping
+const ROLE_ROUTES: Record<string, string> = {
+  doctor:      '/doctor',
+  clinic_admin: '/clinic/admin',
+  super_admin:  '/admin',
+};
+
+function getDestinationByRole(role: string | undefined): string {
+  return role ? (ROLE_ROUTES[role] ?? '/') : '/';
+}
 
 export function AuthCallbackPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [error, setError] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [status, setStatus] = useState('Traitement du lien…');
 
   useEffect(() => {
-    const handleCallback = async () => {
-      try {
-        // Log full URL for debugging
-        console.log('[AUTH CALLBACK] Full URL:', window.location.href);
-        console.log('[AUTH CALLBACK] Search:', location.search);
-        console.log('[AUTH CALLBACK] Hash:', location.hash);
+    handleCallback();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-        // Parse recovery type from URL
-        const params = new URLSearchParams(location.search);
-        const hashParams = new URLSearchParams(location.hash.slice(1));
+  async function waitForSession(maxWaitMs = 6000): Promise<typeof supabase extends { auth: infer A } ? Awaited<ReturnType<A['getSession']>>['data']['session'] : never> {
+    const step = 300;
+    let waited = 0;
+    while (waited < maxWaitMs) {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) return data.session as any;
+      await new Promise(r => setTimeout(r, step));
+      waited += step;
+    }
+    return null as any;
+  }
 
-        const type = params.get('type') || hashParams.get('type');
-        const errorParam = params.get('error');
-        const errorDescription = params.get('error_description');
+  async function handleCallback() {
+    try {
+      const params    = new URLSearchParams(location.search);
+      const hashParams = new URLSearchParams(location.hash.slice(1));
 
-        console.log('[AUTH CALLBACK] Detected type:', type);
-        console.log('[AUTH CALLBACK] Error param:', errorParam);
+      const type             = params.get('type')              || hashParams.get('type');
+      const errorParam       = params.get('error');
+      const errorDescription = params.get('error_description');
 
-        // Handle Supabase errors
-        if (errorParam) {
-          console.error('[AUTH CALLBACK] Auth error:', errorDescription);
-          setError(errorDescription || 'Une erreur est survenue');
-          setTimeout(() => {
-            navigate('/', { replace: true });
-          }, 3000);
+      console.log('[AUTH CALLBACK] type:', type, '| error:', errorParam);
+
+      // ── Supabase error in URL ────────────────────────────────────────────
+      if (errorParam) {
+        console.error('[AUTH CALLBACK] Auth error:', errorDescription);
+        setErrorMsg(errorDescription || 'Une erreur est survenue lors de la confirmation.');
+        setTimeout(() => navigate('/', { replace: true }), 3000);
+        return;
+      }
+
+      // ── Password recovery ────────────────────────────────────────────────
+      if (type === 'recovery') {
+        setStatus('Redirection vers la réinitialisation du mot de passe…');
+        navigate('/reset-password', { replace: true });
+        return;
+      }
+
+      // ── Signup / email change ────────────────────────────────────────────
+      if (type === 'signup' || type === 'email_change' || !type) {
+        setStatus('Confirmation de l\'email en cours…');
+
+        // Wait until Supabase has processed the token and established a session
+        const session = await waitForSession(8000);
+
+        if (!session) {
+          console.warn('[AUTH CALLBACK] No session established after waiting');
+          // Redirect to login — the user can log in manually
+          navigate('/', { replace: true });
           return;
         }
 
-        // Wait for Supabase to process the token and create session
-        // The auth link contains access_token in hash which Supabase processes automatically
-        await new Promise(resolve => setTimeout(resolve, 500));
+        setStatus('Chargement de votre profil…');
 
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('[AUTH CALLBACK] Session exists:', !!session);
-        if (session) {
-          console.log('[AUTH CALLBACK] Session user ID:', session.user?.id);
+        // Fetch user role from user_profiles
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          console.error('[AUTH CALLBACK] Profile error:', profileError);
         }
 
-        // Route based on recovery type
-        if (type === 'recovery') {
-          console.log('[AUTH CALLBACK] Recovery detected - redirecting to /reset-password');
-          navigate('/reset-password', { replace: true });
-        } else if (type === 'signup' || type === 'email_change') {
-          console.log('[AUTH CALLBACK] Signup/email_change detected');
-          // Wait for session to be fully established before redirecting
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          window.location.href = '/';
-        } else if (type === 'magiclink') {
-          console.log('[AUTH CALLBACK] Magic link detected');
-          navigate('/', { replace: true });
-        } else {
-          console.log('[AUTH CALLBACK] No type detected - defaulting to login');
-          navigate('/', { replace: true });
-        }
-      } catch (err: any) {
-        console.error('[AUTH CALLBACK] Callback error:', err);
-        setError('Une erreur est survenue lors du traitement du lien');
-        setTimeout(() => {
-          navigate('/', { replace: true });
-        }, 3000);
+        const destination = getDestinationByRole(profile?.role);
+        console.log('[AUTH CALLBACK] role:', profile?.role, '→ redirect to', destination);
+
+        setStatus(`Bienvenue ! Redirection vers votre espace…`);
+        // Small delay so the welcome message is visible
+        await new Promise(r => setTimeout(r, 600));
+
+        navigate(destination, { replace: true });
+        return;
       }
-    };
 
-    handleCallback();
-  }, [location, navigate]);
+      // ── Magic link ───────────────────────────────────────────────────────
+      if (type === 'magiclink') {
+        const session = await waitForSession(6000);
+        if (session) {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('role')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+          navigate(getDestinationByRole(profile?.role), { replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
+        return;
+      }
 
-  if (error) {
+      // ── Fallback ─────────────────────────────────────────────────────────
+      navigate('/', { replace: true });
+    } catch (err: any) {
+      console.error('[AUTH CALLBACK] Unexpected error:', err);
+      setErrorMsg('Une erreur inattendue est survenue. Vous allez être redirigé…');
+      setTimeout(() => navigate('/', { replace: true }), 3000);
+    }
+  }
+
+  // ── Error state ───────────────────────────────────────────────────────────
+  if (errorMsg) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
-          <div className="text-center">
-            <h2 className="text-xl font-semibold text-error-600 mb-2">Erreur</h2>
-            <p className="text-neutral-600 mb-4">{error}</p>
-            <p className="text-sm text-neutral-500">Redirection en cours...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center space-y-4">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z" />
+            </svg>
           </div>
+          <h2 className="text-xl font-bold text-gray-900">Erreur de confirmation</h2>
+          <p className="text-gray-600 text-sm">{errorMsg}</p>
+          <p className="text-xs text-gray-400">Redirection en cours…</p>
         </div>
       </div>
     );
   }
 
+  // ── Loading state ─────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
-        <p className="text-neutral-600">Traitement du lien...</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 via-white to-cyan-50">
+      <div className="flex flex-col items-center gap-6 text-center">
+        <div className="w-16 h-16 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-200">
+          <Activity className="w-8 h-8 text-white" />
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-sky-500" />
+          <p className="text-gray-600 font-medium">{status}</p>
+        </div>
       </div>
     </div>
   );
