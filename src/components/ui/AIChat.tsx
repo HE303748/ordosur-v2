@@ -51,15 +51,12 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
-
     const userMsg: Message = { role: 'user', content: trimmed };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setLoading(true);
-
     try {
       if (!ANTHROPIC_API_KEY) throw new Error('no_key');
-
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -75,18 +72,13 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
           messages: [...messages, userMsg],
         }),
       });
-
       if (!res.ok) throw new Error('api_error');
       const data = await res.json();
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: data.content?.[0]?.text || 'Erreur inattendue.' },
-      ]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.content?.[0]?.text || 'Erreur inattendue.' }]);
     } catch (err: any) {
-      const msg =
-        err?.message === 'no_key'
-          ? 'Clé API manquante. Ajoutez VITE_ANTHROPIC_API_KEY dans votre fichier .env'
-          : "Erreur de connexion à l'API Anthropic.";
+      const msg = err?.message === 'no_key'
+        ? 'Clé API manquante. Ajoutez VITE_ANTHROPIC_API_KEY dans votre fichier .env'
+        : "Erreur de connexion à l'API Anthropic.";
       setMessages(prev => [...prev, { role: 'assistant', content: msg }]);
     } finally {
       setLoading(false);
@@ -99,9 +91,12 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-      className="fixed right-0 top-0 bottom-0 w-[400px] bg-white shadow-2xl z-50 flex flex-col border-l border-slate-200"
+      className="fixed right-0 top-0 bottom-0 w-[400px] z-50 flex flex-col
+        bg-white dark:bg-[#111827]
+        border-l border-slate-200 dark:border-white/[0.06]
+        shadow-2xl"
     >
-      {/* ─── Header ─── */}
+      {/* Header */}
       <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-sky-500 to-cyan-500 flex-shrink-0">
         <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
           <Bot className="w-5 h-5 text-white" />
@@ -125,25 +120,25 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
         </button>
       </div>
 
-      {/* ─── Messages ─── */}
+      {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 && (
           <>
             <div className="flex gap-3">
-              <div className="w-8 h-8 bg-sky-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-4 h-4 text-sky-600" />
+              <div className="w-8 h-8 bg-sky-100 dark:bg-sky-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-4 h-4 text-sky-600 dark:text-sky-400" />
               </div>
-              <div className="bg-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-700 leading-relaxed">
+              <div className="bg-slate-100 dark:bg-white/[0.07] rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-700 dark:text-[#94A3B8] leading-relaxed">
                 Bonjour ! Je suis votre assistant médical. Posez-moi vos questions sur les interactions, posologies ou pathologies.
                 {selectedPatient && (
-                  <p className="mt-2 text-sky-600 font-semibold text-xs">
+                  <p className="mt-2 text-sky-600 dark:text-sky-400 font-semibold text-xs">
                     👤 Patient : {selectedPatient.prenom} {selectedPatient.nom}
                   </p>
                 )}
               </div>
             </div>
 
-            <p className="text-[11px] text-slate-400 font-semibold text-center uppercase tracking-wide pt-2">
+            <p className="text-[11px] text-slate-400 dark:text-slate-600 font-semibold text-center uppercase tracking-wide pt-2">
               Suggestions
             </p>
             <div className="space-y-2">
@@ -151,7 +146,13 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
                 <button
                   key={q}
                   onClick={() => send(q)}
-                  className="w-full text-left text-xs px-3 py-2.5 bg-sky-50 text-sky-700 rounded-xl hover:bg-sky-100 transition-colors border border-sky-100 font-medium leading-relaxed"
+                  className="w-full text-left text-xs px-3 py-2.5
+                    bg-sky-50 dark:bg-sky-500/[0.08]
+                    text-sky-700 dark:text-sky-400
+                    rounded-xl hover:bg-sky-100 dark:hover:bg-sky-500/[0.14]
+                    transition-colors
+                    border border-sky-100 dark:border-sky-500/20
+                    font-medium leading-relaxed"
                 >
                   {q}
                 </button>
@@ -162,24 +163,19 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
 
         {messages.map((msg, i) => (
           <div key={i} className={`flex gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-            <div
-              className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                msg.role === 'user' ? 'bg-sky-500' : 'bg-slate-100'
-              }`}
-            >
-              {msg.role === 'user' ? (
-                <User className="w-4 h-4 text-white" />
-              ) : (
-                <Bot className="w-4 h-4 text-slate-500" />
-              )}
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
+              msg.role === 'user' ? 'bg-sky-500' : 'bg-slate-100 dark:bg-white/[0.07]'
+            }`}>
+              {msg.role === 'user'
+                ? <User className="w-4 h-4 text-white" />
+                : <Bot  className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+              }
             </div>
-            <div
-              className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
-                msg.role === 'user'
-                  ? 'bg-sky-500 text-white rounded-tr-sm'
-                  : 'bg-slate-100 text-slate-700 rounded-tl-sm'
-              }`}
-            >
+            <div className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+              msg.role === 'user'
+                ? 'bg-sky-500 text-white rounded-tr-sm'
+                : 'bg-slate-100 dark:bg-white/[0.07] text-slate-700 dark:text-[#94A3B8] rounded-tl-sm'
+            }`}>
               {msg.content}
             </div>
           </div>
@@ -187,38 +183,42 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
 
         {loading && (
           <div className="flex gap-2.5">
-            <div className="w-8 h-8 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 bg-slate-100 dark:bg-white/[0.07] rounded-xl flex items-center justify-center flex-shrink-0">
               <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
             </div>
-            <div className="bg-slate-100 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
+            <div className="bg-slate-100 dark:bg-white/[0.07] rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
               {[0, 150, 300].map(d => (
                 <div
                   key={d}
-                  className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"
+                  className="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce"
                   style={{ animationDelay: `${d}ms` }}
                 />
               ))}
             </div>
           </div>
         )}
-
         <div ref={bottomRef} />
       </div>
 
-      {/* ─── Input ─── */}
-      <div className="p-4 border-t border-slate-100 flex-shrink-0">
+      {/* Input */}
+      <div className="p-4 border-t border-slate-100 dark:border-white/[0.06] flex-shrink-0">
         <div className="flex gap-2">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                send(input);
-              }
+              if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input); }
             }}
             placeholder="Posez votre question médicale..."
-            className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 transition-all"
+            className="flex-1 px-4 py-2.5
+              bg-slate-50 dark:bg-[#1E293B]
+              border border-slate-200 dark:border-white/[0.1]
+              rounded-xl text-sm
+              text-slate-900 dark:text-[#E2E8F0]
+              placeholder-slate-400 dark:placeholder-slate-600
+              focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40
+              focus:border-sky-300 dark:focus:border-sky-500/40
+              transition-all"
           />
           <button
             onClick={() => send(input)}
@@ -228,7 +228,7 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
             <Send className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-[10px] text-slate-400 mt-2 text-center">
+        <p className="text-[10px] text-slate-400 dark:text-slate-600 mt-2 text-center">
           Indicatif — ne remplace pas le jugement clinique
         </p>
       </div>

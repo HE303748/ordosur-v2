@@ -23,17 +23,17 @@ const NOTIF_ICONS: Record<string, any> = {
 };
 
 const NOTIF_COLORS: Record<string, string> = {
-  info:        'bg-sky-100 text-sky-600',
-  warning:     'bg-amber-100 text-amber-600',
-  success:     'bg-emerald-100 text-emerald-600',
-  rdv:         'bg-violet-100 text-violet-600',
-  interaction: 'bg-red-100 text-red-600',
+  info:        'bg-sky-100 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400',
+  warning:     'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400',
+  success:     'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400',
+  rdv:         'bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400',
+  interaction: 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400',
 };
 
 function timeAgo(dateStr: string): string {
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 60)   return 'À l\'instant';
-  if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
+  if (diff < 60)    return 'À l\'instant';
+  if (diff < 3600)  return `Il y a ${Math.floor(diff / 60)} min`;
   if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
   return `Il y a ${Math.floor(diff / 86400)} j`;
 }
@@ -47,9 +47,9 @@ export function NotifBell({ count, onClick }: NotifBellProps) {
   return (
     <button
       onClick={onClick}
-      className="relative p-2 hover:bg-slate-100 rounded-xl transition-colors"
+      className="relative p-2 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-xl transition-colors"
     >
-      <Bell className="w-5 h-5 text-slate-600" />
+      <Bell className="w-5 h-5 text-slate-600 dark:text-[#94A3B8]" />
       <AnimatePresence>
         {count > 0 && (
           <motion.span
@@ -90,28 +90,34 @@ export function NotificationsPanel({
             animate={{ opacity: 1, y: 0,  scale: 1    }}
             exit={{    opacity: 0, y: -8, scale: 0.97  }}
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-            className="fixed top-16 right-4 z-[9990] w-96 bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden"
+            className="fixed top-16 right-4 z-[9990] w-96 rounded-2xl shadow-2xl overflow-hidden
+              bg-white dark:bg-[#111827]
+              border border-slate-200/80 dark:border-white/[0.06]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-white/[0.06]">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Notifications</h3>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-[#E2E8F0]">Notifications</h3>
                 {unreadCount > 0 && (
-                  <p className="text-xs text-slate-400 mt-0.5">{unreadCount} non lue(s)</p>
+                  <p className="text-xs text-slate-400 dark:text-[#94A3B8] mt-0.5">{unreadCount} non lue(s)</p>
                 )}
               </div>
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <button
                     onClick={onMarkAllRead}
-                    className="text-xs text-sky-600 hover:text-sky-700 font-semibold flex items-center gap-1 hover:bg-sky-50 px-2 py-1 rounded-lg transition-colors"
+                    className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 font-semibold flex items-center gap-1
+                      hover:bg-sky-50 dark:hover:bg-sky-500/[0.1] px-2 py-1 rounded-lg transition-colors"
                   >
                     <CheckCheck className="w-3.5 h-3.5" />
                     Tout lire
                   </button>
                 )}
-                <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors">
-                  <X className="w-4 h-4 text-slate-400" />
+                <button
+                  onClick={onClose}
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                 </button>
               </div>
             </div>
@@ -119,12 +125,12 @@ export function NotificationsPanel({
             {/* List */}
             <div className="max-h-[420px] overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="text-center py-12 text-slate-300">
-                  <Bell className="w-10 h-10 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-slate-400">Aucune notification</p>
+                <div className="text-center py-12">
+                  <Bell className="w-10 h-10 mx-auto mb-2 text-slate-300 dark:text-slate-700" />
+                  <p className="text-sm font-medium text-slate-400 dark:text-slate-600">Aucune notification</p>
                 </div>
               ) : (
-                <div className="divide-y divide-slate-50">
+                <div className="divide-y divide-slate-50 dark:divide-white/[0.04]">
                   {notifications.map(n => {
                     const Icon = NOTIF_ICONS[n.type] || Info;
                     return (
@@ -133,8 +139,10 @@ export function NotificationsPanel({
                         layout
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={`flex items-start gap-3 px-5 py-4 hover:bg-slate-50 transition-colors cursor-pointer ${
-                          !n.lu ? 'bg-sky-50/40' : ''
+                        className={`group flex items-start gap-3 px-5 py-4 cursor-pointer transition-colors ${
+                          !n.lu
+                            ? 'bg-sky-50/40 dark:bg-sky-500/[0.05] hover:bg-sky-50 dark:hover:bg-sky-500/[0.1]'
+                            : 'hover:bg-slate-50 dark:hover:bg-white/[0.03]'
                         }`}
                         onClick={() => onMarkRead(n.id)}
                       >
@@ -143,17 +151,23 @@ export function NotificationsPanel({
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
-                            <p className={`text-sm ${n.lu ? 'text-slate-600' : 'text-slate-900 font-semibold'}`}>
+                            <p className={`text-sm ${
+                              n.lu
+                                ? 'text-slate-600 dark:text-[#94A3B8]'
+                                : 'text-slate-900 dark:text-[#E2E8F0] font-semibold'
+                            }`}>
                               {n.titre}
                             </p>
                             {!n.lu && <span className="w-2 h-2 bg-sky-500 rounded-full flex-shrink-0 mt-1" />}
                           </div>
-                          {n.message && <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{n.message}</p>}
-                          <p className="text-[10px] text-slate-300 mt-1">{timeAgo(n.created_at)}</p>
+                          {n.message && (
+                            <p className="text-xs text-slate-400 dark:text-[#475569] mt-0.5 line-clamp-2">{n.message}</p>
+                          )}
+                          <p className="text-[10px] text-slate-300 dark:text-slate-700 mt-1">{timeAgo(n.created_at)}</p>
                         </div>
                         <button
                           onClick={e => { e.stopPropagation(); onDelete(n.id); }}
-                          className="p-1 hover:bg-slate-200 rounded-lg transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100"
+                          className="p-1 hover:bg-slate-200 dark:hover:bg-white/[0.1] rounded-lg transition-colors flex-shrink-0 opacity-0 group-hover:opacity-100"
                         >
                           <X className="w-3 h-3 text-slate-400" />
                         </button>
@@ -188,15 +202,12 @@ export function useNotifications() {
 
   useEffect(() => { load(); }, [load]);
 
-  // Realtime subscription
   useEffect(() => {
     if (!user) return;
     const channel = supabase
       .channel('notifications')
       .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'notifications',
+        event: 'INSERT', schema: 'public', table: 'notifications',
         filter: `user_id=eq.${user.id}`,
       }, () => load())
       .subscribe();
@@ -228,10 +239,6 @@ export function useNotifications() {
   return {
     notifications,
     unreadCount: notifications.filter(n => !n.lu).length,
-    markRead,
-    markAllRead,
-    deleteNotif,
-    addNotification,
-    reload: load,
+    markRead, markAllRead, deleteNotif, addNotification, reload: load,
   };
 }

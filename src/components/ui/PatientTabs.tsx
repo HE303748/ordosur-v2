@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart, FileText, Syringe, FolderOpen, Activity,
-  Phone, Mail, MapPin, Clock, Plus, AlertTriangle, User,
+  Phone, Mail, MapPin, Plus, AlertTriangle, User,
   Droplets, Pill, Scissors, Edit,
 } from 'lucide-react';
 import { PatientAvatar } from './PatientAvatar';
@@ -55,50 +55,54 @@ function ResumeTab({ patient }: { patient: Patient }) {
   return (
     <div className="space-y-4">
       {/* Identity card */}
-      <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+      <div className="bg-slate-50 dark:bg-white/[0.04] rounded-2xl p-5 border border-slate-100 dark:border-white/[0.06]">
+        <h4 className="text-xs font-bold text-slate-500 dark:text-[#475569] uppercase tracking-widest mb-3 flex items-center gap-2">
           <User className="w-3.5 h-3.5" /> Identité
         </h4>
         <div className="grid grid-cols-2 gap-3 text-sm">
           {patient.date_naissance && (
             <div>
-              <p className="text-xs text-slate-400">Date de naissance</p>
-              <p className="font-semibold text-slate-800 mt-0.5">
+              <p className="text-xs text-slate-400 dark:text-[#475569]">Date de naissance</p>
+              <p className="font-semibold text-slate-800 dark:text-[#E2E8F0] mt-0.5">
                 {new Date(patient.date_naissance).toLocaleDateString('fr-FR')}
-                <span className="text-slate-400 font-normal ml-1.5">({getPatientAge(patient.date_naissance)} ans)</span>
+                <span className="text-slate-400 dark:text-[#475569] font-normal ml-1.5">
+                  ({getPatientAge(patient.date_naissance)} ans)
+                </span>
               </p>
             </div>
           )}
           {patient.sexe && (
             <div>
-              <p className="text-xs text-slate-400">Sexe</p>
-              <p className="font-semibold text-slate-800 mt-0.5">{patient.sexe === 'M' ? '♂ Homme' : '♀ Femme'}</p>
+              <p className="text-xs text-slate-400 dark:text-[#475569]">Sexe</p>
+              <p className="font-semibold text-slate-800 dark:text-[#E2E8F0] mt-0.5">
+                {patient.sexe === 'M' ? '♂ Homme' : '♀ Femme'}
+              </p>
             </div>
           )}
           {patient.telephone && (
             <div className="flex items-center gap-2">
-              <Phone className="w-3.5 h-3.5 text-slate-400" />
+              <Phone className="w-3.5 h-3.5 text-slate-400 dark:text-[#475569]" />
               <div>
-                <p className="text-xs text-slate-400">Téléphone</p>
-                <p className="font-semibold text-slate-800 mt-0.5 text-sm">{patient.telephone}</p>
+                <p className="text-xs text-slate-400 dark:text-[#475569]">Téléphone</p>
+                <p className="font-semibold text-slate-800 dark:text-[#E2E8F0] mt-0.5 text-sm">{patient.telephone}</p>
               </div>
             </div>
           )}
           {patient.email && (
             <div className="flex items-center gap-2">
-              <Mail className="w-3.5 h-3.5 text-slate-400" />
+              <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-[#475569]" />
               <div>
-                <p className="text-xs text-slate-400">Email</p>
-                <p className="font-semibold text-slate-800 mt-0.5 text-sm truncate">{patient.email}</p>
+                <p className="text-xs text-slate-400 dark:text-[#475569]">Email</p>
+                <p className="font-semibold text-slate-800 dark:text-[#E2E8F0] mt-0.5 text-sm truncate">{patient.email}</p>
               </div>
             </div>
           )}
           {patient.adresse && (
             <div className="flex items-center gap-2 col-span-2">
-              <MapPin className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+              <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-[#475569] flex-shrink-0" />
               <div>
-                <p className="text-xs text-slate-400">Adresse</p>
-                <p className="font-semibold text-slate-800 mt-0.5 text-sm">{patient.adresse}</p>
+                <p className="text-xs text-slate-400 dark:text-[#475569]">Adresse</p>
+                <p className="font-semibold text-slate-800 dark:text-[#E2E8F0] mt-0.5 text-sm">{patient.adresse}</p>
               </div>
             </div>
           )}
@@ -107,15 +111,15 @@ function ResumeTab({ patient }: { patient: Patient }) {
 
       {/* Medical info */}
       {hasInfo && (
-        <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+        <div className="bg-slate-50 dark:bg-white/[0.04] rounded-2xl p-5 border border-slate-100 dark:border-white/[0.06]">
+          <h4 className="text-xs font-bold text-slate-500 dark:text-[#475569] uppercase tracking-widest mb-3 flex items-center gap-2">
             <Heart className="w-3.5 h-3.5 text-rose-500" /> Informations médicales
           </h4>
           <div className="space-y-3">
             {patient.groupe_sanguin && (
               <div className="flex items-center gap-3">
                 <Droplets className="w-4 h-4 text-rose-400" />
-                <span className="text-xs text-slate-500">Groupe sanguin</span>
+                <span className="text-xs text-slate-500 dark:text-[#94A3B8]">Groupe sanguin</span>
                 <span className="px-2.5 py-0.5 bg-rose-500 text-white text-xs font-bold rounded-full">
                   {patient.groupe_sanguin}
                 </span>
@@ -123,42 +127,48 @@ function ResumeTab({ patient }: { patient: Patient }) {
             )}
             {(patient.pathologies?.length ?? 0) > 0 && (
               <div>
-                <p className="text-xs text-slate-500 mb-1.5">Pathologies</p>
+                <p className="text-xs text-slate-500 dark:text-[#94A3B8] mb-1.5">Pathologies</p>
                 <div className="flex flex-wrap gap-1.5">
                   {patient.pathologies!.map(p => (
-                    <span key={p} className="px-2.5 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium border border-blue-200">{p}</span>
+                    <span key={p} className="px-2.5 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300 text-xs rounded-full font-medium border border-blue-200 dark:border-blue-500/30">
+                      {p}
+                    </span>
                   ))}
                 </div>
               </div>
             )}
             {(patient.allergies_medicaments?.length ?? 0) > 0 && (
               <div>
-                <p className="text-xs text-slate-500 mb-1.5 flex items-center gap-1.5">
+                <p className="text-xs text-slate-500 dark:text-[#94A3B8] mb-1.5 flex items-center gap-1.5">
                   <AlertTriangle className="w-3 h-3 text-red-500" /> Allergies médicamenteuses
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {patient.allergies_medicaments!.map(a => (
-                    <span key={a} className="px-2.5 py-1 bg-red-100 text-red-800 text-xs rounded-full font-medium border border-red-200">⚠ {a}</span>
+                    <span key={a} className="px-2.5 py-1 bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300 text-xs rounded-full font-medium border border-red-200 dark:border-red-500/30">
+                      ⚠ {a}
+                    </span>
                   ))}
                 </div>
               </div>
             )}
             {(patient.allergies_alimentaires?.length ?? 0) > 0 && (
               <div>
-                <p className="text-xs text-slate-500 mb-1.5">Allergies alimentaires</p>
+                <p className="text-xs text-slate-500 dark:text-[#94A3B8] mb-1.5">Allergies alimentaires</p>
                 <div className="flex flex-wrap gap-1.5">
                   {patient.allergies_alimentaires!.map(a => (
-                    <span key={a} className="px-2.5 py-1 bg-orange-100 text-orange-800 text-xs rounded-full font-medium border border-orange-200">{a}</span>
+                    <span key={a} className="px-2.5 py-1 bg-orange-100 dark:bg-orange-500/20 text-orange-800 dark:text-orange-300 text-xs rounded-full font-medium border border-orange-200 dark:border-orange-500/30">
+                      {a}
+                    </span>
                   ))}
                 </div>
               </div>
             )}
             {patient.antecedents_chirurgicaux && (
               <div className="flex items-start gap-2">
-                <Scissors className="w-4 h-4 text-slate-400 mt-0.5" />
+                <Scissors className="w-4 h-4 text-slate-400 dark:text-[#475569] mt-0.5" />
                 <div>
-                  <p className="text-xs text-slate-500">Antécédents chirurgicaux</p>
-                  <p className="text-sm text-slate-700 mt-0.5">{patient.antecedents_chirurgicaux}</p>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Antécédents chirurgicaux</p>
+                  <p className="text-sm text-slate-700 dark:text-[#E2E8F0] mt-0.5">{patient.antecedents_chirurgicaux}</p>
                 </div>
               </div>
             )}
@@ -166,8 +176,8 @@ function ResumeTab({ patient }: { patient: Patient }) {
               <div className="flex items-start gap-2">
                 <Pill className="w-4 h-4 text-violet-400 mt-0.5" />
                 <div>
-                  <p className="text-xs text-slate-500">Traitements en cours</p>
-                  <p className="text-sm text-slate-700 mt-0.5">{patient.traitements_en_cours}</p>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Traitements en cours</p>
+                  <p className="text-sm text-slate-700 dark:text-[#E2E8F0] mt-0.5">{patient.traitements_en_cours}</p>
                 </div>
               </div>
             )}
@@ -176,9 +186,9 @@ function ResumeTab({ patient }: { patient: Patient }) {
       )}
 
       {!hasInfo && (
-        <div className="text-center py-10 text-slate-300">
-          <Heart className="w-10 h-10 mx-auto mb-2" />
-          <p className="text-sm">Aucune information médicale renseignée</p>
+        <div className="text-center py-10">
+          <Heart className="w-10 h-10 mx-auto mb-2 text-slate-300 dark:text-slate-700" />
+          <p className="text-sm text-slate-400 dark:text-[#475569]">Aucune information médicale renseignée</p>
         </div>
       )}
     </div>
@@ -189,10 +199,12 @@ function ResumeTab({ patient }: { patient: Patient }) {
 function OrdonnancesTab({ ordonnances }: { ordonnances: any[] }) {
   if (ordonnances.length === 0) {
     return (
-      <div className="text-center py-16 text-slate-300">
-        <FileText className="w-12 h-12 mx-auto mb-3" />
-        <p className="text-sm font-medium text-slate-400">Aucune ordonnance</p>
-        <p className="text-xs text-slate-300 mt-1">Les ordonnances créées depuis le Vérificateur apparaîtront ici</p>
+      <div className="text-center py-16">
+        <FileText className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-700" />
+        <p className="text-sm font-medium text-slate-400 dark:text-[#475569]">Aucune ordonnance</p>
+        <p className="text-xs text-slate-300 dark:text-slate-700 mt-1">
+          Les ordonnances créées depuis le Vérificateur apparaîtront ici
+        </p>
       </div>
     );
   }
@@ -204,17 +216,26 @@ function OrdonnancesTab({ ordonnances }: { ordonnances: any[] }) {
           ? new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
           : 'Date inconnue';
         return (
-          <div key={ord.id} className="bg-slate-50 rounded-xl p-4 border border-slate-100 hover:border-sky-200 transition-colors">
+          <div
+            key={ord.id}
+            className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-4
+              border border-slate-100 dark:border-white/[0.06]
+              hover:border-sky-200 dark:hover:border-sky-500/30
+              dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.15)]
+              transition-all"
+          >
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 bg-sky-100 rounded-lg flex items-center justify-center">
-                <FileText className="w-4 h-4 text-sky-600" />
+              <div className="w-8 h-8 bg-sky-100 dark:bg-sky-500/20 rounded-lg flex items-center justify-center">
+                <FileText className="w-4 h-4 text-sky-600 dark:text-sky-400" />
               </div>
               <div>
-                <p className="text-xs font-bold text-slate-700">{dateLabel}</p>
-                {ord.doctor_name && <p className="text-[11px] text-slate-400">{ord.doctor_name}</p>}
+                <p className="text-xs font-bold text-slate-700 dark:text-[#E2E8F0]">{dateLabel}</p>
+                {ord.doctor_name && <p className="text-[11px] text-slate-400 dark:text-[#475569]">{ord.doctor_name}</p>}
               </div>
               <span className={`ml-auto text-[10px] px-2 py-0.5 rounded-full font-semibold ${
-                ord.statut === 'valide' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                ord.statut === 'valide'
+                  ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+                  : 'bg-slate-100 dark:bg-white/[0.07] text-slate-600 dark:text-[#94A3B8]'
               }`}>
                 {ord.statut || 'Créée'}
               </span>
@@ -223,9 +244,9 @@ function OrdonnancesTab({ ordonnances }: { ordonnances: any[] }) {
               {(ord.medications || []).map((med: any, idx: number) => (
                 <div key={idx} className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-sky-400 flex-shrink-0" />
-                  <span className="text-xs font-semibold text-slate-800">{med.nom}</span>
-                  {med.posologie && <span className="text-xs text-slate-400">– {med.posologie}</span>}
-                  {med.duree && <span className="text-xs text-slate-400">/ {med.duree}</span>}
+                  <span className="text-xs font-semibold text-slate-800 dark:text-[#E2E8F0]">{med.nom}</span>
+                  {med.posologie && <span className="text-xs text-slate-400 dark:text-[#475569]">– {med.posologie}</span>}
+                  {med.duree && <span className="text-xs text-slate-400 dark:text-[#475569]">/ {med.duree}</span>}
                 </div>
               ))}
             </div>
@@ -240,12 +261,12 @@ function OrdonnancesTab({ ordonnances }: { ordonnances: any[] }) {
 function PlaceholderTab({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
   return (
     <div className="text-center py-16">
-      <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <Icon className="w-8 h-8 text-slate-300" />
+      <div className="w-16 h-16 bg-slate-100 dark:bg-white/[0.05] rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <Icon className="w-8 h-8 text-slate-300 dark:text-slate-700" />
       </div>
-      <p className="text-sm font-semibold text-slate-500">{title}</p>
-      <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">{desc}</p>
-      <button className="mt-4 px-4 py-2 bg-sky-50 text-sky-600 rounded-xl text-xs font-semibold hover:bg-sky-100 transition-colors flex items-center gap-1.5 mx-auto">
+      <p className="text-sm font-semibold text-slate-500 dark:text-[#94A3B8]">{title}</p>
+      <p className="text-xs text-slate-400 dark:text-[#475569] mt-1 max-w-xs mx-auto">{desc}</p>
+      <button className="mt-4 px-4 py-2 bg-sky-50 dark:bg-sky-500/[0.1] text-sky-600 dark:text-sky-400 rounded-xl text-xs font-semibold hover:bg-sky-100 dark:hover:bg-sky-500/[0.18] transition-colors flex items-center gap-1.5 mx-auto">
         <Plus className="w-3.5 h-3.5" /> Ajouter
       </button>
     </div>
@@ -266,32 +287,31 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
   return (
     <div className="flex flex-col h-full">
       {/* Patient header */}
-      <div className="bg-white border-b border-slate-200 px-6 pt-5 pb-0 flex-shrink-0">
-        <div className="flex items-start gap-4 pb-4 border-b border-slate-100">
+      <div className="bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-white/[0.06] px-6 pt-5 pb-0 flex-shrink-0">
+        <div className="flex items-start gap-4 pb-4 border-b border-slate-100 dark:border-white/[0.06]">
           <PatientAvatar name={`${patient.prenom} ${patient.nom}`} size="lg" />
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-slate-900">{patient.prenom} {patient.nom}</h2>
-            <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-slate-500">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0]">{patient.prenom} {patient.nom}</h2>
+            <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-slate-500 dark:text-[#94A3B8]">
               {patient.sexe && <span>{patient.sexe === 'M' ? '♂ Homme' : '♀ Femme'}</span>}
               {patient.date_naissance && (
                 <>
-                  <span className="text-slate-300">•</span>
+                  <span className="text-slate-300 dark:text-slate-700">•</span>
                   <span>{getPatientAge(patient.date_naissance)} ans</span>
                 </>
               )}
               {patient.groupe_sanguin && (
                 <>
-                  <span className="text-slate-300">•</span>
+                  <span className="text-slate-300 dark:text-slate-700">•</span>
                   <span className="px-2 py-0.5 bg-rose-500 text-white text-xs font-bold rounded-full">
                     {patient.groupe_sanguin}
                   </span>
                 </>
               )}
             </div>
-            {/* Quick stats */}
             <div className="flex gap-3 mt-2">
-              <span className="text-xs text-slate-400">
-                <span className="font-bold text-slate-700">{ordonnances.length}</span> ordonnances
+              <span className="text-xs text-slate-400 dark:text-[#475569]">
+                <span className="font-bold text-slate-700 dark:text-[#94A3B8]">{ordonnances.length}</span> ordonnances
               </span>
               {(patient.allergies_medicaments?.length ?? 0) > 0 && (
                 <span className="text-xs text-red-500 font-semibold">
@@ -303,7 +323,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
           <div className="flex gap-2 flex-shrink-0">
             <button
               onClick={onEdit}
-              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-colors"
+              className="p-2 bg-slate-100 dark:bg-white/[0.07] hover:bg-slate-200 dark:hover:bg-white/[0.12] text-slate-600 dark:text-[#94A3B8] rounded-xl transition-colors"
               title="Modifier"
             >
               <Edit className="w-4 h-4" />
@@ -328,15 +348,17 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
                 onClick={() => setActiveTab(tab.id)}
                 className={`relative flex items-center gap-1.5 px-4 py-3 text-xs font-semibold transition-colors ${
                   isActive
-                    ? 'text-sky-600 border-b-2 border-sky-500'
-                    : 'text-slate-400 hover:text-slate-600 border-b-2 border-transparent'
+                    ? 'text-sky-600 dark:text-sky-400 border-b-2 border-sky-500 dark:border-sky-400'
+                    : 'text-slate-400 dark:text-[#475569] hover:text-slate-600 dark:hover:text-[#94A3B8] border-b-2 border-transparent'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
                 {tab.label}
                 {tab.id === 'ordonnances' && ordonnances.length > 0 && (
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                    isActive ? 'bg-sky-100 text-sky-600' : 'bg-slate-100 text-slate-500'
+                    isActive
+                      ? 'bg-sky-100 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400'
+                      : 'bg-slate-100 dark:bg-white/[0.07] text-slate-500 dark:text-[#475569]'
                   }`}>
                     {ordonnances.length}
                   </span>
@@ -348,7 +370,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
       </div>
 
       {/* Tab content */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 bg-[#F8FAFC] dark:bg-[#0A0F1E]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -357,28 +379,16 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
           >
-            {activeTab === 'resume' && <ResumeTab patient={patient} />}
-            {activeTab === 'ordonnances' && <OrdonnancesTab ordonnances={ordonnances} />}
+            {activeTab === 'resume'        && <ResumeTab patient={patient} />}
+            {activeTab === 'ordonnances'   && <OrdonnancesTab ordonnances={ordonnances} />}
             {activeTab === 'consultations' && (
-              <PlaceholderTab
-                icon={Activity}
-                title="Consultations"
-                desc="L'historique des consultations sera disponible prochainement"
-              />
+              <PlaceholderTab icon={Activity}   title="Consultations" desc="L'historique des consultations sera disponible prochainement" />
             )}
             {activeTab === 'documents' && (
-              <PlaceholderTab
-                icon={FolderOpen}
-                title="Documents"
-                desc="Résultats d'analyses, ordonnances scannées, comptes-rendus..."
-              />
+              <PlaceholderTab icon={FolderOpen}  title="Documents" desc="Résultats d'analyses, ordonnances scannées, comptes-rendus..." />
             )}
             {activeTab === 'vaccination' && (
-              <PlaceholderTab
-                icon={Syringe}
-                title="Carnet de vaccination"
-                desc="Suivi des vaccinations et rappels automatiques"
-              />
+              <PlaceholderTab icon={Syringe}     title="Carnet de vaccination" desc="Suivi des vaccinations et rappels automatiques" />
             )}
           </motion.div>
         </AnimatePresence>

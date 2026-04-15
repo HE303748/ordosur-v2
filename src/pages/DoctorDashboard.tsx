@@ -184,10 +184,10 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       <div className="p-6 max-w-[1400px]">
         {/* Welcome */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">
             Tableau de bord 👋
           </h1>
-          <p className="text-slate-500 mt-0.5 text-sm capitalize">{today}</p>
+          <p className="text-slate-500 dark:text-[#94A3B8] mt-0.5 text-sm capitalize">{today}</p>
         </div>
 
         {/* KPI Grid */}
@@ -218,37 +218,37 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
         {/* Content grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Recent patients — 2/3 */}
-          <div className="xl:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-base font-bold text-slate-900">Patients récents</h2>
+          <div className="xl:col-span-2 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.1)]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+              <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients récents</h2>
               <button
                 onClick={() => onNavigate('patients')}
-                className="text-sm text-sky-600 hover:text-sky-700 font-semibold transition-colors"
+                className="text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 font-semibold transition-colors"
               >
                 Voir tous →
               </button>
             </div>
 
-            <div className="divide-y divide-slate-50">
+            <div className="divide-y divide-slate-50 dark:divide-white/[0.04]">
               {dataLoading
                 ? Array.from({ length: 5 }).map((_, i) => <SkeletonPatientRow key={i} />)
                 : patients.slice(0, 7).map((p) => (
                 <div
                   key={p.id}
                   onClick={() => onNavigate('patients')}
-                  className="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50 cursor-pointer transition-colors group"
+                  className="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.04] cursor-pointer transition-colors group"
                 >
                   <PatientAvatar name={`${p.prenom} ${p.nom}`} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 text-sm group-hover:text-sky-700 transition-colors">
+                    <p className="font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm group-hover:text-sky-700 dark:group-hover:text-sky-400 transition-colors">
                       {p.prenom} {p.nom}
                     </p>
-                    <p className="text-xs text-slate-400 truncate">
+                    <p className="text-xs text-slate-400 dark:text-[#475569] truncate">
                       {p.pathologies?.[0] || 'Aucune pathologie renseignée'}
                       {p.date_naissance && ` • ${getPatientAge(p.date_naissance)} ans`}
                     </p>
                   </div>
-                  <span className="text-xs text-slate-300 group-hover:text-sky-500 transition-colors flex-shrink-0">→</span>
+                  <span className="text-xs text-slate-300 dark:text-slate-700 group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors flex-shrink-0">→</span>
                 </div>
               ))
               }
@@ -273,14 +273,14 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
 
           {/* Quick actions — 1/3 */}
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-              <h2 className="text-base font-bold text-slate-900 mb-4">Actions rapides</h2>
+            <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
+              <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">Actions rapides</h2>
               <div className="space-y-2">
                 {[
-                  { label: '+ Nouveau patient', view: 'patients' as ViewType, action: onAddPatient, color: 'bg-sky-500 hover:bg-sky-600 text-white' },
-                  { label: '💊 Vérifier interactions', view: 'checker' as ViewType, color: 'bg-violet-50 hover:bg-violet-100 text-violet-700' },
-                  { label: '📋 Voir ordonnances', view: 'ordonnances' as ViewType, color: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700' },
-                  { label: '📊 Statistiques', view: 'stats' as ViewType, color: 'bg-slate-50 hover:bg-slate-100 text-slate-700' },
+                  { label: '+ Nouveau patient',     view: 'patients' as ViewType,    action: onAddPatient, color: 'bg-sky-500 hover:bg-sky-600 text-white' },
+                  { label: '💊 Vérifier interactions', view: 'checker' as ViewType,  color: 'bg-violet-50 dark:bg-violet-500/[0.1] hover:bg-violet-100 dark:hover:bg-violet-500/[0.18] text-violet-700 dark:text-violet-400' },
+                  { label: '📋 Voir ordonnances',   view: 'ordonnances' as ViewType, color: 'bg-emerald-50 dark:bg-emerald-500/[0.1] hover:bg-emerald-100 dark:hover:bg-emerald-500/[0.18] text-emerald-700 dark:text-emerald-400' },
+                  { label: '📊 Statistiques',       view: 'stats' as ViewType,       color: 'bg-slate-50 dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.07] text-slate-700 dark:text-[#94A3B8]' },
                 ].map(({ label, view, action, color }) => (
                   <button
                     key={label}
@@ -347,11 +347,11 @@ function PatientsView({
   return (
     <PageTransition className="flex h-full">
       {/* ── Left: patient list ─────────────────────────────────────────── */}
-      <div className="w-[320px] min-w-[320px] border-r border-slate-200 flex flex-col bg-white h-full">
+      <div className="w-[320px] min-w-[320px] border-r border-slate-200 dark:border-white/[0.06] flex flex-col bg-white dark:bg-[#111827] h-full">
         {/* Header */}
-        <div className="px-4 pt-4 pb-3 border-b border-slate-100 flex-shrink-0">
+        <div className="px-4 pt-4 pb-3 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-bold text-slate-900">Patients</h2>
+            <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients</h2>
             <button
               onClick={onAddPatient}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500 text-white rounded-xl text-xs font-semibold hover:bg-sky-600 transition-colors"
@@ -366,7 +366,7 @@ function PatientsView({
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Rechercher un patient..."
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 focus:border-sky-300 dark:focus:border-sky-500/40"
             />
           </div>
         </div>
@@ -393,16 +393,16 @@ function PatientsView({
                 onClick={() => selectPatient(p)}
                 className={`flex items-center gap-3 px-4 py-3.5 cursor-pointer transition-all border-l-[3px] group ${
                   isSelected
-                    ? 'bg-sky-50 border-l-sky-500'
-                    : 'border-l-transparent hover:bg-slate-50 hover:border-l-slate-200'
+                    ? 'bg-sky-50 dark:bg-sky-500/[0.1] border-l-sky-500'
+                    : 'border-l-transparent hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:border-l-slate-200 dark:hover:border-l-white/[0.1]'
                 }`}
               >
                 <PatientAvatar name={`${p.prenom} ${p.nom}`} size="sm" />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold truncate ${isSelected ? 'text-sky-700' : 'text-slate-900'}`}>
+                  <p className={`text-sm font-semibold truncate ${isSelected ? 'text-sky-700 dark:text-sky-400' : 'text-slate-900 dark:text-[#E2E8F0]'}`}>
                     {p.prenom} {p.nom}
                   </p>
-                  <p className="text-xs text-slate-400 truncate">
+                  <p className="text-xs text-slate-400 dark:text-[#475569] truncate">
                     {p.pathologies?.[0] || (p.date_naissance ? `${getPatientAge(p.date_naissance)} ans` : 'Aucune info')}
                   </p>
                 </div>
@@ -427,14 +427,14 @@ function PatientsView({
       </div>
 
       {/* ── Right: patient detail with tabs ──────────────────────────── */}
-      <div className="flex-1 overflow-hidden bg-[#F8FAFC] flex flex-col">
+      <div className="flex-1 overflow-hidden bg-[#F8FAFC] dark:bg-[#0A0F1E] flex flex-col">
         {!selectedPatient ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-8">
-            <div className="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center mb-4">
-              <Users className="w-10 h-10 text-slate-300" />
+            <div className="w-20 h-20 bg-slate-100 dark:bg-white/[0.05] rounded-3xl flex items-center justify-center mb-4">
+              <Users className="w-10 h-10 text-slate-300 dark:text-slate-700" />
             </div>
-            <h3 className="text-lg font-bold text-slate-700">Sélectionnez un patient</h3>
-            <p className="text-slate-400 text-sm mt-1 max-w-xs">
+            <h3 className="text-lg font-bold text-slate-700 dark:text-[#94A3B8]">Sélectionnez un patient</h3>
+            <p className="text-slate-400 dark:text-[#475569] text-sm mt-1 max-w-xs">
               Cliquez sur un patient dans la liste de gauche pour voir sa fiche détaillée
             </p>
           </div>
@@ -501,13 +501,13 @@ function CheckerView({
     <PageTransition>
       <div className="p-6 max-w-[1400px]">
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Vérificateur d'interactions</h2>
-          <p className="text-slate-500 text-sm mt-0.5">Analysez les interactions médicamenteuses avant de prescrire</p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">Vérificateur d'interactions</h2>
+          <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Analysez les interactions médicamenteuses avant de prescrire</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* ── Patient selector ── */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)]">
             <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-sky-500 to-sky-600">
               <h3 className="text-white font-bold text-base">Patient</h3>
             </div>
@@ -522,11 +522,11 @@ function CheckerView({
                     onFocus={() => setShowPatientDropdown(true)}
                     onBlur={() => setTimeout(() => setShowPatientDropdown(false), 300)}
                     placeholder="Rechercher un patient..."
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 focus:border-sky-300 dark:focus:border-sky-500/40 transition-all"
                   />
 
                   {showPatientDropdown && (patientSearchTerm.length === 0 ? patients.length > 0 : filteredPatientsForDropdown.length > 0) && (
-                    <div className="absolute z-50 w-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl max-h-72 overflow-y-auto">
+                    <div className="absolute z-50 w-full mt-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl shadow-xl max-h-72 overflow-y-auto">
                       {(patientSearchTerm.length === 0 ? patients : filteredPatientsForDropdown).map(p => (
                         <button
                           key={p.id}
@@ -538,12 +538,12 @@ function CheckerView({
                             resetAnalysis();
                             loadPatientOrdonnances(p.id);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-sky-50 transition-colors border-b border-slate-50 last:border-b-0"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-sky-50 dark:hover:bg-sky-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
                           <PatientAvatar name={`${p.prenom} ${p.nom}`} size="xs" />
                           <div>
-                            <p className="text-sm font-semibold text-slate-900">{p.prenom} {p.nom}</p>
-                            <p className="text-xs text-slate-400">
+                            <p className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">{p.prenom} {p.nom}</p>
+                            <p className="text-xs text-slate-400 dark:text-[#475569]">
                               {p.date_naissance ? `${getPatientAge(p.date_naissance)} ans` : ''}
                               {p.telephone ? ` • ${p.telephone}` : ''}
                             </p>
@@ -606,7 +606,7 @@ function CheckerView({
           </div>
 
           {/* ── Prescription builder ── */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)]">
             <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-violet-500 to-violet-600">
               <h3 className="text-white font-bold text-base">Médicaments</h3>
             </div>
@@ -622,23 +622,23 @@ function CheckerView({
                     onFocus={() => { setShowMedDropdown(true); if (medSearchTerm.length >= 2) searchMedications(medSearchTerm); }}
                     onBlur={() => setTimeout(() => setShowMedDropdown(false), 300)}
                     placeholder="Ex: Doliprane, paracétamol..."
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-300 transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40 focus:border-violet-300 dark:focus:border-violet-500/40 transition-all"
                   />
 
                   {showMedDropdown && (medSearchResults.length > 0 || medSearchLoading) && (
-                    <div className="absolute z-50 w-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl max-h-72 overflow-y-auto">
+                    <div className="absolute z-50 w-full mt-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl shadow-xl max-h-72 overflow-y-auto">
                       {medSearchLoading && (
-                        <div className="px-4 py-3 text-sm text-slate-400 text-center">Recherche...</div>
+                        <div className="px-4 py-3 text-sm text-slate-400 dark:text-[#475569] text-center">Recherche...</div>
                       )}
                       {!medSearchLoading && medSearchResults.map(med => (
                         <button
                           key={med.id}
                           onMouseDown={e => { e.preventDefault(); addMedication(med); }}
-                          className="w-full px-4 py-3 text-left hover:bg-violet-50 transition-colors border-b border-slate-50 last:border-b-0"
+                          className="w-full px-4 py-3 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
                           <div className="flex items-center gap-2">
                             {med.pays === 'MA' && <span className="text-sm">🇲🇦</span>}
-                            <span className="font-bold text-slate-900 text-sm">{med.nom_commercial || med.nom}</span>
+                            <span className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm">{med.nom_commercial || med.nom}</span>
                           </div>
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                             {med.dci && <span className="text-xs text-slate-500">{med.dci}</span>}
@@ -663,11 +663,11 @@ function CheckerView({
                 {selectedMeds.length > 0 ? (
                   <div className="space-y-2">
                     {selectedMeds.map((med, idx) => (
-                      <div key={med.id} className="flex items-center gap-3 px-4 py-3 bg-violet-50 border border-violet-100 rounded-xl">
+                      <div key={med.id} className="flex items-center gap-3 px-4 py-3 bg-violet-50 dark:bg-violet-500/[0.08] border border-violet-100 dark:border-violet-500/20 rounded-xl">
                         <span className="w-6 h-6 rounded-full bg-violet-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                           {idx + 1}
                         </span>
-                        <span className="flex-1 font-semibold text-slate-900 text-sm truncate">{med.nom}</span>
+                        <span className="flex-1 font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm truncate">{med.nom}</span>
                         <button
                           onClick={() => removeMedication(med.id)}
                           className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
@@ -767,7 +767,7 @@ function CheckerView({
         {result && (
           <div
             ref={resultsRef}
-            className={`mt-6 bg-white rounded-2xl shadow-sm overflow-hidden border-l-4 ${
+            className={`mt-6 bg-white dark:bg-[#111827] rounded-2xl shadow-sm overflow-hidden border-l-4 ${
               result.severity === 'safe' ? 'border-l-emerald-500' :
               result.severity === 'attention' ? 'border-l-amber-500' : 'border-l-red-500'
             }`}
@@ -793,11 +793,11 @@ function CheckerView({
 
             <div className="p-6 space-y-5">
               {result.reasons.length > 0 && (
-                <div className="bg-slate-50 rounded-xl p-5">
-                  <h4 className="font-bold text-slate-900 mb-3">Analyse détaillée</h4>
+                <div className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-5">
+                  <h4 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-3">Analyse détaillée</h4>
                   <ul className="space-y-2.5">
                     {result.reasons.map((r, i) => (
-                      <li key={i} className="flex items-start gap-3 text-slate-700 text-sm">
+                      <li key={i} className="flex items-start gap-3 text-slate-700 dark:text-[#94A3B8] text-sm">
                         <span className="text-red-500 font-bold mt-0.5">•</span>
                         <span>{r}</span>
                       </li>
@@ -806,8 +806,8 @@ function CheckerView({
                 </div>
               )}
 
-              <div className="bg-slate-100 rounded-xl p-4 border-l-4 border-slate-400">
-                <p className="text-xs text-slate-600 leading-relaxed">
+              <div className="bg-slate-100 dark:bg-white/[0.04] rounded-xl p-4 border-l-4 border-slate-400 dark:border-slate-600">
+                <p className="text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
                   <strong>Avertissement :</strong> Cette analyse est indicative. Consultez le Vidal et les recommandations HAS.
                 </p>
               </div>
@@ -891,8 +891,8 @@ function OrdonnancesView({ onNavigate, doctorId }: { onNavigate: (v: ViewType) =
       <div className="p-6 max-w-4xl">
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">Ordonnances</h2>
-            <p className="text-slate-500 text-sm mt-0.5">Historique de toutes vos prescriptions</p>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">Ordonnances</h2>
+            <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Historique de toutes vos prescriptions</p>
           </div>
           <button
             onClick={() => onNavigate('checker')}
@@ -909,10 +909,10 @@ function OrdonnancesView({ onNavigate, doctorId }: { onNavigate: (v: ViewType) =
             ))}
           </div>
         ) : ords.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-12 text-center">
-            <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-slate-700 mb-2">Aucune ordonnance</h3>
-            <p className="text-slate-400 text-sm mb-6 max-w-sm mx-auto">
+          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-12 text-center">
+            <FileText className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-slate-700 dark:text-[#94A3B8] mb-2">Aucune ordonnance</h3>
+            <p className="text-slate-400 dark:text-[#475569] text-sm mb-6 max-w-sm mx-auto">
               Créez votre première ordonnance depuis le Vérificateur d'interactions.
             </p>
             <button
@@ -931,19 +931,19 @@ function OrdonnancesView({ onNavigate, doctorId }: { onNavigate: (v: ViewType) =
                 : 'Date inconnue';
               const meds = ord.ordonnance_lignes || [];
               return (
-                <div key={ord.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:border-sky-200 transition-colors">
+                <div key={ord.id} className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm p-5 hover:border-sky-200 dark:hover:border-sky-500/30 dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)] transition-all">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-sky-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <FileText className="w-5 h-5 text-sky-500" />
+                      <div className="w-10 h-10 bg-sky-50 dark:bg-sky-500/[0.12] rounded-xl flex items-center justify-center flex-shrink-0">
+                        <FileText className="w-5 h-5 text-sky-500 dark:text-sky-400" />
                       </div>
                       <div>
-                        <p className="font-bold text-slate-900 text-sm">{ord.patient_nom}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">{dateLabel}</p>
+                        <p className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm">{ord.patient_nom}</p>
+                        <p className="text-xs text-slate-400 dark:text-[#475569] mt-0.5">{dateLabel}</p>
                       </div>
                     </div>
                     <span className={`text-[11px] px-2.5 py-1 rounded-full font-semibold flex-shrink-0 ${
-                      ord.statut === 'valide' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'
+                      ord.statut === 'valide' ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-slate-100 dark:bg-white/[0.07] text-slate-600 dark:text-[#94A3B8]'
                     }`}>
                       {ord.statut || 'Créée'}
                     </span>
@@ -986,8 +986,8 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
     <PageTransition>
       <div className="p-6 max-w-3xl">
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight">Paramètres</h2>
-          <p className="text-slate-500 text-sm mt-0.5">Gérez votre compte et vos préférences</p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">Paramètres</h2>
+          <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Gérez votre compte et vos préférences</p>
         </div>
 
         <div className="flex gap-6">
@@ -1001,7 +1001,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     activeSection === s.id
                       ? 'bg-sky-500 text-white'
-                      : 'text-slate-600 hover:bg-slate-100'
+                      : 'text-slate-600 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-white/[0.06]'
                   }`}
                 >
                   {s.label}
@@ -1014,25 +1014,22 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
           <div className="flex-1 space-y-4">
             {activeSection === 'profil' && (
               <>
-                <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-                  <h3 className="font-bold text-slate-900 mb-4">Informations personnelles</h3>
+                <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
+                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">Informations personnelles</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Prénom</label>
-                      <input defaultValue={user?.prenom || ''} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Nom</label>
-                      <input defaultValue={user?.nom || ''} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Email</label>
-                      <input defaultValue={user?.email || ''} type="email" className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Spécialité</label>
-                      <input defaultValue={doctorProfile?.specialite || ''} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
-                    </div>
+                    {[
+                      { label: 'Prénom', value: user?.prenom || '', type: 'text' },
+                      { label: 'Nom', value: user?.nom || '', type: 'text' },
+                      { label: 'Email', value: user?.email || '', type: 'email', colSpan: true },
+                      { label: 'Spécialité', value: doctorProfile?.specialite || '', type: 'text', colSpan: true },
+                    ].map(f => (
+                      <div key={f.label} className={f.colSpan ? 'col-span-2' : ''}>
+                        <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">{f.label}</label>
+                        <input defaultValue={f.value} type={f.type}
+                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                        />
+                      </div>
+                    ))}
                   </div>
                   <button
                     onClick={() => navigate('/profile')}
@@ -1441,28 +1438,12 @@ export function DoctorDashboard() {
     setShowPatientModal(true);
   };
 
-  // ── Global keyboard shortcuts ────────────────────────────────────────────
+  // ── Keyboard shortcuts (Escape only — Ctrl+K handled in TopBar) ──────────
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      // Skip if focus is inside an input / textarea / contenteditable
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable ||
-        e.ctrlKey || e.metaKey || e.altKey
-      ) return;
-
-      switch (e.key.toLowerCase()) {
-        case 'h': setActiveView('home'); break;
-        case 'p': setActiveView('patients'); break;
-        case 'c': setActiveView('checker'); break;
-        case 'o': setActiveView('ordonnances'); break;
-        case 'a': setActiveView('agenda'); break;
-        case 'escape':
-          setSelectedPatient(null);
-          setShowAIChat(false);
-          break;
+      if (e.key === 'Escape') {
+        setSelectedPatient(null);
+        setShowAIChat(false);
       }
     };
     window.addEventListener('keydown', handler);

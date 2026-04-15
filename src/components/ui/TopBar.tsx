@@ -28,7 +28,6 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Ctrl+K shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -45,7 +44,7 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
     if (open) { setQuery(''); setTimeout(() => inputRef.current?.focus(), 50); }
   }, [open]);
 
-  const filteredPatients = query.length >= 1
+  const filtered = query.length >= 1
     ? patients.filter(p => `${p.prenom} ${p.nom}`.toLowerCase().includes(query.toLowerCase())).slice(0, 6)
     : [];
 
@@ -54,11 +53,18 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
       {/* Trigger bar */}
       <button
         onClick={() => setOpen(true)}
-        className="flex-1 max-w-lg mx-auto flex items-center gap-2.5 pl-3 pr-4 py-2 bg-slate-50 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] rounded-xl text-sm text-slate-400 dark:text-slate-500 hover:border-sky-300 dark:hover:border-sky-500/40 hover:bg-white dark:hover:bg-white/[0.08] transition-all cursor-pointer text-left"
+        className="flex-1 max-w-lg mx-auto flex items-center gap-2.5 pl-3 pr-4 py-2
+          bg-slate-50 dark:bg-white/[0.05]
+          border border-slate-200 dark:border-white/[0.08]
+          rounded-xl text-sm
+          text-slate-400 dark:text-slate-500
+          hover:border-sky-300 dark:hover:border-sky-500/30
+          hover:bg-white dark:hover:bg-white/[0.07]
+          transition-all cursor-pointer text-left"
       >
-        <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+        <Search className="w-4 h-4 flex-shrink-0" />
         <span className="flex-1">Rechercher...</span>
-        <span className="text-[11px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded font-mono hidden sm:block">
+        <span className="text-[11px] bg-slate-200 dark:bg-white/[0.07] text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded font-mono hidden sm:block">
           Ctrl K
         </span>
       </button>
@@ -71,7 +77,7 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={() => setOpen(false)}
             />
             <motion.div
@@ -79,65 +85,89 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
               animate={{ opacity: 1, scale: 1,    y: 0   }}
               exit={{    opacity: 0, scale: 0.96, y: -10  }}
               transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-              className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden"
+              className="relative w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden
+                bg-white dark:bg-[#111827]
+                border border-slate-200/80 dark:border-white/[0.08]"
             >
               {/* Input */}
-              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100">
-                <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
+              <div className="flex items-center gap-3 px-4 py-3.5 border-b border-slate-100 dark:border-white/[0.06]">
+                <Search className="w-5 h-5 text-slate-400 dark:text-slate-500 flex-shrink-0" />
                 <input
                   ref={inputRef}
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                   placeholder="Rechercher un patient, médicament..."
-                  className="flex-1 bg-transparent text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+                  className="flex-1 bg-transparent text-sm
+                    text-slate-900 dark:text-[#E2E8F0]
+                    placeholder-slate-400 dark:placeholder-slate-600
+                    focus:outline-none"
                 />
                 {query && (
-                  <button onClick={() => setQuery('')} className="p-1 hover:bg-slate-100 rounded-lg">
+                  <button
+                    onClick={() => setQuery('')}
+                    className="p-1 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-lg transition-colors"
+                  >
                     <X className="w-4 h-4 text-slate-400" />
                   </button>
                 )}
-                <kbd className="text-[11px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-mono">Esc</kbd>
+                <kbd className="text-[11px] bg-slate-100 dark:bg-white/[0.07] text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded font-mono">
+                  Esc
+                </kbd>
               </div>
 
               {/* Results */}
-              {filteredPatients.length > 0 ? (
+              {filtered.length > 0 ? (
                 <div className="py-2">
-                  <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Patients</p>
-                  {filteredPatients.map(p => (
+                  <p className="px-4 py-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">
+                    Patients
+                  </p>
+                  {filtered.map(p => (
                     <button
                       key={p.id}
                       onClick={() => { onNavigate?.('patients'); setOpen(false); }}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-sky-50 transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-4 py-3
+                        hover:bg-sky-50 dark:hover:bg-sky-500/[0.1]
+                        transition-colors text-left"
                     >
                       <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                         {p.prenom[0]}{p.nom[0]}
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-slate-900">{p.prenom} {p.nom}</p>
-                        {p.pathologies?.[0] && <p className="text-xs text-slate-400">{p.pathologies[0]}</p>}
+                        <p className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
+                          {p.prenom} {p.nom}
+                        </p>
+                        {p.pathologies?.[0] && (
+                          <p className="text-xs text-slate-400 dark:text-slate-500">{p.pathologies[0]}</p>
+                        )}
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-300 ml-auto" />
+                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 ml-auto" />
                     </button>
                   ))}
                 </div>
               ) : query.length >= 1 ? (
-                <div className="py-10 text-center text-slate-400 text-sm">
+                <div className="py-10 text-center text-slate-400 dark:text-slate-600 text-sm">
                   Aucun résultat pour « {query} »
                 </div>
               ) : (
                 <div className="py-6 px-4">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Accès rapide</p>
+                  <p className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-3">
+                    Accès rapide
+                  </p>
                   <div className="grid grid-cols-2 gap-2">
                     {[
-                      { label: 'Patients', icon: User, view: 'patients' },
-                      { label: 'Vérificateur', icon: Pill, view: 'checker' },
+                      { label: 'Patients',     icon: User, view: 'patients' },
+                      { label: 'Vérificateur', icon: Pill, view: 'checker'  },
                     ].map(item => (
                       <button
                         key={item.view}
                         onClick={() => { onNavigate?.(item.view); setOpen(false); }}
-                        className="flex items-center gap-2.5 px-4 py-3 bg-slate-50 hover:bg-sky-50 rounded-xl transition-colors text-sm font-semibold text-slate-700"
+                        className="flex items-center gap-2.5 px-4 py-3
+                          bg-slate-50 dark:bg-white/[0.05]
+                          hover:bg-sky-50 dark:hover:bg-sky-500/[0.08]
+                          rounded-xl transition-colors text-sm font-semibold
+                          text-slate-700 dark:text-[#94A3B8]"
                       >
-                        <item.icon className="w-4 h-4 text-slate-400" />
+                        <item.icon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                         {item.label}
                       </button>
                     ))}
@@ -160,28 +190,33 @@ export function TopBar({ activeView, userInitials, patients = [], onNavigate }: 
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <header className="h-16 bg-white dark:bg-[#0F172A] border-b border-slate-200/80 dark:border-white/[0.06] flex items-center px-6 gap-4 flex-shrink-0 z-20 relative">
+    <header
+      className="h-16 flex items-center px-6 gap-4 flex-shrink-0 z-20 relative
+        bg-white/95 dark:bg-[#0D1424]/95
+        border-b border-slate-200/80 dark:border-white/[0.06]
+        backdrop-blur-md"
+    >
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-sm min-w-0 flex-shrink-0">
-        <span className="text-slate-400 dark:text-slate-500 font-medium hidden sm:block">OrdoSur</span>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 hidden sm:block" />
-        <span className="text-slate-800 dark:text-white font-semibold">{LABELS[activeView] || activeView}</span>
+        <span className="text-slate-400 dark:text-[#475569] font-medium hidden sm:block">OrdoSur</span>
+        <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-700 hidden sm:block" />
+        <span className="text-slate-800 dark:text-[#E2E8F0] font-semibold">{LABELS[activeView] || activeView}</span>
       </div>
 
       {/* Global search Ctrl+K */}
       <GlobalSearch patients={patients} onNavigate={onNavigate} />
 
       {/* Actions */}
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-1.5 flex-shrink-0">
         {/* Dark mode toggle */}
         <motion.button
-          whileTap={{ scale: 0.9 }}
+          whileTap={{ scale: 0.88 }}
           onClick={toggleTheme}
           title={isDark ? 'Mode clair' : 'Mode sombre'}
           className="p-2 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-xl transition-colors"
         >
           {isDark
-            ? <Sun className="w-5 h-5 text-amber-400" />
+            ? <Sun  className="w-5 h-5 text-amber-400" />
             : <Moon className="w-5 h-5 text-slate-500" />
           }
         </motion.button>
