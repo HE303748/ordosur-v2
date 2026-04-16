@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, UserCog, FileText,
   BarChart3, Calendar, Settings, LogOut, Bot, Activity,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Bell,
 } from 'lucide-react';
 
-export type ClinicViewType = 'home' | 'medecins' | 'patients' | 'agenda' | 'ordonnances' | 'stats' | 'settings';
+export type ClinicViewType = 'home' | 'medecins' | 'patients' | 'agenda' | 'ordonnances' | 'notifications' | 'stats' | 'settings';
 
 interface NavItem {
   id: ClinicViewType;
@@ -15,11 +15,12 @@ interface NavItem {
 }
 
 const mainNav: NavItem[] = [
-  { id: 'home',        label: 'Tableau de bord', icon: LayoutDashboard },
-  { id: 'medecins',   label: 'Médecins',         icon: UserCog         },
-  { id: 'patients',   label: 'Patients',          icon: Users           },
-  { id: 'agenda',     label: 'Agenda',            icon: Calendar        },
-  { id: 'ordonnances', label: 'Ordonnances',      icon: FileText        },
+  { id: 'home',          label: 'Tableau de bord', icon: LayoutDashboard },
+  { id: 'medecins',      label: 'Médecins',         icon: UserCog         },
+  { id: 'patients',      label: 'Patients',          icon: Users           },
+  { id: 'agenda',        label: 'Agenda',            icon: Calendar        },
+  { id: 'ordonnances',   label: 'Ordonnances',       icon: FileText        },
+  { id: 'notifications', label: 'Notifications',     icon: Bell            },
 ];
 
 const toolsNav: NavItem[] = [

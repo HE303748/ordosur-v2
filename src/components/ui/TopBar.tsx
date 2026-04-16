@@ -14,7 +14,8 @@ const LABELS: Record<string, string> = {
   agenda:      'Agenda',
   settings:    'Paramètres',
   // Clinic admin views
-  medecins:    'Gestion des médecins',
+  medecins:      'Gestion des médecins',
+  notifications: 'Notifications',
 };
 
 interface TopBarProps {

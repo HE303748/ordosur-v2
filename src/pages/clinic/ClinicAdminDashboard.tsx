@@ -15,6 +15,7 @@ import { ClinicPatientsView } from './views/ClinicPatientsView';
 import { ClinicOrdonnancesView } from './views/ClinicOrdonnancesView';
 import { ClinicStatsView } from './views/ClinicStatsView';
 import { ClinicSettingsView } from './views/ClinicSettingsView';
+import { ClinicNotificationsView } from './views/ClinicNotificationsView';
 
 /* ── Types ──────────────────────────────────────────────────────── */
 export interface DoctorWithProfile {
@@ -194,6 +195,9 @@ export function ClinicAdminDashboard() {
             )}
             {activeView === 'stats' && (
               <ClinicStatsView key="stats" orgId={user?.org_id} doctors={doctors} />
+            )}
+            {activeView === 'notifications' && (
+              <ClinicNotificationsView key="notifications" />
             )}
             {activeView === 'settings' && (
               <ClinicSettingsView key="settings" />
