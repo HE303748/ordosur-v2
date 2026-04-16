@@ -1,417 +1,460 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
-import { Button } from '../components/Button';
-import { Input } from '../components/Input';
-import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
-import { Mail, Lock, User, AlertCircle, CheckCircle, Heart, Phone, CreditCard } from 'lucide-react';
+import {
+  Activity, Lock, Eye, EyeOff, CheckCircle,
+  AlertCircle, ArrowRight, Loader2,
+} from 'lucide-react';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface InvitationData {
   id: string;
-  clinic_id: string;
+  org_id: string;
   email: string;
-  role: string;
-  speciality: string | null;
-  clinic_name: string;
-  clinic_address: string;
+  prenom: string | null;
+  nom: string | null;
+  specialite: string | null;
+  token: string;
   expires_at: string;
+  clinic_name: string;
 }
 
-export function AcceptInvitationPage() {
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function passwordStrength(pwd: string): { score: number; label: string; color: string } {
+  if (!pwd) return { score: 0, label: '', color: '' };
+  let score = 0;
+  if (pwd.length >= 8)  score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  const map = [
+    { score: 1, label: 'Trop faible',  color: 'bg-red-500'    },
+    { score: 2, label: 'Faible',        color: 'bg-orange-400' },
+    { score: 3, label: 'Moyen',         color: 'bg-yellow-400' },
+    { score: 4, label: 'Fort',          color: 'bg-emerald-500'},
+  ];
+  return map[score - 1] ?? { score: 0, label: '', color: '' };
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-[#0A0F1E] to-slate-900">
+      <Loader2 className="w-8 h-8 text-sky-400 animate-spin" />
+    </div>
+  );
+}
+
+function ErrorScreen({ message }: { message: string }) {
   const navigate = useNavigate();
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-[#0A0F1E] to-slate-900 p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-[#111827] border border-white/[0.08] rounded-2xl p-8 w-full max-w-md text-center shadow-2xl"
+      >
+        <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
+          <AlertCircle className="w-8 h-8 text-red-400" />
+        </div>
+        <h2 className="text-xl font-bold text-white mb-2">Lien invalide ou expiré</h2>
+        <p className="text-sm text-slate-400 mb-6 leading-relaxed">{message}</p>
+        <button
+          onClick={() => navigate('/')}
+          className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold transition-colors"
+        >
+          Retour à la connexion
+        </button>
+      </motion.div>
+    </div>
+  );
+}
+
+function SuccessScreen({ clinicName, prenom }: { clinicName: string; prenom: string }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-[#0A0F1E] to-slate-900 p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-[#111827] border border-white/[0.08] rounded-2xl p-8 w-full max-w-md text-center shadow-2xl"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.15, type: 'spring', stiffness: 260 }}
+          className="w-20 h-20 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5"
+        >
+          <CheckCircle className="w-10 h-10 text-emerald-400" />
+        </motion.div>
+        <h2 className="text-2xl font-bold text-white mb-2">Compte créé !</h2>
+        <p className="text-slate-400 mb-1">
+          Bienvenue{prenom ? `, Dr. ${prenom}` : ''} dans l'équipe de
+        </p>
+        <p className="text-sky-400 font-semibold mb-5">{clinicName}</p>
+        <div className="p-4 bg-sky-500/10 border border-sky-500/20 rounded-xl mb-6">
+          <p className="text-sm text-sky-300 leading-relaxed">
+            Un email de confirmation vous a été envoyé. Cliquez sur le lien pour activer votre compte et accéder à votre espace médecin.
+          </p>
+        </div>
+        <p className="text-xs text-slate-600">Vous pouvez fermer cette page.</p>
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function AcceptInvitationPage() {
+  const navigate     = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  const token        = searchParams.get('token');
 
   const [invitation, setInvitation] = useState<InvitationData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [registering, setRegistering] = useState(false);
-  const [error, setError] = useState('');
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [countdown, setCountdown] = useState(3);
+  const [loading, setLoading]       = useState(true);
+  const [errMsg, setErrMsg]         = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [done, setDone]             = useState(false);
 
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    password: '',
-    confirmPassword: '',
-    rppsNumber: '',
-    phone: '',
-    acceptTerms: false,
-  });
+  const [pwd, setPwd]   = useState('');
+  const [pwd2, setPwd2] = useState('');
+  const [showPwd, setShowPwd]   = useState(false);
+  const [showPwd2, setShowPwd2] = useState(false);
+
+  // Editable prenom/nom (pre-filled from invitation)
+  const [prenom, setPrenom] = useState('');
+  const [nom,    setNom]    = useState('');
 
   useEffect(() => {
-    if (token) {
-      validateInvitation();
-    } else {
-      setError('Lien d\'invitation manquant');
+    if (!token) {
+      setErrMsg("Lien d'invitation manquant. Vérifiez votre email.");
       setLoading(false);
+      return;
     }
+    validateToken(token);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  useEffect(() => {
-    if (showSuccess && countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (showSuccess && countdown === 0) {
-      navigate('/doctor');
-    }
-  }, [showSuccess, countdown, navigate]);
-
-  async function validateInvitation() {
+  async function validateToken(t: string) {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError('');
-
-      const { data: invitationData, error: inviteError } = await supabase
+      // 1. Fetch invitation
+      const { data: inv, error: invErr } = await supabase
         .from('clinic_invitations')
-        .select(`
-          id,
-          clinic_id,
-          email,
-          role,
-          speciality,
-          expires_at,
-          clinics (
-            name,
-            address_street,
-            address_city
-          )
-        `)
-        .eq('token', token)
-        .eq('status', 'pending')
+        .select('id, org_id, email, prenom, nom, specialite, token, expires_at, statut')
+        .eq('token', t)
         .maybeSingle();
 
-      if (inviteError) throw inviteError;
+      if (invErr) throw invErr;
 
-      if (!invitationData) {
-        setError('Ce lien d\'invitation est invalide ou a expiré. Contactez votre administrateur.');
+      if (!inv) {
+        setErrMsg("Ce lien d'invitation est invalide. Il a peut-être déjà été utilisé ou n'existe pas.");
         setLoading(false);
         return;
       }
 
-      if (new Date(invitationData.expires_at) < new Date()) {
-        setError('Ce lien d\'invitation a expiré. Contactez votre administrateur pour recevoir un nouveau lien.');
+      if (inv.statut !== 'pending') {
+        setErrMsg("Cette invitation a déjà été acceptée ou annulée.");
         setLoading(false);
         return;
       }
 
-      const clinic = invitationData.clinics as any;
+      if (new Date(inv.expires_at) < new Date()) {
+        setErrMsg("Ce lien d'invitation a expiré. Contactez l'administrateur de la clinique pour en recevoir un nouveau.");
+        setLoading(false);
+        return;
+      }
+
+      // 2. Fetch clinic name
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('name')
+        .eq('id', inv.org_id)
+        .maybeSingle();
+
       setInvitation({
-        id: invitationData.id,
-        clinic_id: invitationData.clinic_id,
-        email: invitationData.email,
-        role: invitationData.role,
-        speciality: invitationData.speciality,
-        clinic_name: clinic?.name || 'Clinique',
-        clinic_address: clinic ? `${clinic.address_street}, ${clinic.address_city}` : '',
-        expires_at: invitationData.expires_at,
+        ...inv,
+        clinic_name: org?.name ?? 'Clinique',
       });
-    } catch (error: any) {
-      console.error('Error validating invitation:', error);
-      setError('Erreur lors de la validation de l\'invitation');
+
+      // Pre-fill editable fields
+      setPrenom(inv.prenom ?? '');
+      setNom(inv.nom ?? '');
+    } catch (err) {
+      console.error('[AcceptInvitation] validateToken error:', err);
+      setErrMsg("Erreur lors de la validation du lien. Réessayez ou contactez l'administrateur.");
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleAcceptInvitation(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError('');
+    setSubmitError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+    if (!prenom.trim()) { setSubmitError('Le prénom est requis.');  return; }
+    if (!nom.trim())    { setSubmitError('Le nom est requis.');      return; }
+    if (pwd.length < 8) { setSubmitError('Le mot de passe doit contenir au moins 8 caractères.'); return; }
+    if (pwd !== pwd2)   { setSubmitError('Les mots de passe ne correspondent pas.'); return; }
+
+    const str = passwordStrength(pwd);
+    if (str.score < 2) {
+      setSubmitError('Mot de passe trop faible. Ajoutez des majuscules, chiffres ou caractères spéciaux.');
       return;
     }
 
-    if (formData.password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères');
-      return;
-    }
-
-    const hasUppercase = /[A-Z]/.test(formData.password);
-    const hasLowercase = /[a-z]/.test(formData.password);
-    const hasNumber = /[0-9]/.test(formData.password);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
-
-    if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
-      setError('Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial');
-      return;
-    }
-
-    if (!formData.acceptTerms) {
-      setError('Vous devez accepter les conditions d\'utilisation');
-      return;
-    }
-
-    if (!invitation) {
-      setError('Données d\'invitation invalides');
-      return;
-    }
-
-    setRegistering(true);
+    if (!invitation) return;
+    setSubmitting(true);
 
     try {
-      const fullName = `${formData.firstName} ${formData.lastName}`;
-
-      const { data: authData, error: signUpError } = await supabase.auth.signUp({
-        email: invitation.email,
-        password: formData.password,
+      // 1. Create auth user
+      const { data: authData, error: signUpErr } = await supabase.auth.signUp({
+        email:    invitation.email,
+        password: pwd,
         options: {
-          data: {
-            full_name: fullName,
-            role: 'doctor',
-            clinic_id: invitation.clinic_id,
-          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: { role: 'doctor' },
         },
       });
 
-      if (signUpError) throw signUpError;
-
-      if (!authData.user) {
-        throw new Error('Échec de la création du compte');
+      if (signUpErr) {
+        if (signUpErr.message.includes('already registered') || signUpErr.message.includes('already been registered')) {
+          setSubmitError('Un compte existe déjà avec cette adresse email. Connectez-vous directement.');
+        } else {
+          setSubmitError(signUpErr.message);
+        }
+        setSubmitting(false);
+        return;
       }
 
-      await supabase
-        .from('user_profiles')
-        .update({
-          clinic_id: invitation.clinic_id,
-          full_name: fullName,
-        })
-        .eq('id', authData.user.id);
+      if (!authData.user) throw new Error('Échec création compte auth.');
 
-      await supabase
-        .from('doctor_profiles')
-        .update({
-          full_name: fullName,
-          clinic_id: invitation.clinic_id,
-          rpps_number: formData.rppsNumber || null,
-          phone_number: formData.phone || null,
-          specialization: invitation.speciality ? [invitation.speciality] : [],
-        })
-        .eq('id', authData.user.id);
+      // 2. Accept invitation via SECURITY DEFINER RPC
+      const { error: rpcErr } = await supabase.rpc('accept_clinic_invitation', {
+        p_token:   invitation.token,
+        p_user_id: authData.user.id,
+      });
 
-      await supabase
-        .from('clinic_invitations')
-        .update({
-          status: 'accepted',
-          accepted_at: new Date().toISOString(),
-        })
-        .eq('id', invitation.id);
-
-      setShowSuccess(true);
-    } catch (error: any) {
-      console.error('Registration error:', error);
-      if (error.message?.includes('User already registered')) {
-        setError('Un compte existe déjà avec cette adresse email');
-      } else {
-        setError(error.message || 'Erreur lors de l\'inscription');
+      if (rpcErr) {
+        console.error('[AcceptInvitation] RPC error:', rpcErr);
+        // Non-fatal if user_profile already exists; still show success
+        if (!rpcErr.message.includes('duplicate') && !rpcErr.message.includes('unique')) {
+          throw rpcErr;
+        }
       }
+
+      setDone(true);
+    } catch (err: unknown) {
+      console.error('[AcceptInvitation] submit error:', err);
+      setSubmitError(err instanceof Error ? err.message : 'Erreur inattendue. Réessayez.');
     } finally {
-      setRegistering(false);
+      setSubmitting(false);
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-teal-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  // ── Render states
+  if (loading)                    return <LoadingScreen />;
+  if (errMsg && !invitation)      return <ErrorScreen message={errMsg} />;
+  if (done && invitation)         return <SuccessScreen clinicName={invitation.clinic_name} prenom={prenom} />;
 
-  if (error && !invitation) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-teal-50 p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-8 h-8 text-red-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Lien invalide ou expiré</h2>
-          <p className="text-gray-600 mb-2">{error}</p>
-          <p className="text-sm text-gray-500 mb-6">Contactez votre administrateur pour recevoir un nouveau lien.</p>
-          <Button onClick={() => navigate('/')} className="w-full">
-            Retour à la connexion
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  if (!invitation) return <ErrorScreen message="Invitation introuvable." />;
 
-  if (showSuccess) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-teal-50 p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-12 h-12 text-green-600" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">Compte créé avec succès !</h2>
-          <p className="text-lg text-gray-700 mb-2">
-            Bienvenue dans l'équipe de <span className="font-semibold text-blue-600">{invitation?.clinic_name}</span>,
-            Dr. {formData.lastName}
-          </p>
-          <p className="text-gray-600 mb-6">Vous allez être redirigé vers votre espace médecin...</p>
+  const str = passwordStrength(pwd);
 
-          <div className="relative pt-1">
-            <div className="flex mb-2 items-center justify-between">
-              <div>
-                <span className="text-xs font-semibold inline-block text-blue-600">
-                  Redirection dans {countdown}s
-                </span>
-              </div>
-            </div>
-            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-blue-100">
-              <div
-                style={{ width: `${((3 - countdown) / 3) * 100}%` }}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-blue-500 to-teal-500 transition-all duration-1000"
-              ></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const inputCls = "w-full px-4 py-3 bg-[#1E293B] border border-white/[0.1] rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 placeholder-slate-600";
+  const labelCls = "block text-xs font-semibold text-slate-400 mb-1.5";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-teal-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-2xl">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-teal-600 rounded-full flex items-center justify-center">
-              <Heart className="w-7 h-7 text-white" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-[#0A0F1E] to-slate-900 p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-lg"
+      >
+        {/* Card */}
+        <div className="bg-[#111827] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden">
+
+          {/* Top banner */}
+          <div className="bg-gradient-to-r from-sky-600 to-cyan-500 px-6 py-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <Activity className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-white font-bold text-lg leading-tight">OrdoSur</h1>
+                <p className="text-sky-100 text-xs">Invitation à rejoindre</p>
+              </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">OrdoSur</h1>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Bienvenue sur OrdoSur</h2>
-          <div className="inline-flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full">
-            <span className="text-blue-600 font-medium">Vous avez été invité(e) à rejoindre</span>
-            <span className="font-bold text-blue-700">{invitation?.clinic_name}</span>
-          </div>
-          {invitation?.clinic_address && (
-            <p className="text-sm text-gray-500 mt-2">{invitation.clinic_address}</p>
-          )}
-        </div>
-
-        <form onSubmit={handleAcceptInvitation} className="space-y-5">
-          <div>
-            <Input
-              label="Adresse e-mail"
-              type="email"
-              value={invitation?.email || ''}
-              disabled
-              icon={Mail}
-            />
-            <p className="mt-1 text-xs text-gray-500">Cette adresse email a été pré-remplie par votre invitation</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Prénom"
-              type="text"
-              value={formData.firstName}
-              onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-              placeholder="Jean"
-              required
-              icon={User}
-            />
-            <Input
-              label="Nom"
-              type="text"
-              value={formData.lastName}
-              onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-              placeholder="Dupont"
-              required
-              icon={User}
-            />
-          </div>
-
-          <div>
-            <Input
-              label="Mot de passe"
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              placeholder="••••••••"
-              required
-              icon={Lock}
-            />
-            {formData.password && <PasswordStrengthIndicator password={formData.password} />}
-            <p className="mt-1 text-xs text-gray-500">
-              Minimum 8 caractères avec majuscule, minuscule, chiffre et caractère spécial
-            </p>
-          </div>
-
-          <Input
-            label="Confirmer le mot de passe"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-            placeholder="••••••••"
-            required
-            icon={Lock}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Numéro RPPS (optionnel)"
-              type="text"
-              value={formData.rppsNumber}
-              onChange={(e) => setFormData({ ...formData, rppsNumber: e.target.value })}
-              placeholder="12345678901"
-              icon={CreditCard}
-            />
-            <Input
-              label="Téléphone (optionnel)"
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="+33 6 12 34 56 78"
-              icon={Phone}
-            />
-          </div>
-
-          <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
-            <input
-              type="checkbox"
-              id="acceptTerms"
-              checked={formData.acceptTerms}
-              onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
-              className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="acceptTerms" className="text-sm text-gray-700">
-              J'accepte les{' '}
-              <a href="#" className="text-blue-600 hover:underline font-medium">
-                conditions d'utilisation
-              </a>{' '}
-              et la{' '}
-              <a href="#" className="text-blue-600 hover:underline font-medium">
-                politique de confidentialité
-              </a>
-            </label>
-          </div>
-
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-              <p className="text-red-800 text-sm">{error}</p>
+            <div className="mt-4">
+              <p className="text-white/80 text-sm">Vous avez été invité(e) à rejoindre</p>
+              <p className="text-white font-bold text-xl mt-0.5">{invitation.clinic_name}</p>
+              {invitation.specialite && (
+                <span className="inline-block mt-2 px-2.5 py-1 bg-white/20 rounded-full text-xs text-white font-medium">
+                  {invitation.specialite}
+                </span>
+              )}
             </div>
-          )}
+          </div>
 
-          <Button type="submit" className="w-full" loading={registering}>
-            Créer mon compte
-          </Button>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-white mb-4">Créez votre compte médecin</p>
+            </div>
 
-          <p className="text-center text-sm text-gray-600">
-            Vous avez déjà un compte ?{' '}
+            {/* Email (locked) */}
+            <div>
+              <label className={labelCls}>Adresse email</label>
+              <input
+                type="email"
+                value={invitation.email}
+                disabled
+                className={`${inputCls} opacity-60 cursor-not-allowed`}
+              />
+              <p className="text-[11px] text-slate-600 mt-1">Pré-rempli depuis votre invitation</p>
+            </div>
+
+            {/* Prenom + Nom */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelCls}>Prénom <span className="text-red-400">*</span></label>
+                <input
+                  type="text"
+                  value={prenom}
+                  onChange={e => setPrenom(e.target.value)}
+                  placeholder="Mohamed"
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Nom <span className="text-red-400">*</span></label>
+                <input
+                  type="text"
+                  value={nom}
+                  onChange={e => setNom(e.target.value)}
+                  placeholder="Benali"
+                  className={inputCls}
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className={labelCls}>Mot de passe <span className="text-red-400">*</span></label>
+              <div className="relative">
+                <input
+                  type={showPwd ? 'text' : 'password'}
+                  value={pwd}
+                  onChange={e => setPwd(e.target.value)}
+                  placeholder="••••••••"
+                  className={`${inputCls} pr-10`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPwd(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                >
+                  {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {/* Strength bar */}
+              <AnimatePresence>
+                {pwd && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-2 space-y-1.5"
+                  >
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4].map(i => (
+                        <div
+                          key={i}
+                          className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                            i <= str.score ? str.color : 'bg-white/10'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {str.label && (
+                      <p className="text-[11px] text-slate-500">{str.label}</p>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Confirm password */}
+            <div>
+              <label className={labelCls}>Confirmer le mot de passe <span className="text-red-400">*</span></label>
+              <div className="relative">
+                <input
+                  type={showPwd2 ? 'text' : 'password'}
+                  value={pwd2}
+                  onChange={e => setPwd2(e.target.value)}
+                  placeholder="••••••••"
+                  className={`${inputCls} pr-10 ${
+                    pwd2 && pwd !== pwd2 ? 'border-red-500/50 focus:ring-red-500/30' : ''
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPwd2(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                >
+                  {showPwd2 ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {pwd2 && pwd !== pwd2 && (
+                <p className="text-[11px] text-red-400 mt-1">Les mots de passe ne correspondent pas</p>
+              )}
+            </div>
+
+            {/* Submit error */}
+            <AnimatePresence>
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  className="flex items-start gap-2.5 p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl"
+                >
+                  <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-red-300 leading-relaxed">{submitError}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Submit */}
             <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 disabled:opacity-60 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2 mt-2"
             >
-              Se connecter
+              {submitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <Lock className="w-4 h-4" />
+                  Créer mon compte
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
-          </p>
-        </form>
-      </div>
+
+            <p className="text-center text-xs text-slate-600 pt-1">
+              Déjà un compte ?{' '}
+              <button type="button" onClick={() => navigate('/')} className="text-sky-500 hover:text-sky-400 font-medium transition-colors">
+                Se connecter
+              </button>
+            </p>
+          </form>
+        </div>
+      </motion.div>
     </div>
   );
 }
