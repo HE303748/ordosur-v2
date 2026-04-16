@@ -8,7 +8,7 @@ import { TopBar } from '../../components/ui/TopBar';
 import { AIChat } from '../../components/ui/AIChat';
 import { ToastManager, ToastItem } from '../../components/ui/Toast';
 import { useNotifications } from '../../components/ui/NotificationsPanel';
-import { AgendaView } from '../../components/ui/AgendaView';
+import { ClinicAgendaView } from './views/ClinicAgendaView';
 import { ClinicHomeView } from './views/ClinicHomeView';
 import { ClinicMedecinsView } from './views/ClinicMedecinsView';
 import { ClinicPatientsView } from './views/ClinicPatientsView';
@@ -181,12 +181,13 @@ export function ClinicAdminDashboard() {
               />
             )}
             {activeView === 'patients' && (
-              <ClinicPatientsView key="patients" orgId={user?.org_id} />
+              <ClinicPatientsView key="patients" orgId={user?.org_id} doctors={doctors} />
             )}
             {activeView === 'agenda' && (
-              <AgendaView
+              <ClinicAgendaView
                 key="agenda"
-                patients={[]}
+                orgId={user?.org_id}
+                doctors={doctors}
                 showToast={showToast}
               />
             )}
