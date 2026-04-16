@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, FileText, AlertTriangle, Activity, Calendar, ChevronRight, UserPlus, UserCheck } from 'lucide-react';
+import { Users, FileText, AlertTriangle, Activity, Calendar, ChevronRight, UserPlus, UserCheck, ShieldAlert } from 'lucide-react';
 import { PageTransition } from '../../../components/ui/PageTransition';
 import { supabase } from '../../../lib/supabase';
+import type { Patient } from '../../../lib/supabase';
+import { calculateRiskScore, type RiskResult } from '../../../lib/riskScore';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -122,6 +124,7 @@ export function ClinicHomeView({ doctors, orgId, onNavigate }: ClinicHomeViewPro
   const [ordonnancesCount, setOrdonnancesCount] = useState(0);
   const [todayRdv, setTodayRdv] = useState<RdvItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [riskPatients, setRiskPatients] = useState<Array<{ patient: Patient; risk: RiskResult }>>([]);
 
   const todayDate = new Date();
   const todayStr = todayDate.toISOString().split('T')[0];
@@ -205,6 +208,22 @@ export function ClinicHomeView({ doctors, orgId, onNavigate }: ClinicHomeViewPro
       }));
 
       setTodayRdv(enriched);
+
+      // ── Patients à risque élevé / critique ─────────────────────────────
+      const { data: patsForRisk } = await supabase
+        .from('patients')
+        .select('id, prenom, nom, date_naissance, pathologies, allergies_medicaments, traitements_en_cours, org_id, sexe, telephone, email, adresse, allergies_alimentaires, groupe_sanguin, antecedents_chirurgicaux, created_at')
+        .eq('org_id', orgId!)
+        .limit(200);
+
+      if (patsForRisk) {
+        const scored = patsForRisk
+          .map(p => ({ patient: p as Patient, risk: calculateRiskScore(p as Patient) }))
+          .filter(({ risk }) => risk.category === 'high' || risk.category === 'critical')
+          .sort((a, b) => b.risk.score - a.risk.score)
+          .slice(0, 5);
+        setRiskPatients(scored);
+      }
     } catch (err) {
       console.error('[ClinicHomeView] loadData error:', err);
     } finally {
@@ -437,6 +456,71 @@ export function ClinicHomeView({ doctors, orgId, onNavigate }: ClinicHomeViewPro
           </div>
 
         </div>
+
+        {/* ── Patients à risque élevé ── */}
+        {(loading || riskPatients.length > 0) && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+            className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-sm"
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+                  <ShieldAlert className="w-4 h-4 text-red-500" />
+                </div>
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">Patients à risque élevé</h2>
+                {!loading && riskPatients.length > 0 && (
+                  <span className="text-xs bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 px-2 py-0.5 rounded-full font-semibold">
+                    {riskPatients.length}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => onNavigate?.('patients')}
+                className="text-xs text-sky-500 hover:text-sky-600 dark:text-sky-400 dark:hover:text-sky-300 flex items-center gap-1"
+              >
+                Voir patients <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+
+            {loading ? (
+              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-16 bg-slate-100 dark:bg-white/[0.05] rounded-xl animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+                {riskPatients.map(({ patient: p, risk }, i) => (
+                  <div
+                    key={p.id}
+                    className={`rounded-xl border p-3 ${
+                      risk.category === 'critical'
+                        ? 'bg-red-50/60 border-red-200 dark:bg-red-500/[0.07] dark:border-red-500/20'
+                        : 'bg-orange-50/60 border-orange-200 dark:bg-amber-500/[0.07] dark:border-amber-500/20'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${
+                        AVATAR_COLORS[i % AVATAR_COLORS.length].includes('from-') ? `bg-gradient-to-br ${AVATAR_COLORS[i % AVATAR_COLORS.length]}` : 'bg-red-400'
+                      }`}>
+                        {p.prenom[0]}{p.nom[0]}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-900 dark:text-[#E2E8F0] truncate">{p.prenom} {p.nom}</p>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 w-fit ${risk.badgeClass}`}>
+                      {risk.alertIcon && <ShieldAlert className="w-2.5 h-2.5" />}
+                      {risk.label} · {risk.score}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+
       </div>
     </PageTransition>
   );

@@ -4,12 +4,13 @@ import {
   Search, Download, Users, ChevronLeft, ChevronRight,
   AlertCircle, Filter, X, FileText, Phone, Mail,
   ChevronUp, ChevronDown, ChevronsUpDown, Droplets,
-  Activity, UserCheck, Calendar,
+  Activity, UserCheck, Calendar, ShieldAlert,
 } from 'lucide-react';
 import { PageTransition } from '../../../components/ui/PageTransition';
 import { supabase } from '../../../lib/supabase';
 import type { Patient } from '../../../lib/supabase';
 import type { DoctorWithProfile } from './ClinicMedecinsView';
+import { calculateRiskScore } from '../../../lib/riskScore';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -101,7 +102,7 @@ function SortBtn({ col, active, dir, onClick }: {
 function SkeletonRow() {
   return (
     <tr className="border-b border-slate-100 dark:border-white/[0.04]">
-      {Array.from({ length: 8 }).map((_, i) => (
+      {Array.from({ length: 9 }).map((_, i) => (
         <td key={i} className="px-4 py-4">
           <div className="h-4 bg-slate-200 dark:bg-white/[0.07] rounded animate-pulse w-full max-w-[100px]" />
         </td>
@@ -259,6 +260,34 @@ function PatientDetailModal({ patient, meta, onClose }: PatientDetailModalProps)
               </div>
             )}
           </div>
+
+          {/* Score de risque */}
+          {(() => {
+            const risk = calculateRiskScore(patient);
+            return (
+              <div className="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+                <p className="text-[11px] font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wider mb-3">Score de risque</p>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 bg-slate-100 dark:bg-white/[0.07] rounded-full h-2.5 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${risk.score}%` }}
+                      transition={{ duration: 0.7, ease: 'easeOut' }}
+                      className={`h-full rounded-full ${
+                        risk.category === 'low' ? 'bg-emerald-400' :
+                        risk.category === 'moderate' ? 'bg-amber-400' :
+                        risk.category === 'high' ? 'bg-red-400' : 'bg-red-700'
+                      }`}
+                    />
+                  </div>
+                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 ${risk.badgeClass}`}>
+                    {risk.alertIcon && <ShieldAlert className="w-3 h-3" />}
+                    {risk.label} ({risk.score}/100)
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Suivi */}
           <div className="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] space-y-3">
@@ -535,6 +564,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
                   <TH label="Médecin référent"                    />
                   <TH label="Pathologies"                         />
                   <TH label="Allergies"                           />
+                  <TH label="Risque"                              />
                   <TH label="Dernière visite"   sKey="last_visit" />
                   <TH label="Téléphone"                           />
                   <TH label="Actions"                             />
@@ -546,7 +576,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
                   : displayedPatients.length === 0
                   ? (
                     <tr>
-                      <td colSpan={8} className="py-16 text-center">
+                      <td colSpan={9} className="py-16 text-center">
                         <Users className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700 mb-3" />
                         <p className="text-sm text-slate-400 dark:text-slate-600">Aucun patient trouvé</p>
                       </td>
@@ -602,6 +632,18 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
                             )}
                             {!p.allergies_medicaments?.length && <span className="text-xs text-slate-300 dark:text-slate-700">—</span>}
                           </div>
+                        </td>
+                        <td className="px-4 py-3.5 whitespace-nowrap">
+                          {(() => {
+                            const risk = calculateRiskScore(p);
+                            return (
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${risk.badgeClass}`}>
+                                {risk.alertIcon && <ShieldAlert className="w-3 h-3" />}
+                                {risk.label}
+                                <span className="opacity-70 ml-0.5">{risk.score}</span>
+                              </span>
+                            );
+                          })()}
                         </td>
                         <td className="px-4 py-3.5">
                           {meta.lastVisit ? (
