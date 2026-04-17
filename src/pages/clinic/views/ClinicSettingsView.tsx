@@ -203,6 +203,11 @@ export function ClinicSettingsView() {
   const [exportLoading, setExportLoading] = useState(false);
   const [signOutLoading, setSignOutLoading] = useState(false);
 
+  // ── Session history ────────────────────────────────────────────────────────
+  interface SessionRow { id: string; user_agent: string; created_at: string; }
+  const [sessionHistory, setSessionHistory] = useState<SessionRow[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+
   // ── IA ────────────────────────────────────────────────────────────────────
   const [iaApiKey, setIaApiKey]     = useState(() => {
     try { return localStorage.getItem('ordosur_anthropic_key') || ''; } catch { return ''; }
@@ -250,6 +255,22 @@ export function ClinicSettingsView() {
         }
       });
   }, [user]);
+
+  // ── Load session history when security tab becomes active ──────────────────
+  useEffect(() => {
+    if (activeTab !== 'securite' || !user?.id) return;
+    setSessionsLoading(true);
+    supabase
+      .from('user_sessions')
+      .select('id, user_agent, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10)
+      .then(({ data }) => {
+        setSessionHistory(data ?? []);
+        setSessionsLoading(false);
+      });
+  }, [activeTab, user?.id]);
 
   // ── Logo upload ────────────────────────────────────────────────────────────
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -558,47 +579,94 @@ export function ClinicSettingsView() {
               <SectionHeader icon={Clock} title="Horaires d'ouverture"
                 sub="Définissez les horaires par jour de la semaine" color="emerald" />
 
-              <div className="space-y-3">
-                {JOURS.map(jour => (
-                  <div key={jour} className="flex items-center gap-3">
-                    <div className="w-24 flex-shrink-0">
-                      <span className={`text-sm font-medium ${
-                        horaires[jour]?.ouvert
-                          ? 'text-slate-800 dark:text-[#E2E8F0]'
-                          : 'text-slate-400 dark:text-[#475569]'
-                      }`}>{jour}</span>
-                    </div>
-                    <button
-                      onClick={() => updateHoraire(jour, 'ouvert', !horaires[jour]?.ouvert)}
-                      className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${
-                        horaires[jour]?.ouvert ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-white/[0.1]'
+              <div className="space-y-2">
+                {JOURS.map(jour => {
+                  const isOpen = horaires[jour]?.ouvert ?? false;
+                  return (
+                    <div
+                      key={jour}
+                      className={`rounded-xl border transition-all ${
+                        isOpen
+                          ? 'bg-sky-50/60 dark:bg-sky-500/[0.06] border-sky-200 dark:border-sky-500/20'
+                          : 'bg-slate-50/60 dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.05]'
                       }`}
                     >
-                      <motion.span
-                        animate={{ x: horaires[jour]?.ouvert ? 14 : 2 }}
-                        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                        className="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm"
-                      />
-                    </button>
-                    {horaires[jour]?.ouvert ? (
-                      <div className="flex items-center gap-2 flex-1">
-                        <input
-                          type="time" value={horaires[jour]?.debut ?? '08:00'}
-                          onChange={e => updateHoraire(jour, 'debut', e.target.value)}
-                          className="px-2.5 py-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-lg text-sm text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-sky-300"
-                        />
-                        <Minus className="w-4 h-4 text-slate-400" />
-                        <input
-                          type="time" value={horaires[jour]?.fin ?? '18:00'}
-                          onChange={e => updateHoraire(jour, 'fin', e.target.value)}
-                          className="px-2.5 py-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-lg text-sm text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-1 focus:ring-sky-300"
-                        />
+                      {/* Day row */}
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        {/* Day name */}
+                        <span className={`w-24 flex-shrink-0 text-sm font-semibold ${
+                          isOpen ? 'text-slate-900 dark:text-[#E2E8F0]' : 'text-slate-400 dark:text-[#475569]'
+                        }`}>
+                          {jour}
+                        </span>
+
+                        {/* Premium toggle */}
+                        <button
+                          onClick={() => updateHoraire(jour, 'ouvert', !isOpen)}
+                          style={{
+                            width: 44, height: 24, borderRadius: 12,
+                            backgroundColor: isOpen ? '#0EA5E9' : '#CBD5E1',
+                            position: 'relative', flexShrink: 0, border: 'none',
+                            transition: 'background-color 0.2s ease', cursor: 'pointer', padding: 0,
+                          }}
+                          aria-label={`${isOpen ? 'Fermer' : 'Ouvrir'} ${jour}`}
+                        >
+                          <motion.span
+                            animate={{ x: isOpen ? 22 : 2 }}
+                            initial={false}
+                            transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                            style={{
+                              position: 'absolute', top: 2,
+                              width: 20, height: 20,
+                              backgroundColor: '#ffffff',
+                              borderRadius: '50%',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                            }}
+                          />
+                        </button>
+
+                        {/* Status label */}
+                        <span className={`text-xs font-medium flex-1 ${
+                          isOpen ? 'text-sky-600 dark:text-sky-400' : 'text-slate-400 dark:text-[#475569]'
+                        }`}>
+                          {isOpen ? 'Ouvert' : 'Fermé'}
+                        </span>
                       </div>
-                    ) : (
-                      <span className="text-xs text-slate-400 dark:text-[#475569]">Fermé</span>
-                    )}
-                  </div>
-                ))}
+
+                      {/* Time pickers — only visible when open */}
+                      <AnimatePresence>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="flex items-center gap-3 px-4 pb-3">
+                              <span className="text-xs text-slate-500 dark:text-[#475569] w-24 flex-shrink-0">
+                                Horaires
+                              </span>
+                              <input
+                                type="time"
+                                value={horaires[jour]?.debut ?? '08:00'}
+                                onChange={e => updateHoraire(jour, 'debut', e.target.value)}
+                                className="px-3 py-1.5 bg-white dark:bg-[#1E293B] border border-sky-200 dark:border-sky-500/30 rounded-lg text-sm text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 transition-all"
+                              />
+                              <Minus className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                              <input
+                                type="time"
+                                value={horaires[jour]?.fin ?? '18:00'}
+                                onChange={e => updateHoraire(jour, 'fin', e.target.value)}
+                                className="px-3 py-1.5 bg-white dark:bg-[#1E293B] border border-sky-200 dark:border-sky-500/30 rounded-lg text-sm text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 transition-all"
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
@@ -772,32 +840,68 @@ export function ClinicSettingsView() {
               <SectionHeader icon={Clock} title="Historique des connexions"
                 sub="10 dernières connexions" color="sky" />
 
-              <div className="space-y-2">
-                {[
-                  { date: 'Aujourd\'hui', time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }), ua: 'Chrome / Windows', current: true },
-                  { date: 'Hier',         time: '14:32',  ua: 'Chrome / Windows',  current: false },
-                  { date: 'Hier',         time: '09:15',  ua: 'Safari / iPhone',   current: false },
-                  { date: new Date(Date.now() - 2*86400000).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' }),
-                    time: '18:47',  ua: 'Chrome / Windows',  current: false },
-                  { date: new Date(Date.now() - 4*86400000).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' }),
-                    time: '11:05',  ua: 'Firefox / Mac',    current: false },
-                ].map((s, i) => (
-                  <div key={i} className={`flex items-center gap-3 px-4 py-3 rounded-xl ${
-                    s.current
-                      ? 'bg-sky-50 dark:bg-sky-500/[0.07] border border-sky-200 dark:border-sky-500/20'
-                      : 'bg-slate-50/60 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.04]'
-                  }`}>
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${s.current ? 'bg-sky-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-800 dark:text-[#E2E8F0]">{s.ua}</p>
-                      <p className="text-xs text-slate-400 dark:text-[#475569]">{s.date} à {s.time}</p>
-                    </div>
-                    {s.current && (
-                      <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400">Session actuelle</span>
-                    )}
+              {sessionsLoading ? (
+                <div className="space-y-2">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-14 bg-slate-100 dark:bg-white/[0.04] rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              ) : sessionHistory.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.05] flex items-center justify-center mb-3">
+                    <Clock className="w-5 h-5 text-slate-400" />
                   </div>
-                ))}
-              </div>
+                  <p className="text-sm text-slate-500 dark:text-[#94A3B8] font-medium">Aucune connexion enregistrée</p>
+                  <p className="text-xs text-slate-400 dark:text-[#475569] mt-1">L'historique sera disponible dès votre prochaine connexion</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {sessionHistory.map((s, i) => {
+                    const date = new Date(s.created_at);
+                    const isToday = date.toDateString() === new Date().toDateString();
+                    const dateLabel = isToday
+                      ? "Aujourd'hui"
+                      : date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const timeLabel = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+                    // Parse browser from user-agent
+                    const ua = s.user_agent ?? '';
+                    let browser = 'Navigateur';
+                    if (ua.includes('Edg/')) browser = 'Edge';
+                    else if (ua.includes('Chrome/') && !ua.includes('Chromium')) browser = 'Chrome';
+                    else if (ua.includes('Firefox/')) browser = 'Firefox';
+                    else if (ua.includes('Safari/') && !ua.includes('Chrome')) browser = 'Safari';
+                    let os = '';
+                    if (ua.includes('Windows')) os = 'Windows';
+                    else if (ua.includes('Mac')) os = 'macOS';
+                    else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+                    else if (ua.includes('Android')) os = 'Android';
+                    else if (ua.includes('Linux')) os = 'Linux';
+                    const uaLabel = [browser, os].filter(Boolean).join(' / ');
+
+                    const isCurrent = i === 0 && isToday;
+
+                    return (
+                      <div key={s.id} className={`flex items-center gap-3 px-4 py-3 rounded-xl ${
+                        isCurrent
+                          ? 'bg-sky-50 dark:bg-sky-500/[0.07] border border-sky-200 dark:border-sky-500/20'
+                          : 'bg-slate-50/60 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.04]'
+                      }`}>
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          isCurrent ? 'bg-sky-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'
+                        }`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-800 dark:text-[#E2E8F0]">{uaLabel}</p>
+                          <p className="text-xs text-slate-400 dark:text-[#475569]">{dateLabel} à {timeLabel}</p>
+                        </div>
+                        {isCurrent && (
+                          <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400 flex-shrink-0">Session actuelle</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Export données */}

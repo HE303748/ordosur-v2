@@ -237,6 +237,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
         throw new Error('email_not_verified');
       }
+
+      // Log this session (fire-and-forget — don't block login on failure)
+      supabase.from('user_sessions').insert({
+        user_id:    data.user.id,
+        user_agent: navigator.userAgent,
+        ip_address: null, // Not available client-side
+      }).then(({ error: sessionErr }) => {
+        if (sessionErr) console.warn('[AUTH] Session log error:', sessionErr);
+      });
+
       await loadUserProfile(data.user.id, data.user.email ?? '');
     }
   };

@@ -1349,11 +1349,48 @@ export function DoctorDashboard() {
 
   const loadStats = async () => {
     if (!user) return;
-    const { count: patientCount } = await supabase.from('patients')
-      .select('id', { count: 'exact', head: true }).eq('org_id', user.org_id);
-    const { count: ordCount } = await supabase.from('ordonnances')
-      .select('id', { count: 'exact', head: true }).eq('doctor_id', doctorProfile?.id || user.id);
-    setStats({ totalPatients: patientCount || 0, ordonnances: ordCount || 0, safetyRate: 100, evolution: 0 });
+    try {
+      const now = new Date();
+      const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+      const endOfLastMonth   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
+
+      const [patientsRes, ordRes, thisMonthPats, lastMonthPats] = await Promise.all([
+        // Total patients for this org
+        supabase.from('patients')
+          .select('id', { count: 'exact', head: true })
+          .eq('org_id', user.org_id),
+        // Ordonnances by this doctor — use user.id (auth UUID), NOT doctorProfile.id (doctors PK)
+        supabase.from('ordonnances')
+          .select('id', { count: 'exact', head: true })
+          .eq('doctor_id', user.id),
+        // Patients added this month
+        supabase.from('patients')
+          .select('id', { count: 'exact', head: true })
+          .eq('org_id', user.org_id)
+          .gte('created_at', startOfThisMonth),
+        // Patients added last month
+        supabase.from('patients')
+          .select('id', { count: 'exact', head: true })
+          .eq('org_id', user.org_id)
+          .gte('created_at', startOfLastMonth)
+          .lte('created_at', endOfLastMonth),
+      ]);
+
+      const totalPatients  = patientsRes.count  ?? 0;
+      const ordonnances    = ordRes.count        ?? 0;
+      const thisMonth      = thisMonthPats.count ?? 0;
+      const lastMonth      = lastMonthPats.count ?? 0;
+
+      // Evolution: % change in new patients month-over-month
+      const evolution = lastMonth > 0
+        ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100)
+        : thisMonth > 0 ? 100 : 0;
+
+      setStats({ totalPatients, ordonnances, safetyRate: 100, evolution });
+    } catch (err) {
+      console.error('[DoctorDashboard] loadStats error:', err);
+    }
   };
 
   const searchMedications = async (term: string) => {

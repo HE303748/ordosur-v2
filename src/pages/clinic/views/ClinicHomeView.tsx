@@ -248,14 +248,19 @@ export function ClinicHomeView({ doctors, orgId, onNavigate }: ClinicHomeViewPro
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="p-6 lg:p-8 space-y-6">
 
         {/* ── Welcome header ── */}
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-[#E2E8F0]">
-            Bonjour 👋 — Tableau de bord de la Clinique
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-[#94A3B8] mt-1 capitalize">{formattedDate}</p>
+        <div className="relative overflow-hidden bg-gradient-to-r from-sky-500 via-cyan-500 to-teal-500 rounded-2xl px-6 py-5 shadow-sm">
+          <div className="relative z-10">
+            <h1 className="text-xl font-bold text-white">
+              Bonjour 👋 — Tableau de bord de la Clinique
+            </h1>
+            <p className="text-sky-100/80 text-sm mt-0.5 capitalize">{formattedDate}</p>
+          </div>
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-10">
+            <Activity className="w-24 h-24 text-white" />
+          </div>
         </div>
 
         {/* ── KPI Cards ── */}
@@ -521,7 +526,7 @@ export function ClinicHomeView({ doctors, orgId, onNavigate }: ClinicHomeViewPro
           </motion.div>
         )}
 
-      </div>
+      </div>{/* end space-y-6 p-8 */}
     </PageTransition>
   );
 }

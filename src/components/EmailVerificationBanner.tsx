@@ -9,20 +9,19 @@ export function EmailVerificationBanner() {
   const [dismissed, setDismissed] = useState(false);
   const [sent, setSent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
-  const [emailConfirmed, setEmailConfirmed] = useState(false);
+  // null = still checking, true = confirmed, false = not confirmed
+  const [emailConfirmed, setEmailConfirmed] = useState<boolean | null>(null);
 
   useEffect(() => {
     const refreshUserSession = async () => {
       try {
         await supabase.auth.refreshSession();
         const { data: { user: freshUser } } = await supabase.auth.getUser();
-        if (freshUser?.email_confirmed_at) {
-          setEmailConfirmed(true);
-        } else {
-          setEmailConfirmed(false);
-        }
+        setEmailConfirmed(!!freshUser?.email_confirmed_at);
       } catch (error) {
         console.error('Error refreshing session:', error);
+        // On error, assume confirmed to avoid false positive banner
+        setEmailConfirmed(true);
       }
     };
 
@@ -39,7 +38,8 @@ export function EmailVerificationBanner() {
     };
   }, []);
 
-  if (!user || emailConfirmed || dismissed) {
+  // Don't render while still checking (null) or if confirmed/dismissed
+  if (!user || emailConfirmed !== false || dismissed) {
     return null;
   }
 
