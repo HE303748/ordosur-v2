@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ArrowLeft, Save, Printer, Download, AlertTriangle, Shield } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
@@ -59,24 +60,36 @@ export function PrescriptionPreviewModal({
   nextAppointment,
   interactionAlerts = [],
 }: PrescriptionPreviewModalProps) {
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
   const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const todayIso = new Date().toISOString().split('T')[0];
 
   const handlePrint = () => window.print();
 
   const handleDownloadPdf = async () => {
-    await generateOrdonnancePdf({
-      ordreNumber,
-      doctor,
-      org,
-      patient,
-      motif,
-      medications,
-      remarks,
-      nextAppointment,
-      date: todayIso,
-      interactionAlerts,
-    });
+    setPdfError(null);
+    setPdfLoading(true);
+    try {
+      await generateOrdonnancePdf({
+        ordreNumber,
+        doctor,
+        org,
+        patient,
+        motif,
+        medications,
+        remarks,
+        nextAppointment,
+        date: todayIso,
+        interactionAlerts,
+      });
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Erreur lors de la génération du PDF';
+      setPdfError(msg);
+    } finally {
+      setPdfLoading(false);
+    }
   };
 
   const criticalAlerts = interactionAlerts.filter(a =>
@@ -210,6 +223,13 @@ export function PrescriptionPreviewModal({
           </div>
         </div>
 
+        {pdfError && (
+          <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 no-print">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+            {pdfError}
+          </div>
+        )}
+
         <div className="flex gap-2 justify-end no-print flex-wrap">
           <Button onClick={onBack} variant="secondary">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -223,9 +243,11 @@ export function PrescriptionPreviewModal({
             <Printer className="w-4 h-4 mr-2" />
             Imprimer
           </Button>
-          <Button onClick={handleDownloadPdf} variant="secondary">
-            <Download className="w-4 h-4 mr-2" />
-            Télécharger PDF
+          <Button onClick={handleDownloadPdf} variant="secondary" disabled={pdfLoading}>
+            {pdfLoading
+              ? <span className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mr-2" />
+              : <Download className="w-4 h-4 mr-2" />}
+            {pdfLoading ? 'Génération…' : 'Télécharger PDF'}
           </Button>
         </div>
       </div>

@@ -1237,6 +1237,7 @@ export function DoctorDashboard() {
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
   const [showPrescriptionPreview, setShowPrescriptionPreview] = useState(false);
   const [prescriptionData, setPrescriptionData] = useState<any>(null);
+  const [prescriptionOrdreNumber, setPrescriptionOrdreNumber] = useState('');
   const [showMedicationHistory, setShowMedicationHistory] = useState(false);
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
 
@@ -1445,6 +1446,51 @@ export function DoctorDashboard() {
         };
       }));
     } catch { setPatientOrdonnances([]); }
+  };
+
+  // ── Prescription save ─────────────────────────────────────────────────────
+
+  const handleSaveOrdonnance = async () => {
+    if (!user || !selectedPatient || !prescriptionData) return;
+    try {
+      const { data: ordonnance, error: ordErr } = await supabase
+        .from('ordonnances')
+        .insert({
+          doctor_id:   user.id,
+          patient_id:  selectedPatient.id,
+          org_id:      user.org_id,
+          numero:      prescriptionOrdreNumber,
+          motif:       prescriptionData.motif ?? null,
+          remarques:   prescriptionData.remarks ?? null,
+          prochain_rdv: prescriptionData.nextAppointment ?? null,
+        })
+        .select('id')
+        .single();
+
+      if (ordErr) throw ordErr;
+
+      const lignes = (prescriptionData.medications ?? []).map((m: any) => ({
+        ordonnance_id: ordonnance.id,
+        nom:           m.nom,
+        posologie:     m.posologie ?? '',
+        duree:         m.duree ?? '',
+        quantite:      m.quantite ?? '',
+      }));
+
+      if (lignes.length > 0) {
+        const { error: lignesErr } = await supabase
+          .from('ordonnance_lignes')
+          .insert(lignes);
+        if (lignesErr) throw lignesErr;
+      }
+
+      showToast('Ordonnance enregistrée avec succès', 'success');
+      setShowPrescriptionPreview(false);
+      setPrescriptionData(null);
+      loadStats();
+    } catch (e: any) {
+      showToast(e?.message || "Erreur lors de l'enregistrement de l'ordonnance", 'error');
+    }
   };
 
   // ── Actions ───────────────────────────────────────────────────────────────
@@ -1715,20 +1761,44 @@ export function DoctorDashboard() {
           initialMedications={selectedMeds.map(m => ({ nom: (m as any).nom_commercial || m.nom || '' }))}
           onPreview={(data) => {
             setPrescriptionData(data);
+            const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+            setPrescriptionOrdreNumber(`ORD-${dateStr}-${rand}`);
             setShowPrescriptionForm(false);
             setShowPrescriptionPreview(true);
           }}
         />
       )}
 
-      {selectedPatient && showPrescriptionPreview && prescriptionData && (
+      {selectedPatient && showPrescriptionPreview && prescriptionData && user && (
         <PrescriptionPreviewModal
           isOpen={showPrescriptionPreview}
           onClose={() => setShowPrescriptionPreview(false)}
-          prescriptionData={prescriptionData}
+          onBack={() => {
+            setShowPrescriptionPreview(false);
+            setShowPrescriptionForm(true);
+          }}
+          onSave={handleSaveOrdonnance}
+          ordreNumber={prescriptionOrdreNumber}
+          doctor={{
+            nom:          user.nom,
+            prenom:       user.prenom,
+            specialite:   doctorProfile?.specialite ?? null,
+            rpps:         doctorProfile?.rpps ?? null,
+            ordre_number: doctorProfile?.ordre_number ?? null,
+            telephone:    null,
+          }}
+          org={{
+            name:      clinicProfile?.name ?? '',
+            adresse:   clinicProfile?.adresse ?? null,
+            telephone: clinicProfile?.telephone ?? null,
+          }}
           patient={selectedPatient}
-          doctor={doctorProfile}
-          clinic={clinicProfile}
+          motif={prescriptionData.motif}
+          medications={prescriptionData.medications ?? []}
+          remarks={prescriptionData.remarks ?? ''}
+          nextAppointment={prescriptionData.nextAppointment}
+          interactionAlerts={interactionAlerts}
         />
       )}
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Plus, X, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, Plus, X, Loader2, Users } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { PageTransition } from '../../../components/ui/PageTransition';
 import type { DoctorWithProfile } from './ClinicMedecinsView';
@@ -437,6 +437,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
   const [editingRdv, setEditingRdv]   = useState<RendezVous | null>(null);
   const [clickedDate, setClickedDate] = useState<string | undefined>();
   const [filterDocId, setFilterDocId] = useState<string>('all');
+  const [showDocDropdown, setShowDocDropdown] = useState(false);
   const [patients, setPatients]       = useState<Array<{ id: string; prenom: string; nom: string }>>([]);
 
   const weekDays = getWeekDays(refDate);
@@ -560,17 +561,130 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
             ))}
           </div>
 
-          {/* Doctor filter */}
-          <select
-            value={filterDocId}
-            onChange={e => setFilterDocId(e.target.value)}
-            className="px-3 py-2 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-xs text-slate-700 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 max-w-[180px]"
-          >
-            <option value="all">Tous les médecins</option>
-            {doctors.map(d => (
-              <option key={d.id} value={d.user_id}>Dr. {d.prenom} {d.nom}</option>
-            ))}
-          </select>
+          {/* Doctor filter — premium dropdown */}
+          <div className="relative">
+            {filterDocId === 'all' ? (
+              <button
+                onClick={() => setShowDocDropdown(v => !v)}
+                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-xs font-medium text-slate-700 dark:text-[#94A3B8] hover:border-sky-300 dark:hover:border-sky-500/40 transition-colors"
+              >
+                <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/[0.1] flex items-center justify-center flex-shrink-0">
+                  <Users className="w-3 h-3 text-slate-500 dark:text-slate-400" />
+                </div>
+                Tous les médecins
+                <ChevronDown className="w-3 h-3 text-slate-400 ml-0.5" />
+              </button>
+            ) : (() => {
+              const selDoc = doctors.find(d => d.user_id === filterDocId);
+              const selIdx = doctors.findIndex(d => d.user_id === filterDocId);
+              if (!selDoc) return null;
+              return (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setShowDocDropdown(v => !v)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors"
+                    style={{
+                      backgroundColor: docColorLight(selIdx),
+                      borderColor: docColor(selIdx) + '60',
+                      color: docColor(selIdx),
+                    }}
+                  >
+                    <div
+                      className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0"
+                      style={{ backgroundColor: docColor(selIdx) }}
+                    >
+                      {selDoc.prenom[0]}{selDoc.nom[0]}
+                    </div>
+                    Dr. {selDoc.prenom} {selDoc.nom}
+                    {selDoc.specialite && (
+                      <span className="opacity-60">· {selDoc.specialite.slice(0, 12)}{selDoc.specialite.length > 12 ? '…' : ''}</span>
+                    )}
+                    <ChevronDown className="w-3 h-3 opacity-60 ml-0.5" />
+                  </button>
+                  <button
+                    onClick={() => setFilterDocId('all')}
+                    title="Tous les médecins"
+                    className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-lg transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5 text-slate-400" />
+                  </button>
+                </div>
+              );
+            })()}
+
+            {/* Backdrop */}
+            {showDocDropdown && (
+              <div className="fixed inset-0 z-40" onClick={() => setShowDocDropdown(false)} />
+            )}
+
+            {/* Dropdown panel */}
+            <AnimatePresence>
+              {showDocDropdown && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full left-0 mt-1.5 z-50 bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl shadow-2xl overflow-hidden"
+                  style={{ minWidth: 230 }}
+                >
+                  {/* All doctors option */}
+                  <button
+                    onClick={() => { setFilterDocId('all'); setShowDocDropdown(false); }}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-colors ${
+                      filterDocId === 'all'
+                        ? 'bg-sky-50 dark:bg-sky-500/10'
+                        : 'hover:bg-slate-50 dark:hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-white/[0.1] flex items-center justify-center flex-shrink-0">
+                      <Users className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                    </div>
+                    <span className="text-xs font-semibold text-slate-700 dark:text-[#E2E8F0]">
+                      Tous les médecins
+                    </span>
+                    {filterDocId === 'all' && (
+                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-sky-500 flex-shrink-0" />
+                    )}
+                  </button>
+
+                  {doctors.length > 0 && (
+                    <div className="border-t border-slate-100 dark:border-white/[0.06]" />
+                  )}
+
+                  {doctors.map((d, idx) => (
+                    <button
+                      key={d.id}
+                      onClick={() => { setFilterDocId(d.user_id); setShowDocDropdown(false); }}
+                      className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-colors ${
+                        filterDocId === d.user_id
+                          ? 'bg-sky-50 dark:bg-sky-500/10'
+                          : 'hover:bg-slate-50 dark:hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <div
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
+                        style={{ backgroundColor: docColor(idx) }}
+                      >
+                        {d.prenom[0]}{d.nom[0]}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold text-slate-800 dark:text-[#E2E8F0] truncate">
+                          Dr. {d.prenom} {d.nom}
+                        </p>
+                        {d.specialite && (
+                          <p className="text-[10px] text-slate-400 dark:text-[#475569] truncate">{d.specialite}</p>
+                        )}
+                      </div>
+                      {filterDocId === d.user_id && (
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: docColor(idx) }} />
+                      )}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* New RDV */}
           <button
@@ -603,16 +717,27 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
           />
         )}
 
-        {/* Doctor legend */}
+        {/* Doctor legend — filtered when a doctor is selected */}
         {doctors.length > 0 && (
           <div className="flex items-center gap-4 px-6 py-3 border-t border-slate-100 dark:border-white/[0.06] bg-white dark:bg-[#111827] flex-shrink-0 flex-wrap">
             <span className="text-[11px] font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wide">Médecins :</span>
-            {doctors.map((d, idx) => (
-              <div key={d.id} className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: docColor(idx) }} />
-                <span className="text-xs text-slate-600 dark:text-[#94A3B8]">Dr. {d.prenom} {d.nom}</span>
-              </div>
-            ))}
+            {doctors
+              .filter(d => filterDocId === 'all' || d.user_id === filterDocId)
+              .map((d) => {
+                const idx = doctors.findIndex(x => x.id === d.id);
+                return (
+                  <button
+                    key={d.id}
+                    onClick={() => setFilterDocId(d.user_id === filterDocId ? 'all' : d.user_id)}
+                    className="flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: docColor(idx) }} />
+                    <span className={`text-xs ${filterDocId === d.user_id ? 'font-semibold text-slate-900 dark:text-[#E2E8F0]' : 'text-slate-600 dark:text-[#94A3B8]'}`}>
+                      Dr. {d.prenom} {d.nom}
+                    </span>
+                  </button>
+                );
+              })}
           </div>
         )}
       </div>

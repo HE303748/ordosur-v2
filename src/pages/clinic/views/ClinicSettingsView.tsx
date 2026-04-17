@@ -6,6 +6,7 @@ import {
   MonitorSmartphone, AlertTriangle, LogOut, FileJson, Bot,
 } from 'lucide-react';
 import { PageTransition } from '../../../components/ui/PageTransition';
+import { Toggle } from '../../../components/ui/Toggle';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 
@@ -98,8 +99,8 @@ function SaveBtn({ saving, label = 'Enregistrer', color = 'sky', onClick, disabl
   );
 }
 
-// Toggle component
-function Toggle({ checked, onChange, label, sub }: {
+// Notification row — label on left, toggle on right
+function NotifToggleRow({ checked, onChange, label, sub }: {
   checked: boolean; onChange: (v: boolean) => void;
   label: string; sub?: string;
 }) {
@@ -109,18 +110,7 @@ function Toggle({ checked, onChange, label, sub }: {
         <p className="text-sm font-medium text-slate-800 dark:text-[#E2E8F0]">{label}</p>
         {sub && <p className="text-xs text-slate-400 dark:text-[#475569] mt-0.5">{sub}</p>}
       </div>
-      <button
-        onClick={() => onChange(!checked)}
-        className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 ${
-          checked ? 'bg-sky-500' : 'bg-slate-200 dark:bg-white/[0.1]'
-        }`}
-      >
-        <motion.span
-          animate={{ x: checked ? 16 : 2 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-          className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
-        />
-      </button>
+      <Toggle enabled={checked} onChange={onChange} />
     </div>
   );
 }
@@ -601,29 +591,10 @@ export function ClinicSettingsView() {
                         </span>
 
                         {/* Premium toggle */}
-                        <button
-                          onClick={() => updateHoraire(jour, 'ouvert', !isOpen)}
-                          style={{
-                            width: 44, height: 24, borderRadius: 12,
-                            backgroundColor: isOpen ? '#0EA5E9' : '#CBD5E1',
-                            position: 'relative', flexShrink: 0, border: 'none',
-                            transition: 'background-color 0.2s ease', cursor: 'pointer', padding: 0,
-                          }}
-                          aria-label={`${isOpen ? 'Fermer' : 'Ouvrir'} ${jour}`}
-                        >
-                          <motion.span
-                            animate={{ x: isOpen ? 22 : 2 }}
-                            initial={false}
-                            transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                            style={{
-                              position: 'absolute', top: 2,
-                              width: 20, height: 20,
-                              backgroundColor: '#ffffff',
-                              borderRadius: '50%',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                            }}
-                          />
-                        </button>
+                        <Toggle
+                          enabled={isOpen}
+                          onChange={v => updateHoraire(jour, 'ouvert', v)}
+                        />
 
                         {/* Status label */}
                         <span className={`text-xs font-medium flex-1 ${
@@ -755,25 +726,25 @@ export function ClinicSettingsView() {
               <StatusMsg msg={notifMsg} />
 
               <div className="space-y-1">
-                <Toggle
+                <NotifToggleRow
                   checked={notifPrefs.invitationAcceptee}
                   onChange={v => setNotifPrefs(p => ({ ...p, invitationAcceptee: v }))}
                   label="Invitation médecin acceptée"
                   sub="Notifier quand un médecin rejoint la clinique"
                 />
-                <Toggle
+                <NotifToggleRow
                   checked={notifPrefs.interactionDangereuse}
                   onChange={v => setNotifPrefs(p => ({ ...p, interactionDangereuse: v }))}
                   label="Interaction dangereuse détectée"
                   sub="Alerte immédiate pour chaque interaction médicamenteuse majeure"
                 />
-                <Toggle
+                <NotifToggleRow
                   checked={notifPrefs.rapportMensuel}
                   onChange={v => setNotifPrefs(p => ({ ...p, rapportMensuel: v }))}
                   label="Rapport mensuel automatique"
                   sub="Envoi par email le 1er de chaque mois"
                 />
-                <Toggle
+                <NotifToggleRow
                   checked={notifPrefs.patientCritique}
                   onChange={v => setNotifPrefs(p => ({ ...p, patientCritique: v }))}
                   label="Patient à risque critique"
