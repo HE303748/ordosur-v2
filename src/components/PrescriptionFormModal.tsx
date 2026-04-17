@@ -65,7 +65,7 @@ export function PrescriptionFormModal({
   isOpen,
   onClose,
   patient,
-  initialMedications,
+  initialMedications = [],
   onPreview
 }: PrescriptionFormModalProps) {
   const [motif, setMotif] = useState('');
@@ -75,7 +75,7 @@ export function PrescriptionFormModal({
   const [appointmentTime, setAppointmentTime] = useState('');
 
   useEffect(() => {
-    if (isOpen && initialMedications.length > 0) {
+    if (isOpen && initialMedications?.length > 0) {
       const meds = initialMedications.map((med, idx) => {
         const suggestion = getDosageSuggestion(med.nom);
         return {

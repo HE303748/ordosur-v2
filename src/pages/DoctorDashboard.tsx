@@ -812,12 +812,21 @@ function CheckerView({
                 </p>
               </div>
 
-              <div className="flex justify-center pt-2">
+              <div className="flex flex-col items-center gap-2 pt-2">
+                {!selectedPatient && (
+                  <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl px-4 py-2">
+                    ⚠️ Veuillez d'abord sélectionner un patient
+                  </p>
+                )}
                 <Button
-                  onClick={() => setShowPrescriptionForm(true)}
+                  onClick={() => {
+                    if (!selectedPatient) return;
+                    setShowPrescriptionForm(true);
+                  }}
                   variant="primary"
                   size="lg"
                   className="px-8"
+                  disabled={!selectedPatient}
                 >
                   <FileText className="w-4 h-4 mr-2" />
                   Créer une ordonnance
@@ -974,6 +983,11 @@ function OrdonnancesView({ onNavigate, doctorId }: { onNavigate: (v: ViewType) =
 
 function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: string) => void; user: any; doctorProfile: any }) {
   const [activeSection, setActiveSection] = useState<'profil' | 'cabinet' | 'securite' | 'ia'>('profil');
+  const [apiKey, setApiKey]         = useState(() => {
+    try { return localStorage.getItem('ordosur_anthropic_key') || ''; } catch { return ''; }
+  });
+  const [apiKeyMsg, setApiKeyMsg]   = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [apiTesting, setApiTesting] = useState(false);
 
   const sections = [
     { id: 'profil',   label: '👤 Profil'   },
@@ -1083,23 +1097,90 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
             )}
 
             {activeSection === 'ia' && (
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-                <h3 className="font-bold text-slate-900 mb-2">Assistant IA (Claude)</h3>
-                <p className="text-sm text-slate-500 mb-4">
-                  L'Assistant IA utilise Claude d'Anthropic. Configurez votre clé API pour l'activer.
-                </p>
+              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Clé API Anthropic</label>
-                  <input
-                    type="password"
-                    placeholder="sk-ant-..."
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 font-mono"
-                  />
-                  <p className="text-xs text-slate-400 mt-2">
-                    Variable d'environnement : <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono">VITE_ANTHROPIC_API_KEY</code>
+                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-1">Assistant IA (Claude)</h3>
+                  <p className="text-sm text-slate-500 dark:text-[#94A3B8]">
+                    L'Assistant IA utilise Claude d'Anthropic. Obtenez votre clé sur{' '}
+                    <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer"
+                      className="text-sky-600 dark:text-sky-400 underline">console.anthropic.com</a>
                   </p>
                 </div>
-                <div className="mt-4 p-3 bg-sky-50 rounded-xl border border-sky-100 text-xs text-sky-800">
+
+                {apiKeyMsg && (
+                  <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium ${
+                    apiKeyMsg.type === 'success'
+                      ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+                      : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
+                  }`}>
+                    {apiKeyMsg.text}
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">
+                    Clé API Anthropic
+                  </label>
+                  <input
+                    type="password"
+                    value={apiKey}
+                    onChange={e => setApiKey(e.target.value)}
+                    placeholder="sk-ant-api03-..."
+                    className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 font-mono"
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      try {
+                        if (apiKey.trim()) localStorage.setItem('ordosur_anthropic_key', apiKey.trim());
+                        else localStorage.removeItem('ordosur_anthropic_key');
+                        setApiKeyMsg({ type: 'success', text: '✓ Clé API sauvegardée dans le navigateur.' });
+                        setTimeout(() => setApiKeyMsg(null), 3000);
+                      } catch {
+                        setApiKeyMsg({ type: 'error', text: 'Erreur lors de la sauvegarde.' });
+                      }
+                    }}
+                    className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold transition-colors"
+                  >
+                    Sauvegarder
+                  </button>
+                  <button
+                    disabled={!apiKey.trim() || apiTesting}
+                    onClick={async () => {
+                      setApiTesting(true); setApiKeyMsg(null);
+                      try {
+                        const res = await fetch('https://api.anthropic.com/v1/messages', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'x-api-key': apiKey.trim(),
+                            'anthropic-version': '2023-06-01',
+                            'anthropic-dangerous-allow-browser': 'true',
+                          },
+                          body: JSON.stringify({
+                            model: 'claude-opus-4-5',
+                            max_tokens: 10,
+                            messages: [{ role: 'user', content: 'Test' }],
+                          }),
+                        });
+                        if (res.ok) setApiKeyMsg({ type: 'success', text: '✅ Connexion réussie ! Clé API valide.' });
+                        else { const d = await res.json().catch(() => ({})); throw new Error(d?.error?.message || `HTTP ${res.status}`); }
+                      } catch (e: unknown) {
+                        setApiKeyMsg({ type: 'error', text: `❌ Erreur : ${e instanceof Error ? e.message : String(e)}` });
+                      } finally {
+                        setApiTesting(false);
+                      }
+                    }}
+                    className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-[#94A3B8] rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors disabled:opacity-50"
+                  >
+                    {apiTesting && <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />}
+                    Tester la connexion
+                  </button>
+                </div>
+
+                <div className="p-3 bg-sky-50 dark:bg-sky-500/[0.08] rounded-xl border border-sky-100 dark:border-sky-500/20 text-xs text-sky-800 dark:text-sky-400">
                   🤖 Modèle : <strong>claude-opus-4-5</strong> — Questions médicales, interactions, posologies, diagnostics différentiels
                 </div>
               </div>
@@ -1594,8 +1675,8 @@ export function DoctorDashboard() {
           isOpen={showPrescriptionForm}
           onClose={() => setShowPrescriptionForm(false)}
           patient={selectedPatient}
-          selectedMedications={selectedMeds}
-          onPrescriptionCreated={(data: any) => {
+          initialMedications={selectedMeds.map(m => ({ nom: (m as any).nom_commercial || m.nom || '' }))}
+          onPreview={(data) => {
             setPrescriptionData(data);
             setShowPrescriptionForm(false);
             setShowPrescriptionPreview(true);

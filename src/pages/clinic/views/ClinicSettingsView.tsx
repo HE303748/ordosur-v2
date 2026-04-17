@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Save, Lock, Shield, Building2, User, Check, Eye, EyeOff,
   Bell, Upload, X, Camera, Clock, Plus, Minus, Download,
-  MonitorSmartphone, AlertTriangle, LogOut, FileJson,
+  MonitorSmartphone, AlertTriangle, LogOut, FileJson, Bot,
 } from 'lucide-react';
 import { PageTransition } from '../../../components/ui/PageTransition';
 import { supabase } from '../../../lib/supabase';
@@ -141,7 +141,7 @@ interface HoraireJour {
   fin: string;
 }
 
-type TabType = 'clinique' | 'profil' | 'notifications' | 'securite';
+type TabType = 'clinique' | 'profil' | 'notifications' | 'securite' | 'ia';
 
 interface NotifPrefs {
   invitationAcceptee: boolean;
@@ -202,6 +202,13 @@ export function ClinicSettingsView() {
   // ── Security ──────────────────────────────────────────────────────────────
   const [exportLoading, setExportLoading] = useState(false);
   const [signOutLoading, setSignOutLoading] = useState(false);
+
+  // ── IA ────────────────────────────────────────────────────────────────────
+  const [iaApiKey, setIaApiKey]     = useState(() => {
+    try { return localStorage.getItem('ordosur_anthropic_key') || ''; } catch { return ''; }
+  });
+  const [iaMsg, setIaMsg]           = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [iaTesting, setIaTesting]   = useState(false);
 
   // ── Load data ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -404,6 +411,7 @@ export function ClinicSettingsView() {
     { key: 'profil',        label: 'Mon profil',      icon: User      },
     { key: 'notifications', label: 'Notifications',  icon: Bell      },
     { key: 'securite',      label: 'Sécurité',       icon: Shield    },
+    { key: 'ia',            label: 'Assistant IA',   icon: Bot       },
   ];
 
   // ── Specialité toggle ──────────────────────────────────────────────────────
@@ -811,6 +819,139 @@ export function ClinicSettingsView() {
                   : <Download className="w-4 h-4" />}
                 {exportLoading ? 'Génération…' : 'Télécharger mes données (JSON)'}
               </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════
+            TAB 5 : ASSISTANT IA
+        ══════════════════════════════════════════════════════════ */}
+        {activeTab === 'ia' && (
+          <motion.div key="ia" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+            className="space-y-4">
+
+            <div className={cardCls}>
+              <SectionHeader icon={Bot} title="Assistant IA (Claude)"
+                sub="Configurez votre clé API Anthropic pour activer l'assistant" color="sky" />
+
+              <AnimatePresence>
+                {iaMsg && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                    className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium ${
+                      iaMsg.type === 'success'
+                        ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+                        : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
+                    }`}
+                  >
+                    {iaMsg.type === 'success' ? <Check className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+                    {iaMsg.text}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <Field
+                label="Clé API Anthropic"
+                hint="Obtenez votre clé sur console.anthropic.com — commence par sk-ant-"
+              >
+                <input
+                  type="password"
+                  value={iaApiKey}
+                  onChange={e => setIaApiKey(e.target.value)}
+                  placeholder="sk-ant-api03-..."
+                  className={`${inputCls} font-mono`}
+                />
+              </Field>
+
+              <div className="flex gap-3 pt-1">
+                <button
+                  onClick={() => {
+                    try {
+                      if (iaApiKey.trim()) localStorage.setItem('ordosur_anthropic_key', iaApiKey.trim());
+                      else localStorage.removeItem('ordosur_anthropic_key');
+                      setIaMsg({ type: 'success', text: '✓ Clé API sauvegardée dans le navigateur.' });
+                      setTimeout(() => setIaMsg(null), 3000);
+                    } catch {
+                      setIaMsg({ type: 'error', text: 'Erreur lors de la sauvegarde.' });
+                    }
+                  }}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold rounded-xl transition-colors"
+                >
+                  <Save className="w-4 h-4" />
+                  Sauvegarder
+                </button>
+
+                <button
+                  disabled={!iaApiKey.trim() || iaTesting}
+                  onClick={async () => {
+                    setIaTesting(true); setIaMsg(null);
+                    try {
+                      const res = await fetch('https://api.anthropic.com/v1/messages', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'x-api-key': iaApiKey.trim(),
+                          'anthropic-version': '2023-06-01',
+                          'anthropic-dangerous-allow-browser': 'true',
+                        },
+                        body: JSON.stringify({
+                          model: 'claude-opus-4-5',
+                          max_tokens: 10,
+                          messages: [{ role: 'user', content: 'Test' }],
+                        }),
+                      });
+                      if (res.ok) {
+                        setIaMsg({ type: 'success', text: '✅ Connexion réussie ! Clé API valide.' });
+                      } else {
+                        const d = await res.json().catch(() => ({}));
+                        throw new Error((d as { error?: { message?: string } })?.error?.message || `HTTP ${res.status}`);
+                      }
+                    } catch (e: unknown) {
+                      setIaMsg({ type: 'error', text: `❌ Erreur : ${e instanceof Error ? e.message : String(e)}` });
+                    } finally {
+                      setIaTesting(false);
+                    }
+                  }}
+                  className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-[#94A3B8] text-sm font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors disabled:opacity-50"
+                >
+                  {iaTesting && <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />}
+                  Tester la connexion
+                </button>
+              </div>
+            </div>
+
+            <div className={cardCls}>
+              <SectionHeader icon={Bot} title="Modèle et capacités"
+                sub="Informations sur l'assistant IA" color="violet" />
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-white/[0.03] rounded-xl border border-slate-100 dark:border-white/[0.06]">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-[#E2E8F0]">Modèle actif</p>
+                    <p className="text-xs text-slate-400 dark:text-[#475569] mt-0.5">Version Claude utilisée</p>
+                  </div>
+                  <span className="px-3 py-1 bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-400 text-xs font-bold rounded-full">
+                    claude-opus-4-5
+                  </span>
+                </div>
+
+                {[
+                  'Gestion de la clinique et des médecins',
+                  'Questions médicales générales',
+                  'Analyse des interactions médicamenteuses',
+                  "Optimisation de l'agenda et des processus",
+                  'Interprétation des statistiques',
+                ].map(cap => (
+                  <div key={cap} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-[#94A3B8]">
+                    <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                    {cap}
+                  </div>
+                ))}
+
+                <p className="text-xs text-slate-400 dark:text-[#475569] pt-1 italic">
+                  Les réponses sont indicatives et ne remplacent pas l'expertise médicale.
+                </p>
+              </div>
             </div>
           </motion.div>
         )}

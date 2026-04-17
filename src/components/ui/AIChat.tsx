@@ -2,15 +2,22 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Send, Bot, User, Loader2, Sparkles } from 'lucide-react';
 
-const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY || '';
+// Resolve API key: localStorage first, then env variable
+function getApiKey(): string {
+  try {
+    const stored = localStorage.getItem('ordosur_anthropic_key');
+    if (stored && stored.trim()) return stored.trim();
+  } catch {}
+  return import.meta.env.VITE_ANTHROPIC_API_KEY || '';
+}
 
-const SYSTEM_PROMPT =
-  "Tu es un assistant médical expert pour les médecins marocains francophones. " +
-  "Tu fournis des informations médicales précises sur les médicaments, interactions, posologies et pathologies. " +
-  "Tu es concis, précis et professionnel. " +
+const DEFAULT_SYSTEM_PROMPT =
+  'Tu es un assistant médical expert pour les médecins marocains francophones. ' +
+  'Tu fournis des informations médicales précises sur les médicaments, interactions, posologies et pathologies. ' +
+  'Tu es concis, précis et professionnel. ' +
   "Tu rappelles toujours que tes réponses sont indicatives et ne remplacent pas le jugement clinique.";
 
-const SUGGESTED = [
+const DEFAULT_SUGGESTED = [
   'Interactions Metformine + Ibuprofène ?',
   'Posologie Amoxicilline enfant 10 kg ?',
   'Contre-indications Ramipril en HTA ?',
@@ -22,7 +29,7 @@ interface Message {
   content: string;
 }
 
-interface AIChatProps {
+export interface AIChatProps {
   onClose: () => void;
   selectedPatient?: {
     prenom: string;
@@ -30,13 +37,28 @@ interface AIChatProps {
     pathologies?: string[];
     allergies_medicaments?: string[];
   } | null;
+  /** Custom system prompt — defaults to doctor medical prompt */
+  systemPrompt?: string;
+  /** Custom suggested questions — defaults to doctor questions */
+  suggestedQuestions?: string[];
+  /** Context label shown in header */
+  contextLabel?: string;
 }
 
-export function AIChat({ onClose, selectedPatient }: AIChatProps) {
+export function AIChat({
+  onClose,
+  selectedPatient,
+  systemPrompt,
+  suggestedQuestions,
+  contextLabel,
+}: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  const effectiveSystem = systemPrompt || DEFAULT_SYSTEM_PROMPT;
+  const effectiveSuggested = suggestedQuestions || DEFAULT_SUGGESTED;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -44,8 +66,12 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
 
   const patientCtx = selectedPatient
     ? `\n\nContexte patient actif : ${selectedPatient.prenom} ${selectedPatient.nom}` +
-      (selectedPatient.pathologies?.length ? `, pathologies : ${selectedPatient.pathologies.join(', ')}` : '') +
-      (selectedPatient.allergies_medicaments?.length ? `, allergies : ${selectedPatient.allergies_medicaments.join(', ')}` : '')
+      (selectedPatient.pathologies?.length
+        ? `, pathologies : ${selectedPatient.pathologies.join(', ')}`
+        : '') +
+      (selectedPatient.allergies_medicaments?.length
+        ? `, allergies : ${selectedPatient.allergies_medicaments.join(', ')}`
+        : '')
     : '';
 
   const send = async (text: string) => {
@@ -56,29 +82,40 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
     setInput('');
     setLoading(true);
     try {
-      if (!ANTHROPIC_API_KEY) throw new Error('no_key');
+      const apiKey = getApiKey();
+      if (!apiKey) throw new Error('no_key');
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': ANTHROPIC_API_KEY,
+          'x-api-key': apiKey,
           'anthropic-version': '2023-06-01',
           'anthropic-dangerous-allow-browser': 'true',
         },
         body: JSON.stringify({
           model: 'claude-opus-4-5',
           max_tokens: 1024,
-          system: SYSTEM_PROMPT + patientCtx,
+          system: effectiveSystem + patientCtx,
           messages: [...messages, userMsg],
         }),
       });
-      if (!res.ok) throw new Error('api_error');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData?.error?.message || `HTTP ${res.status}`);
+      }
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.content?.[0]?.text || 'Erreur inattendue.' }]);
-    } catch (err: any) {
-      const msg = err?.message === 'no_key'
-        ? 'Clé API manquante. Ajoutez VITE_ANTHROPIC_API_KEY dans votre fichier .env'
-        : "Erreur de connexion à l'API Anthropic.";
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: data.content?.[0]?.text || 'Réponse vide.' },
+      ]);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      const msg =
+        errMsg === 'no_key'
+          ? '🔑 Clé API manquante. Configurez votre clé API dans les paramètres (onglet 🤖 IA).'
+          : errMsg.includes('401') || errMsg.includes('invalid')
+          ? '❌ Clé API invalide. Vérifiez votre clé dans Paramètres → IA.'
+          : `⚠️ Erreur de connexion à l'API Anthropic : ${errMsg}`;
       setMessages(prev => [...prev, { role: 'assistant', content: msg }]);
     } finally {
       setLoading(false);
@@ -103,7 +140,9 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-[15px] leading-tight">Assistant Ordosur</h2>
-          <p className="text-sky-100/70 text-xs">Powered by Claude</p>
+          <p className="text-sky-100/70 text-xs">
+            {contextLabel || 'Powered by Claude'}
+          </p>
         </div>
         {selectedPatient && (
           <div className="px-2.5 py-1 bg-white/20 rounded-lg max-w-[90px]">
@@ -142,7 +181,7 @@ export function AIChat({ onClose, selectedPatient }: AIChatProps) {
               Suggestions
             </p>
             <div className="space-y-2">
-              {SUGGESTED.map(q => (
+              {effectiveSuggested.map(q => (
                 <button
                   key={q}
                   onClick={() => send(q)}

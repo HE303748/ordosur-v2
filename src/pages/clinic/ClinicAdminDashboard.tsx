@@ -146,7 +146,7 @@ export function ClinicAdminDashboard() {
 
   /* ── Render ─────────────────────────────────────────────────────── */
   return (
-    <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-[#0A0F1E]">
+    <div className="flex h-screen bg-slate-50 dark:bg-[#0A0F1E] overflow-hidden font-sans">
       <ClinicSidebar
         activeView={activeView}
         onNavigate={setActiveView}
@@ -160,14 +160,14 @@ export function ClinicAdminDashboard() {
         notifCount={unreadCount}
       />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopBar
           activeView={activeView}
           userInitials={initials}
           onNavigate={(v) => setActiveView(v as ClinicViewType)}
         />
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-auto bg-slate-50 dark:bg-[#0A0F1E]">
           <AnimatePresence mode="wait">
             {activeView === 'home' && (
               <ClinicHomeView key="home" doctors={doctors} orgId={user?.org_id} />
@@ -208,7 +208,24 @@ export function ClinicAdminDashboard() {
       </div>
 
       <AnimatePresence>
-        {showAIChat && <AIChat onClose={() => setShowAIChat(false)} />}
+        {showAIChat && (
+          <AIChat
+            onClose={() => setShowAIChat(false)}
+            systemPrompt={
+              `Tu es un assistant intelligent pour l'administrateur de la clinique "${clinicProfile?.name || 'OrdoSur'}". ` +
+              'Tu aides avec la gestion de la clinique, les statistiques, les questions médicales générales, la coordination des médecins et l\'optimisation des processus. ' +
+              'Tu es concis, professionnel et orienté solutions. ' +
+              "Tu rappelles que tes réponses sont indicatives et ne remplacent pas l'expertise médicale."
+            }
+            suggestedQuestions={[
+              'Quels sont mes médecins les plus actifs ?',
+              'Comment interpréter les interactions médicamenteuses ?',
+              'Quels patients sont à risque élevé ?',
+              "Comment optimiser l'agenda de ma clinique ?",
+            ]}
+            contextLabel={`Clinique ${clinicProfile?.name || ''}`}
+          />
+        )}
       </AnimatePresence>
 
       <ToastManager toasts={toasts} onRemove={removeToast} />
