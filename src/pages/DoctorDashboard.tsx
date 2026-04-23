@@ -1399,7 +1399,7 @@ export function DoctorDashboard() {
     setMedSearchLoading(true);
     const { data } = await supabase.from('medicaments')
       .select('id, nom, nom_commercial, dci, forme, dosage, laboratoire, pays, ppv_ma')
-      .or(`nom_commercial.ilike.%${term}%,dci.ilike.%${term}%`)
+      .or(`nom_commercial.ilike.%${term}%,nom.ilike.%${term}%,dci.ilike.%${term}%`)
       .order('pays', { ascending: false, nullsFirst: false })
       .order('nom_commercial').limit(15);
     const sorted = (data || []).sort((a, b) => {
