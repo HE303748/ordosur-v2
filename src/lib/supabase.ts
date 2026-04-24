@@ -103,4 +103,7 @@ export interface Medicament {
   voie_administration?: string | null;
   pays?: string | null;
   ppv_ma?: number | null;
+  ean?: string | null;
+  classe_therapeutique?: string | null;
+  remboursement_cnops?: boolean | null;
 }

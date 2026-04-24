@@ -634,20 +634,47 @@ function CheckerView({
                         <button
                           key={med.id}
                           onMouseDown={e => { e.preventDefault(); addMedication(med); }}
-                          className="w-full px-4 py-3 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
+                          className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
-                          <div className="flex items-center gap-2">
-                            {med.pays === 'MA' && <span className="text-sm">🇲🇦</span>}
-                            <span className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm">{med.nom_commercial || med.nom}</span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                            {med.dci && <span className="text-xs text-slate-500">{med.dci}</span>}
-                            {med.dosage && <span className="text-xs text-violet-600 font-medium">{med.dosage}</span>}
-                            {med.forme && <span className="text-xs text-slate-400 italic">{med.forme}</span>}
+                          {/* Ligne 1 : badge pays + nom commercial + badge CNOPS */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {med.pays === 'MA' && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40 flex-shrink-0">
+                                🇲🇦 MAR
+                              </span>
+                            )}
+                            <span className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm leading-tight">
+                              {med.nom_commercial || med.nom}
+                            </span>
+                            {med.remboursement_cnops && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/40 flex-shrink-0">
+                                ✓ CNOPS
+                              </span>
+                            )}
                             {med.ppv_ma != null && (
-                              <span className="text-xs font-semibold text-emerald-600">PPV {med.ppv_ma.toFixed(2)} MAD</span>
+                              <span className="ml-auto text-xs font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                                {med.ppv_ma.toFixed(2)} MAD
+                              </span>
                             )}
                           </div>
+                          {/* Ligne 2 : DCI + dosage + forme */}
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap pl-0.5">
+                            {med.dci && (
+                              <span className="text-xs text-slate-500 dark:text-slate-400">{med.dci}</span>
+                            )}
+                            {med.dosage && (
+                              <span className="text-xs text-violet-600 dark:text-violet-400 font-medium">· {med.dosage}</span>
+                            )}
+                            {med.forme && (
+                              <span className="text-xs text-slate-400 dark:text-slate-500 italic">· {med.forme}</span>
+                            )}
+                          </div>
+                          {/* Ligne 3 : laboratoire */}
+                          {med.laboratoire && (
+                            <div className="mt-0.5 pl-0.5">
+                              <span className="text-[10px] text-slate-400 dark:text-slate-600">{med.laboratoire}</span>
+                            </div>
+                          )}
                         </button>
                       ))}
                     </div>
@@ -1397,17 +1424,11 @@ export function DoctorDashboard() {
   const searchMedications = async (term: string) => {
     if (term.length < 2) { setMedSearchResults([]); return; }
     setMedSearchLoading(true);
-    const { data } = await supabase.from('medicaments')
-      .select('id, nom, nom_commercial, dci, forme, dosage, laboratoire, pays, ppv_ma')
-      .or(`nom_commercial.ilike.%${term}%,nom.ilike.%${term}%,dci.ilike.%${term}%`)
-      .order('pays', { ascending: false, nullsFirst: false })
-      .order('nom_commercial').limit(15);
-    const sorted = (data || []).sort((a, b) => {
-      if (a.pays === 'MA' && b.pays !== 'MA') return -1;
-      if (a.pays !== 'MA' && b.pays === 'MA') return 1;
-      return 0;
-    }).slice(0, 10);
-    setMedSearchResults(sorted);
+    const { data } = await supabase.rpc('search_medicaments', {
+      search_term: term,
+      limit_count: 15,
+    });
+    setMedSearchResults((data as Medicament[]) || []);
     setMedSearchLoading(false);
   };
 
