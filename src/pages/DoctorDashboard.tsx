@@ -776,7 +776,7 @@ function CheckerView({
                   variant="primary"
                   size="lg"
                   loading={loading}
-                  disabled={!selectedPatient || selectedMeds.length < 2}
+                  disabled={!selectedPatient || selectedMeds.length < 1}
                   className="flex-1"
                 >
                   <Shield className="w-4 h-4 mr-2" />
@@ -1328,6 +1328,7 @@ export function DoctorDashboard() {
         const conditions = [
           ...(selectedPatient.pathologies || []),
           ...(selectedPatient.allergies_medicaments || []),
+          ...(selectedPatient.allergies_alimentaires || []),
         ].map(c => c.toLowerCase());
 
         for (const contra of allContraindications) {
@@ -1567,7 +1568,7 @@ export function DoctorDashboard() {
   const removeMedication = (medId: string) => setSelectedMeds(selectedMeds.filter(m => m.id !== medId));
 
   const checkInteractions = async () => {
-    if (selectedMeds.length < 2) { setToast({ message: 'Sélectionnez au moins 2 médicaments', type: 'error' }); return; }
+    if (selectedMeds.length < 1) { setToast({ message: 'Sélectionnez au moins 1 médicament', type: 'error' }); return; }
     if (!selectedPatient) { setToast({ message: 'Sélectionnez un patient', type: 'error' }); return; }
     setLoading(true);
     await new Promise(r => setTimeout(r, 200));
@@ -1575,11 +1576,14 @@ export function DoctorDashboard() {
     let overallSeverity: 'safe' | 'attention' | 'dangerous' = 'safe';
     const reasons: string[] = [];
 
-    for (let i = 0; i < selectedMeds.length; i++) {
-      for (let j = i + 1; j < selectedMeds.length; j++) {
-        if (selectedMeds[i].nom === selectedMeds[j].nom) {
-          overallSeverity = 'dangerous';
-          reasons.push(`DUPLICATION : ${selectedMeds[i].nom} prescrit en double — risque de surdosage`);
+    // Doublons — uniquement si ≥ 2 médicaments
+    if (selectedMeds.length >= 2) {
+      for (let i = 0; i < selectedMeds.length; i++) {
+        for (let j = i + 1; j < selectedMeds.length; j++) {
+          if (selectedMeds[i].nom === selectedMeds[j].nom) {
+            overallSeverity = 'dangerous';
+            reasons.push(`DUPLICATION : ${selectedMeds[i].nom} prescrit en double — risque de surdosage`);
+          }
         }
       }
     }
@@ -1592,13 +1596,18 @@ export function DoctorDashboard() {
       reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
 
-    const nbCI = interactionAlerts.filter(a => a.severite === 'contre_indication').length;
+    const nbCI  = interactionAlerts.filter(a => a.severite === 'contre_indication').length;
     const nbMaj = interactionAlerts.filter(a => a.severite === 'majeure').length;
     const description =
-      overallSeverity === 'dangerous' ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé` :
-      overallSeverity === 'attention' ? `${nbMaj} interaction(s) majeure(s) — Précautions requises` :
-      reasons.length > 0 ? reasons[0] :
-      `✓ Aucune interaction connue entre les ${selectedMeds.length} médicaments sélectionnés`;
+      overallSeverity === 'dangerous'
+        ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé`
+        : overallSeverity === 'attention'
+          ? `${nbMaj} interaction(s) signalée(s) — Précautions requises`
+          : reasons.length > 0
+            ? reasons[0]
+            : selectedMeds.length === 1
+              ? `✓ Aucune contre-indication connue pour ${selectedMeds[0].nom} avec le profil de ce patient`
+              : `✓ Aucune interaction connue entre les ${selectedMeds.length} médicaments sélectionnés`;
 
     setResult({ severity: overallSeverity, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);

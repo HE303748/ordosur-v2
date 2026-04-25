@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Phone, Mail, MapPin, Calendar, Heart, Plus, X, Pill, Leaf, Scissors, ClipboardList } from 'lucide-react';
 import { Button } from './Button';
 import { Input } from './Input';
-import { Patient } from '../lib/supabase';
+import { Patient, supabase } from '../lib/supabase';
 
 interface PatientFormProps {
   patient?: Patient | null;
@@ -12,23 +12,21 @@ interface PatientFormProps {
 
 const GROUPES_SANGUINS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
-const PATHOLOGIES_COMMUNES = [
-  'Diabète type 1', 'Diabète type 2', 'Hypertension artérielle', 'Asthme',
-  'BPCO', 'Insuffisance cardiaque', 'Coronaropathie', 'Fibrillation atriale',
-  'Insuffisance rénale chronique', 'Hypothyroïdie', 'Hyperthyroïdie',
-  'Dépression', 'Anxiété', 'Épilepsie', 'Maladie de Parkinson',
-  'Polyarthrite rhumatoïde', 'Lupus', 'Psoriasis', 'Cirrhose hépatique',
+// Fallbacks si le chargement DB échoue
+const PATHOLOGIES_FALLBACK = [
+  'Diabète type 2', 'Hypertension artérielle', 'Asthme', 'BPCO',
+  'Insuffisance cardiaque', 'Insuffisance rénale chronique', 'Épilepsie',
+  'Hypothyroïdie', 'Dépression', 'Anxiété', 'Maladie de Parkinson',
 ];
-
-const ALLERGIES_MED_COMMUNES = [
-  'Pénicillines', 'Amoxicilline', 'Céphalosporines', 'Sulfamides',
-  'Aspirine', 'AINS', 'Paracétamol', 'Morphine', 'Codéine',
-  'Iode (produit de contraste)', 'Latex', 'Quinolones', 'Macrolides',
+const ALLERGIES_MED_FALLBACK = [
+  'Allergie aux Pénicillines', 'Allergie aux Céphalosporines', 'Allergie aux AINS',
+  'Allergie à l\'Aspirine', 'Allergie aux Macrolides', 'Allergie aux Fluoroquinolones',
+  'Allergie à la Morphine', 'Allergie aux Statines', 'Allergie aux IEC',
 ];
-
-const ALLERGIES_ALIM_COMMUNES = [
-  'Arachides', 'Fruits à coque', 'Gluten', 'Lactose', 'Œufs',
-  'Poissons', 'Crustacés', 'Soja', 'Céleri', 'Moutarde', 'Sésame', 'Lupin',
+const ALLERGIES_ALIM_FALLBACK = [
+  'Allergie aux Arachides', 'Allergie aux Noix', 'Allergie au Lait de vache',
+  'Allergie aux Œufs', 'Allergie au Blé/Gluten', 'Allergie au Soja',
+  'Allergie aux Crustacés', 'Allergie aux Poissons',
 ];
 
 function BadgeSelector({
@@ -137,6 +135,26 @@ function BadgeSelector({
 }
 
 export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
+  // ── DB suggestions ──────────────────────────────────────────────────────
+  const [dbPathologies, setDbPathologies]   = useState<string[]>(PATHOLOGIES_FALLBACK);
+  const [dbAllergiesMed, setDbAllergiesMed] = useState<string[]>(ALLERGIES_MED_FALLBACK);
+  const [dbAllergiesAlim, setDbAllergiesAlim] = useState<string[]>(ALLERGIES_ALIM_FALLBACK);
+
+  useEffect(() => {
+    const load = async () => {
+      const [pathRes, medRes, alimRes] = await Promise.all([
+        supabase.from('pathologies').select('nom_fr').order('nom_fr'),
+        supabase.from('allergies_reference').select('nom_fr').eq('type', 'medicamenteuse').order('nom_fr'),
+        supabase.from('allergies_reference').select('nom_fr').eq('type', 'alimentaire').order('nom_fr'),
+      ]);
+      if (pathRes.data?.length) setDbPathologies(pathRes.data.map(r => r.nom_fr));
+      if (medRes.data?.length)  setDbAllergiesMed(medRes.data.map(r => r.nom_fr));
+      if (alimRes.data?.length) setDbAllergiesAlim(alimRes.data.map(r => r.nom_fr));
+    };
+    load();
+  }, []);
+
+  // ── Form state ──────────────────────────────────────────────────────────
   const [formData, setFormData] = useState({
     prenom: '',
     nom: '',
@@ -293,35 +311,35 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
 
           {/* Pathologies */}
           <BadgeSelector
-            label="Pathologies chroniques"
+            label={`Pathologies chroniques (${dbPathologies.length} disponibles)`}
             icon={Heart}
             color="blue"
-            suggestions={PATHOLOGIES_COMMUNES}
+            suggestions={dbPathologies}
             values={formData.pathologies}
             onChange={v => setFormData(prev => ({ ...prev, pathologies: v }))}
-            placeholder="Ajouter une pathologie..."
+            placeholder="Rechercher une pathologie..."
           />
 
           {/* Allergies médicaments */}
           <BadgeSelector
-            label="Allergies médicamenteuses"
+            label={`Allergies médicamenteuses (${dbAllergiesMed.length} disponibles)`}
             icon={Pill}
             color="red"
-            suggestions={ALLERGIES_MED_COMMUNES}
+            suggestions={dbAllergiesMed}
             values={formData.allergies_medicaments}
             onChange={v => setFormData(prev => ({ ...prev, allergies_medicaments: v }))}
-            placeholder="Ajouter une allergie..."
+            placeholder="Rechercher une allergie médicamenteuse..."
           />
 
           {/* Allergies alimentaires */}
           <BadgeSelector
-            label="Allergies alimentaires"
+            label={`Allergies alimentaires (${dbAllergiesAlim.length} disponibles)`}
             icon={Leaf}
             color="orange"
-            suggestions={ALLERGIES_ALIM_COMMUNES}
+            suggestions={dbAllergiesAlim}
             values={formData.allergies_alimentaires}
             onChange={v => setFormData(prev => ({ ...prev, allergies_alimentaires: v }))}
-            placeholder="Ajouter une allergie..."
+            placeholder="Rechercher une allergie alimentaire..."
           />
 
           {/* Antécédents chirurgicaux */}
