@@ -29,6 +29,7 @@ import { PageTransition } from '../components/ui/PageTransition';
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
 import { PatientTabs } from '../components/ui/PatientTabs';
 import { AgendaView } from '../components/ui/AgendaView';
+import { EncyclopedieView } from '../components/ui/EncyclopedieView';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -1915,6 +1916,10 @@ export function DoctorDashboard() {
 
             {activeView === 'agenda' && (
               <AgendaView key="agenda" patients={patients} showToast={showToast} />
+            )}
+
+            {activeView === 'encyclopedie' && (
+              <EncyclopedieView key="encyclopedie" />
             )}
 
             {activeView === 'settings' && (
