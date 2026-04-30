@@ -127,7 +127,7 @@ function SkeletonPatientRow() {
 }
 
 interface HomeViewProps {
-  stats: { totalPatients: number; ordonnances: number; safetyRate: number; evolution: number };
+  stats: { totalPatients: number; ordonnances: number; evolution: number };
   patients: Patient[];
   interactionAlerts: InteractionAlert[];
   onNavigate: (v: ViewType) => void;
@@ -169,13 +169,17 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       sub: 'En cours d\'analyse',
     },
     {
-      label: 'Taux de sécurité',
-      value: `${stats.safetyRate}%`,
-      icon: Shield,
-      color: 'bg-emerald-500',
-      light: 'bg-emerald-50',
-      text: 'text-emerald-600',
-      sub: 'Prescriptions vérifiées',
+      label: 'Évolution patients',
+      value: stats.evolution === 0
+        ? '—'
+        : stats.evolution > 0
+        ? `+${stats.evolution}%`
+        : `${stats.evolution}%`,
+      icon: BarChart3,
+      color: stats.evolution >= 0 ? 'bg-emerald-500' : 'bg-amber-500',
+      light: stats.evolution >= 0 ? 'bg-emerald-50' : 'bg-amber-50',
+      text:  stats.evolution >= 0 ? 'text-emerald-600' : 'text-amber-600',
+      sub: 'Nouveaux patients ce mois vs. mois précédent',
     },
   ];
 
@@ -1390,7 +1394,7 @@ export function DoctorDashboard() {
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
 
   // Stats
-  const [stats, setStats] = useState({ totalPatients: 0, ordonnances: 0, safetyRate: 100, evolution: 0 });
+  const [stats, setStats] = useState({ totalPatients: 0, ordonnances: 0, evolution: 0 });
   const [dataLoading, setDataLoading] = useState(true);
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -1579,7 +1583,7 @@ export function DoctorDashboard() {
         ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100)
         : thisMonth > 0 ? 100 : 0;
 
-      setStats({ totalPatients, ordonnances, safetyRate: 100, evolution });
+      setStats({ totalPatients, ordonnances, evolution });
     } catch (err) {
       console.error('[DoctorDashboard] loadStats error:', err);
     }
@@ -1927,6 +1931,7 @@ export function DoctorDashboard() {
             key="ai-chat"
             onClose={() => setShowAIChat(false)}
             selectedPatient={selectedPatient}
+            patients={patients}
           />
         )}
       </AnimatePresence>

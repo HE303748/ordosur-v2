@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ChevronLeft, ChevronRight, Plus, X,
+  ChevronLeft, ChevronRight, Plus, X, Search, UserPlus,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -88,6 +88,7 @@ interface RdvModalProps {
 function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps) {
   const [form, setForm] = useState<Partial<RendezVous>>({
     patient_nom:  rdv?.patient_nom  || '',
+    patient_id:   rdv?.patient_id   || null,
     date:         rdv?.date         || defaultDate || fmt(new Date()),
     heure_debut:  rdv?.heure_debut  || '09:00',
     heure_fin:    rdv?.heure_fin    || '09:30',
@@ -97,6 +98,16 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
     notes:        rdv?.notes        || '',
   });
   const [saving, setSaving] = useState(false);
+
+  // Patient autocomplete
+  const [patSearch, setPatSearch]     = useState(rdv?.patient_nom || '');
+  const [showPatDrop, setShowPatDrop] = useState(false);
+
+  const filteredPats = patSearch.trim().length >= 1
+    ? patients
+        .filter(p => `${p.prenom} ${p.nom}`.toLowerCase().includes(patSearch.toLowerCase()))
+        .slice(0, 25)
+    : patients.slice(0, 20);
 
   const set = (k: keyof RendezVous, v: any) => setForm(f => ({ ...f, [k]: v }));
 
@@ -133,17 +144,63 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className={labelCls}>Patient</label>
-            <input
-              value={form.patient_nom}
-              onChange={e => set('patient_nom', e.target.value)}
-              list="patients-list"
-              placeholder="Nom du patient..."
-              required
-              className={inputCls}
-            />
-            <datalist id="patients-list">
-              {patients.map(p => <option key={p.id} value={`${p.prenom} ${p.nom}`} />)}
-            </datalist>
+            <div className="relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <input
+                  value={patSearch}
+                  onChange={e => {
+                    const v = e.target.value;
+                    setPatSearch(v);
+                    set('patient_nom', v);
+                    set('patient_id', null);
+                    setShowPatDrop(true);
+                  }}
+                  onFocus={() => setShowPatDrop(true)}
+                  onBlur={() => setTimeout(() => setShowPatDrop(false), 200)}
+                  placeholder="Rechercher un patient de l'organisation..."
+                  required
+                  className={`${inputCls} pl-9`}
+                />
+              </div>
+              {showPatDrop && (filteredPats.length > 0 || patSearch.trim().length >= 1) && (
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl shadow-xl max-h-56 overflow-y-auto">
+                  {filteredPats.map(p => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        const name = `${p.prenom} ${p.nom}`;
+                        setPatSearch(name);
+                        set('patient_nom', name);
+                        set('patient_id', p.id);
+                        setShowPatDrop(false);
+                      }}
+                      className="w-full px-4 py-2.5 text-left hover:bg-sky-50 dark:hover:bg-sky-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
+                    >
+                      <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
+                        {p.prenom} {p.nom}
+                      </span>
+                    </button>
+                  ))}
+                  {filteredPats.length === 0 && patSearch.trim().length >= 1 && (
+                    <button
+                      type="button"
+                      onMouseDown={e => {
+                        e.preventDefault();
+                        set('patient_nom', patSearch.trim());
+                        setShowPatDrop(false);
+                      }}
+                      className="w-full px-4 py-2.5 text-left text-sm text-sky-600 dark:text-sky-400 font-semibold hover:bg-sky-50 dark:hover:bg-sky-500/[0.08] transition-colors flex items-center gap-2"
+                    >
+                      <UserPlus className="w-4 h-4 flex-shrink-0" />
+                      Créer un RDV pour « {patSearch.trim()} »
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
