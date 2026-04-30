@@ -776,7 +776,7 @@ function CheckerView({
                   variant="primary"
                   size="lg"
                   loading={loading}
-                  disabled={!selectedPatient || selectedMeds.length < 1}
+                  disabled={selectedMeds.length < 1}
                   className="flex-1"
                 >
                   <Shield className="w-4 h-4 mr-2" />
@@ -1290,53 +1290,85 @@ export function DoctorDashboard() {
     }
   }, [result]);
 
-  // Real-time interaction check
+  // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
   useEffect(() => {
     if (selectedMeds.length === 0) { setInteractionAlerts([]); return; }
 
-    const normalizedStrings = selectedMeds.map(m =>
-      normalizeDrugName((m.dci || '') + ' ' + m.nom)
-    );
+    // Normalize: strip accents, lowercase, remove non-alphanumeric
+    const norm = (s: string) =>
+      s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
+       .replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+
+    const medDCIs = selectedMeds.map(m => ({
+      ...m,
+      normalizedDCI:  norm(m.dci || ''),
+      normalizedName: norm(m.nom),
+    }));
 
     const runCheck = async () => {
       const alerts: InteractionAlert[] = [];
+      const seen = new Set<string>();
 
+      // ── 1. Drug-drug interactions (≥ 2 meds) ──────────────────────────────
       if (selectedMeds.length >= 2) {
+        const normalizedStrings = medDCIs.map(m => `${m.normalizedDCI} ${m.normalizedName}`);
         const { data: interactions } = await supabase.rpc(
           'check_drug_interactions_for_meds',
           { p_med_strings: normalizedStrings }
         );
         if (interactions) {
           for (const interaction of interactions as DbInteraction[]) {
-            const p1 = interaction.dci_1_pattern;
-            const p2 = interaction.dci_2_pattern;
+            const p1 = norm(interaction.dci_1_pattern);
+            const p2 = norm(interaction.dci_2_pattern);
             const idx1 = normalizedStrings.findIndex(s => s.includes(p1));
             const idx2 = normalizedStrings.findIndex(s => s.includes(p2) && s !== normalizedStrings[idx1]);
             const i1 = idx1 !== -1 ? idx1 : 0;
             const i2 = idx2 !== -1 ? idx2 : (idx1 === 0 ? 1 : 0);
-            alerts.push({
-              type: 'drug_drug',
-              severite: interaction.severite,
-              description: interaction.description,
-              involved: [selectedMeds[i1].nom, selectedMeds[i2].nom],
-            });
+            const key = `dd|${[selectedMeds[i1].nom, selectedMeds[i2].nom].sort().join('+')}|${interaction.description.substring(0, 40)}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              alerts.push({
+                type: 'drug_drug',
+                severite: interaction.severite,
+                description: interaction.description,
+                involved: [selectedMeds[i1].nom, selectedMeds[i2].nom],
+              });
+            }
           }
         }
       }
 
+      // ── 2. Contraindications (runs even with 1 med, requires patient) ──────
       if (selectedPatient && allContraindications.length > 0) {
-        const conditions = [
+        const patientConditions = [
           ...(selectedPatient.pathologies || []),
           ...(selectedPatient.allergies_medicaments || []),
           ...(selectedPatient.allergies_alimentaires || []),
-        ].map(c => c.toLowerCase());
+        ].map(c => norm(c));
 
         for (const contra of allContraindications) {
-          const dp = normalizeDrugName(contra.dci_pattern);
-          const cv = contra.condition_valeur.toLowerCase();
-          const matchedIdx = normalizedStrings.findIndex(s => s.includes(dp));
-          const condMatch = conditions.some(c => c.includes(cv) || cv.includes(c));
-          if (matchedIdx !== -1 && condMatch) {
+          // dci_pattern may be pipe-separated (OR): "amoxicilline|ampicilline|..."
+          const dciParts = contra.dci_pattern.split('|').map(p => norm(p.trim())).filter(p => p.length > 2);
+          const cv = norm(contra.condition_valeur);
+
+          // Find which selected med matches this dci pattern
+          const matchedIdx = medDCIs.findIndex(m =>
+            dciParts.some(dp =>
+              m.normalizedDCI.includes(dp) || m.normalizedName.includes(dp)
+            )
+          );
+          if (matchedIdx === -1) continue;
+
+          // Check patient has the contraindicated condition
+          const condMatch = patientConditions.some(pc =>
+            pc.includes(cv) || cv.includes(pc) ||
+            (cv.length > 6 && pc.includes(cv.slice(0, Math.min(cv.length, 14))))
+          );
+          if (!condMatch) continue;
+
+          const key = `ci|${selectedMeds[matchedIdx].nom}|${contra.condition_valeur.slice(0, 30)}`;
+          if (!seen.has(key)) {
+            seen.add(key);
             alerts.push({
               type: 'contraindication',
               severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
@@ -1347,13 +1379,23 @@ export function DoctorDashboard() {
         }
       }
 
-      const seen = new Set<string>();
-      setInteractionAlerts(alerts.filter(a => {
-        const key = `${a.type}|${[...a.involved].sort().join('+')}|${a.description.substring(0, 40)}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      }));
+      // ── 3. DCI non identifiée — avertissement ─────────────────────────────
+      for (const m of selectedMeds) {
+        if (!m.dci || m.dci.trim() === '') {
+          const key = `nodci|${m.nom}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            alerts.push({
+              type: 'contraindication',
+              severite: 'mineure',
+              description: `⚠ DCI non identifiée pour "${m.nom}" — vérification des contre-indications limitée.`,
+              involved: [m.nom],
+            });
+          }
+        }
+      }
+
+      setInteractionAlerts(alerts);
     };
 
     runCheck();
@@ -1568,8 +1610,8 @@ export function DoctorDashboard() {
   const removeMedication = (medId: string) => setSelectedMeds(selectedMeds.filter(m => m.id !== medId));
 
   const checkInteractions = async () => {
-    if (selectedMeds.length < 1) { setToast({ message: 'Sélectionnez au moins 1 médicament', type: 'error' }); return; }
-    if (!selectedPatient) { setToast({ message: 'Sélectionnez un patient', type: 'error' }); return; }
+    if (selectedMeds.length < 1) { showToast('Sélectionnez au moins 1 médicament', 'error'); return; }
+    if (!selectedPatient) { showToast('Sélectionnez un patient pour analyser les contre-indications', 'error'); return; }
     setLoading(true);
     await new Promise(r => setTimeout(r, 200));
 
