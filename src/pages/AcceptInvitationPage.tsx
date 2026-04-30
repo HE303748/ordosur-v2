@@ -112,6 +112,7 @@ export function AcceptInvitationPage() {
   const navigate     = useNavigate();
   const [searchParams] = useSearchParams();
   const token        = searchParams.get('token');
+  const invType      = searchParams.get('type'); // 'secretaire' | null (doctor default)
 
   const [invitation, setInvitation] = useState<InvitationData | null>(null);
   const [loading, setLoading]       = useState(true);
@@ -142,10 +143,15 @@ export function AcceptInvitationPage() {
   async function validateToken(t: string) {
     setLoading(true);
     try {
-      // 1. Fetch invitation
+      // Choose table based on invitation type
+      const tableName = invType === 'secretaire' ? 'secretaire_invitations' : 'clinic_invitations';
+      const selectFields = invType === 'secretaire'
+        ? 'id, org_id, email, prenom, nom, token, expires_at, statut'
+        : 'id, org_id, email, prenom, nom, specialite, token, expires_at, statut';
+
       const { data: inv, error: invErr } = await supabase
-        .from('clinic_invitations')
-        .select('id, org_id, email, prenom, nom, specialite, token, expires_at, statut')
+        .from(tableName)
+        .select(selectFields)
         .eq('token', t)
         .maybeSingle();
 
@@ -164,12 +170,12 @@ export function AcceptInvitationPage() {
       }
 
       if (new Date(inv.expires_at) < new Date()) {
-        setErrMsg("Ce lien d'invitation a expiré. Contactez l'administrateur de la clinique pour en recevoir un nouveau.");
+        setErrMsg("Ce lien d'invitation a expiré. Contactez le médecin pour en recevoir un nouveau.");
         setLoading(false);
         return;
       }
 
-      // 2. Fetch clinic name
+      // Fetch org name
       const { data: org } = await supabase
         .from('organizations')
         .select('name')
@@ -178,10 +184,10 @@ export function AcceptInvitationPage() {
 
       setInvitation({
         ...inv,
-        clinic_name: org?.name ?? 'Clinique',
+        specialite: inv.specialite ?? null,
+        clinic_name: org?.name ?? 'Cabinet',
       });
 
-      // Pre-fill editable fields
       setPrenom(inv.prenom ?? '');
       setNom(inv.nom ?? '');
     } catch (err) {
@@ -211,13 +217,15 @@ export function AcceptInvitationPage() {
     setSubmitting(true);
 
     try {
+      const isSecretaire = invType === 'secretaire';
+
       // 1. Create auth user
       const { data: authData, error: signUpErr } = await supabase.auth.signUp({
         email:    invitation.email,
         password: pwd,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: { role: 'doctor' },
+          data: { role: isSecretaire ? 'secretaire' : 'doctor' },
         },
       });
 
@@ -233,15 +241,16 @@ export function AcceptInvitationPage() {
 
       if (!authData.user) throw new Error('Échec création compte auth.');
 
-      // 2. Accept invitation via SECURITY DEFINER RPC
-      const { error: rpcErr } = await supabase.rpc('accept_clinic_invitation', {
-        p_token:   invitation.token,
-        p_user_id: authData.user.id,
-      });
+      // 2. Accept invitation via the appropriate SECURITY DEFINER RPC
+      const rpcName = isSecretaire ? 'accept_secretaire_invitation' : 'accept_clinic_invitation';
+      const rpcArgs = isSecretaire
+        ? { p_token: invitation.token, p_user_id: authData.user.id, p_prenom: prenom.trim(), p_nom: nom.trim() }
+        : { p_token: invitation.token, p_user_id: authData.user.id };
+
+      const { error: rpcErr } = await supabase.rpc(rpcName, rpcArgs);
 
       if (rpcErr) {
         console.error('[AcceptInvitation] RPC error:', rpcErr);
-        // Non-fatal if user_profile already exists; still show success
         if (!rpcErr.message.includes('duplicate') && !rpcErr.message.includes('unique')) {
           throw rpcErr;
         }
@@ -303,7 +312,9 @@ export function AcceptInvitationPage() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <div>
-              <p className="text-sm font-semibold text-white mb-4">Créez votre compte médecin</p>
+              <p className="text-sm font-semibold text-white mb-4">
+                {invType === 'secretaire' ? 'Créez votre compte secrétaire' : 'Créez votre compte médecin'}
+              </p>
             </div>
 
             {/* Email (locked) */}

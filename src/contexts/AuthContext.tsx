@@ -7,7 +7,7 @@ import type { Organization, Doctor } from '../lib/supabase';
 export interface AuthUser {
   id: string;       // auth.users uuid
   email: string;
-  role: 'super_admin' | 'clinic_admin' | 'doctor';
+  role: 'super_admin' | 'clinic_admin' | 'doctor' | 'secretaire';
   prenom: string;
   nom: string;
   full_name: string; // prenom + ' ' + nom (compat)

@@ -1009,7 +1009,62 @@ function OrdonnancesView({ onNavigate, doctorId }: { onNavigate: (v: ViewType) =
 // ─── SettingsView ─────────────────────────────────────────────────────────────
 
 function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: string) => void; user: any; doctorProfile: any }) {
-  const [activeSection, setActiveSection] = useState<'profil' | 'cabinet' | 'securite' | 'ia'>('profil');
+  const [activeSection, setActiveSection] = useState<'profil' | 'cabinet' | 'securite' | 'ia' | 'secretaire'>('profil');
+
+  // Secrétaire state
+  const [secEmail, setSecEmail]       = useState('');
+  const [secPrenom, setSecPrenom]     = useState('');
+  const [secNom, setSecNom]           = useState('');
+  const [secInviting, setSecInviting] = useState(false);
+  const [secMsg, setSecMsg]           = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [secInviteLink, setSecInviteLink] = useState<string | null>(null);
+  const [secretaires, setSecretaires] = useState<{ id: string; user_id: string; active: boolean; created_at: string; prenom?: string; nom?: string }[]>([]);
+  const [secLoading, setSecLoading]   = useState(false);
+
+  const loadSecretaires = async () => {
+    if (!user?.org_id) return;
+    setSecLoading(true);
+    const { data } = await supabase
+      .from('secretaires')
+      .select('id, user_id, active, created_at')
+      .eq('org_id', user.org_id)
+      .order('created_at', { ascending: false });
+    if (data) {
+      // Enrich with prenom/nom from user_profiles
+      const enriched = await Promise.all((data as { id: string; user_id: string; active: boolean; created_at: string }[]).map(async s => {
+        const { data: up } = await supabase.from('user_profiles').select('prenom, nom').eq('user_id', s.user_id).maybeSingle();
+        return { ...s, prenom: up?.prenom, nom: up?.nom };
+      }));
+      setSecretaires(enriched);
+    }
+    setSecLoading(false);
+  };
+
+  const handleInviteSecretaire = async () => {
+    if (!secEmail.trim()) { setSecMsg({ type: 'error', text: 'Email requis.' }); return; }
+    if (!user?.org_id) return;
+    setSecInviting(true);
+    setSecMsg(null);
+    setSecInviteLink(null);
+    try {
+      const { data: token, error } = await supabase.rpc('invite_secretaire', {
+        p_org_id: user.org_id,
+        p_email: secEmail.trim(),
+        p_prenom: secPrenom.trim() || null,
+        p_nom: secNom.trim() || null,
+      });
+      if (error) throw error;
+      const link = `${window.location.origin}/accept-invitation?type=secretaire&token=${token}`;
+      setSecInviteLink(link);
+      setSecMsg({ type: 'success', text: '✓ Invitation créée. Partagez le lien avec votre secrétaire.' });
+      setSecEmail(''); setSecPrenom(''); setSecNom('');
+      loadSecretaires();
+    } catch (err: unknown) {
+      setSecMsg({ type: 'error', text: `Erreur : ${err instanceof Error ? err.message : String(err)}` });
+    } finally {
+      setSecInviting(false);
+    }
+  };
   const [apiKey, setApiKey]         = useState(() => {
     try { return localStorage.getItem('ordosur_anthropic_key') || ''; } catch { return ''; }
   });
@@ -1090,11 +1145,18 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
   };
 
   const sections = [
-    { id: 'profil',   label: '👤 Profil'   },
-    { id: 'cabinet',  label: '🏥 Cabinet'  },
-    { id: 'securite', label: '🔒 Sécurité' },
-    { id: 'ia',       label: '🤖 IA'       },
+    { id: 'profil',     label: '👤 Profil'     },
+    { id: 'cabinet',    label: '🏥 Cabinet'    },
+    { id: 'securite',   label: '🔒 Sécurité'  },
+    { id: 'ia',         label: '🤖 IA'         },
+    { id: 'secretaire', label: '🗂 Secrétaire' },
   ] as const;
+
+  // Load secretaires when section becomes active
+  useEffect(() => {
+    if (activeSection === 'secretaire') loadSecretaires();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSection]);
 
   return (
     <PageTransition>
@@ -1335,6 +1397,126 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
 
                 <div className="p-3 bg-sky-50 dark:bg-sky-500/[0.08] rounded-xl border border-sky-100 dark:border-sky-500/20 text-xs text-sky-800 dark:text-sky-400">
                   🤖 Modèle : <strong>claude-opus-4-5</strong> — Questions médicales, interactions, posologies, diagnostics différentiels
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'secretaire' && (
+              <div className="space-y-4">
+                {/* Invite form */}
+                <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
+                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-1">Inviter une secrétaire</h3>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Un lien d'activation sera généré. Transmettez-le à votre secrétaire.</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">Prénom</label>
+                      <input
+                        value={secPrenom}
+                        onChange={e => setSecPrenom(e.target.value)}
+                        placeholder="Fatima"
+                        className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">Nom</label>
+                      <input
+                        value={secNom}
+                        onChange={e => setSecNom(e.target.value)}
+                        placeholder="Benali"
+                        className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">Email <span className="text-red-400">*</span></label>
+                    <input
+                      type="email"
+                      value={secEmail}
+                      onChange={e => setSecEmail(e.target.value)}
+                      placeholder="secretaire@cabinet.ma"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                    />
+                  </div>
+                  <button
+                    onClick={handleInviteSecretaire}
+                    disabled={secInviting || !secEmail.trim()}
+                    className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
+                  >
+                    {secInviting && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+                    Générer le lien d'invitation
+                  </button>
+
+                  {secMsg && (
+                    <div className={`p-3 rounded-xl text-xs font-medium ${
+                      secMsg.type === 'success'
+                        ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20'
+                        : 'bg-red-50 dark:bg-red-500/10 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-500/20'
+                    }`}>
+                      {secMsg.text}
+                    </div>
+                  )}
+
+                  {secInviteLink && (
+                    <div className="p-3 bg-slate-50 dark:bg-white/[0.04] rounded-xl border border-slate-200 dark:border-white/[0.08] space-y-2">
+                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">🔗 Lien d'invitation :</p>
+                      <div className="flex gap-2">
+                        <input
+                          readOnly
+                          value={secInviteLink}
+                          className="flex-1 px-2.5 py-1.5 text-[11px] font-mono bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.08] rounded-lg text-slate-700 dark:text-slate-300 select-all"
+                        />
+                        <button
+                          onClick={() => { navigator.clipboard.writeText(secInviteLink); }}
+                          className="px-3 py-1.5 bg-sky-500 text-white text-xs font-semibold rounded-lg hover:bg-sky-600 transition-colors whitespace-nowrap"
+                        >
+                          Copier
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-slate-400">Expire dans 7 jours. Partagez ce lien uniquement avec votre secrétaire.</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Current secretaires */}
+                <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
+                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">Secrétaires actives</h3>
+                  {secLoading ? (
+                    <p className="text-sm text-slate-400">Chargement…</p>
+                  ) : secretaires.length === 0 ? (
+                    <p className="text-sm text-slate-400 italic">Aucune secrétaire enregistrée.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {secretaires.map(s => (
+                        <div key={s.id} className="flex items-center gap-3 px-3 py-2.5 bg-slate-50 dark:bg-white/[0.04] rounded-xl border border-slate-200 dark:border-white/[0.06]">
+                          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                            {(s.prenom?.[0] || '?')}{(s.nom?.[0] || '')}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                              {s.prenom || ''} {s.nom || ''}{(!s.prenom && !s.nom) && <span className="italic text-slate-400">Nom inconnu</span>}
+                            </p>
+                            <p className="text-[10px] text-slate-400">Inscrite le {new Date(s.created_at).toLocaleDateString('fr-FR')}</p>
+                          </div>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            s.active
+                              ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+                              : 'bg-slate-100 dark:bg-white/[0.06] text-slate-500'
+                          }`}>
+                            {s.active ? 'Active' : 'Inactive'}
+                          </span>
+                          <button
+                            onClick={async () => {
+                              await supabase.from('secretaires').update({ active: !s.active }).eq('id', s.id);
+                              loadSecretaires();
+                            }}
+                            className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
+                          >
+                            {s.active ? 'Désactiver' : 'Réactiver'}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

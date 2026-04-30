@@ -50,6 +50,7 @@ export function LoginPage() {
       if (user.role === 'super_admin') navigate('/super-admin', { replace: true });
       else if (user.role === 'clinic_admin') navigate('/clinic/admin', { replace: true });
       else if (user.role === 'doctor') navigate('/doctor', { replace: true });
+      else if (user.role === 'secretaire') navigate('/secretaire', { replace: true });
     }
   }, [user, authLoading, navigate]);
 
