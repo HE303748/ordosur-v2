@@ -1832,10 +1832,10 @@ export function DoctorDashboard() {
         supabase.from('patients')
           .select('id', { count: 'exact', head: true })
           .eq('org_id', user.org_id),
-        // Ordonnances by this doctor — use user.id (auth UUID), NOT doctorProfile.id (doctors PK)
+        // Ordonnances by this doctor — MUST use doctorProfile.id (doctors PK), NOT user.id (auth UUID)
         supabase.from('ordonnances')
           .select('id', { count: 'exact', head: true })
-          .eq('doctor_id', user.id),
+          .eq('doctor_id', doctorProfile?.id || user.id),
         // Patients added this month
         supabase.from('patients')
           .select('id', { count: 'exact', head: true })
@@ -1917,24 +1917,43 @@ export function DoctorDashboard() {
 
   const handleSaveOrdonnance = async () => {
     if (!user || !selectedPatient || !prescriptionData) return;
+
+    // BUG FIX: doctor_id must be doctors.id (PK), NOT user.id (auth UUID).
+    // The ordonnances table has a FK ordonnances.doctor_id → doctors.id,
+    // and the RLS INSERT policy checks doctor_id = (SELECT doctors.id FROM doctors WHERE user_id = auth.uid()).
+    const doctorId = doctorProfile?.id;
+    if (!doctorId) {
+      showToast('Profil médecin non chargé — rechargez la page', 'error');
+      return;
+    }
+
+    const payload = {
+      doctor_id:    doctorId,
+      patient_id:   selectedPatient.id,
+      org_id:       user.org_id,
+      date:         new Date().toISOString(),
+      statut:       'active',
+      ordre_number: prescriptionOrdreNumber,
+      motif:        prescriptionData.motif ?? null,
+      remarques:    prescriptionData.remarks ?? null,
+      prochain_rdv: prescriptionData.nextAppointment ?? null,
+    };
+
+    console.log('[OrdoSur] Saving ordonnance payload:', payload);
+
     try {
       const { data: ordonnance, error: ordErr } = await supabase
         .from('ordonnances')
-        .insert({
-          doctor_id:    user.id,
-          patient_id:   selectedPatient.id,
-          org_id:       user.org_id,
-          date:         new Date().toISOString(),
-          statut:       'active',
-          ordre_number: prescriptionOrdreNumber,
-          motif:        prescriptionData.motif ?? null,
-          remarques:    prescriptionData.remarks ?? null,
-          prochain_rdv: prescriptionData.nextAppointment ?? null,
-        })
+        .insert(payload)
         .select('id')
         .single();
 
-      if (ordErr) throw ordErr;
+      if (ordErr) {
+        console.error('[OrdoSur] ordonnances insert error:', ordErr);
+        throw ordErr;
+      }
+
+      console.log('[OrdoSur] Ordonnance inserted, id:', ordonnance.id);
 
       const lignes = (prescriptionData.medications ?? []).map((m: any) => ({
         ordonnance_id:  ordonnance.id,
@@ -1944,18 +1963,28 @@ export function DoctorDashboard() {
         instructions:   m.quantite ? `Quantité: ${m.quantite}` : null,
       }));
 
+      console.log('[OrdoSur] Inserting lignes:', lignes);
+
       if (lignes.length > 0) {
         const { error: lignesErr } = await supabase
           .from('ordonnance_lignes')
           .insert(lignes);
-        if (lignesErr) throw lignesErr;
+        if (lignesErr) {
+          console.error('[OrdoSur] ordonnance_lignes insert error:', lignesErr);
+          throw lignesErr;
+        }
       }
 
       showToast('Ordonnance enregistrée avec succès', 'success');
       setShowPrescriptionPreview(false);
       setPrescriptionData(null);
       loadStats();
+
+      // Refresh patient ordonnances if one is selected
+      if (selectedPatient) loadPatientOrdonnances(selectedPatient.id);
+
     } catch (e: any) {
+      console.error('[OrdoSur] handleSaveOrdonnance error:', e);
       showToast(e?.message || "Erreur lors de l'enregistrement de l'ordonnance", 'error');
     }
   };
