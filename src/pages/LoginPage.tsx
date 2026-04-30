@@ -15,16 +15,6 @@ function Orb({ className }: { className: string }) {
   return <div className={`absolute rounded-full blur-3xl opacity-20 pointer-events-none ${className}`} />;
 }
 
-/* ── Stat pill ── */
-function StatPill({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="flex items-center gap-3 bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] rounded-2xl px-4 py-3">
-      <span className="text-2xl font-bold text-white">{value}</span>
-      <span className="text-white/60 text-sm leading-tight">{label}</span>
-    </div>
-  );
-}
-
 /* ── Feature row ── */
 function Feature({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
   return (
@@ -181,17 +171,6 @@ export function LoginPage() {
             <Feature icon={Building2} title="Multi-organisations" desc="Cabinets individuels et cliniques" />
           </motion.div>
 
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="grid grid-cols-3 gap-3"
-          >
-            <StatPill value="12k+" label="Médicaments marocains" />
-            <StatPill value="99.9%" label="Disponibilité" />
-            <StatPill value="< 1s" label="Vérification" />
-          </motion.div>
         </div>
       </div>
 

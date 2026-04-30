@@ -2,23 +2,52 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Stethoscope, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { validatePassword, validateEmail, validatePhoneNumber, validateRPPSNumber, sanitizeInput, sanitizeInputFinal } from '../lib/validation';
+import { validatePassword, validateEmail, validatePhoneNumber, validateINPENumber, sanitizeInput, sanitizeInputFinal } from '../lib/validation';
 import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 
 const SPECIALITES = [
   'Médecin généraliste',
-  'Cardiologue',
-  'Pédiatre',
-  'Chirurgien',
-  'Pharmacien',
-  'Dermatologue',
-  'Ophtalmologue',
-  'Gynécologue',
-  'Psychiatre',
-  'Radiologue',
-  'Autre',
+  'Allergologie',
+  'Anesthésiologie-Réanimation',
+  'Cardiologie',
+  'Chirurgie cardiovasculaire et thoracique',
+  'Chirurgie générale',
+  'Chirurgie maxillo-faciale et stomatologie',
+  'Chirurgie orthopédique et traumatologique',
+  'Chirurgie pédiatrique',
+  'Chirurgie plastique et reconstructrice',
+  'Chirurgie urologique',
+  'Dermatologie-Vénérologie',
+  'Endocrinologie-Diabétologie et maladies métaboliques',
+  'Gastro-entérologie et Hépatologie',
+  'Gériatrie',
+  'Gynécologie médicale',
+  'Gynécologie-Obstétrique',
+  'Hématologie',
+  'Infectiologie',
+  'Médecin biologiste',
+  'Médecine du travail',
+  'Médecine d\'urgence',
+  'Médecine interne',
+  'Médecine légale et expertises médicales',
+  'Médecine nucléaire',
+  'Médecine physique et Réadaptation',
+  'Médecine préventive et Santé publique',
+  'Néonatologie',
+  'Néphrologie',
+  'Neurochirurgie',
+  'Neurologie',
+  'Oncologie médicale',
+  'Oncologie radiothérapique',
+  'Ophtalmologie',
+  'ORL et Chirurgie cervico-faciale',
+  'Pédiatrie',
+  'Pneumo-Phtisiologie',
+  'Psychiatrie',
+  'Radiologie et Imagerie médicale',
+  'Rhumatologie',
 ];
 
 // Champ requis avec astérisque rouge
@@ -44,10 +73,8 @@ export function DoctorRegistrationPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    rpps: '',
+    inpe: '',
     specialite: '',
-    ordre_number: '',
-    nom_cabinet: '',
     adresse: '',
     telephone: '',
     acceptTerms: false,
@@ -89,18 +116,13 @@ export function DoctorRegistrationPage() {
       return;
     }
 
-    if (!validateRPPSNumber(formData.rpps)) {
-      setError('Numéro RPPS invalide (11 chiffres requis)');
+    if (!validateINPENumber(formData.inpe)) {
+      setError('Numéro INPE invalide (9 chiffres requis)');
       return;
     }
 
     if (!formData.specialite) {
       setError('Veuillez sélectionner une spécialité');
-      return;
-    }
-
-    if (!formData.nom_cabinet.trim()) {
-      setError('Le nom du cabinet est obligatoire');
       return;
     }
 
@@ -122,16 +144,17 @@ export function DoctorRegistrationPage() {
     setLoading(true);
 
     try {
+      const prenom = sanitizeInputFinal(formData.prenom);
+      const nom    = sanitizeInputFinal(formData.nom);
       await signUp(formData.email, formData.password, 'doctor', {
-        prenom: sanitizeInputFinal(formData.prenom),
-        nom: sanitizeInputFinal(formData.nom),
-        org_name: sanitizeInputFinal(formData.nom_cabinet),
+        prenom,
+        nom,
+        org_name: `Cabinet Dr. ${nom} ${prenom}`,
         org_type: 'cabinet',
         adresse: sanitizeInputFinal(formData.adresse),
         telephone: formData.telephone,
-        rpps: formData.rpps,
+        rpps: formData.inpe,
         specialite: formData.specialite,
-        ordre_number: formData.ordre_number || undefined,
       });
 
       navigate('/registration-success', { state: { email: formData.email } });
@@ -303,18 +326,19 @@ export function DoctorRegistrationPage() {
               {/* Infos professionnelles */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <RequiredLabel>Numéro RPPS</RequiredLabel>
+                  <RequiredLabel>Numéro INPE</RequiredLabel>
                 </label>
                 <input
-                  name="rpps"
+                  name="inpe"
                   type="text"
-                  value={formData.rpps}
+                  value={formData.inpe}
                   onChange={handleChange}
                   required
-                  placeholder="12345678901"
-                  maxLength={11}
+                  placeholder="123456789"
+                  maxLength={9}
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
                 />
+                <p className="text-xs text-gray-400 mt-1">Identifiant National du Praticien dans l'Établissement — 9 chiffres</p>
               </div>
 
               <div>
@@ -335,39 +359,10 @@ export function DoctorRegistrationPage() {
                 </select>
               </div>
 
+              {/* Cabinet — adresse + téléphone uniquement */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Numéro Ordre (optionnel)
-                </label>
-                <input
-                  name="ordre_number"
-                  type="text"
-                  value={formData.ordre_number}
-                  onChange={handleChange}
-                  placeholder="Numéro d'ordre du conseil médical"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
-                />
-              </div>
-
-              {/* Cabinet */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <RequiredLabel>Nom du cabinet</RequiredLabel>
-                </label>
-                <input
-                  name="nom_cabinet"
-                  type="text"
-                  value={formData.nom_cabinet}
-                  onChange={handleChange}
-                  required
-                  placeholder="Cabinet Médical Benali"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <RequiredLabel>Adresse du cabinet</RequiredLabel>
+                  <RequiredLabel>Adresse du cabinet / clinique</RequiredLabel>
                 </label>
                 <input
                   name="adresse"

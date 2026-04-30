@@ -73,6 +73,11 @@ export function validateRPPSNumber(rpps: string): boolean {
   return rppsRegex.test(rpps);
 }
 
+/** Valide un numéro INPE marocain : exactement 9 chiffres */
+export function validateINPENumber(inpe: string): boolean {
+  return /^\d{9}$/.test(inpe.trim());
+}
+
 export function sanitizeInput(input: string): string {
   return input.replace(/[<>]/g, '');
 }

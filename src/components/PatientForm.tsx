@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Phone, Mail, MapPin, Calendar, Heart, Plus, X, Pill, Leaf, Scissors, ClipboardList } from 'lucide-react';
+import { User, Phone, Mail, MapPin, Calendar, Heart, Plus, X, Pill, Leaf, Scissors, ClipboardList, CreditCard } from 'lucide-react';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Patient, supabase } from '../lib/supabase';
@@ -163,6 +163,7 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
     telephone: '',
     email: '',
     adresse: '',
+    cnie: '',
     pathologies: [] as string[],
     allergies_medicaments: [] as string[],
     allergies_alimentaires: [] as string[],
@@ -181,6 +182,7 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
         telephone: patient.telephone ?? '',
         email: patient.email ?? '',
         adresse: patient.adresse ?? '',
+        cnie: patient.cnie ?? '',
         pathologies: patient.pathologies ?? [],
         allergies_medicaments: patient.allergies_medicaments ?? [],
         allergies_alimentaires: patient.allergies_alimentaires ?? [],
@@ -206,6 +208,7 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
       telephone: formData.telephone.trim() || null,
       email: formData.email.trim() || null,
       adresse: formData.adresse.trim() || null,
+      cnie: formData.cnie.trim() || null,
       pathologies: formData.pathologies.length > 0 ? formData.pathologies : null,
       allergies_medicaments: formData.allergies_medicaments.length > 0 ? formData.allergies_medicaments : null,
       allergies_alimentaires: formData.allergies_alimentaires.length > 0 ? formData.allergies_alimentaires : null,
@@ -273,9 +276,24 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
           Coordonnées
         </h3>
         <div className="space-y-3">
-          <Input label="Téléphone" name="telephone" type="tel" value={formData.telephone} onChange={handleChange} placeholder="+33 6 12 34 56 78" icon={Phone} />
-          <Input label="Email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="jean.dupont@email.fr" icon={Mail} />
-          <Input label="Adresse" name="adresse" value={formData.adresse} onChange={handleChange} placeholder="123 Rue de la Santé, 75001 Paris" icon={MapPin} />
+          <Input label="Téléphone" name="telephone" type="tel" value={formData.telephone} onChange={handleChange} placeholder="+212 6XX XXX XXX" icon={Phone} />
+          <Input label="Email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="patient@email.ma" icon={Mail} />
+          <Input label="Adresse" name="adresse" value={formData.adresse} onChange={handleChange} placeholder="123 Bd Mohammed V, Casablanca" icon={MapPin} />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1.5">
+              <CreditCard className="w-3.5 h-3.5" />
+              CNIE <span className="text-gray-400 font-normal">(Carte d'identité nationale)</span>
+            </label>
+            <input
+              type="text"
+              name="cnie"
+              value={formData.cnie}
+              onChange={handleChange}
+              placeholder="AB123456"
+              maxLength={20}
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+            />
+          </div>
         </div>
       </div>
 
@@ -311,35 +329,35 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
 
           {/* Pathologies */}
           <BadgeSelector
-            label={`Pathologies chroniques (${dbPathologies.length} disponibles)`}
+            label="Pathologies chroniques"
             icon={Heart}
             color="blue"
             suggestions={dbPathologies}
             values={formData.pathologies}
             onChange={v => setFormData(prev => ({ ...prev, pathologies: v }))}
-            placeholder="Rechercher une pathologie..."
+            placeholder="Saisir ou rechercher une pathologie..."
           />
 
           {/* Allergies médicaments */}
           <BadgeSelector
-            label={`Allergies médicamenteuses (${dbAllergiesMed.length} disponibles)`}
+            label="Allergies médicamenteuses"
             icon={Pill}
             color="red"
             suggestions={dbAllergiesMed}
             values={formData.allergies_medicaments}
             onChange={v => setFormData(prev => ({ ...prev, allergies_medicaments: v }))}
-            placeholder="Rechercher une allergie médicamenteuse..."
+            placeholder="Saisir ou rechercher une allergie..."
           />
 
           {/* Allergies alimentaires */}
           <BadgeSelector
-            label={`Allergies alimentaires (${dbAllergiesAlim.length} disponibles)`}
+            label="Allergies alimentaires"
             icon={Leaf}
             color="orange"
             suggestions={dbAllergiesAlim}
             values={formData.allergies_alimentaires}
             onChange={v => setFormData(prev => ({ ...prev, allergies_alimentaires: v }))}
-            placeholder="Rechercher une allergie alimentaire..."
+            placeholder="Saisir ou rechercher une allergie alimentaire..."
           />
 
           {/* Antécédents chirurgicaux */}

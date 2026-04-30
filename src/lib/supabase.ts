@@ -53,6 +53,7 @@ export interface Patient {
   telephone?: string | null;
   email?: string | null;
   adresse?: string | null;
+  cnie?: string | null;
   pathologies?: string[] | null;
   allergies_medicaments?: string[] | null;
   allergies_alimentaires?: string[] | null;

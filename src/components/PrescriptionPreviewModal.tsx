@@ -126,7 +126,7 @@ export function PrescriptionPreviewModal({
           <div className="mb-4">
             <p className="text-xl font-bold text-blue-700">Dr {doctor.prenom} {doctor.nom}</p>
             {doctor.specialite && <p className="text-sm text-gray-600">{doctor.specialite}</p>}
-            {doctor.rpps && <p className="text-sm text-gray-600">N° RPPS : {doctor.rpps}</p>}
+            {doctor.rpps && <p className="text-sm text-gray-600">N° INPE : {doctor.rpps}</p>}
             {doctor.ordre_number && <p className="text-sm text-gray-600">N° Ordre : {doctor.ordre_number}</p>}
           </div>
 

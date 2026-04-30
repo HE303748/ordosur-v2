@@ -651,11 +651,6 @@ function CheckerView({
                                 ✓ CNOPS
                               </span>
                             )}
-                            {med.ppv_ma != null && (
-                              <span className="ml-auto text-xs font-bold text-emerald-600 dark:text-emerald-400 flex-shrink-0">
-                                {med.ppv_ma.toFixed(2)} MAD
-                              </span>
-                            )}
                           </div>
                           {/* Ligne 2 : DCI + dosage + forme */}
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap pl-0.5">

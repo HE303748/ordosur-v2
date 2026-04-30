@@ -152,7 +152,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
   if (data.doctor.specialite) { doc.text(data.doctor.specialite, marginL, y); y += 5; }
-  if (data.doctor.rpps) { doc.text(`N° RPPS : ${data.doctor.rpps}`, marginL, y); y += 5; }
+  if (data.doctor.rpps) { doc.text(`N° INPE : ${data.doctor.rpps}`, marginL, y); y += 5; }
   if (data.doctor.ordre_number) { doc.text(`N° Ordre : ${data.doctor.ordre_number}`, marginL, y); y += 5; }
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
