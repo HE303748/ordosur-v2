@@ -39,6 +39,7 @@ export interface Doctor {
   rpps?: string | null;
   specialite?: string | null;
   ordre_number?: string | null;
+  logo_url?: string | null;
   created_at: string;
 }
 

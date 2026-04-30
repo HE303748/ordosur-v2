@@ -1016,6 +1016,79 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
   const [apiKeyMsg, setApiKeyMsg]   = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [apiTesting, setApiTesting] = useState(false);
 
+  // Logo upload state
+  const [logoUrl, setLogoUrl]           = useState<string | null>(doctorProfile?.logo_url ?? null);
+  const [logoPreview, setLogoPreview]   = useState<string | null>(null);
+  const [logoFile, setLogoFile]         = useState<File | null>(null);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoMsg, setLogoMsg]           = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setLogoMsg({ type: 'error', text: 'Fichier trop lourd. Maximum 2 Mo.' });
+      return;
+    }
+    setLogoFile(file);
+    setLogoMsg(null);
+    const reader = new FileReader();
+    reader.onload = () => setLogoPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleLogoUpload = async () => {
+    if (!logoFile || !user?.id) return;
+    setLogoUploading(true);
+    setLogoMsg(null);
+    try {
+      const ext  = logoFile.name.split('.').pop()?.toLowerCase() ?? 'png';
+      const path = `${user.id}/logo.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from('cabinet-logos')
+        .upload(path, logoFile, { upsert: true, contentType: logoFile.type });
+      if (uploadErr) throw uploadErr;
+      const { data: urlData } = supabase.storage.from('cabinet-logos').getPublicUrl(path);
+      const publicUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      const { error: updateErr } = await supabase
+        .from('doctors')
+        .update({ logo_url: publicUrl })
+        .eq('user_id', user.id);
+      if (updateErr) throw updateErr;
+      setLogoUrl(publicUrl);
+      setLogoPreview(null);
+      setLogoFile(null);
+      setLogoMsg({ type: 'success', text: '✓ Logo sauvegardé avec succès.' });
+      setTimeout(() => setLogoMsg(null), 3000);
+    } catch (err: unknown) {
+      setLogoMsg({ type: 'error', text: `Erreur : ${err instanceof Error ? err.message : String(err)}` });
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
+  const handleLogoDelete = async () => {
+    if (!user?.id) return;
+    setLogoUploading(true);
+    setLogoMsg(null);
+    try {
+      const { error: updateErr } = await supabase
+        .from('doctors')
+        .update({ logo_url: null })
+        .eq('user_id', user.id);
+      if (updateErr) throw updateErr;
+      setLogoUrl(null);
+      setLogoPreview(null);
+      setLogoFile(null);
+      setLogoMsg({ type: 'success', text: '✓ Logo supprimé.' });
+      setTimeout(() => setLogoMsg(null), 3000);
+    } catch (err: unknown) {
+      setLogoMsg({ type: 'error', text: `Erreur : ${err instanceof Error ? err.message : String(err)}` });
+    } finally {
+      setLogoUploading(false);
+    }
+  };
+
   const sections = [
     { id: 'profil',   label: '👤 Profil'   },
     { id: 'cabinet',  label: '🏥 Cabinet'  },
@@ -1083,23 +1156,76 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
             )}
 
             {activeSection === 'cabinet' && (
-              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-                <h3 className="font-bold text-slate-900 mb-4">Informations du cabinet</h3>
-                <div className="space-y-4">
-                  {[
-                    { label: 'Nom du cabinet', placeholder: 'Cabinet médical...' },
-                    { label: 'Adresse', placeholder: 'Adresse complète...' },
-                    { label: 'Téléphone', placeholder: '+212 ...' },
-                    { label: 'Ville', placeholder: 'Casablanca, Rabat...' },
-                  ].map(field => (
-                    <div key={field.label}>
-                      <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">{field.label}</label>
-                      <input placeholder={field.placeholder} className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
-                    </div>
-                  ))}
-                  <div className="text-xs text-slate-400 bg-slate-50 rounded-xl p-3">
-                    Ces informations apparaîtront sur les ordonnances imprimées.
+              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-5">
+                <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Logo du cabinet</h3>
+
+                {logoMsg && (
+                  <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium ${
+                    logoMsg.type === 'success'
+                      ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+                      : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
+                  }`}>
+                    {logoMsg.text}
                   </div>
+                )}
+
+                {/* Aperçu du logo actuel ou préview du nouveau */}
+                <div className="flex items-start gap-4">
+                  <div className="w-28 h-20 rounded-xl border-2 border-dashed border-slate-200 dark:border-white/[0.1] bg-slate-50 dark:bg-[#1E293B] flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {(logoPreview ?? logoUrl)
+                      ? <img src={logoPreview ?? logoUrl!} alt="Logo cabinet" className="max-h-full max-w-full object-contain p-1" />
+                      : <span className="text-xs text-slate-400 dark:text-slate-500 text-center px-2">Aucun logo</span>
+                    }
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+                      Le logo apparaîtra en haut à gauche des ordonnances générées en PDF.<br />
+                      Format : PNG ou JPEG · Max 2 Mo · Hauteur affichée : 60 px
+                    </p>
+                    <label className="inline-block cursor-pointer px-4 py-2 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] text-slate-700 dark:text-[#E2E8F0] rounded-xl text-sm font-medium transition-colors">
+                      Choisir un fichier
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/jpg,image/webp"
+                        className="hidden"
+                        onChange={handleLogoFileChange}
+                      />
+                    </label>
+                    {logoFile && (
+                      <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+                        Sélectionné : <strong>{logoFile.name}</strong> ({(logoFile.size / 1024).toFixed(0)} Ko)
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 flex-wrap">
+                  <button
+                    onClick={handleLogoUpload}
+                    disabled={!logoFile || logoUploading}
+                    className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
+                  >
+                    {logoUploading && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+                    {logoUploading ? 'Envoi…' : 'Sauvegarder le logo'}
+                  </button>
+                  {logoUrl && !logoFile && (
+                    <button
+                      onClick={handleLogoDelete}
+                      disabled={logoUploading}
+                      className="px-5 py-2.5 border border-red-200 dark:border-red-500/30 text-red-500 dark:text-red-400 rounded-xl text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                    >
+                      Supprimer le logo
+                    </button>
+                  )}
+                  {logoFile && (
+                    <button
+                      onClick={() => { setLogoFile(null); setLogoPreview(null); setLogoMsg(null); }}
+                      className="px-5 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-500 dark:text-[#94A3B8] rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors"
+                    >
+                      Annuler
+                    </button>
+                  )}
                 </div>
               </div>
             )}
@@ -1520,12 +1646,14 @@ export function DoctorDashboard() {
       const { data: ordonnance, error: ordErr } = await supabase
         .from('ordonnances')
         .insert({
-          doctor_id:   user.id,
-          patient_id:  selectedPatient.id,
-          org_id:      user.org_id,
-          numero:      prescriptionOrdreNumber,
-          motif:       prescriptionData.motif ?? null,
-          remarques:   prescriptionData.remarks ?? null,
+          doctor_id:    user.id,
+          patient_id:   selectedPatient.id,
+          org_id:       user.org_id,
+          date:         new Date().toISOString(),
+          statut:       'active',
+          ordre_number: prescriptionOrdreNumber,
+          motif:        prescriptionData.motif ?? null,
+          remarques:    prescriptionData.remarks ?? null,
           prochain_rdv: prescriptionData.nextAppointment ?? null,
         })
         .select('id')
@@ -1534,11 +1662,11 @@ export function DoctorDashboard() {
       if (ordErr) throw ordErr;
 
       const lignes = (prescriptionData.medications ?? []).map((m: any) => ({
-        ordonnance_id: ordonnance.id,
-        nom:           m.nom,
-        posologie:     m.posologie ?? '',
-        duree:         m.duree ?? '',
-        quantite:      m.quantite ?? '',
+        ordonnance_id:  ordonnance.id,
+        medicament_nom: m.nom,
+        posologie:      m.posologie ?? '',
+        duree:          m.duree ?? '',
+        instructions:   m.quantite ? `Quantité: ${m.quantite}` : null,
       }));
 
       if (lignes.length > 0) {
@@ -1852,6 +1980,7 @@ export function DoctorDashboard() {
           }}
           onSave={handleSaveOrdonnance}
           ordreNumber={prescriptionOrdreNumber}
+          logo_url={doctorProfile?.logo_url ?? null}
           doctor={{
             nom:          user.nom,
             prenom:       user.prenom,

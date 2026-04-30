@@ -17,6 +17,7 @@ export interface PdfInteractionAlert {
 
 export interface PdfOrdonnanceData {
   ordreNumber: string;
+  logo_url?: string | null;
   doctor: {
     prenom: string;
     nom: string;
@@ -56,6 +57,20 @@ function wrapText(doc: jsPDF, text: string, maxWidth: number): string[] {
   return doc.splitTextToSize(text, maxWidth);
 }
 
+/** Fetches a public image URL and returns it as a base64 data-URL + detected format for jsPDF. */
+async function urlToBase64(url: string): Promise<{ data: string; format: 'PNG' | 'JPEG' }> {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`Logo fetch failed: ${resp.status}`);
+  const blob = await resp.blob();
+  const format: 'PNG' | 'JPEG' = blob.type.includes('png') ? 'PNG' : 'JPEG';
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve({ data: reader.result as string, format });
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
   // ── QR Code ────────────────────────────────────────────────────────────────
   const qrContent = [
@@ -76,11 +91,28 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   let y = 18;
 
   // ── En-tête cabinet ────────────────────────────────────────────────────────
-  doc.setFontSize(14);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(30, 64, 175); // blue-700
-  doc.text(data.org.name, marginL, y);
-  y += 6;
+  // Logo ou nom du cabinet en haut à gauche
+  if (data.logo_url) {
+    try {
+      const { data: imgData, format } = await urlToBase64(data.logo_url);
+      // Max height: 20 mm — width auto-scaled by jsPDF (pass 0)
+      doc.addImage(imgData, format, marginL, y - 4, 0, 20);
+      y += 22;
+    } catch {
+      // Fallback to text if logo fails to load
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 64, 175);
+      doc.text(data.org.name, marginL, y);
+      y += 6;
+    }
+  } else {
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 64, 175); // blue-700
+    doc.text(data.org.name, marginL, y);
+    y += 6;
+  }
 
   doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');

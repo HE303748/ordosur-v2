@@ -18,6 +18,7 @@ interface PrescriptionPreviewModalProps {
   onBack: () => void;
   onSave: () => void;
   ordreNumber: string;
+  logo_url?: string | null;
   doctor: {
     nom: string;
     prenom: string;
@@ -51,6 +52,7 @@ export function PrescriptionPreviewModal({
   onBack,
   onSave,
   ordreNumber,
+  logo_url,
   doctor,
   org,
   patient,
@@ -74,6 +76,7 @@ export function PrescriptionPreviewModal({
     try {
       await generateOrdonnancePdf({
         ordreNumber,
+        logo_url,
         doctor,
         org,
         patient,
@@ -105,7 +108,10 @@ export function PrescriptionPreviewModal({
           <div className="mb-4 pb-4 border-b border-gray-200">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-lg font-bold text-blue-700">{org.name}</h2>
+                {logo_url
+                  ? <img src={logo_url} alt="Logo cabinet" className="max-h-14 max-w-[160px] object-contain mb-1" />
+                  : <h2 className="text-lg font-bold text-blue-700">{org.name}</h2>
+                }
                 {org.adresse && <p className="text-sm text-gray-600">{org.adresse}</p>}
                 {org.telephone && <p className="text-sm text-gray-600">Tél : {org.telephone}</p>}
               </div>
