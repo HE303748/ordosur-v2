@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, Shield, FileText,
   BarChart3, Calendar, Settings, LogOut, Bot, Activity,
-  ChevronLeft, ChevronRight, BookOpen,
+  ChevronLeft, ChevronRight, BookOpen, FilePlus,
 } from 'lucide-react';
 
-export type ViewType = 'home' | 'patients' | 'checker' | 'ordonnances' | 'stats' | 'agenda' | 'encyclopedie' | 'settings';
+export type ViewType = 'home' | 'patients' | 'checker' | 'ordonnances' | 'stats' | 'agenda' | 'encyclopedie' | 'documents' | 'settings';
 
 interface NavItem {
   id: ViewType;
@@ -23,9 +23,10 @@ const mainNav: NavItem[] = [
 ];
 
 const toolsNav: NavItem[] = [
-  { id: 'stats',        label: 'Statistiques', icon: BarChart3 },
-  { id: 'encyclopedie', label: 'Encyclopédie', icon: BookOpen  },
-  { id: 'settings',     label: 'Paramètres',   icon: Settings  },
+  { id: 'stats',        label: 'Statistiques', icon: BarChart3  },
+  { id: 'encyclopedie', label: 'Encyclopédie', icon: BookOpen   },
+  { id: 'documents',    label: 'Documents',    icon: FilePlus   },
+  { id: 'settings',     label: 'Paramètres',   icon: Settings   },
 ];
 
 /* ── Tooltip wrapper for collapsed mode ────────────────────────── */

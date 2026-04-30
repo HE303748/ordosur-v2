@@ -30,6 +30,7 @@ import { ToastManager, type ToastItem } from '../components/ui/Toast';
 import { PatientTabs } from '../components/ui/PatientTabs';
 import { AgendaView } from '../components/ui/AgendaView';
 import { EncyclopedieView } from '../components/ui/EncyclopedieView';
+import { DocumentsView } from '../components/ui/DocumentsView';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -2102,6 +2103,10 @@ export function DoctorDashboard() {
 
             {activeView === 'encyclopedie' && (
               <EncyclopedieView key="encyclopedie" />
+            )}
+
+            {activeView === 'documents' && (
+              <DocumentsView key="documents" patients={patients} showToast={showToast} />
             )}
 
             {activeView === 'settings' && (
