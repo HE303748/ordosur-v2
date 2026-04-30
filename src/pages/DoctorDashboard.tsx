@@ -1072,6 +1072,42 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
   const [apiKeyMsg, setApiKeyMsg]   = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [apiTesting, setApiTesting] = useState(false);
 
+  // OpenFDA sync state
+  const [syncRunning, setSyncRunning] = useState(false);
+  const [syncResult, setSyncResult]   = useState<{ success: boolean; inserted?: number; skipped?: number; errors?: number; message?: string; error?: string } | null>(null);
+  const [lastSync, setLastSync]       = useState<{ finished_at: string; inserted: number; skipped: number; status: string } | null>(null);
+  const [medCount, setMedCount]       = useState<number | null>(null);
+
+  const loadSyncInfo = async () => {
+    const [logRes, countRes] = await Promise.all([
+      supabase.from('openfda_sync_log').select('finished_at, inserted, skipped, status').eq('status', 'success').order('finished_at', { ascending: false }).limit(1).maybeSingle(),
+      supabase.from('medicaments').select('id', { count: 'exact', head: true }),
+    ]);
+    if (logRes.data) setLastSync(logRes.data as any);
+    if (countRes.count != null) setMedCount(countRes.count);
+  };
+
+  const handleOpenFDASync = async () => {
+    setSyncRunning(true);
+    setSyncResult(null);
+    try {
+      const res = await fetch('https://yxzvukryngvlzjgaydqj.supabase.co/functions/v1/update-medicaments-openfda', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const json = await res.json();
+      setSyncResult(json);
+      if (json.success) {
+        setMedCount(prev => prev != null ? prev + (json.inserted || 0) : null);
+        loadSyncInfo();
+      }
+    } catch (err: unknown) {
+      setSyncResult({ success: false, error: err instanceof Error ? err.message : 'Erreur réseau' });
+    } finally {
+      setSyncRunning(false);
+    }
+  };
+
   // Logo upload state
   const [logoUrl, setLogoUrl]           = useState<string | null>(doctorProfile?.logo_url ?? null);
   const [logoPreview, setLogoPreview]   = useState<string | null>(null);
@@ -1152,6 +1188,12 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
     { id: 'ia',         label: '🤖 IA'         },
     { id: 'secretaire', label: '🗂 Secrétaire' },
   ] as const;
+
+  // Load sync info when cabinet section becomes active
+  useEffect(() => {
+    if (activeSection === 'cabinet') loadSyncInfo();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSection]);
 
   // Load secretaires when section becomes active
   useEffect(() => {
@@ -1290,6 +1332,56 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                     </button>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* OpenFDA sync card — separate from the logo block */}
+            {activeSection === 'cabinet' && (
+              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Synchronisation médicaments</h3>
+                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">Importe les nouveaux médicaments depuis la base OpenFDA (FDA américaine)</p>
+                  </div>
+                  {medCount != null && (
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-2xl font-bold text-sky-600 dark:text-sky-400">{medCount.toLocaleString('fr-FR')}</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-wide">médicaments</p>
+                    </div>
+                  )}
+                </div>
+
+                {lastSync && (
+                  <div className="p-3 bg-slate-50 dark:bg-white/[0.04] rounded-xl border border-slate-200 dark:border-white/[0.06] text-xs text-slate-500 dark:text-slate-400">
+                    ✅ Dernière sync réussie : {new Date(lastSync.finished_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    {' · '}{lastSync.inserted} ajoutés, {lastSync.skipped} ignorés
+                  </div>
+                )}
+
+                {syncResult && (
+                  <div className={`p-3 rounded-xl border text-xs font-medium ${
+                    syncResult.success
+                      ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300'
+                      : 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-800 dark:text-red-300'
+                  }`}>
+                    {syncResult.success
+                      ? `✅ Sync réussie : ${syncResult.inserted} médicaments ajoutés, ${syncResult.skipped} ignorés, ${syncResult.errors} erreurs`
+                      : `❌ Erreur : ${syncResult.error}`}
+                    {syncResult.message && <p className="mt-1 opacity-70">{syncResult.message}</p>}
+                  </div>
+                )}
+
+                <button
+                  onClick={handleOpenFDASync}
+                  disabled={syncRunning}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors"
+                >
+                  {syncRunning && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+                  {syncRunning ? 'Synchronisation en cours…' : '🔄 Synchroniser avec OpenFDA'}
+                </button>
+                <p className="text-[10px] text-slate-400 dark:text-slate-600">
+                  Ajoute jusqu'à 100 médicaments de la base FDA par exécution. La rotation hebdomadaire couvre 13 classes thérapeutiques différentes.
+                </p>
               </div>
             )}
 
