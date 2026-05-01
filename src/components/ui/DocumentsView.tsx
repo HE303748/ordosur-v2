@@ -2,616 +2,1112 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText, Plus, X, Download, Search, Calendar,
-  BriefcaseMedical, Heart, Baby, User, AlertCircle,
-  ChevronDown, Loader2,
+  Clock, AlertTriangle, CheckCircle2, Shield, Heart,
+  Activity, Star, Loader2, ChevronDown, Edit2,
+  Eye, Save, ChevronLeft, User, Phone, MapPin, Stethoscope,
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import QRCode from 'qrcode';
 import { supabase, Patient } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { generateDocumentPdf, type DocumentType } from '../../lib/pdfService';
 import { PageTransition } from './PageTransition';
 
 /* ── Types ─────────────────────────────────────────────────────────────────── */
-interface DocumentRecord {
+type CertType =
+  | 'arret_travail'
+  | 'accident_travail'
+  | 'general'
+  | 'aptitude'
+  | 'inaptitude'
+  | 'vaccination'
+  | 'transport'
+  | 'autre';
+
+interface DoctorInfo {
+  nom: string;
+  prenom: string;
+  specialite: string;
+  inpe: string;
+  adresse: string;
+  telephone: string;
+  ville: string;
+  orgName: string;
+}
+
+interface PatientInfo {
+  nom: string;
+  prenom: string;
+  dateNaissance: string;
+  sexe: string;
+}
+
+interface CertRecord {
   id: string;
-  type: DocumentType;
+  type: string;
   numero: string;
-  data: Record<string, string | number | boolean | null>;
+  certName: string;
+  patientNom: string;
+  patientPrenom: string;
   created_at: string;
-  patient_id: string | null;
-  patient_nom?: string;
-  patient_prenom?: string;
+  data: Record<string, string | boolean | null>;
 }
 
 interface DocumentsViewProps {
   patients: Patient[];
   showToast: (msg: string, type?: 'success' | 'error' | 'warning') => void;
+  doctorProfile?: {
+    id?: string;
+    specialite?: string | null;
+    inpe?: string | null;
+    logo_url?: string | null;
+    organisations?: {
+      name?: string;
+      adresse?: string | null;
+      telephone?: string | null;
+      ville?: string | null;
+    } | null;
+  } | null;
 }
 
-/* ── Config by type ─────────────────────────────────────────────────────────── */
-const DOC_CONFIG: Record<DocumentType, { label: string; icon: React.ElementType; color: string; needsPatient: boolean }> = {
-  repos:     { label: 'Repos médical',       icon: BriefcaseMedical, color: 'blue',   needsPatient: true  },
-  aptitude:  { label: 'Aptitude physique',    icon: Heart,            color: 'green',  needsPatient: true  },
-  general:   { label: 'Certificat médical',   icon: FileText,         color: 'purple', needsPatient: true  },
-  deces:     { label: 'Certificat de décès',  icon: AlertCircle,      color: 'gray',   needsPatient: false },
-  grossesse: { label: 'Certificat grossesse', icon: Baby,             color: 'pink',   needsPatient: true  },
+/* ── Certificate configs ────────────────────────────────────────────────────── */
+interface CertConfig {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  description: string;
+}
+
+const CERT_CONFIGS: Record<CertType, CertConfig> = {
+  arret_travail:   { label: 'Arrêt de travail',        icon: Clock,          color: 'text-orange-600',  bgColor: 'bg-orange-50',  borderColor: 'border-orange-200', description: 'Congé maladie / arrêt de travail' },
+  accident_travail:{ label: 'Accident de travail',     icon: AlertTriangle,  color: 'text-red-600',     bgColor: 'bg-red-50',     borderColor: 'border-red-200',    description: 'Constatation médicale suite à accident' },
+  general:         { label: 'Certificat médical',      icon: FileText,       color: 'text-blue-600',    bgColor: 'bg-blue-50',    borderColor: 'border-blue-200',   description: 'Certificat médical général' },
+  aptitude:        { label: "Certificat d'aptitude",   icon: CheckCircle2,   color: 'text-emerald-600', bgColor: 'bg-emerald-50', borderColor: 'border-emerald-200',description: 'Aptitude à une activité / emploi' },
+  inaptitude:      { label: "Certificat d'inaptitude", icon: Shield,         color: 'text-slate-600',   bgColor: 'bg-slate-50',   borderColor: 'border-slate-200',  description: 'Inaptitude médicale constatée' },
+  vaccination:     { label: 'Certificat de vaccination', icon: Heart,        color: 'text-pink-600',    bgColor: 'bg-pink-50',    borderColor: 'border-pink-200',   description: 'Attestation de vaccination' },
+  transport:       { label: 'Bon de transport médical',icon: Activity,       color: 'text-violet-600',  bgColor: 'bg-violet-50',  borderColor: 'border-violet-200', description: 'Prescription de transport sanitaire' },
+  autre:           { label: 'Autre certificat',        icon: Star,           color: 'text-amber-600',   bgColor: 'bg-amber-50',   borderColor: 'border-amber-200',  description: 'Document médical personnalisé' },
 };
 
-const TYPE_COLORS: Record<string, string> = {
-  blue:   'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-500/30',
-  green:  'bg-green-100 text-green-800 border-green-200 dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30',
-  purple: 'bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-500/20 dark:text-violet-400 dark:border-violet-500/30',
-  gray:   'bg-slate-100 text-slate-700 border-slate-200 dark:bg-white/[0.06] dark:text-slate-400 dark:border-white/[0.08]',
-  pink:   'bg-pink-100 text-pink-800 border-pink-200 dark:bg-pink-500/20 dark:text-pink-400 dark:border-pink-500/30',
-};
+/* ── Templates ──────────────────────────────────────────────────────────────── */
+function getTemplate(type: CertType, doctorNom: string, patientNom: string, date: string): string {
+  const patient = patientNom || '[NOM DU PATIENT]';
+  const doctor  = doctorNom  || '[NOM DU MÉDECIN]';
+  const d = date || new Date().toLocaleDateString('fr-FR');
 
-/* ── Field components ───────────────────────────────────────────────────────── */
-function FieldInput({ label, name, value, onChange, required, type = 'text', placeholder }: {
-  label: string; name: string; value: string; onChange: (n: string, v: string) => void;
-  required?: boolean; type?: string; placeholder?: string;
-}) {
-  return (
-    <div>
-      <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
-        {label}{required && <span className="text-red-400 ml-1">*</span>}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange(name, e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-3 py-2.5 text-sm border border-slate-200 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40"
-      />
-    </div>
-  );
+  switch (type) {
+    case 'arret_travail':
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}.
+
+Suite à cet examen, je prescris un arrêt de travail de _____ jours à compter du ${d}.
+
+Motif médical : [PRÉCISER LE MOTIF]
+
+Autorisation de sortie : ☐ Oui  ☐ Non
+Si oui, sorties autorisées de ___h à ___h.
+
+Ce certificat est établi à la demande de l'intéressé(e) et lui est remis pour faire valoir ce que de droit.`;
+
+    case 'accident_travail':
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}, suite à un accident survenu le ${d}.
+
+CONSTATATIONS CLINIQUES :
+[Décrire les lésions constatées]
+
+ÉTAT GÉNÉRAL :
+[Description de l'état général]
+
+TRAITEMENT PRESCRIT :
+[Traitement ou soins prescrits]
+
+SUITES PRÉVISIBLES :
+Durée d'incapacité de travail estimée : _____ jours
+Consolidation prévisible le : ___________
+
+Ce certificat est établi à la demande de l'intéressé(e) pour faire valoir ce que de droit.`;
+
+    case 'general':
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}.
+
+[OBJET DU CERTIFICAT — décrire les constations médicales ou l'objet du certificat]
+
+En foi de quoi, je délivre le présent certificat à l'intéressé(e) pour faire valoir ce que de droit.`;
+
+    case 'aptitude':
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}.
+
+À l'issue de cet examen médical, je déclare que l'intéressé(e) est :
+
+✓ APTE à [PRÉCISER L'ACTIVITÉ / L'EMPLOI / LE SPORT]
+
+[Observations éventuelles ou restrictions particulières]
+
+Ce certificat est établi à la demande de l'intéressé(e) et lui est remis pour faire valoir ce que de droit.`;
+
+    case 'inaptitude':
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}.
+
+À l'issue de cet examen médical, je déclare que l'intéressé(e) est :
+
+✗ INAPTE à [PRÉCISER L'ACTIVITÉ / L'EMPLOI]
+
+Motif de l'inaptitude : [PRÉCISER LA RAISON MÉDICALE]
+
+Durée de l'inaptitude : ☐ Temporaire (jusqu'au __________)  ☐ Définitive
+
+Ce certificat est établi à la demande de l'intéressé(e) et lui est remis pour faire valoir ce que de droit.`;
+
+    case 'vaccination':
+      return `Je soussigné, Docteur ${doctor}, certifie avoir vacciné ce jour M./Mme ${patient}.
+
+VACCIN ADMINISTRÉ : [NOM DU VACCIN]
+Fabricant / Lot n° : ___________
+Voie d'administration : ___________
+Site d'injection : ___________
+
+Prochaine dose / rappel prévu le : ___________
+
+Réactions post-vaccinales observées : ☐ Aucune  ☐ Autres : ___________
+
+Ce certificat est établi conformément aux recommandations vaccinales en vigueur.`;
+
+    case 'transport':
+      return `Je soussigné, Docteur ${doctor}, prescris le transport sanitaire de M./Mme ${patient}.
+
+MOTIF DU TRANSPORT : [PRÉCISER LE MOTIF MÉDICAL]
+
+TYPE DE TRANSPORT :
+☐ Ambulance  ☐ VSL (véhicule sanitaire léger)  ☐ Taxi médical
+
+De : [LIEU DE DÉPART]
+Vers : [LIEU DE DESTINATION / ÉTABLISSEMENT DE SOINS]
+
+Date et heure prévues : ___________
+
+Fréquence : ☐ Aller simple  ☐ Aller-retour  ☐ Répété (_____ fois/semaine)
+
+Ce bon de transport est établi conformément aux exigences médicales du patient.`;
+
+    case 'autre':
+      return `Je soussigné, Docteur ${doctor}, certifie que M./Mme ${patient} :
+
+[INDIQUER LE CONTENU DU CERTIFICAT]
+
+En foi de quoi, je délivre le présent certificat à l'intéressé(e) pour faire valoir ce que de droit.`;
+  }
 }
 
-function FieldTextarea({ label, name, value, onChange, placeholder, rows = 3 }: {
-  label: string; name: string; value: string; onChange: (n: string, v: string) => void;
-  placeholder?: string; rows?: number;
-}) {
-  return (
-    <div>
-      <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">{label}</label>
-      <textarea
-        value={value}
-        onChange={e => onChange(name, e.target.value)}
-        placeholder={placeholder}
-        rows={rows}
-        className="w-full px-3 py-2.5 text-sm border border-slate-200 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40 resize-none"
-      />
-    </div>
-  );
+/* ── Helpers ────────────────────────────────────────────────────────────────── */
+function todayStr(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+function formatDateFr(iso: string): string {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+function generateNumero(type: CertType): string {
+  const codes: Record<CertType, string> = {
+    arret_travail: 'AT', accident_travail: 'ACC', general: 'CG',
+    aptitude: 'APT', inaptitude: 'INA', vaccination: 'VAC',
+    transport: 'TR', autre: 'DOC',
+  };
+  const year = new Date().getFullYear();
+  const rand = Math.floor(Math.random() * 9000) + 1000;
+  return `${codes[type]}-${year}-${rand}`;
 }
 
-/* ── Modal création ─────────────────────────────────────────────────────────── */
-function CreateDocumentModal({
-  patients, onClose, onCreated, doctorProfile, orgProfile, logoUrl,
-}: {
-  patients: Patient[];
-  onClose: () => void;
-  onCreated: () => void;
-  doctorProfile: any;
-  orgProfile: any;
+/* ── PDF generation ──────────────────────────────────────────────────────────── */
+async function generateCertificatPdf(params: {
+  type: CertType;
+  certName: string;
+  certBody: string;
+  certDate: string;
+  numero: string;
+  doctor: DoctorInfo;
+  patient: PatientInfo;
+  inclureLogo: boolean;
+  inclureQR: boolean;
   logoUrl?: string | null;
-}) {
-  const { user } = useAuth();
-  const [type, setType] = useState<DocumentType>('repos');
-  const [patientId, setPatientId] = useState('');
-  const [patSearch, setPatSearch] = useState('');
-  const [showPatDrop, setShowPatDrop] = useState(false);
-  const [fields, setFields] = useState<Record<string, string>>({});
-  const [generating, setGenerating] = useState(false);
-  const [error, setError] = useState('');
+}): Promise<void> {
+  const { type, certName, certBody, certDate, numero, doctor, patient, inclureLogo, inclureQR, logoUrl } = params;
 
-  const config = DOC_CONFIG[type];
-  const filteredPats = patSearch.length >= 1
-    ? patients.filter(p => `${p.prenom} ${p.nom}`.toLowerCase().includes(patSearch.toLowerCase())).slice(0, 20)
-    : [];
-  const selectedPat = patients.find(p => p.id === patientId);
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageW = 210;
+  const pageH = 297;
+  const mL = 18, mR = 18, mT = 15;
+  const cW = pageW - mL - mR;
+  let y = mT;
 
-  const setField = (name: string, value: string) => setFields(f => ({ ...f, [name]: value }));
+  // ── QR code (optional) ─────────────────────────────────────────────────────
+  let qrDataUrl: string | null = null;
+  if (inclureQR) {
+    const qrText = [
+      `N° ${numero}`,
+      `${CERT_CONFIGS[type].label}`,
+      `Patient: ${patient.prenom} ${patient.nom}`,
+      `Médecin: Dr. ${doctor.prenom} ${doctor.nom}`,
+      `Date: ${formatDateFr(certDate)}`,
+    ].join('\n');
+    qrDataUrl = await QRCode.toDataURL(qrText, { width: 100, margin: 1, color: { dark: '#1e3a8a' } });
+  }
 
-  // Reset fields when type changes
-  const handleTypeChange = (t: DocumentType) => {
-    setType(t);
-    setFields({});
-    if (!DOC_CONFIG[t].needsPatient) {
-      setPatientId('');
-      setPatSearch('');
-    }
-  };
-
-  const handleGenerate = async () => {
-    setError('');
-    if (config.needsPatient && !patientId) { setError('Sélectionnez un patient.'); return; }
-    if (type === 'repos' && !fields.duree_jours) { setError('La durée de repos est requise.'); return; }
-    if (type === 'aptitude' && !fields.activite) { setError("L'activité est requise."); return; }
-    if (type === 'general' && !fields.objet) { setError("L'objet du certificat est requis."); return; }
-    if (type === 'deces' && !fields.nom_defunt) { setError('Le nom du défunt est requis.'); return; }
-    if (type === 'grossesse' && !fields.terme_sa) { setError('Le terme en SA est requis.'); return; }
-
-    setGenerating(true);
+  // ── Logo (optional) ───────────────────────────────────────────────────────
+  if (inclureLogo && logoUrl) {
     try {
-      // Get next document number
-      const { data: numero } = await supabase.rpc('next_document_numero', {
-        p_type: type,
-        p_org_id: user?.org_id,
+      const resp = await fetch(logoUrl);
+      const blob = await resp.blob();
+      const format: 'PNG' | 'JPEG' = blob.type.includes('png') ? 'PNG' : 'JPEG';
+      const b64: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
       });
+      doc.addImage(b64, format, mL, y, 0, 18);
+      y += 22;
+    } catch { /* skip logo on error */ }
+  }
 
-      const today = new Date().toISOString().split('T')[0];
+  // ── Header: Cabinet info left / Date + Numéro right ─────────────────────
+  const headerY = y;
 
-      // Save to DB
-      const { error: dbErr } = await supabase.from('documents_medicaux').insert({
-        org_id: user?.org_id,
-        doctor_id: doctorProfile?.id,
-        patient_id: patientId || null,
-        type,
-        numero: numero || `DOC-${Date.now()}`,
-        data: {
-          ...fields,
-          patient_nom: selectedPat?.nom,
-          patient_prenom: selectedPat?.prenom,
-        },
+  // Cabinet / Doctor info (left)
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(30, 64, 175);
+  doc.text(doctor.orgName || `Cabinet Dr. ${doctor.prenom} ${doctor.nom}`, mL, y);
+  y += 6;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(70, 70, 70);
+  doc.text(`Dr. ${doctor.prenom} ${doctor.nom}`, mL, y); y += 4.5;
+  if (doctor.specialite) { doc.text(doctor.specialite, mL, y); y += 4.5; }
+  if (doctor.inpe) { doc.text(`N° INPE : ${doctor.inpe}`, mL, y); y += 4.5; }
+  if (doctor.adresse) { doc.text(doctor.adresse, mL, y); y += 4.5; }
+  if (doctor.telephone) { doc.text(`Tél : ${doctor.telephone}`, mL, y); y += 4.5; }
+
+  // Date + Numéro (right)
+  doc.setFontSize(8.5);
+  doc.setTextColor(70, 70, 70);
+  doc.text(`Le ${formatDateFr(certDate)}`, pageW - mR, headerY, { align: 'right' });
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 64, 175);
+  doc.setFontSize(8);
+  doc.text(numero, pageW - mR, headerY + 5, { align: 'right' });
+
+  // QR code top-right
+  if (qrDataUrl) {
+    const qrSize = 22;
+    doc.addImage(qrDataUrl, 'PNG', pageW - mR - qrSize, headerY + 9, qrSize, qrSize);
+  }
+
+  // ── Separator ─────────────────────────────────────────────────────────────
+  y = Math.max(y + 4, headerY + 34);
+  doc.setDrawColor(180, 200, 240);
+  doc.setLineWidth(0.5);
+  doc.line(mL, y, pageW - mR, y);
+  y += 10;
+
+  // ── Patient block ─────────────────────────────────────────────────────────
+  if (patient.nom || patient.prenom) {
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(mL, y - 3, cW, (patient.dateNaissance ? 18 : 12), 2, 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(50, 50, 50);
+    doc.text(`${patient.prenom} ${patient.nom}`, mL + 4, y + 4);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(80, 80, 80);
+    if (patient.dateNaissance) {
+      doc.text(`Né(e) le : ${formatDateFr(patient.dateNaissance)}`, mL + 4, y + 10);
+      if (patient.sexe) doc.text(`Sexe : ${patient.sexe}`, mL + 80, y + 10);
+    }
+    y += (patient.dateNaissance ? 22 : 15);
+  }
+
+  // ── Certificate title ─────────────────────────────────────────────────────
+  const title = (type === 'autre' && certName) ? certName.toUpperCase() : CERT_CONFIGS[type].label.toUpperCase();
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.setTextColor(20, 20, 20);
+  doc.text(title, pageW / 2, y, { align: 'center' });
+  y += 10;
+
+  doc.setDrawColor(30, 64, 175);
+  doc.setLineWidth(0.4);
+  const titleW = doc.getTextWidth(title);
+  doc.line(pageW / 2 - titleW / 2, y - 3, pageW / 2 + titleW / 2, y - 3);
+  y += 6;
+
+  // ── Body text ─────────────────────────────────────────────────────────────
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(30, 30, 30);
+
+  const bodyLines = doc.splitTextToSize(certBody, cW);
+  for (const line of bodyLines) {
+    if (y > pageH - 45) {
+      doc.addPage();
+      y = mT;
+    }
+    doc.text(line, mL, y);
+    y += 5.5;
+  }
+
+  // ── Closing / Fait à ─────────────────────────────────────────────────────
+  y = Math.max(y + 8, pageH - 65);
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(9.5);
+  doc.setTextColor(60, 60, 60);
+  doc.text(`Fait à ${doctor.ville || 'Casablanca'}, le ${formatDateFr(certDate)}`, pageW - mR, y, { align: 'right' });
+  y += 10;
+
+  // ── Signature zone ────────────────────────────────────────────────────────
+  const sigX = pageW - mR - 65;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(30, 30, 30);
+  doc.text('Signature et cachet du médecin', sigX, y, { align: 'left' });
+  y += 4;
+  doc.setDrawColor(160, 160, 160);
+  doc.setLineWidth(0.3);
+  doc.setLineDash([1, 1]);
+  doc.line(sigX, y, pageW - mR, y);
+  y += 14;
+  doc.line(sigX, y, pageW - mR, y);
+  doc.setLineDash([]);
+
+  // ── Footer ────────────────────────────────────────────────────────────────
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(160, 160, 160);
+  doc.text(
+    `Document généré par OrdoSur • ${numero} • ${formatDateFr(certDate)}`,
+    pageW / 2, pageH - 8, { align: 'center' }
+  );
+
+  doc.save(`certificat-${type}-${numero}.pdf`);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   Main component
+══════════════════════════════════════════════════════════════════════════════ */
+export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsViewProps) {
+  const { user } = useAuth();
+
+  // View mode
+  const [view, setView] = useState<'list' | 'create'>('list');
+
+  // List state
+  const [certs, setCerts] = useState<CertRecord[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
+  const [filterType, setFilterType] = useState<CertType | 'all'>('all');
+  const [searchList, setSearchList] = useState('');
+
+  // Editor state
+  const [certType, setCertType] = useState<CertType>('general');
+  const [certName, setCertName] = useState('');
+  const [certBody, setCertBody] = useState('');
+  const [certDate, setCertDate] = useState(todayStr());
+  const [inclureLogo, setInclureLogo] = useState(true);
+  const [inclureQR, setInclureQR] = useState(false);
+  const [editDoctorInfo, setEditDoctorInfo] = useState(false);
+  const [doctorInfo, setDoctorInfo] = useState<DoctorInfo>({
+    nom: '', prenom: '', specialite: '', inpe: '', adresse: '', telephone: '', ville: 'Casablanca', orgName: '',
+  });
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [patientSearch, setPatientSearch] = useState('');
+  const [showPatientDropdown, setShowPatientDropdown] = useState(false);
+  const [manualPatient, setManualPatient] = useState<PatientInfo>({ nom: '', prenom: '', dateNaissance: '', sexe: '' });
+  const [useManualPatient, setUseManualPatient] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [docNumero] = useState(generateNumero('general'));
+
+  // Init doctor info from profile
+  useEffect(() => {
+    if (user) {
+      const org = doctorProfile?.organisations;
+      setDoctorInfo({
+        nom:       user.nom       || '',
+        prenom:    user.prenom    || '',
+        specialite: doctorProfile?.specialite || '',
+        inpe:      doctorProfile?.inpe        || '',
+        adresse:   org?.adresse              || '',
+        telephone: org?.telephone            || '',
+        ville:     (org as any)?.ville       || 'Casablanca',
+        orgName:   org?.name                 || `Cabinet Dr. ${user.prenom} ${user.nom}`,
       });
-      if (dbErr) throw dbErr;
+    }
+  }, [user, doctorProfile]);
 
-      // Generate PDF
-      await generateDocumentPdf({
-        type,
-        numero: numero || `DOC-${Date.now()}`,
-        logo_url: logoUrl,
-        doctor: {
-          prenom: doctorProfile?.full_name?.split(' ')[0] || user?.prenom || '',
-          nom: doctorProfile?.full_name?.split(' ').slice(1).join(' ') || user?.nom || '',
-          specialite: doctorProfile?.specialite,
-          rpps: doctorProfile?.rpps,
-        },
-        org: {
-          name: orgProfile?.name || 'Cabinet',
-          adresse: orgProfile?.adresse,
-          telephone: orgProfile?.telephone,
-        },
-        date: today,
-        patient: selectedPat
-          ? { prenom: selectedPat.prenom, nom: selectedPat.nom, date_naissance: selectedPat.date_naissance }
-          : undefined,
-        fields: Object.fromEntries(
-          Object.entries(fields).map(([k, v]) => [k, v])
-        ),
+  // Load existing certificates
+  useEffect(() => {
+    loadCerts();
+  }, []);
+
+  const loadCerts = async () => {
+    setLoadingList(true);
+    try {
+      const { data } = await supabase
+        .from('documents_medicaux')
+        .select('id, type, numero, data, created_at, patient_id')
+        .order('created_at', { ascending: false })
+        .limit(50);
+      if (data) {
+        const mapped: CertRecord[] = data.map(r => ({
+          id: r.id,
+          type: r.type,
+          numero: r.numero,
+          certName: (r.data as any)?.certName || '',
+          patientNom: (r.data as any)?.patientNom || '',
+          patientPrenom: (r.data as any)?.patientPrenom || '',
+          created_at: r.created_at,
+          data: r.data as Record<string, string | boolean | null>,
+        }));
+        setCerts(mapped);
+      }
+    } catch { /* ignore */ }
+    setLoadingList(false);
+  };
+
+  // When cert type changes, update template
+  const handleTypeChange = (t: CertType) => {
+    setCertType(t);
+    const patNom = selectedPatient
+      ? `${selectedPatient.prenom} ${selectedPatient.nom}`
+      : (useManualPatient ? `${manualPatient.prenom} ${manualPatient.nom}` : '');
+    const drNom = `${doctorInfo.prenom} ${doctorInfo.nom}`;
+    setCertBody(getTemplate(t, drNom, patNom, formatDateFr(certDate)));
+  };
+
+  // Init template on first open
+  useEffect(() => {
+    if (view === 'create' && !certBody) {
+      const patNom = selectedPatient
+        ? `${selectedPatient.prenom} ${selectedPatient.nom}`
+        : '';
+      const drNom = `${doctorInfo.prenom} ${doctorInfo.nom}`;
+      setCertBody(getTemplate(certType, drNom, patNom, formatDateFr(certDate)));
+    }
+  }, [view]);
+
+  const handleSelectPatient = (p: Patient) => {
+    setSelectedPatient(p);
+    setPatientSearch(`${p.prenom} ${p.nom}`);
+    setShowPatientDropdown(false);
+    setUseManualPatient(false);
+    setManualPatient({ nom: p.nom, prenom: p.prenom, dateNaissance: p.date_naissance || '', sexe: p.sexe || '' });
+    // Refresh template with patient name
+    const drNom = `${doctorInfo.prenom} ${doctorInfo.nom}`;
+    setCertBody(getTemplate(certType, drNom, `${p.prenom} ${p.nom}`, formatDateFr(certDate)));
+  };
+
+  const filteredPatients = patients.filter(p =>
+    `${p.prenom} ${p.nom}`.toLowerCase().includes(patientSearch.toLowerCase())
+  ).slice(0, 8);
+
+  const currentPatient: PatientInfo = useManualPatient
+    ? manualPatient
+    : (selectedPatient
+      ? { nom: selectedPatient.nom, prenom: selectedPatient.prenom, dateNaissance: selectedPatient.date_naissance || '', sexe: selectedPatient.sexe || '' }
+      : manualPatient);
+
+  const certNumero = generateNumero(certType);
+
+  const handleDownloadPdf = async () => {
+    setGeneratingPdf(true);
+    try {
+      await generateCertificatPdf({
+        type: certType,
+        certName,
+        certBody,
+        certDate,
+        numero: certNumero,
+        doctor: doctorInfo,
+        patient: currentPatient,
+        inclureLogo,
+        inclureQR,
+        logoUrl: doctorProfile?.logo_url,
       });
-
-      onCreated();
-      onClose();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erreur inattendue.');
+    } catch (e: any) {
+      showToast('Erreur lors de la génération du PDF', 'error');
     } finally {
-      setGenerating(false);
+      setGeneratingPdf(false);
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.18 }}
-        className="bg-white dark:bg-[#111827] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-white/[0.06]"
-      >
-        {/* Header */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0 bg-gradient-to-r from-violet-500 to-purple-600">
-          <FileText className="w-5 h-5 text-white" />
-          <h2 className="text-white font-bold text-base flex-1">Nouveau document médical</h2>
-          <button onClick={onClose} className="p-1.5 text-white/70 hover:text-white hover:bg-white/20 rounded-lg transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+  const handleSave = async () => {
+    if (!selectedPatient && !useManualPatient) {
+      handleDownloadPdf();
+      return;
+    }
+    setSaving(true);
+    try {
+      const payload = {
+        type: 'general', // fallback type for DB constraint
+        numero: certNumero,
+        data: {
+          certType,
+          certName,
+          certBody,
+          certDate,
+          patientNom: currentPatient.nom,
+          patientPrenom: currentPatient.prenom,
+          inclureLogo,
+          inclureQR,
+        },
+        patient_id: selectedPatient?.id ?? null,
+        doctor_id: doctorProfile?.id ?? null,
+        org_id: user?.org_id ?? null,
+      };
+      const { error } = await supabase.from('documents_medicaux').insert(payload);
+      if (!error) showToast('Certificat enregistré', 'success');
+      await loadCerts();
+    } catch { /* ignore DB errors, PDF still generated */ }
+    await handleDownloadPdf();
+    setSaving(false);
+    setShowPreview(false);
+    setView('list');
+  };
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
-          {/* Type selector */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">Type de document</label>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {(Object.entries(DOC_CONFIG) as [DocumentType, typeof DOC_CONFIG[DocumentType]][]).map(([t, cfg]) => {
+  const handleNewCert = () => {
+    setCertType('general');
+    setCertName('');
+    setSelectedPatient(null);
+    setPatientSearch('');
+    setManualPatient({ nom: '', prenom: '', dateNaissance: '', sexe: '' });
+    setUseManualPatient(false);
+    setCertDate(todayStr());
+    setInclureLogo(true);
+    setInclureQR(false);
+    setEditDoctorInfo(false);
+    const drNom = `${doctorInfo.prenom} ${doctorInfo.nom}`;
+    setCertBody(getTemplate('general', drNom, '', formatDateFr(todayStr())));
+    setView('create');
+  };
+
+  /* ── List view ─────────────────────────────────────────────────────────────── */
+  if (view === 'list') {
+    const filtered = certs.filter(c => {
+      if (filterType !== 'all' && c.type !== filterType) return false;
+      const q = searchList.toLowerCase();
+      return !q || `${c.patientPrenom} ${c.patientNom} ${c.numero}`.toLowerCase().includes(q);
+    });
+
+    return (
+      <PageTransition>
+        <div className="p-6 max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Certificats médicaux</h1>
+              <p className="text-sm text-slate-500 mt-0.5">Rédigez et téléchargez vos certificats en PDF</p>
+            </div>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={handleNewCert}
+              className="flex items-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-sky-500/25 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Nouveau certificat
+            </motion.button>
+          </div>
+
+          {/* Type filters */}
+          <div className="flex gap-2 flex-wrap mb-4">
+            <button
+              onClick={() => setFilterType('all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filterType === 'all' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
+            >Tous</button>
+            {(Object.entries(CERT_CONFIGS) as [CertType, CertConfig][]).map(([t, c]) => (
+              <button
+                key={t}
+                onClick={() => setFilterType(t)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filterType === t ? `${c.bgColor} ${c.color} border ${c.borderColor}` : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
+              >{c.label}</button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              value={searchList}
+              onChange={e => setSearchList(e.target.value)}
+              placeholder="Rechercher par patient ou numéro…"
+              className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 bg-white"
+            />
+          </div>
+
+          {/* List */}
+          {loadingList ? (
+            <div className="flex justify-center py-16">
+              <Loader2 className="w-6 h-6 text-sky-500 animate-spin" />
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-2xl border border-slate-100">
+              <FileText className="w-12 h-12 text-slate-200 mx-auto mb-3" />
+              <p className="text-slate-500 font-medium">Aucun certificat trouvé</p>
+              <p className="text-slate-400 text-sm mt-1">Créez votre premier certificat médical</p>
+              <button onClick={handleNewCert} className="mt-4 px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors">
+                + Nouveau certificat
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {filtered.map(cert => {
+                const cfg = CERT_CONFIGS[cert.type as CertType] || CERT_CONFIGS.autre;
                 const Icon = cfg.icon;
                 return (
-                  <button
-                    key={t}
-                    onClick={() => handleTypeChange(t)}
-                    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-left text-xs font-semibold border-2 transition-all ${
-                      type === t
-                        ? 'bg-violet-500 text-white border-violet-500 shadow-lg shadow-violet-500/25'
-                        : 'border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-slate-400 hover:border-violet-300 dark:hover:border-violet-500/40'
-                    }`}
+                  <motion.div
+                    key={cert.id}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`flex items-center gap-4 p-4 bg-white border ${cfg.borderColor} rounded-xl hover:shadow-sm transition-shadow`}
                   >
-                    <Icon className="w-4 h-4 flex-shrink-0" />
-                    {cfg.label}
-                  </button>
+                    <div className={`w-10 h-10 rounded-xl ${cfg.bgColor} flex items-center justify-center flex-shrink-0`}>
+                      <Icon className={`w-5 h-5 ${cfg.color}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cfg.bgColor} ${cfg.color}`}>
+                          {cert.certName || cfg.label}
+                        </span>
+                        <span className="text-xs text-slate-400 font-mono">{cert.numero}</span>
+                      </div>
+                      {(cert.patientNom || cert.patientPrenom) && (
+                        <p className="text-sm text-slate-600 mt-0.5 truncate">
+                          {cert.patientPrenom} {cert.patientNom}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-xs text-slate-400">
+                        {new Date(cert.created_at).toLocaleDateString('fr-FR')}
+                      </span>
+                    </div>
+                  </motion.div>
                 );
               })}
             </div>
-          </div>
-
-          {/* Patient selector */}
-          {config.needsPatient && (
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
-                Patient <span className="text-red-400">*</span>
-              </label>
-              {selectedPat ? (
-                <div className="flex items-center gap-2 px-3 py-2 bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/20 rounded-xl">
-                  <User className="w-4 h-4 text-violet-500 flex-shrink-0" />
-                  <span className="flex-1 text-sm font-semibold text-violet-700 dark:text-violet-300">{selectedPat.prenom} {selectedPat.nom}</span>
-                  <button onClick={() => { setPatientId(''); setPatSearch(''); }} className="text-violet-400 hover:text-violet-600">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ) : (
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-                  <input
-                    value={patSearch}
-                    onChange={e => { setPatSearch(e.target.value); setShowPatDrop(true); }}
-                    onFocus={() => setShowPatDrop(true)}
-                    onBlur={() => setTimeout(() => setShowPatDrop(false), 200)}
-                    placeholder="Rechercher un patient…"
-                    className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40"
-                  />
-                  {showPatDrop && filteredPats.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                      {filteredPats.map(p => (
-                        <button
-                          key={p.id}
-                          onMouseDown={e => { e.preventDefault(); setPatientId(p.id); setPatSearch(''); setShowPatDrop(false); }}
-                          className="w-full px-3 py-2 text-left text-sm hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
-                        >
-                          <span className="font-semibold text-slate-900 dark:text-white">{p.prenom} {p.nom}</span>
-                          {p.date_naissance && <span className="ml-2 text-xs text-slate-400">{new Date(p.date_naissance).getFullYear()}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Type-specific fields */}
-          {type === 'repos' && (
-            <div className="space-y-3">
-              <FieldInput label="Motif" name="motif" value={fields.motif || ''} onChange={setField} placeholder="Ex: Syndrome grippal, lombalgie aiguë..." />
-              <div className="grid grid-cols-2 gap-3">
-                <FieldInput label="Durée (jours)" name="duree_jours" type="number" value={fields.duree_jours || ''} onChange={setField} required placeholder="3" />
-                <FieldInput label="Date début" name="date_debut" type="date" value={fields.date_debut || ''} onChange={setField} />
-              </div>
-              <FieldInput label="Date fin" name="date_fin" type="date" value={fields.date_fin || ''} onChange={setField} />
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Sortie</label>
-                <div className="flex gap-2">
-                  {[{ val: 'true', label: 'Autorisée' }, { val: 'false', label: 'Non autorisée' }].map(opt => (
-                    <button
-                      key={opt.val}
-                      onClick={() => setField('avec_sortie', opt.val)}
-                      className={`flex-1 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${
-                        fields.avec_sortie === opt.val
-                          ? 'bg-sky-500 border-sky-500 text-white'
-                          : 'border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-slate-400'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <FieldTextarea label="Commentaire" name="commentaire" value={fields.commentaire || ''} onChange={setField} rows={2} />
-            </div>
-          )}
-
-          {type === 'aptitude' && (
-            <div className="space-y-3">
-              <FieldInput label="Activité / objet" name="activite" value={fields.activite || ''} onChange={setField} required placeholder="Ex: Sport en compétition, conduite, travail..." />
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Aptitude</label>
-                <div className="flex gap-2">
-                  {[{ val: 'true', label: 'Apte' }, { val: 'false', label: 'Inapte' }].map(opt => (
-                    <button
-                      key={opt.val}
-                      onClick={() => setField('apte', opt.val)}
-                      className={`flex-1 py-2 rounded-xl text-sm font-semibold border-2 transition-all ${
-                        fields.apte === opt.val
-                          ? (opt.val === 'true' ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-red-500 border-red-500 text-white')
-                          : 'border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-slate-400'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {fields.apte === 'false' && (
-                <FieldInput label="Durée d'inaptitude" name="duree_inapte" value={fields.duree_inapte || ''} onChange={setField} placeholder="Ex: 3 semaines" />
-              )}
-              <FieldInput label="Réserves éventuelles" name="reserves" value={fields.reserves || ''} onChange={setField} placeholder="Optionnel" />
-              <FieldTextarea label="Commentaire" name="commentaire" value={fields.commentaire || ''} onChange={setField} rows={2} />
-            </div>
-          )}
-
-          {type === 'general' && (
-            <div className="space-y-3">
-              <FieldInput label="Objet" name="objet" value={fields.objet || ''} onChange={setField} required placeholder="Ex: À présenter à l'employeur, Demande CNSS..." />
-              <FieldTextarea label="Contenu du certificat" name="contenu" value={fields.contenu || ''} onChange={setField} rows={5} placeholder="Rédigez ici le contenu du certificat médical..." />
-            </div>
-          )}
-
-          {type === 'deces' && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <FieldInput label="Prénom du défunt" name="prenom_defunt" value={fields.prenom_defunt || ''} onChange={setField} placeholder="Mohamed" />
-                <FieldInput label="Nom du défunt" name="nom_defunt" value={fields.nom_defunt || ''} onChange={setField} required placeholder="Bensaid" />
-              </div>
-              <FieldInput label="Date de naissance" name="date_naissance_defunt" type="date" value={fields.date_naissance_defunt || ''} onChange={setField} />
-              <div className="grid grid-cols-2 gap-3">
-                <FieldInput label="Date du décès" name="date_deces" type="date" value={fields.date_deces || ''} onChange={setField} />
-                <FieldInput label="Heure" name="heure_deces" type="time" value={fields.heure_deces || ''} onChange={setField} />
-              </div>
-              <FieldInput label="Lieu du décès" name="lieu_deces" value={fields.lieu_deces || ''} onChange={setField} placeholder="Ex: CHU Ibn Rochd, Casablanca" />
-              <FieldInput label="Cause du décès" name="cause" value={fields.cause || ''} onChange={setField} placeholder="Ex: Arrêt cardiorespiratoire" />
-              <FieldInput label="Mode de constatation" name="mode" value={fields.mode || ''} onChange={setField} placeholder="Ex: Constaté personnellement" />
-            </div>
-          )}
-
-          {type === 'grossesse' && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <FieldInput label="Terme (SA)" name="terme_sa" type="number" value={fields.terme_sa || ''} onChange={setField} required placeholder="28" />
-                <FieldInput label="Date d'accouchement prévue" name="date_accouchement" type="date" value={fields.date_accouchement || ''} onChange={setField} />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Type de grossesse</label>
-                <select
-                  value={fields.type_grossesse || ''}
-                  onChange={e => setField('type_grossesse', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-slate-200 dark:border-white/[0.1] rounded-xl bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-300"
-                >
-                  <option value="">Sélectionner…</option>
-                  <option value="Grossesse simple">Grossesse simple</option>
-                  <option value="Grossesse gémellaire">Grossesse gémellaire</option>
-                  <option value="Grossesse triple">Grossesse triple</option>
-                  <option value="Grossesse à risque">Grossesse à risque</option>
-                </select>
-              </div>
-              <FieldTextarea label="Commentaire" name="commentaire" value={fields.commentaire || ''} onChange={setField} rows={2} />
-            </div>
-          )}
-
-          {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl text-xs text-red-700 dark:text-red-400">
-              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-              {error}
-            </div>
           )}
         </div>
+      </PageTransition>
+    );
+  }
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-100 dark:border-white/[0.06] flex gap-3 flex-shrink-0">
-          <button onClick={onClose} className="flex-1 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/[0.1] rounded-xl hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors">
-            Annuler
-          </button>
-          <button
-            onClick={handleGenerate}
-            disabled={generating}
-            className="flex-1 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-violet-500 to-purple-600 rounded-xl hover:from-violet-600 hover:to-purple-700 disabled:opacity-60 transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-500/25"
-          >
-            {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-            Générer le PDF
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-/* ── Main DocumentsView ─────────────────────────────────────────────────────── */
-export function DocumentsView({ patients, showToast }: DocumentsViewProps) {
-  const { user, doctorProfile, clinicProfile } = useAuth();
-  const [docs, setDocs] = useState<DocumentRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<DocumentType | 'all'>('all');
-
-  const logoUrl = (doctorProfile as any)?.logo_url ?? null;
-
-  const loadDocs = async () => {
-    if (!user?.org_id) return;
-    setLoading(true);
-    const { data } = await supabase
-      .from('documents_medicaux')
-      .select('id, type, numero, data, created_at, patient_id')
-      .eq('org_id', user.org_id)
-      .order('created_at', { ascending: false })
-      .limit(200);
-
-    if (data) {
-      const enriched = (data as DocumentRecord[]).map(d => ({
-        ...d,
-        patient_nom: (d.data as any)?.patient_nom,
-        patient_prenom: (d.data as any)?.patient_prenom,
-      }));
-      setDocs(enriched);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => { loadDocs(); }, [user?.org_id]);
-
-  const filtered = docs.filter(d => {
-    const matchType = typeFilter === 'all' || d.type === typeFilter;
-    const matchSearch = !search ||
-      `${d.patient_prenom || ''} ${d.patient_nom || ''}`.toLowerCase().includes(search.toLowerCase()) ||
-      d.numero.toLowerCase().includes(search.toLowerCase());
-    return matchType && matchSearch;
-  });
-
-  const handleRegenerate = async (d: DocumentRecord) => {
-    const pat = patients.find(p => p.id === d.patient_id);
-    const today = new Date().toISOString().split('T')[0];
-    try {
-      await generateDocumentPdf({
-        type: d.type,
-        numero: d.numero,
-        logo_url: logoUrl,
-        doctor: {
-          prenom: (doctorProfile as any)?.full_name?.split(' ')[0] || user?.prenom || '',
-          nom: (doctorProfile as any)?.full_name?.split(' ').slice(1).join(' ') || user?.nom || '',
-          specialite: (doctorProfile as any)?.specialite,
-          rpps: (doctorProfile as any)?.rpps,
-        },
-        org: {
-          name: clinicProfile?.name || 'Cabinet',
-          adresse: (clinicProfile as any)?.adresse,
-          telephone: (clinicProfile as any)?.telephone,
-        },
-        date: d.created_at.split('T')[0],
-        patient: pat ? { prenom: pat.prenom, nom: pat.nom, date_naissance: pat.date_naissance } : undefined,
-        fields: d.data,
-      });
-      showToast('PDF régénéré');
-    } catch {
-      showToast('Erreur lors de la génération', 'error');
-    }
-  };
+  /* ── Create/Edit view ──────────────────────────────────────────────────────── */
+  const cfg = CERT_CONFIGS[certType];
+  const CertIcon = cfg.icon;
 
   return (
     <PageTransition>
-      <div className="p-6 max-w-5xl">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/25">
-              <FileText className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">Documents médicaux</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Certificats, attestations et documents officiels</p>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold text-sm shadow-lg shadow-violet-500/25 hover:from-violet-600 hover:to-purple-700 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            Nouveau document
-          </button>
-        </div>
+      <div className="p-6 max-w-5xl mx-auto">
+        {/* Back button */}
+        <button
+          onClick={() => setView('list')}
+          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 mb-5 transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          Retour aux certificats
+        </button>
 
-        {/* Filters */}
-        <div className="flex gap-3 mb-5 flex-wrap">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher par patient ou numéro…"
-              className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40"
-            />
-          </div>
-          <div className="relative">
-            <select
-              value={typeFilter}
-              onChange={e => setTypeFilter(e.target.value as DocumentType | 'all')}
-              className="appearance-none pl-3 pr-8 py-2.5 text-sm bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40"
-            >
-              <option value="all">Tous les types</option>
-              {(Object.entries(DOC_CONFIG) as [DocumentType, { label: string }][]).map(([t, cfg]) => (
-                <option key={t} value={t}>{cfg.label}</option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-          </div>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ── Left column ─────────────────────────────────────────────────── */}
+          <div className="lg:col-span-1 space-y-4">
 
-        {/* Table */}
-        {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-            <FileText className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm font-medium">Aucun document trouvé</p>
-            <p className="text-xs mt-1 opacity-70">Créez votre premier document médical</p>
-          </div>
-        ) : (
-          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200 dark:border-white/[0.06] shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-100 dark:border-white/[0.06]">
-                    {['Numéro', 'Type', 'Patient', 'Date', 'Actions'].map(h => (
-                      <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-wide">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((d, i) => {
-                    const cfg = DOC_CONFIG[d.type];
-                    const Icon = cfg.icon;
-                    return (
-                      <tr key={d.id} className={`border-b border-slate-50 dark:border-white/[0.04] last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors ${i % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-white/[0.01]'}`}>
-                        <td className="px-4 py-3">
-                          <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300">{d.numero}</span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${TYPE_COLORS[cfg.color]}`}>
-                            <Icon className="w-3 h-3" />
-                            {cfg.label}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="text-sm text-slate-900 dark:text-white">
-                            {d.patient_prenom || d.patient_nom
-                              ? `${d.patient_prenom || ''} ${d.patient_nom || ''}`.trim()
-                              : <span className="text-slate-400 italic text-xs">—</span>}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                            <Calendar className="w-3 h-3" />
-                            {new Date(d.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
+            {/* Type selector */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-4">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Type de certificat</p>
+              <div className="space-y-1.5">
+                {(Object.entries(CERT_CONFIGS) as [CertType, CertConfig][]).map(([t, c]) => {
+                  const Icon = c.icon;
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => handleTypeChange(t)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm font-medium transition-colors ${
+                        certType === t
+                          ? `${c.bgColor} ${c.color} border ${c.borderColor}`
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">{c.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Patient */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-4">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Patient</p>
+
+              {!useManualPatient ? (
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                  <input
+                    value={patientSearch}
+                    onChange={e => { setPatientSearch(e.target.value); setShowPatientDropdown(true); setSelectedPatient(null); }}
+                    onFocus={() => setShowPatientDropdown(true)}
+                    placeholder="Rechercher un patient…"
+                    className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500"
+                  />
+                  <AnimatePresence>
+                    {showPatientDropdown && filteredPatients.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden"
+                      >
+                        {filteredPatients.map(p => (
                           <button
-                            onClick={() => handleRegenerate(d)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-lg transition-colors border border-violet-200 dark:border-violet-500/30"
+                            key={p.id}
+                            onMouseDown={() => handleSelectPatient(p)}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-sky-50 transition-colors"
                           >
-                            <Download className="w-3 h-3" />
-                            PDF
+                            <span className="font-medium">{p.prenom} {p.nom}</span>
+                            {p.date_naissance && (
+                              <span className="text-slate-400 ml-2 text-xs">{formatDateFr(p.date_naissance)}</span>
+                            )}
                           </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : null}
+
+              <button
+                onClick={() => { setUseManualPatient(!useManualPatient); setSelectedPatient(null); setPatientSearch(''); }}
+                className="mt-2 text-xs text-sky-600 hover:text-sky-700 font-medium"
+              >
+                {useManualPatient ? '← Rechercher un patient existant' : 'Saisir manuellement →'}
+              </button>
+
+              {(useManualPatient || !selectedPatient) && (
+                <div className="mt-3 space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      value={manualPatient.prenom}
+                      onChange={e => setManualPatient(p => ({ ...p, prenom: e.target.value }))}
+                      placeholder="Prénom"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500"
+                    />
+                    <input
+                      value={manualPatient.nom}
+                      onChange={e => setManualPatient(p => ({ ...p, nom: e.target.value }))}
+                      placeholder="Nom"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500"
+                    />
+                  </div>
+                  <input
+                    type="date"
+                    value={manualPatient.dateNaissance}
+                    onChange={e => setManualPatient(p => ({ ...p, dateNaissance: e.target.value }))}
+                    placeholder="Date de naissance"
+                    className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500"
+                  />
+                  <select
+                    value={manualPatient.sexe}
+                    onChange={e => setManualPatient(p => ({ ...p, sexe: e.target.value }))}
+                    className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 bg-white"
+                  >
+                    <option value="">Sexe (optionnel)</option>
+                    <option value="Masculin">Masculin</option>
+                    <option value="Féminin">Féminin</option>
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* PDF options */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-4">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Options PDF</p>
+              <label className="flex items-center gap-3 cursor-pointer mb-2">
+                <input
+                  type="checkbox"
+                  checked={inclureLogo}
+                  onChange={e => setInclureLogo(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 accent-sky-500"
+                />
+                <span className="text-sm text-slate-700">Inclure le logo du cabinet</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={inclureQR}
+                  onChange={e => setInclureQR(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 accent-sky-500"
+                />
+                <span className="text-sm text-slate-700">Inclure un QR code</span>
+              </label>
             </div>
           </div>
-        )}
-      </div>
 
-      <AnimatePresence>
-        {showModal && (
-          <CreateDocumentModal
-            patients={patients}
-            onClose={() => setShowModal(false)}
-            onCreated={() => { loadDocs(); showToast('Document créé et PDF généré'); }}
-            doctorProfile={doctorProfile}
-            orgProfile={clinicProfile}
-            logoUrl={logoUrl}
-          />
-        )}
-      </AnimatePresence>
+          {/* ── Right column ─────────────────────────────────────────────────── */}
+          <div className="lg:col-span-2 space-y-4">
+
+            {/* Certificate header */}
+            <div className={`bg-white rounded-2xl border ${cfg.borderColor} p-5`}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-xl ${cfg.bgColor} flex items-center justify-center`}>
+                  <CertIcon className={`w-5 h-5 ${cfg.color}`} />
+                </div>
+                <div className="flex-1">
+                  {certType === 'autre' ? (
+                    <input
+                      value={certName}
+                      onChange={e => setCertName(e.target.value)}
+                      placeholder="Nom du certificat (ex: Certificat de repos)"
+                      className="w-full text-lg font-bold bg-transparent border-b border-slate-300 focus:outline-none focus:border-sky-500 pb-1 text-slate-800"
+                    />
+                  ) : (
+                    <h2 className="text-lg font-bold text-slate-800">{cfg.label}</h2>
+                  )}
+                  <p className="text-xs text-slate-400 mt-0.5">{cfg.description}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                  <input
+                    type="date"
+                    value={certDate}
+                    onChange={e => setCertDate(e.target.value)}
+                    className="text-sm border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500"
+                  />
+                </div>
+              </div>
+
+              {/* Doctor info (collapsible edit) */}
+              <div className="border-t border-slate-100 pt-3">
+                <button
+                  onClick={() => setEditDoctorInfo(!editDoctorInfo)}
+                  className="flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors mb-2"
+                >
+                  <Stethoscope className="w-3.5 h-3.5" />
+                  <span>Dr. {doctorInfo.prenom} {doctorInfo.nom}</span>
+                  {doctorInfo.specialite && <span className="text-slate-400">· {doctorInfo.specialite}</span>}
+                  <Edit2 className="w-3 h-3 ml-1 opacity-50" />
+                </button>
+
+                <AnimatePresence>
+                  {editDoctorInfo && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="grid grid-cols-2 gap-2 pb-2">
+                        {[
+                          { key: 'prenom',     label: 'Prénom',      icon: User },
+                          { key: 'nom',        label: 'Nom',         icon: User },
+                          { key: 'specialite', label: 'Spécialité',  icon: Stethoscope },
+                          { key: 'inpe',       label: 'N° INPE',     icon: FileText },
+                          { key: 'telephone',  label: 'Téléphone',   icon: Phone },
+                          { key: 'ville',      label: 'Ville',       icon: MapPin },
+                          { key: 'adresse',    label: 'Adresse',     icon: MapPin },
+                          { key: 'orgName',    label: 'Nom cabinet', icon: FileText },
+                        ].map(({ key, label }) => (
+                          <input
+                            key={key}
+                            value={(doctorInfo as any)[key]}
+                            onChange={e => setDoctorInfo(d => ({ ...d, [key]: e.target.value }))}
+                            placeholder={label}
+                            className="px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500"
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Body textarea */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-5">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Contenu du certificat</p>
+                <button
+                  onClick={() => {
+                    const patNom = selectedPatient
+                      ? `${selectedPatient.prenom} ${selectedPatient.nom}`
+                      : `${manualPatient.prenom} ${manualPatient.nom}`;
+                    const drNom = `${doctorInfo.prenom} ${doctorInfo.nom}`;
+                    setCertBody(getTemplate(certType, drNom, patNom, formatDateFr(certDate)));
+                  }}
+                  className="text-xs text-sky-600 hover:text-sky-700 font-medium"
+                >
+                  ↺ Recharger le modèle
+                </button>
+              </div>
+              <textarea
+                value={certBody}
+                onChange={e => setCertBody(e.target.value)}
+                rows={18}
+                className="w-full px-3 py-3 border border-slate-200 rounded-xl text-sm font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 resize-none"
+                placeholder="Rédigez le contenu du certificat…"
+              />
+              <p className="text-xs text-slate-400 mt-1.5">
+                Le texte est pré-rempli avec un modèle — modifiez-le librement avant de générer le PDF.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-3 justify-end">
+              <button
+                onClick={() => setView('list')}
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
+              >
+                Annuler
+              </button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setShowPreview(true)}
+                className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
+              >
+                <Eye className="w-4 h-4" />
+                Aperçu
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={handleDownloadPdf}
+                disabled={generatingPdf}
+                className="flex items-center gap-2 px-5 py-2.5 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 disabled:opacity-60 transition-colors shadow-lg shadow-sky-500/25"
+              >
+                {generatingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                Télécharger PDF
+              </motion.button>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Preview modal ────────────────────────────────────────────────────── */}
+        <AnimatePresence>
+          {showPreview && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+              onClick={() => setShowPreview(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={e => e.stopPropagation()}
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                {/* Preview header */}
+                <div className="flex items-center justify-between p-5 border-b border-slate-100">
+                  <h3 className="font-bold text-slate-800">Aperçu du certificat</h3>
+                  <button onClick={() => setShowPreview(false)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Preview content */}
+                <div className="p-6">
+                  {/* Simulated A4 preview */}
+                  <div className="border border-slate-200 rounded-xl p-8 bg-white shadow-inner font-sans">
+                    {/* Header */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <p className="font-bold text-blue-700 text-base">{doctorInfo.orgName}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Dr. {doctorInfo.prenom} {doctorInfo.nom}</p>
+                        {doctorInfo.specialite && <p className="text-xs text-slate-400">{doctorInfo.specialite}</p>}
+                        {doctorInfo.inpe && <p className="text-xs text-slate-400">N° INPE : {doctorInfo.inpe}</p>}
+                        {doctorInfo.adresse && <p className="text-xs text-slate-400">{doctorInfo.adresse}</p>}
+                        {doctorInfo.telephone && <p className="text-xs text-slate-400">Tél : {doctorInfo.telephone}</p>}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-slate-500">Le {formatDateFr(certDate)}</p>
+                        <p className="text-xs text-blue-600 font-mono mt-0.5">{certNumero}</p>
+                      </div>
+                    </div>
+
+                    <hr className="border-blue-100 mb-4" />
+
+                    {/* Patient */}
+                    {(currentPatient.nom || currentPatient.prenom) && (
+                      <div className="bg-slate-50 rounded-lg p-3 mb-4">
+                        <p className="text-sm font-semibold text-slate-800">{currentPatient.prenom} {currentPatient.nom}</p>
+                        {currentPatient.dateNaissance && <p className="text-xs text-slate-500 mt-0.5">Né(e) le : {formatDateFr(currentPatient.dateNaissance)}</p>}
+                      </div>
+                    )}
+
+                    {/* Title */}
+                    <p className="text-center font-bold text-slate-900 text-base mb-4 underline">
+                      {(certType === 'autre' && certName) ? certName.toUpperCase() : CERT_CONFIGS[certType].label.toUpperCase()}
+                    </p>
+
+                    {/* Body */}
+                    <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap mb-6">
+                      {certBody}
+                    </div>
+
+                    {/* Closing */}
+                    <p className="text-sm italic text-slate-600 text-right mb-6">
+                      Fait à {doctorInfo.ville || 'Casablanca'}, le {formatDateFr(certDate)}
+                    </p>
+
+                    {/* Signature */}
+                    <div className="ml-auto w-64">
+                      <p className="text-xs text-slate-500 mb-1 text-center">Signature et cachet du médecin</p>
+                      <div className="border-b border-dashed border-slate-300 h-12" />
+                    </div>
+
+                    {/* Footer */}
+                    <p className="text-center text-xs text-slate-300 mt-6">
+                      Document généré par OrdoSur • {certNumero}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-3 p-5 border-t border-slate-100 justify-end">
+                  <button
+                    onClick={() => setShowPreview(false)}
+                    className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium transition-colors"
+                  >
+                    Modifier
+                  </button>
+                  {selectedPatient && (
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl text-sm font-semibold hover:bg-emerald-600 disabled:opacity-60 transition-colors"
+                    >
+                      {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      Enregistrer + PDF
+                    </motion.button>
+                  )}
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleDownloadPdf}
+                    disabled={generatingPdf}
+                    className="flex items-center gap-2 px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 disabled:opacity-60 transition-colors shadow-lg shadow-sky-500/25"
+                  >
+                    {generatingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                    Télécharger PDF
+                  </motion.button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </PageTransition>
   );
 }

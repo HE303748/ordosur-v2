@@ -2227,7 +2227,7 @@ export function DoctorDashboard() {
             )}
 
             {activeView === 'documents' && (
-              <DocumentsView key="documents" patients={patients} showToast={showToast} />
+              <DocumentsView key="documents" patients={patients} showToast={showToast} doctorProfile={doctorProfile} />
             )}
 
             {activeView === 'settings' && (
