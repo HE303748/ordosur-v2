@@ -419,13 +419,6 @@ const ICD_CHAPTERS = [
   { value: "Facteurs influant sur l'état de santé",                label: 'Z · Facteurs de santé' },
 ];
 
-const PAYS_OPTIONS = [
-  { value: 'MA', label: '🇲🇦 Maroc' },
-  { value: 'FR', label: '🇫🇷 France' },
-  { value: 'US', label: '🇺🇸 États-Unis' },
-  { value: 'INT', label: '🌍 International' },
-];
-
 /* ── Main EncyclopedieView ───────────────────────────────────────────────────── */
 type Tab = 'medicaments' | 'pathologies';
 
@@ -440,7 +433,6 @@ export function EncyclopedieView() {
   const [medsTotal, setMedsTotal]   = useState(0);
   const [medsPage, setMedsPage]     = useState(1);
   const [selectedMed, setSelectedMed] = useState<Medicament | null>(null);
-  const [filterPays, setFilterPays] = useState('');
 
   // Pathologies state
   const [paths, setPaths]           = useState<Pathologie[]>([]);
@@ -461,35 +453,37 @@ export function EncyclopedieView() {
     setSearch(''); setDebouncedSearch('');
     setSelectedMed(null); setSelectedPath(null);
     setMedsPage(1); setPathsPage(1);
-    setFilterPays(''); setFilterCat('');
+    setFilterCat('');
   }, [tab]);
 
   // Reset page on search/filter change
-  useEffect(() => { setMedsPage(1); }, [debouncedSearch, filterPays]);
+  useEffect(() => { setMedsPage(1); }, [debouncedSearch]);
   useEffect(() => { setPathsPage(1); }, [debouncedSearch, filterCat]);
 
   /* ── Fetch médicaments ── */
-  const fetchMeds = useCallback(async (q: string, page: number, pays: string) => {
+  const fetchMeds = useCallback(async (q: string, page: number) => {
     setMedsLoading(true);
     try {
       const from = (page - 1) * PAGE_SIZE;
       const to   = from + PAGE_SIZE - 1;
 
       if (q.trim().length >= 2) {
-        // Use RPC for fuzzy search (no pagination on RPC, slice client-side)
-        const { data } = await supabase.rpc('search_medicaments', { search_query: q });
-        let filtered = (data as Medicament[]) || [];
-        if (pays) filtered = filtered.filter(m => m.pays === pays);
-        setMedsTotal(filtered.length);
-        setMeds(filtered.slice(from, from + PAGE_SIZE));
+        // Same RPC as CheckerView — tri MA en premier géré par la fonction
+        const { data } = await supabase.rpc('search_medicaments', {
+          search_term: q,
+          limit_count: 200,
+        });
+        const all = (data as Medicament[]) || [];
+        setMedsTotal(all.length);
+        setMeds(all.slice(from, from + PAGE_SIZE));
       } else {
-        // Direct query with filters + pagination
-        let query = supabase
+        // Navigation directe : tous les médicaments, pagination serveur
+        const { data, count } = await supabase
           .from('medicaments')
           .select('id, nom, dci, forme, dosage, nom_commercial, laboratoire, voie_administration, pays, ppv_ma, classe_therapeutique, remboursement_cnops', { count: 'exact' })
-          .order('nom').range(from, to);
-        if (pays) query = query.eq('pays', pays);
-        const { data, count } = await query;
+          .order('pays', { ascending: true, nullsFirst: false })
+          .order('nom')
+          .range(from, to);
         setMeds((data as Medicament[]) || []);
         setMedsTotal(count ?? 0);
       }
@@ -529,13 +523,13 @@ export function EncyclopedieView() {
     }
   }, []);
 
-  useEffect(() => { if (tab === 'medicaments') fetchMeds(debouncedSearch, medsPage, filterPays); },
-    [debouncedSearch, medsPage, filterPays, tab, fetchMeds]);
+  useEffect(() => { if (tab === 'medicaments') fetchMeds(debouncedSearch, medsPage); },
+    [debouncedSearch, medsPage, tab, fetchMeds]);
   useEffect(() => { if (tab === 'pathologies') fetchPaths(debouncedSearch, pathsPage, filterCat); },
     [debouncedSearch, pathsPage, filterCat, tab, fetchPaths]);
 
   // Initial load
-  useEffect(() => { fetchMeds('', 1, ''); }, [fetchMeds]);
+  useEffect(() => { fetchMeds('', 1); }, [fetchMeds]);
 
   const hasDetail = selectedMed || selectedPath;
 
@@ -596,20 +590,15 @@ export function EncyclopedieView() {
                 className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Filter className="w-3 h-3 text-slate-400 flex-shrink-0" />
-              {tab === 'medicaments' ? (
-                <FilterSelect
-                  value={filterPays} onChange={setFilterPays}
-                  options={PAYS_OPTIONS} placeholder="Tous les pays"
-                />
-              ) : (
+            {tab === 'pathologies' && (
+              <div className="flex items-center gap-2">
+                <Filter className="w-3 h-3 text-slate-400 flex-shrink-0" />
                 <FilterSelect
                   value={filterCat} onChange={setFilterCat}
                   options={ICD_CHAPTERS} placeholder="Tous les chapitres CIM-10"
                 />
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* List */}
