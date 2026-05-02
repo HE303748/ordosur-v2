@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import QRCode from 'qrcode';
+import QRCode from 'qrcode'; // used only in generateDocumentPdf
 
 interface MedicationLine {
   nom: string;
@@ -72,17 +72,6 @@ async function urlToBase64(url: string): Promise<{ data: string; format: 'PNG' |
 }
 
 export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
-  // ── QR Code ────────────────────────────────────────────────────────────────
-  const qrContent = [
-    data.ordreNumber,
-    `Patient: ${data.patient.nom} ${data.patient.prenom}`,
-    `Médecin: Dr. ${data.doctor.prenom} ${data.doctor.nom}`,
-    `Date: ${formatDate(data.date)}`,
-    `Cabinet: ${data.org.name}`,
-  ].join('\n');
-
-  const qrDataUrl = await QRCode.toDataURL(qrContent, { width: 120, margin: 1, color: { dark: '#1e3a8a' } });
-
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageW = 210;
   const marginL = 18;
@@ -91,15 +80,12 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   let y = 18;
 
   // ── En-tête cabinet ────────────────────────────────────────────────────────
-  // Logo ou nom du cabinet en haut à gauche
   if (data.logo_url) {
     try {
       const { data: imgData, format } = await urlToBase64(data.logo_url);
-      // Max height: 20 mm — width auto-scaled by jsPDF (pass 0)
       doc.addImage(imgData, format, marginL, y - 4, 0, 20);
       y += 22;
     } catch {
-      // Fallback to text if logo fails to load
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(30, 64, 175);
@@ -109,7 +95,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   } else {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 64, 175); // blue-700
+    doc.setTextColor(30, 64, 175);
     doc.text(data.org.name, marginL, y);
     y += 6;
   }
@@ -117,7 +103,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
-  if (data.org.adresse) { doc.text(data.org.adresse, marginL, y); y += 5; }
+  if (data.org.adresse)   { doc.text(data.org.adresse, marginL, y); y += 5; }
   if (data.org.telephone) { doc.text(`Tél : ${data.org.telephone}`, marginL, y); y += 5; }
 
   // Date + numéro d'ordonnance — coin haut droit
@@ -130,12 +116,8 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setTextColor(30, 64, 175);
   doc.text(data.ordreNumber, pageW - marginR, 24, { align: 'right' });
 
-  // QR Code — coin haut droit (sous le numéro)
-  const qrSize = 22;
-  doc.addImage(qrDataUrl, 'PNG', pageW - marginR - qrSize, 27, qrSize, qrSize);
-
   // ── Séparateur ─────────────────────────────────────────────────────────────
-  y = Math.max(y + 3, 53);
+  y = Math.max(y + 3, 33);
   doc.setDrawColor(200, 210, 240);
   doc.setLineWidth(0.5);
   doc.line(marginL, y, pageW - marginR, y);
@@ -151,9 +133,11 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(80, 80, 80);
-  if (data.doctor.specialite) { doc.text(data.doctor.specialite, marginL, y); y += 5; }
-  if (data.doctor.rpps) { doc.text(`N° INPE : ${data.doctor.rpps}`, marginL, y); y += 5; }
+  if (data.doctor.specialite)   { doc.text(data.doctor.specialite, marginL, y); y += 5; }
+  if (data.doctor.rpps)         { doc.text(`N° INPE : ${data.doctor.rpps}`, marginL, y); y += 5; }
   if (data.doctor.ordre_number) { doc.text(`N° Ordre : ${data.doctor.ordre_number}`, marginL, y); y += 5; }
+  if (data.org.adresse)         { doc.text(data.org.adresse, marginL, y); y += 5; }
+  if (data.org.telephone)       { doc.text(`Tél : ${data.org.telephone}`, marginL, y); y += 5; }
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
   y += 3;
@@ -162,9 +146,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   y += 7;
 
   // ── Patient ────────────────────────────────────────────────────────────────
-  // Fond léger
-  const patientBlockStart = y;
-  doc.setFillColor(248, 250, 252); // slate-50
+  doc.setFillColor(248, 250, 252);
   doc.roundedRect(marginL, y - 3, contentW, 10, 2, 2, 'F');
 
   doc.setFontSize(10);
@@ -173,47 +155,9 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.text('Patient :', marginL + 2, y + 4);
   doc.setFont('helvetica', 'normal');
   doc.text(`${data.patient.prenom} ${data.patient.nom}`, marginL + 22, y + 4);
-  y += 12;
-
-  doc.setFontSize(8.5);
-  doc.setTextColor(80, 80, 80);
-  if (data.patient.date_naissance) {
-    doc.text(`Né(e) le ${formatDate(data.patient.date_naissance)}`, marginL + 2, y);
-    y += 5;
-  }
-  if (data.motif) {
-    doc.text(`Motif : ${data.motif}`, marginL + 2, y);
-    y += 5;
-  }
-
-  // Pathologies
-  if (data.patient.pathologies && data.patient.pathologies.length > 0) {
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(37, 99, 235); // blue-600
-    doc.text('Pathologies :', marginL + 2, y);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
-    const pathoText = data.patient.pathologies.join(' · ');
-    const wrapped = wrapText(doc, pathoText, contentW - 35);
-    doc.text(wrapped, marginL + 30, y);
-    y += wrapped.length * 4.5 + 2;
-  }
-
-  // Allergies médicamenteuses
-  if (data.patient.allergies_medicaments && data.patient.allergies_medicaments.length > 0) {
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(220, 38, 38); // red-600
-    doc.text('⚠ Allergies :', marginL + 2, y);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(180, 30, 30);
-    const allergyText = data.patient.allergies_medicaments.join(', ');
-    const wrapped = wrapText(doc, allergyText, contentW - 35);
-    doc.text(wrapped, marginL + 30, y);
-    y += wrapped.length * 4.5 + 2;
-  }
+  y += 14;
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
-  y += 3;
   doc.setDrawColor(200, 210, 240);
   doc.line(marginL, y, pageW - marginR, y);
   y += 8;
@@ -244,74 +188,6 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
     if (med.quantite)  { doc.text(`   Quantité : ${med.quantite}`,    marginL, y); y += 4.5; }
     y += 2;
   });
-
-  // ── Alertes interactions ────────────────────────────────────────────────────
-  if (data.interactionAlerts && data.interactionAlerts.length > 0) {
-    const criticalAlerts = data.interactionAlerts.filter(a =>
-      a.severite === 'contre_indication' || a.severite === 'majeure'
-    );
-    if (criticalAlerts.length > 0) {
-      if (y > 230) { doc.addPage(); y = 18; }
-      y += 3;
-
-      // Fond rouge clair
-      const alertH = 8 + criticalAlerts.length * 8;
-      doc.setFillColor(254, 242, 242); // red-50
-      doc.setDrawColor(220, 38, 38);
-      doc.setLineWidth(0.4);
-      doc.roundedRect(marginL, y - 3, contentW, alertH, 2, 2, 'FD');
-
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(153, 27, 27); // red-800
-      doc.text('⚠ ALERTES INTERACTIONS / CONTRE-INDICATIONS', marginL + 3, y + 3);
-      y += 8;
-
-      doc.setFontSize(7.5);
-      doc.setFont('helvetica', 'normal');
-      criticalAlerts.forEach(alert => {
-        const icon = alert.severite === 'contre_indication' ? '🔴' : '🟠';
-        const label = alert.severite === 'contre_indication' ? 'CI' : 'MAJ';
-        const line = `${label} ${alert.involved.join(' + ')} : ${alert.description.substring(0, 90)}${alert.description.length > 90 ? '...' : ''}`;
-        doc.setTextColor(153, 27, 27);
-        doc.text(line, marginL + 3, y);
-        y += 6.5;
-      });
-      y += 3;
-    }
-  }
-
-  // ── Remarques ──────────────────────────────────────────────────────────────
-  if (data.remarks) {
-    if (y > 240) { doc.addPage(); y = 18; }
-    y += 3;
-    doc.setDrawColor(200, 210, 240);
-    doc.line(marginL, y, pageW - marginR, y);
-    y += 7;
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(30, 30, 30);
-    doc.text('Remarques :', marginL, y);
-    y += 5.5;
-
-    doc.setFontSize(8.5);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
-    const remarkLines = doc.splitTextToSize(data.remarks, contentW);
-    doc.text(remarkLines, marginL, y);
-    y += remarkLines.length * 4.5 + 3;
-  }
-
-  // ── Prochain RDV ───────────────────────────────────────────────────────────
-  if (data.nextAppointment) {
-    if (y > 250) { doc.addPage(); y = 18; }
-    doc.setFontSize(8.5);
-    doc.setFont('helvetica', 'italic');
-    doc.setTextColor(80, 80, 80);
-    doc.text(`Prochain rendez-vous : ${data.nextAppointment}`, marginL, y);
-    y += 7;
-  }
 
   // ── Signature ──────────────────────────────────────────────────────────────
   const sigY = Math.max(y + 18, 248);

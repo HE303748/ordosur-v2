@@ -65,10 +65,11 @@ function BadgeSelector({
   const remove = (val: string) => onChange(values.filter(v => v !== val));
 
   const colorMap: Record<string, { badge: string; btn: string; border: string }> = {
-    red:    { badge: 'bg-red-100 text-red-800 border border-red-200',    btn: 'text-red-500 hover:bg-red-200',    border: 'border-red-200 bg-red-50' },
+    red:    { badge: 'bg-red-100 text-red-800 border border-red-200',       btn: 'text-red-500 hover:bg-red-200',       border: 'border-red-200 bg-red-50' },
     orange: { badge: 'bg-orange-100 text-orange-800 border border-orange-200', btn: 'text-orange-500 hover:bg-orange-200', border: 'border-orange-200 bg-orange-50' },
-    blue:   { badge: 'bg-blue-100 text-blue-800 border border-blue-200',  btn: 'text-blue-500 hover:bg-blue-200',  border: 'border-blue-200 bg-blue-50' },
+    blue:   { badge: 'bg-blue-100 text-blue-800 border border-blue-200',    btn: 'text-blue-500 hover:bg-blue-200',    border: 'border-blue-200 bg-blue-50' },
     green:  { badge: 'bg-green-100 text-green-800 border border-green-200', btn: 'text-green-500 hover:bg-green-200', border: 'border-green-200 bg-green-50' },
+    violet: { badge: 'bg-violet-100 text-violet-800 border border-violet-200', btn: 'text-violet-500 hover:bg-violet-200', border: 'border-violet-200 bg-violet-50' },
   };
   const c = colorMap[color];
 
@@ -331,11 +332,11 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
           <BadgeSelector
             label="Pathologies chroniques"
             icon={Heart}
-            color="blue"
+            color="violet"
             suggestions={dbPathologies}
             values={formData.pathologies}
             onChange={v => setFormData(prev => ({ ...prev, pathologies: v }))}
-            placeholder="Saisir ou rechercher une pathologie..."
+            placeholder="Ajouter une pathologie manuellement..."
           />
 
           {/* Allergies médicaments */}
@@ -346,7 +347,7 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
             suggestions={dbAllergiesMed}
             values={formData.allergies_medicaments}
             onChange={v => setFormData(prev => ({ ...prev, allergies_medicaments: v }))}
-            placeholder="Saisir ou rechercher une allergie..."
+            placeholder="Ajouter une allergie médicamenteuse..."
           />
 
           {/* Allergies alimentaires */}
@@ -357,7 +358,7 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
             suggestions={dbAllergiesAlim}
             values={formData.allergies_alimentaires}
             onChange={v => setFormData(prev => ({ ...prev, allergies_alimentaires: v }))}
-            placeholder="Saisir ou rechercher une allergie alimentaire..."
+            placeholder="Ajouter une allergie alimentaire..."
           />
 
           {/* Antécédents chirurgicaux */}

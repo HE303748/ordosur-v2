@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Save, Printer, Download, AlertTriangle, Shield } from 'lucide-react';
+import { ArrowLeft, Save, Printer, Download, AlertTriangle } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { generateOrdonnancePdf, PdfInteractionAlert } from '../lib/pdfService';
@@ -95,10 +95,6 @@ export function PrescriptionPreviewModal({
     }
   };
 
-  const criticalAlerts = interactionAlerts.filter(a =>
-    a.severite === 'contre_indication' || a.severite === 'majeure'
-  );
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Aperçu de l'ordonnance">
       <div className="space-y-4">
@@ -133,30 +129,6 @@ export function PrescriptionPreviewModal({
           {/* Patient */}
           <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
             <p className="font-semibold">Patient : {patient.prenom} {patient.nom}</p>
-            {patient.date_naissance && (
-              <p className="text-sm text-gray-600">Né(e) le : {new Date(patient.date_naissance).toLocaleDateString('fr-FR')}</p>
-            )}
-            {motif && <p className="text-sm mt-1">Motif : {motif}</p>}
-
-            {/* Pathologies */}
-            {patient.pathologies && patient.pathologies.length > 0 && (
-              <div className="mt-2 flex items-start gap-2 flex-wrap">
-                <span className="text-xs font-semibold text-blue-700">Pathologies :</span>
-                {patient.pathologies.map(p => (
-                  <span key={p} className="px-1.5 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full border border-blue-200">{p}</span>
-                ))}
-              </div>
-            )}
-
-            {/* Allergies */}
-            {patient.allergies_medicaments && patient.allergies_medicaments.length > 0 && (
-              <div className="mt-1.5 flex items-start gap-2 flex-wrap">
-                <span className="text-xs font-semibold text-red-700">⚠ Allergies :</span>
-                {patient.allergies_medicaments.map(a => (
-                  <span key={a} className="px-1.5 py-0.5 bg-red-100 text-red-800 text-xs rounded-full border border-red-200 font-medium">{a}</span>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Titre */}
@@ -176,52 +148,6 @@ export function PrescriptionPreviewModal({
               </div>
             ))}
           </div>
-
-          {/* Alertes interactions */}
-          {criticalAlerts.length > 0 && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <h3 className="font-semibold text-red-800 mb-2 flex items-center gap-1.5 text-sm">
-                <AlertTriangle className="w-4 h-4" />
-                Alertes interactions / contre-indications
-              </h3>
-              <div className="space-y-1.5">
-                {criticalAlerts.map((alert, idx) => (
-                  <div key={idx} className="text-xs text-red-700 flex items-start gap-1.5">
-                    <span className="flex-shrink-0">
-                      {alert.severite === 'contre_indication' ? '🔴' : '🟠'}
-                    </span>
-                    <span>
-                      <strong>{alert.involved.join(' + ')}</strong> — {alert.description}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Aucune alerte */}
-          {interactionAlerts.length === 0 && medications.length >= 2 && (
-            <div className="mb-4 p-2 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-xs text-green-700 flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5" />
-                🟢 Aucune interaction médicamenteuse connue détectée
-              </p>
-            </div>
-          )}
-
-          {remarks && (
-            <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-              <h3 className="font-semibold mb-1 text-sm">Remarques :</h3>
-              <p className="text-sm whitespace-pre-wrap">{remarks}</p>
-            </div>
-          )}
-
-          {nextAppointment && (
-            <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-              <h3 className="font-semibold mb-1 text-sm">Prochain rendez-vous :</h3>
-              <p className="text-sm">{nextAppointment}</p>
-            </div>
-          )}
 
           <div className="mt-6 pt-4 border-t flex justify-between items-center text-sm text-gray-500">
             <span className="text-xs text-gray-400">Ordonnance générée par OrdoSur</span>

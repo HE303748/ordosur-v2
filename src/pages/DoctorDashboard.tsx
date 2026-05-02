@@ -469,7 +469,7 @@ interface CheckerViewProps {
   setShowPatientDropdown: (v: boolean) => void;
   filteredPatientsForDropdown: Patient[];
   medSearchResults: Medicament[];
-  selectedMeds: Array<{ id: string; nom: string; dci?: string | null }>;
+  selectedMeds: Array<{ id: string; nom: string; dci?: string | null; manual?: boolean }>;
   medSearchTerm: string;
   setMedSearchTerm: (v: string) => void;
   showMedDropdown: boolean;
@@ -477,6 +477,7 @@ interface CheckerViewProps {
   medSearchLoading: boolean;
   searchMedications: (term: string) => void;
   addMedication: (med: Medicament) => void;
+  addManualMedication: (nom: string) => void;
   removeMedication: (id: string) => void;
   interactionAlerts: InteractionAlert[];
   result: InteractionResult | null;
@@ -497,7 +498,7 @@ function CheckerView({
   filteredPatientsForDropdown,
   medSearchResults, selectedMeds, medSearchTerm, setMedSearchTerm,
   showMedDropdown, setShowMedDropdown, medSearchLoading, searchMedications,
-  addMedication, removeMedication,
+  addMedication, addManualMedication, removeMedication,
   interactionAlerts, result, loading,
   checkInteractions, resetAnalysis, resultsRef,
   loadPatientOrdonnances, patientOrdonnances,
@@ -631,7 +632,7 @@ function CheckerView({
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40 focus:border-violet-300 dark:focus:border-violet-500/40 transition-all"
                   />
 
-                  {showMedDropdown && (medSearchResults.length > 0 || medSearchLoading) && (
+                  {showMedDropdown && medSearchTerm.length >= 2 && (medSearchResults.length > 0 || medSearchLoading || !medSearchLoading) && (
                     <div className="absolute z-50 w-full mt-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl shadow-xl max-h-72 overflow-y-auto">
                       {medSearchLoading && (
                         <div className="px-4 py-3 text-sm text-slate-400 dark:text-[#475569] text-center">Recherche...</div>
@@ -678,6 +679,18 @@ function CheckerView({
                           )}
                         </button>
                       ))}
+                      {/* Ajout manuel quand aucun résultat */}
+                      {!medSearchLoading && medSearchResults.length === 0 && (
+                        <button
+                          onMouseDown={e => { e.preventDefault(); addManualMedication(medSearchTerm); }}
+                          className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors flex items-center gap-2"
+                        >
+                          <span className="text-violet-500 text-base leading-none">✏️</span>
+                          <span className="text-sm text-violet-700 dark:text-violet-400 font-medium">
+                            + Ajouter manuellement : <span className="font-bold">{medSearchTerm}</span>
+                          </span>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -696,6 +709,9 @@ function CheckerView({
                           {idx + 1}
                         </span>
                         <span className="flex-1 font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm truncate">{med.nom}</span>
+                        {med.manual && (
+                          <span title="Saisie manuelle — pas de vérification d'interaction" className="text-xs text-slate-400 dark:text-slate-500 flex-shrink-0">✏️</span>
+                        )}
                         <button
                           onClick={() => removeMedication(med.id)}
                           className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
@@ -1650,7 +1666,7 @@ export function DoctorDashboard() {
 
   // Medications
   const [medSearchResults, setMedSearchResults] = useState<Medicament[]>([]);
-  const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string; dci?: string | null }>>([]);
+  const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string; dci?: string | null; manual?: boolean }>>([]);
   const [medSearchTerm, setMedSearchTerm] = useState('');
   const [showMedDropdown, setShowMedDropdown] = useState(false);
   const [medSearchLoading, setMedSearchLoading] = useState(false);
@@ -2039,6 +2055,14 @@ export function DoctorDashboard() {
     setMedSearchTerm(''); setMedSearchResults([]); setShowMedDropdown(false);
   };
 
+  const addManualMedication = (nom: string) => {
+    const trimmed = nom.trim();
+    if (!trimmed) return;
+    const id = `manual_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    setSelectedMeds(prev => [...prev, { id, nom: trimmed, dci: null, manual: true }]);
+    setMedSearchTerm(''); setMedSearchResults([]); setShowMedDropdown(false);
+  };
+
   const removeMedication = (medId: string) => setSelectedMeds(selectedMeds.filter(m => m.id !== medId));
 
   const checkInteractions = async () => {
@@ -2196,6 +2220,7 @@ export function DoctorDashboard() {
                 medSearchLoading={medSearchLoading}
                 searchMedications={searchMedications}
                 addMedication={addMedication}
+                addManualMedication={addManualMedication}
                 removeMedication={removeMedication}
                 interactionAlerts={interactionAlerts}
                 result={result}
