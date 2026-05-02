@@ -5,7 +5,9 @@ import {
   Search, Plus, X, AlertTriangle,
   CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
   BarChart3, Heart, Users, Calendar, Trash2, CreditCard as Edit,
+  Download,
 } from 'lucide-react';
+import { generateOrdonnancePdf } from '../lib/pdfService';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
 import { Button } from '../components/Button';
@@ -653,11 +655,6 @@ function CheckerView({
                             <span className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm leading-tight">
                               {med.nom_commercial || med.nom}
                             </span>
-                            {med.remboursement_cnops && (
-                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800/40 flex-shrink-0">
-                                ✓ CNOPS
-                              </span>
-                            )}
                           </div>
                           {/* Ligne 2 : DCI + dosage + forme */}
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap pl-0.5">
@@ -886,7 +883,7 @@ function CheckerView({
 
 // ─── StatsView ───────────────────────────────────────────────────────────────
 
-function StatsView({ userId }: { userId: string }) {
+function StatsView({ userId, doctorId }: { userId: string; doctorId: string }) {
   return (
     <PageTransition>
       <div className="p-6 max-w-[1400px] space-y-6">
@@ -896,9 +893,9 @@ function StatsView({ userId }: { userId: string }) {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <MonthlyInteractionsChart />
+            <MonthlyInteractionsChart doctorId={doctorId} />
           </div>
-          <RiskDistributionChart />
+          <RiskDistributionChart doctorId={doctorId} />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <AllMedicationsHistory doctorId={userId} />
@@ -912,107 +909,258 @@ function StatsView({ userId }: { userId: string }) {
 
 // ─── OrdonnancesView ─────────────────────────────────────────────────────────
 
-function OrdonnancesView({ onNavigate, doctorId }: { onNavigate: (v: ViewType) => void; doctorId: string }) {
+interface OrdonnancesViewProps {
+  onNavigate: (v: ViewType) => void;
+  doctorId: string;
+  refreshKey?: number;
+  doctorInfo?: { nom: string; prenom: string; specialite?: string | null; rpps?: string | null; ordre_number?: string | null } | null;
+  orgInfo?: { name: string; adresse?: string | null; telephone?: string | null } | null;
+  logoUrl?: string | null;
+}
+
+function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, orgInfo, logoUrl }: OrdonnancesViewProps) {
   const [ords, setOrds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [timeFilter, setTimeFilter] = useState<'all' | 'month' | 'quarter'>('all');
+  const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!doctorId) return;
-    (async () => {
-      setLoading(true);
-      const { data } = await supabase
-        .from('ordonnances')
-        .select('id, date, created_at, statut, patient_id, ordonnance_lignes(medicament_nom, posologie)')
-        .eq('doctor_id', doctorId)
-        .order('created_at', { ascending: false })
-        .limit(50);
-      // fetch patient names
-      if (data && data.length > 0) {
-        const pIds = [...new Set(data.map((o: any) => o.patient_id).filter(Boolean))];
-        const { data: pats } = await supabase.from('patients').select('id, prenom, nom').in('id', pIds);
-        const pMap = new Map((pats || []).map((p: any) => [p.id, `${p.prenom} ${p.nom}`]));
-        setOrds(data.map((o: any) => ({ ...o, patient_nom: pMap.get(o.patient_id) || 'Patient inconnu' })));
-      } else {
-        setOrds([]);
-      }
-      setLoading(false);
-    })();
-  }, [doctorId]);
+    fetchOrdonnances();
+  }, [doctorId, refreshKey]);
+
+  const fetchOrdonnances = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from('ordonnances')
+      .select('id, date, created_at, statut, patient_id, ordre_number, ordonnance_lignes(medicament_nom, posologie, duree, instructions)')
+      .eq('doctor_id', doctorId)
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (data && data.length > 0) {
+      const pIds = [...new Set(data.map((o: any) => o.patient_id).filter(Boolean))];
+      const { data: pats } = await supabase.from('patients').select('id, prenom, nom').in('id', pIds);
+      const pMap = new Map((pats || []).map((p: any) => [p.id, { prenom: p.prenom, nom: p.nom }]));
+      setOrds(data.map((o: any) => {
+        const p = pMap.get(o.patient_id);
+        return {
+          ...o,
+          patient_prenom: p?.prenom || '',
+          patient_nom_only: p?.nom || '',
+          patient_nom: p ? `${p.prenom} ${p.nom}` : 'Patient inconnu',
+        };
+      }));
+    } else {
+      setOrds([]);
+    }
+    setLoading(false);
+  };
+
+  // Filter logic
+  const filtered = ords.filter(ord => {
+    const q = searchTerm.toLowerCase();
+    const matchesSearch = !searchTerm
+      || (ord.patient_nom || '').toLowerCase().includes(q)
+      || (ord.ordre_number || '').toLowerCase().includes(q);
+    if (!matchesSearch) return false;
+
+    if (timeFilter === 'all') return true;
+    const d = new Date(ord.date || ord.created_at);
+    const now = new Date();
+    if (timeFilter === 'month') {
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    }
+    if (timeFilter === 'quarter') {
+      const qStart = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+      return d >= qStart;
+    }
+    return true;
+  });
+
+  const handleDownloadPdf = async (ord: any) => {
+    if (!doctorInfo || !orgInfo) return;
+    setPdfLoadingId(ord.id);
+    try {
+      const meds = (ord.ordonnance_lignes || []).map((l: any) => ({
+        nom: l.medicament_nom || '',
+        posologie: l.posologie || '',
+        duree: l.duree || '',
+        quantite: l.instructions ? String(l.instructions).replace('Quantité: ', '') : '',
+      }));
+      await generateOrdonnancePdf({
+        ordreNumber: ord.ordre_number || ord.id.substring(0, 8).toUpperCase(),
+        logo_url: logoUrl ?? null,
+        doctor: doctorInfo,
+        org: orgInfo,
+        patient: { prenom: ord.patient_prenom, nom: ord.patient_nom_only },
+        medications: meds,
+        date: (ord.date || ord.created_at || new Date().toISOString()).split('T')[0],
+      });
+    } catch (e) {
+      console.error('[OrdoSur] PDF reprint error:', e);
+    } finally {
+      setPdfLoadingId(null);
+    }
+  };
+
+  const getInitials = (name: string) =>
+    name.split(' ').map(w => w[0] || '').join('').toUpperCase().slice(0, 2) || '??';
+
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  const filterLabels: Record<string, string> = { all: 'Toutes', month: 'Ce mois', quarter: 'Ce trimestre' };
 
   return (
     <PageTransition>
-      <div className="p-6 max-w-4xl">
-        <div className="mb-6 flex items-center justify-between">
+      <div className="p-6 max-w-5xl">
+
+        {/* ── Header ── */}
+        <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">Ordonnances</h2>
-            <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Historique de toutes vos prescriptions</p>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">
+              Historique des ordonnances
+            </h2>
+            <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">
+              {loading ? '…' : `${ords.length} ordonnance${ords.length !== 1 ? 's' : ''} au total`}
+            </p>
           </div>
           <button
             onClick={() => onNavigate('checker')}
-            className="px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
+            className="px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors flex-shrink-0"
           >
             + Nouvelle ordonnance
           </button>
         </div>
 
-        {loading ? (
-          <div className="space-y-3">
-            {[1,2,3].map(i => (
-              <div key={i} className="bg-white rounded-2xl h-24 animate-pulse border border-slate-100" />
+        {/* ── Search + filters ── */}
+        <div className="mb-5 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Rechercher par patient ou numéro d'ordonnance…"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/30 text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-500"
+            />
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {(['all', 'month', 'quarter'] as const).map(f => (
+              <button
+                key={f}
+                onClick={() => setTimeFilter(f)}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                  timeFilter === f
+                    ? 'bg-sky-500 text-white shadow-sm'
+                    : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-white/[0.08] hover:border-sky-300 dark:hover:border-sky-500/30'
+                }`}
+              >
+                {filterLabels[f]}
+              </button>
             ))}
           </div>
-        ) : ords.length === 0 ? (
+        </div>
+
+        {/* ── Content ── */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="bg-white dark:bg-[#111827] rounded-2xl h-40 animate-pulse border border-slate-100 dark:border-white/[0.06]" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-12 text-center">
             <FileText className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-slate-700 dark:text-[#94A3B8] mb-2">Aucune ordonnance</h3>
+            <h3 className="text-lg font-bold text-slate-700 dark:text-[#94A3B8] mb-2">
+              {searchTerm || timeFilter !== 'all' ? 'Aucun résultat' : 'Aucune ordonnance'}
+            </h3>
             <p className="text-slate-400 dark:text-[#475569] text-sm mb-6 max-w-sm mx-auto">
-              Créez votre première ordonnance depuis le Vérificateur d'interactions.
+              {searchTerm || timeFilter !== 'all'
+                ? 'Essayez de modifier votre recherche ou vos filtres.'
+                : "Créez votre première ordonnance depuis le Vérificateur d'interactions."}
             </p>
-            <button
-              onClick={() => onNavigate('checker')}
-              className="px-6 py-3 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
-            >
-              💊 Aller au Vérificateur
-            </button>
+            {!searchTerm && timeFilter === 'all' && (
+              <button
+                onClick={() => onNavigate('checker')}
+                className="px-6 py-3 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
+              >
+                💊 Créer une ordonnance
+              </button>
+            )}
           </div>
         ) : (
-          <div className="space-y-3">
-            {ords.map(ord => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filtered.map(ord => {
               const dateStr = ord.date || ord.created_at;
-              const dateLabel = dateStr
-                ? new Date(dateStr).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })
-                : 'Date inconnue';
-              const meds = ord.ordonnance_lignes || [];
+              const dateLabel = dateStr ? formatDate(dateStr) : 'Date inconnue';
+              const meds: any[] = ord.ordonnance_lignes || [];
+              const initials = getInitials(ord.patient_nom || '');
+              const isLoadingPdf = pdfLoadingId === ord.id;
+
               return (
-                <div key={ord.id} className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm p-5 hover:border-sky-200 dark:hover:border-sky-500/30 dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)] transition-all">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-sky-50 dark:bg-sky-500/[0.12] rounded-xl flex items-center justify-center flex-shrink-0">
-                        <FileText className="w-5 h-5 text-sky-500 dark:text-sky-400" />
+                <div
+                  key={ord.id}
+                  className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-sky-200 dark:hover:border-sky-500/30 transition-all duration-200 p-5 flex flex-col gap-3"
+                >
+                  {/* Patient + badge */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-500/[0.15] flex items-center justify-center text-sky-700 dark:text-sky-400 font-bold text-sm flex-shrink-0">
+                        {initials}
                       </div>
-                      <div>
-                        <p className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm">{ord.patient_nom}</p>
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm truncate">{ord.patient_nom}</p>
                         <p className="text-xs text-slate-400 dark:text-[#475569] mt-0.5">{dateLabel}</p>
                       </div>
                     </div>
-                    <span className={`text-[11px] px-2.5 py-1 rounded-full font-semibold flex-shrink-0 ${
-                      ord.statut === 'valide' ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400' : 'bg-slate-100 dark:bg-white/[0.07] text-slate-600 dark:text-[#94A3B8]'
-                    }`}>
-                      {ord.statut || 'Créée'}
-                    </span>
+                    {ord.ordre_number && (
+                      <span className="text-[10px] font-bold px-2 py-1 bg-sky-50 dark:bg-sky-500/[0.12] text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-500/20 rounded-lg flex-shrink-0 font-mono tracking-wide">
+                        {ord.ordre_number}
+                      </span>
+                    )}
                   </div>
-                  {meds.length > 0 && (
-                    <div className="mt-3 pl-13 flex flex-wrap gap-1.5 pl-[52px]">
-                      {meds.slice(0, 4).map((m: any, i: number) => (
-                        <span key={i} className="px-2.5 py-1 bg-violet-50 text-violet-800 text-xs rounded-full font-medium border border-violet-100">
-                          {m.medicament_nom}
-                        </span>
-                      ))}
-                      {meds.length > 4 && (
-                        <span className="px-2.5 py-1 bg-slate-50 text-slate-500 text-xs rounded-full">+{meds.length - 4}</span>
-                      )}
-                    </div>
-                  )}
+
+                  {/* Medication pills */}
+                  <div className="flex flex-wrap gap-1.5 min-h-[28px]">
+                    {meds.length === 0 ? (
+                      <span className="text-xs text-slate-400 dark:text-[#475569]">Aucun médicament enregistré</span>
+                    ) : (
+                      <>
+                        {meds.slice(0, 3).map((m: any, i: number) => (
+                          <span key={i} className="px-2.5 py-1 bg-violet-50 dark:bg-violet-500/[0.08] text-violet-800 dark:text-violet-300 text-xs rounded-full font-medium border border-violet-100 dark:border-violet-500/20">
+                            {m.medicament_nom}
+                          </span>
+                        ))}
+                        {meds.length > 3 && (
+                          <span className="px-2.5 py-1 bg-slate-50 dark:bg-white/[0.04] text-slate-500 dark:text-[#94A3B8] text-xs rounded-full border border-slate-100 dark:border-white/[0.06]">
+                            +{meds.length - 3}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-white/[0.05] mt-auto">
+                    <span className="text-xs text-slate-400 dark:text-[#475569]">
+                      {meds.length} médicament{meds.length !== 1 ? 's' : ''}
+                    </span>
+                    {doctorInfo && orgInfo && (
+                      <button
+                        onClick={() => handleDownloadPdf(ord)}
+                        disabled={isLoadingPdf}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-500/[0.1] border border-sky-200 dark:border-sky-500/20 rounded-lg hover:bg-sky-100 dark:hover:bg-sky-500/[0.18] transition-colors disabled:opacity-60"
+                      >
+                        {isLoadingPdf
+                          ? <span className="w-3 h-3 border border-sky-400 border-t-sky-700 rounded-full animate-spin" />
+                          : <Download className="w-3 h-3" />}
+                        {isLoadingPdf ? 'Génération…' : 'Télécharger PDF'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -1688,6 +1836,7 @@ export function DoctorDashboard() {
   // Stats
   const [stats, setStats] = useState({ totalPatients: 0, ordonnances: 0, evolution: 0 });
   const [dataLoading, setDataLoading] = useState(true);
+  const [ordRefreshKey, setOrdRefreshKey] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // Auth guard
@@ -1995,6 +2144,7 @@ export function DoctorDashboard() {
       setShowPrescriptionPreview(false);
       setPrescriptionData(null);
       loadStats();
+      setOrdRefreshKey(k => k + 1); // trigger OrdonnancesView reload
 
       // Refresh patient ordonnances if one is selected
       if (selectedPatient) loadPatientOrdonnances(selectedPatient.id);
@@ -2236,11 +2386,29 @@ export function DoctorDashboard() {
             )}
 
             {activeView === 'ordonnances' && (
-              <OrdonnancesView key="ordonnances" onNavigate={setActiveView} doctorId={doctorProfile?.id || user?.id || ''} />
+              <OrdonnancesView
+                key="ordonnances"
+                onNavigate={setActiveView}
+                doctorId={doctorProfile?.id || user?.id || ''}
+                refreshKey={ordRefreshKey}
+                doctorInfo={user ? {
+                  nom: user.nom,
+                  prenom: user.prenom,
+                  specialite: doctorProfile?.specialite ?? null,
+                  rpps: doctorProfile?.rpps ?? null,
+                  ordre_number: doctorProfile?.ordre_number ?? null,
+                } : null}
+                orgInfo={clinicProfile ? {
+                  name: clinicProfile.name ?? '',
+                  adresse: clinicProfile.adresse ?? null,
+                  telephone: clinicProfile.telephone ?? null,
+                } : null}
+                logoUrl={doctorProfile?.logo_url ?? null}
+              />
             )}
 
             {activeView === 'stats' && (
-              <StatsView key="stats" userId={user?.id || ''} />
+              <StatsView key="stats" userId={user?.id || ''} doctorId={doctorProfile?.id || ''} />
             )}
 
             {activeView === 'agenda' && (

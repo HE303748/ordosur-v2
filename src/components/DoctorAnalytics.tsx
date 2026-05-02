@@ -3,97 +3,232 @@ import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { BarChart3, AlertTriangle, Pill, Clock, History } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-const monthlyData = [
-  { mois: 'Juin', interactions: 95 },
-  { mois: 'Juillet', interactions: 120 },
-  { mois: 'Août', interactions: 85 },
-  { mois: 'Sept.', interactions: 145 },
-  { mois: 'Oct.', interactions: 160 },
-  { mois: 'Nov.', interactions: 178 },
-];
+// ─── MonthlyInteractionsChart (real data: ordonnances by month) ───────────────
 
-const riskData = [
-  { name: 'Sécuritaire', value: 65, color: '#10B981' },
-  { name: 'Attention', value: 30, color: '#F59E0B' },
-  { name: 'Dangereux', value: 5, color: '#EF4444' },
-];
+interface MonthlyInteractionsChartProps {
+  doctorId: string;
+}
 
-export function MonthlyInteractionsChart() {
+export function MonthlyInteractionsChart({ doctorId }: MonthlyInteractionsChartProps) {
+  const [chartData, setChartData] = useState<Array<{ mois: string; ordonnances: number }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!doctorId) return;
+    loadMonthlyData();
+  }, [doctorId]);
+
+  const loadMonthlyData = async () => {
+    try {
+      // Fetch last 6 months of ordonnances for this doctor
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+      sixMonthsAgo.setDate(1);
+      sixMonthsAgo.setHours(0, 0, 0, 0);
+
+      const { data } = await supabase
+        .from('ordonnances')
+        .select('created_at')
+        .eq('doctor_id', doctorId)
+        .gte('created_at', sixMonthsAgo.toISOString())
+        .order('created_at', { ascending: true });
+
+      // Build month buckets for last 6 months
+      const now = new Date();
+      const months: Array<{ mois: string; ordonnances: number; key: string }> = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({
+          key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+          mois: d.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', ''),
+          ordonnances: 0,
+        });
+      }
+
+      // Count ordonnances per month
+      (data || []).forEach(ord => {
+        const d = new Date(ord.created_at);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const bucket = months.find(m => m.key === key);
+        if (bucket) bucket.ordonnances++;
+      });
+
+      setChartData(months.map(({ mois, ordonnances }) => ({ mois, ordonnances })));
+    } catch (error) {
+      console.error('Error loading monthly ordonnances:', error);
+      setChartData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px] flex items-center justify-center">
+        <p className="text-sm text-slate-400">Chargement…</p>
+      </div>
+    );
+  }
+
+  const hasData = chartData.some(d => d.ordonnances > 0);
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px]">
       <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center">
         <BarChart3 className="w-5 h-5 mr-2 text-primary-600" />
-        Mes Interactions par Mois
+        Mes Ordonnances par Mois
       </h3>
-      <ResponsiveContainer width="100%" height={230}>
-        <LineChart data={monthlyData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-          <XAxis dataKey="mois" stroke="#6B7280" style={{ fontSize: '12px' }} />
-          <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              border: '1px solid #E5E7EB',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-            }}
-          />
-          <Line
-            type="monotone"
-            dataKey="interactions"
-            stroke="#0066CC"
-            strokeWidth={3}
-            dot={{ fill: '#0066CC', r: 5 }}
-            activeDot={{ r: 7 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      {hasData ? (
+        <ResponsiveContainer width="100%" height={230}>
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis dataKey="mois" stroke="#6B7280" style={{ fontSize: '12px' }} />
+            <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} allowDecimals={false} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                border: '1px solid #E5E7EB',
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+              }}
+              formatter={(value: number) => [value, 'Ordonnances']}
+            />
+            <Line
+              type="monotone"
+              dataKey="ordonnances"
+              stroke="#0066CC"
+              strokeWidth={3}
+              dot={{ fill: '#0066CC', r: 5 }}
+              activeDot={{ r: 7 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className="flex items-center justify-center h-[220px]">
+          <p className="text-sm text-slate-400 text-center">
+            Aucune ordonnance sur les 6 derniers mois
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
-export function RiskDistributionChart() {
+// ─── RiskDistributionChart (real data: from interaction_logs.risk_level) ─────
+
+interface RiskDistributionChartProps {
+  doctorId: string;
+}
+
+const RISK_CONFIG = [
+  { key: 'safe',      name: 'Sécuritaire', color: '#10B981' },
+  { key: 'attention', name: 'Attention',    color: '#F59E0B' },
+  { key: 'dangerous', name: 'Dangereux',    color: '#EF4444' },
+];
+
+export function RiskDistributionChart({ doctorId }: RiskDistributionChartProps) {
+  const [pieData, setPieData] = useState<Array<{ name: string; value: number; color: string }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!doctorId) return;
+    loadRiskData();
+  }, [doctorId]);
+
+  const loadRiskData = async () => {
+    try {
+      const { data: logs } = await supabase
+        .from('interaction_logs')
+        .select('risk_level')
+        .eq('doctor_id', doctorId);
+
+      if (logs && logs.length > 0) {
+        const counts: Record<string, number> = { safe: 0, attention: 0, dangerous: 0 };
+        logs.forEach(l => {
+          const k = l.risk_level as string;
+          if (k in counts) counts[k]++;
+        });
+        const total = logs.length;
+        setPieData(
+          RISK_CONFIG.map(r => ({
+            name: r.name,
+            value: Math.round((counts[r.key] / total) * 100),
+            color: r.color,
+          })).filter(d => d.value > 0)
+        );
+      } else {
+        setPieData([]);
+      }
+    } catch (error) {
+      console.error('Error loading risk distribution:', error);
+      setPieData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px] flex items-center justify-center">
+        <p className="text-sm text-slate-400">Chargement…</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px]">
       <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center">
         <AlertTriangle className="w-5 h-5 mr-2 text-yellow-600" />
         Répartition des Risques
       </h3>
-      <ResponsiveContainer width="100%" height={170}>
-        <PieChart>
-          <Pie
-            data={riskData}
-            cx="50%"
-            cy="50%"
-            innerRadius={40}
-            outerRadius={70}
-            paddingAngle={2}
-            dataKey="value"
-          >
-            {riskData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+      {pieData.length > 0 ? (
+        <>
+          <ResponsiveContainer width="100%" height={170}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                innerRadius={40}
+                outerRadius={70}
+                paddingAngle={2}
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  border: '1px solid #E5E7EB'
+                }}
+                formatter={(value: number) => [`${value}%`, '']}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="flex justify-center gap-4 mt-2">
+            {pieData.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                <span className="text-xs text-slate-700 font-medium">{item.name}: {item.value}%</span>
+              </div>
             ))}
-          </Pie>
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              border: '1px solid #E5E7EB'
-            }}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-      <div className="flex justify-center gap-4 mt-2">
-        {riskData.map((item, idx) => (
-          <div key={idx} className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-            <span className="text-xs text-slate-700 font-medium">{item.name}: {item.value}%</span>
           </div>
-        ))}
-      </div>
+        </>
+      ) : (
+        <div className="flex items-center justify-center h-[220px]">
+          <p className="text-sm text-slate-400 text-center">
+            Aucune vérification d'interaction enregistrée
+          </p>
+        </div>
+      )}
     </div>
   );
 }
+
+// ─── AllMedicationsHistory ────────────────────────────────────────────────────
 
 interface AllMedicationsHistoryProps {
   doctorId: string;
@@ -166,6 +301,8 @@ export function AllMedicationsHistory({ doctorId }: AllMedicationsHistoryProps) 
     </div>
   );
 }
+
+// ─── TopMedicationsSection ────────────────────────────────────────────────────
 
 interface TopMedicationsSectionProps {
   doctorId: string;
@@ -252,6 +389,8 @@ export function TopMedicationsSection({ doctorId }: TopMedicationsSectionProps) 
     </div>
   );
 }
+
+// ─── RecentActivityTimeline ───────────────────────────────────────────────────
 
 interface RecentActivityTimelineProps {
   doctorId: string;

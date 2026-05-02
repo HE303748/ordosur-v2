@@ -181,22 +181,6 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
           ) : null)}
         </div>
 
-        <div className="flex gap-3">
-          {med.ppv_ma != null && (
-            <div className="flex-1 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl p-3 border border-emerald-200 dark:border-emerald-500/20">
-              <p className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">PPV Maroc</p>
-              <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300 mt-0.5">{med.ppv_ma.toFixed(2)} MAD</p>
-            </div>
-          )}
-          {med.remboursement_cnops != null && (
-            <div className={`flex-1 rounded-xl p-3 border ${med.remboursement_cnops ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20' : 'bg-slate-50 dark:bg-white/[0.04] border-slate-200 dark:border-white/[0.06]'}`}>
-              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">CNOPS</p>
-              <p className={`text-sm font-bold mt-0.5 ${med.remboursement_cnops ? 'text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400'}`}>
-                {med.remboursement_cnops ? '✓ Remboursé' : 'Non remboursé'}
-              </p>
-            </div>
-          )}
-        </div>
 
         {loading ? (
           <div className="text-center py-6 text-slate-400 text-sm">Chargement…</div>

@@ -35,9 +35,6 @@ interface PrescriptionPreviewModalProps {
   patient: {
     prenom: string;
     nom: string;
-    date_naissance?: string | null;
-    pathologies?: string[] | null;
-    allergies_medicaments?: string[] | null;
   };
   motif?: string;
   medications: MedicationForm[];
