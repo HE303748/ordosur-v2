@@ -167,7 +167,7 @@ export function LoginPage() {
             transition={{ duration: 0.5, delay: 0.25 }}
             className="space-y-4 mb-10"
           >
-            <Feature icon={Shield} title="Vérificateur d'interactions" desc="Base DDInter + médicaments marocains CNOPS" />
+            <Feature icon={Shield} title="Vérificateur d'interactions" desc="Base DDInter + plus de 52 000 médicaments" />
             <Feature icon={Stethoscope} title="Assistant IA intégré" desc="Aide à la prescription basée sur l'IA" />
             <Feature icon={Building2} title="Multi-organisations" desc="Cabinets individuels et cliniques" />
           </motion.div>

@@ -141,7 +141,7 @@ export function PrescriptionPreviewModal({
               <div key={med.id} className="mb-3 pl-4 border-l-2 border-blue-300">
                 <p className="font-medium">{index + 1}. {med.nom}</p>
                 <p className="text-sm text-gray-700">{med.posologie}</p>
-                <p className="text-xs text-gray-600">Durée : {med.duree} | Quantité : {med.quantite}</p>
+                <p className="text-xs text-gray-600">Durée : {med.duree}</p>
               </div>
             ))}
           </div>

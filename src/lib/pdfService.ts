@@ -182,7 +182,6 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
 
     if (med.posologie) { doc.text(`   Posologie : ${med.posologie}`, marginL, y); y += 4.5; }
     if (med.duree)     { doc.text(`   Durée : ${med.duree}`,          marginL, y); y += 4.5; }
-    if (med.quantite)  { doc.text(`   Quantité : ${med.quantite}`,    marginL, y); y += 4.5; }
     y += 2;
   });
 

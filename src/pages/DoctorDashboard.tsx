@@ -645,7 +645,7 @@ function CheckerView({
                           onMouseDown={e => { e.preventDefault(); addMedication(med); }}
                           className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
-                          {/* Ligne 1 : badge pays + nom commercial + badge CNOPS */}
+                          {/* Ligne 1 : badge pays + nom commercial */}
                           <div className="flex items-center gap-2 flex-wrap">
                             {med.pays === 'MA' && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40 flex-shrink-0">
