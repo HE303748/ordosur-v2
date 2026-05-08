@@ -1,32 +1,49 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Send, Bot, User, Loader2, Sparkles, Search, UserCheck } from 'lucide-react';
+import {
+  X, Send, Bot, User, Sparkles, Search, UserCheck,
+  Copy, Check, RotateCcw,
+} from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
-// Resolve API key: localStorage first, then env variable
-function getApiKey(): string {
-  try {
-    const stored = localStorage.getItem('ordosur_anthropic_key');
-    if (stored && stored.trim()) return stored.trim();
-  } catch {}
-  return import.meta.env.VITE_ANTHROPIC_API_KEY || '';
-}
+// ── Constantes ───────────────────────────────────────────────────────────────
 
-const DEFAULT_SYSTEM_PROMPT =
-  'Tu es un assistant médical expert pour les médecins marocains francophones. ' +
-  'Tu fournis des informations médicales précises sur les médicaments, interactions, posologies et pathologies. ' +
-  'Tu es concis, précis et professionnel. ' +
-  "Tu rappelles toujours que tes réponses sont indicatives et ne remplacent pas le jugement clinique.";
+const EDGE_FUNCTION_URL =
+  'https://yxzvukryngvlzjgaydqj.supabase.co/functions/v1/ai-chat';
+
+const MAX_HISTORY = 20;
+
+const SYSTEM_PROMPT =
+  `Tu es un assistant médical expert intégré dans Ordosur, plateforme de prescription médicale marocaine.
+
+Tu aides les médecins marocains francophones avec :
+- Posologie et mode d'emploi des médicaments
+- Interactions médicamenteuses entre les médicaments
+- Contre-indications selon les pathologies et allergies du patient
+- Diagnostic différentiel et orientation clinique
+- Recommandations thérapeutiques basées sur les guidelines
+- Questions générales de médecine
+
+Règles importantes :
+- Réponds toujours en français
+- Sois concis et précis (médecin occupé)
+- Utilise la terminologie médicale professionnelle
+- Rappelle toujours que tes réponses sont indicatives et ne remplacent pas le jugement clinique
+- Si un patient est sélectionné, tiens compte de ses pathologies et allergies dans tes réponses`;
 
 const DEFAULT_SUGGESTED = [
+  'Posologie Amoxicilline adulte ?',
   'Interactions Metformine + Ibuprofène ?',
-  'Posologie Amoxicilline enfant 10 kg ?',
-  'Contre-indications Ramipril en HTA ?',
-  "Alternatives à la Codéine chez l'enfant ?",
+  'Traitement HTA première intention ?',
+  "Symptômes insuffisance rénale ?",
 ];
+
+// ── Types ────────────────────────────────────────────────────────────────────
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  timestamp: Date;
 }
 
 interface PatientOption {
@@ -39,17 +56,44 @@ interface PatientOption {
 
 export interface AIChatProps {
   onClose: () => void;
-  /** Patient pré-sélectionné depuis la vue principale */
   selectedPatient?: PatientOption | null;
-  /** Liste des patients de l'org pour le sélecteur interne */
   patients?: PatientOption[];
-  /** Custom system prompt — defaults to doctor medical prompt */
   systemPrompt?: string;
-  /** Custom suggested questions — defaults to doctor questions */
   suggestedQuestions?: string[];
-  /** Context label shown in header */
   contextLabel?: string;
 }
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatTime(d: Date): string {
+  return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ── Copy button ──────────────────────────────────────────────────────────────
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+  return (
+    <button
+      onClick={copy}
+      title="Copier la réponse"
+      className="p-1 text-slate-300 hover:text-slate-500 dark:hover:text-slate-400 transition-colors rounded"
+    >
+      {copied
+        ? <Check className="w-3 h-3 text-emerald-500" />
+        : <Copy className="w-3 h-3" />}
+    </button>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
 
 export function AIChat({
   onClose,
@@ -60,8 +104,8 @@ export function AIChat({
   contextLabel,
 }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [input, setInput]       = useState('');
+  const [loading, setLoading]   = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // ── Patient interne ──────────────────────────────────────────────────────
@@ -79,7 +123,7 @@ export function AIChat({
     setActivePatient(p);
     setPatientSearch('');
     setShowPatientDrop(false);
-    setMessages([]); // réinitialiser la conversation pour le nouveau patient
+    setMessages([]);
   };
 
   const clearPatient = () => {
@@ -88,8 +132,7 @@ export function AIChat({
   };
 
   // ── Prompts ──────────────────────────────────────────────────────────────
-  const effectiveSystem    = systemPrompt || DEFAULT_SYSTEM_PROMPT;
-  const effectiveSuggested = suggestedQuestions || DEFAULT_SUGGESTED;
+  const effectiveSystem = systemPrompt || SYSTEM_PROMPT;
 
   const patientCtx = activePatient
     ? `\n\nContexte patient actif : ${activePatient.prenom} ${activePatient.nom}` +
@@ -101,54 +144,87 @@ export function AIChat({
         : '')
     : '';
 
+  // ── Questions suggérées selon contexte ──────────────────────────────────
+  const contextSuggestions: string[] = suggestedQuestions ||
+    (activePatient?.pathologies?.length
+      ? [
+          ...activePatient.pathologies.slice(0, 2).map(
+            p => `Traitement ${p} : quelle posologie recommandez-vous ?`
+          ),
+          ...(activePatient.allergies_medicaments?.length
+            ? [`Alternatives à ${activePatient.allergies_medicaments[0]} pour ce patient ?`]
+            : ['Interactions à surveiller pour ce patient ?']),
+          'Quels examens biologiques de suivi conseiller ?',
+        ]
+      : DEFAULT_SUGGESTED);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // ── Envoi message ────────────────────────────────────────────────────────
+  // ── Nouvelle conversation ────────────────────────────────────────────────
+  const resetConversation = () => setMessages([]);
+
+  // ── Envoi message via Edge Function ─────────────────────────────────────
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
-    const userMsg: Message = { role: 'user', content: trimmed };
+
+    const userMsg: Message = { role: 'user', content: trimmed, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setLoading(true);
+
     try {
-      const apiKey = getApiKey();
-      if (!apiKey) throw new Error('no_key');
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      // Récupérer la session utilisateur
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('session_expired');
+
+      // Limiter à MAX_HISTORY messages (sans timestamps pour l'API)
+      const conversationMessages = [...messages, userMsg]
+        .slice(-MAX_HISTORY)
+        .map(m => ({ role: m.role, content: m.content }));
+
+      // Appel via Edge Function sécurisée
+      const response = await fetch(EDGE_FUNCTION_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-allow-browser': 'true',
+          'Authorization': `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          model: 'claude-opus-4-5',
-          max_tokens: 1024,
           system: effectiveSystem + patientCtx,
-          messages: [...messages, userMsg],
+          messages: conversationMessages,
         }),
       });
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData?.error?.message || `HTTP ${res.status}`);
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${response.status}`);
       }
-      const data = await res.json();
+
+      const data = await response.json();
+      const assistantText = data.content?.[0]?.text || 'Réponse vide.';
+
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: data.content?.[0]?.text || 'Réponse vide.' },
+        { role: 'assistant', content: assistantText, timestamp: new Date() },
       ]);
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : String(err);
-      const msg =
-        errMsg === 'no_key'
-          ? '🔑 Clé API manquante. Configurez votre clé API dans les Paramètres (onglet 🤖 IA).'
-          : errMsg.includes('401') || errMsg.includes('invalid')
-          ? '❌ Clé API invalide. Vérifiez votre clé dans Paramètres → IA.'
-          : `⚠️ Erreur de connexion à l'API Anthropic : ${errMsg}`;
-      setMessages(prev => [...prev, { role: 'assistant', content: msg }]);
+      const displayMsg =
+        errMsg === 'session_expired'
+          ? '⚠️ Session expirée. Veuillez vous reconnecter.'
+          : errMsg.includes('Clé API non configurée') || errMsg.includes('configurée')
+          ? '🔑 Service IA non configuré. Contactez votre administrateur.'
+          : errMsg.includes('non autorisé') || errMsg.includes('401')
+          ? '❌ Accès non autorisé.'
+          : '⚠️ Service IA temporairement indisponible. Réessayez dans quelques instants.';
+
+      setMessages(prev => [
+        ...prev,
+        { role: 'assistant', content: displayMsg, timestamp: new Date() },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -172,16 +248,29 @@ export function AIChat({
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-[15px] leading-tight">Assistant Ordosur</h2>
-          <p className="text-sky-100/70 text-xs">{contextLabel || 'Powered by Claude'}</p>
+          <p className="text-sky-100/70 text-xs">{contextLabel || 'Powered by Claude Haiku'}</p>
         </div>
+
+        {/* Nouvelle conversation */}
+        {messages.length > 0 && (
+          <button
+            onClick={resetConversation}
+            title="Nouvelle conversation"
+            className="p-1.5 text-white/60 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        )}
+
         {activePatient && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/20 rounded-lg max-w-[110px]">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/20 rounded-lg max-w-[100px]">
             <UserCheck className="w-3 h-3 text-white/80 flex-shrink-0" />
             <span className="text-white text-[11px] font-medium truncate">
               {activePatient.prenom} {activePatient.nom}
             </span>
           </div>
         )}
+
         <button
           onClick={onClose}
           className="p-1.5 text-white/60 hover:text-white hover:bg-white/20 rounded-lg transition-colors"
@@ -205,7 +294,7 @@ export function AIChat({
                 onClick={clearPatient}
                 className="px-3 py-1.5 text-xs font-medium text-slate-500 dark:text-[#94A3B8] border border-slate-200 dark:border-white/[0.1] rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors whitespace-nowrap"
               >
-                Question générale
+                Sans patient
               </button>
             </div>
           ) : (
@@ -217,7 +306,7 @@ export function AIChat({
                   onChange={e => { setPatientSearch(e.target.value); setShowPatientDrop(true); }}
                   onFocus={() => setShowPatientDrop(true)}
                   onBlur={() => setTimeout(() => setShowPatientDrop(false), 200)}
-                  placeholder="Associer un patient à la conversation…"
+                  placeholder="Associer un patient…"
                   className="w-full pl-8 pr-3 py-1.5 text-xs
                     border border-slate-200 dark:border-white/[0.1]
                     rounded-xl bg-white dark:bg-[#1E293B]
@@ -254,6 +343,7 @@ export function AIChat({
 
       {/* ── Messages ── */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {/* Welcome + suggestions */}
         {messages.length === 0 && (
           <>
             <div className="flex gap-3">
@@ -264,8 +354,8 @@ export function AIChat({
                 Bonjour ! Je suis votre assistant médical. Posez-moi vos questions sur les interactions, posologies ou pathologies.
                 {activePatient && (
                   <p className="mt-2 text-sky-600 dark:text-sky-400 font-semibold text-xs">
-                    👤 Patient en contexte : {activePatient.prenom} {activePatient.nom}
-                    {activePatient.pathologies?.length ? ` · ${activePatient.pathologies.slice(0,2).join(', ')}` : ''}
+                    👤 Patient : {activePatient.prenom} {activePatient.nom}
+                    {activePatient.pathologies?.length ? ` · ${activePatient.pathologies.slice(0, 2).join(', ')}` : ''}
                   </p>
                 )}
                 {!activePatient && patients.length > 0 && (
@@ -277,10 +367,10 @@ export function AIChat({
             </div>
 
             <p className="text-[11px] text-slate-400 dark:text-slate-600 font-semibold text-center uppercase tracking-wide pt-2">
-              Suggestions
+              {activePatient ? 'Questions suggérées pour ce patient' : 'Suggestions'}
             </p>
             <div className="space-y-2">
-              {effectiveSuggested.map(q => (
+              {contextSuggestions.map(q => (
                 <button
                   key={q}
                   onClick={() => send(q)}
@@ -299,6 +389,7 @@ export function AIChat({
           </>
         )}
 
+        {/* Messages */}
         {messages.map((msg, i) => (
           <div key={i} className={`flex gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
@@ -309,26 +400,36 @@ export function AIChat({
                 : <Bot  className="w-4 h-4 text-slate-500 dark:text-slate-400" />
               }
             </div>
-            <div className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
-              msg.role === 'user'
-                ? 'bg-sky-500 text-white rounded-tr-sm'
-                : 'bg-slate-100 dark:bg-white/[0.07] text-slate-700 dark:text-[#94A3B8] rounded-tl-sm'
-            }`}>
-              {msg.content}
+            <div className={`max-w-[78%] flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+              <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                msg.role === 'user'
+                  ? 'bg-sky-500 text-white rounded-tr-sm'
+                  : 'bg-slate-100 dark:bg-white/[0.07] text-slate-700 dark:text-[#94A3B8] rounded-tl-sm'
+              }`}>
+                {msg.content}
+              </div>
+              {/* Timestamp + copy (réponses IA uniquement) */}
+              <div className={`flex items-center gap-1.5 px-1 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                <span className="text-[10px] text-slate-300 dark:text-slate-600 tabular-nums">
+                  {formatTime(msg.timestamp)}
+                </span>
+                {msg.role === 'assistant' && <CopyButton text={msg.content} />}
+              </div>
             </div>
           </div>
         ))}
 
+        {/* Indicateur de frappe animé */}
         {loading && (
           <div className="flex gap-2.5">
             <div className="w-8 h-8 bg-slate-100 dark:bg-white/[0.07] rounded-xl flex items-center justify-center flex-shrink-0">
-              <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
+              <Bot className="w-4 h-4 text-slate-400 dark:text-slate-500" />
             </div>
             <div className="bg-slate-100 dark:bg-white/[0.07] rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
               {[0, 150, 300].map(d => (
                 <div
                   key={d}
-                  className="w-1.5 h-1.5 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce"
                   style={{ animationDelay: `${d}ms` }}
                 />
               ))}
@@ -347,7 +448,11 @@ export function AIChat({
             onKeyDown={e => {
               if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(input); }
             }}
-            placeholder={activePatient ? `Question sur ${activePatient.prenom} ${activePatient.nom}…` : 'Posez votre question médicale…'}
+            placeholder={
+              activePatient
+                ? `Question sur ${activePatient.prenom} ${activePatient.nom}…`
+                : 'Posez votre question médicale…'
+            }
             className="flex-1 px-4 py-2.5
               bg-slate-50 dark:bg-[#1E293B]
               border border-slate-200 dark:border-white/[0.1]
@@ -355,7 +460,6 @@ export function AIChat({
               text-slate-900 dark:text-[#E2E8F0]
               placeholder-slate-400 dark:placeholder-slate-600
               focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40
-              focus:border-sky-300 dark:focus:border-sky-500/40
               transition-all"
           />
           <button
