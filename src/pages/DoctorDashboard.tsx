@@ -131,7 +131,7 @@ function SkeletonPatientRow() {
 }
 
 interface HomeViewProps {
-  stats: { totalPatients: number; ordonnances: number; evolution: number };
+  stats: { totalPatients: number; ordonnances: number; evolution: number; interactions: number };
   patients: Patient[];
   interactionAlerts: InteractionAlert[];
   onNavigate: (v: ViewType) => void;
@@ -165,12 +165,12 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
     },
     {
       label: 'Interactions',
-      value: interactionAlerts.length,
+      value: stats.interactions,
       icon: AlertTriangle,
-      color: interactionAlerts.length > 0 ? 'bg-red-500' : 'bg-emerald-500',
-      light: interactionAlerts.length > 0 ? 'bg-red-50' : 'bg-emerald-50',
-      text: interactionAlerts.length > 0 ? 'text-red-600' : 'text-emerald-600',
-      sub: 'En cours d\'analyse',
+      color: stats.interactions > 0 ? 'bg-red-500' : 'bg-emerald-500',
+      light: stats.interactions > 0 ? 'bg-red-50' : 'bg-emerald-50',
+      text: stats.interactions > 0 ? 'text-red-600' : 'text-emerald-600',
+      sub: 'Détectées au total',
     },
     {
       label: 'Évolution patients',
@@ -1834,7 +1834,7 @@ export function DoctorDashboard() {
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
 
   // Stats
-  const [stats, setStats] = useState({ totalPatients: 0, ordonnances: 0, evolution: 0 });
+  const [stats, setStats] = useState({ totalPatients: 0, ordonnances: 0, evolution: 0, interactions: 0 });
   const [dataLoading, setDataLoading] = useState(true);
   const [ordRefreshKey, setOrdRefreshKey] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -1992,7 +1992,7 @@ export function DoctorDashboard() {
       const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
       const endOfLastMonth   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
 
-      const [patientsRes, ordRes, thisMonthPats, lastMonthPats] = await Promise.all([
+      const [patientsRes, ordRes, thisMonthPats, lastMonthPats, interactionsRes] = await Promise.all([
         // Total patients for this org
         supabase.from('patients')
           .select('id', { count: 'exact', head: true })
@@ -2012,19 +2012,24 @@ export function DoctorDashboard() {
           .eq('org_id', user.org_id)
           .gte('created_at', startOfLastMonth)
           .lte('created_at', endOfLastMonth),
+        // Interactions détectées (historique)
+        supabase.from('interaction_logs')
+          .select('id', { count: 'exact', head: true })
+          .eq('doctor_id', doctorProfile?.id || user.id),
       ]);
 
-      const totalPatients  = patientsRes.count  ?? 0;
-      const ordonnances    = ordRes.count        ?? 0;
-      const thisMonth      = thisMonthPats.count ?? 0;
-      const lastMonth      = lastMonthPats.count ?? 0;
+      const totalPatients  = patientsRes.count     ?? 0;
+      const ordonnances    = ordRes.count           ?? 0;
+      const thisMonth      = thisMonthPats.count    ?? 0;
+      const lastMonth      = lastMonthPats.count    ?? 0;
+      const interactions   = interactionsRes.count  ?? 0;
 
       // Evolution: % change in new patients month-over-month
       const evolution = lastMonth > 0
         ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100)
         : thisMonth > 0 ? 100 : 0;
 
-      setStats({ totalPatients, ordonnances, evolution });
+      setStats({ totalPatients, ordonnances, evolution, interactions });
     } catch (err) {
       console.error('[DoctorDashboard] loadStats error:', err);
     }
