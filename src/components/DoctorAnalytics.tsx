@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { BarChart3, AlertTriangle, Pill, Clock, History } from 'lucide-react';
+import { BarChart3, AlertTriangle, Pill, Clock, History, FileText } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 // ─── MonthlyInteractionsChart (real data: ordonnances by month) ───────────────
@@ -20,7 +20,6 @@ export function MonthlyInteractionsChart({ doctorId }: MonthlyInteractionsChartP
 
   const loadMonthlyData = async () => {
     try {
-      // Fetch last 6 months of ordonnances for this doctor
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
       sixMonthsAgo.setDate(1);
@@ -33,7 +32,6 @@ export function MonthlyInteractionsChart({ doctorId }: MonthlyInteractionsChartP
         .gte('created_at', sixMonthsAgo.toISOString())
         .order('created_at', { ascending: true });
 
-      // Build month buckets for last 6 months
       const now = new Date();
       const months: Array<{ mois: string; ordonnances: number; key: string }> = [];
       for (let i = 5; i >= 0; i--) {
@@ -45,7 +43,6 @@ export function MonthlyInteractionsChart({ doctorId }: MonthlyInteractionsChartP
         });
       }
 
-      // Count ordonnances per month
       (data || []).forEach(ord => {
         const d = new Date(ord.created_at);
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -229,6 +226,7 @@ export function RiskDistributionChart({ doctorId }: RiskDistributionChartProps) 
 }
 
 // ─── AllMedicationsHistory ────────────────────────────────────────────────────
+// Reads from ordonnance_lignes (prescribed meds) via get_medications_stats RPC
 
 interface AllMedicationsHistoryProps {
   doctorId: string;
@@ -239,36 +237,25 @@ export function AllMedicationsHistory({ doctorId }: AllMedicationsHistoryProps) 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!doctorId) return;
     loadAllMedications();
   }, [doctorId]);
 
   const loadAllMedications = async () => {
     try {
-      const { data: logs } = await supabase
-        .from('interaction_logs')
-        .select('medicament_a, medicament_b')
-        .eq('doctor_id', doctorId);
-
-      if (logs) {
-        const medCounts: { [key: string]: number } = {};
-
-        logs.forEach(log => {
-          if (log.medicament_a) {
-            medCounts[log.medicament_a] = (medCounts[log.medicament_a] || 0) + 1;
-          }
-          if (log.medicament_b) {
-            medCounts[log.medicament_b] = (medCounts[log.medicament_b] || 0) + 1;
-          }
-        });
-
-        const sortedMeds = Object.entries(medCounts)
-          .map(([nom, count]) => ({ nom, count }))
-          .sort((a, b) => b.count - a.count);
-
-        setAllMeds(sortedMeds);
-      }
+      const { data, error } = await supabase.rpc('get_medications_stats', {
+        p_doctor_id: doctorId,
+      });
+      if (error) throw error;
+      setAllMeds(
+        (data || []).map((row: { medicament_nom: string; prescriptions: number }) => ({
+          nom: row.medicament_nom,
+          count: Number(row.prescriptions),
+        }))
+      );
     } catch (error) {
-      console.error('Error loading medications:', error);
+      console.error('Error loading medications history:', error);
+      setAllMeds([]);
     } finally {
       setLoading(false);
     }
@@ -303,6 +290,7 @@ export function AllMedicationsHistory({ doctorId }: AllMedicationsHistoryProps) 
 }
 
 // ─── TopMedicationsSection ────────────────────────────────────────────────────
+// Top 10 from same get_medications_stats RPC (already ordered DESC)
 
 interface TopMedicationsSectionProps {
   doctorId: string;
@@ -313,43 +301,34 @@ export function TopMedicationsSection({ doctorId }: TopMedicationsSectionProps) 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!doctorId) return;
     loadTopMedications();
   }, [doctorId]);
 
   const loadTopMedications = async () => {
     try {
-      const { data: logs } = await supabase
-        .from('interaction_logs')
-        .select('medicament_a, medicament_b')
-        .eq('doctor_id', doctorId);
+      const { data, error } = await supabase.rpc('get_medications_stats', {
+        p_doctor_id: doctorId,
+      });
+      if (error) throw error;
 
-      if (logs) {
-        const medCounts: { [key: string]: number } = {};
-
-        logs.forEach(log => {
-          if (log.medicament_a) {
-            medCounts[log.medicament_a] = (medCounts[log.medicament_a] || 0) + 1;
-          }
-          if (log.medicament_b) {
-            medCounts[log.medicament_b] = (medCounts[log.medicament_b] || 0) + 1;
-          }
-        });
-
-        const sortedMeds = Object.entries(medCounts)
-          .map(([nom, count]) => ({ nom, count }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 10);
-
-        const maxCount = sortedMeds[0]?.count || 1;
-        const medsWithPercentage = sortedMeds.map(med => ({
-          ...med,
-          percentage: Math.round((med.count / maxCount) * 100)
+      const top10 = (data || [])
+        .slice(0, 10)
+        .map((row: { medicament_nom: string; prescriptions: number }) => ({
+          nom: row.medicament_nom,
+          count: Number(row.prescriptions),
         }));
 
-        setTopMeds(medsWithPercentage);
-      }
+      const maxCount = top10[0]?.count || 1;
+      setTopMeds(
+        top10.map(med => ({
+          ...med,
+          percentage: Math.round((med.count / maxCount) * 100),
+        }))
+      );
     } catch (error) {
       console.error('Error loading top medications:', error);
+      setTopMeds([]);
     } finally {
       setLoading(false);
     }
@@ -359,7 +338,7 @@ export function TopMedicationsSection({ doctorId }: TopMedicationsSectionProps) 
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px] md:h-[300px] flex flex-col">
       <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center flex-shrink-0">
         <Pill className="w-5 h-5 mr-2 text-primary-600" />
-        Top 10 Médicaments Vérifiés
+        Top 10 Médicaments Prescrits
       </h3>
       <div className="space-y-3 overflow-y-auto flex-1 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
         {loading ? (
@@ -391,67 +370,96 @@ export function TopMedicationsSection({ doctorId }: TopMedicationsSectionProps) 
 }
 
 // ─── RecentActivityTimeline ───────────────────────────────────────────────────
+// Multi-source feed: ordonnances + interaction checks via get_recent_activity RPC
 
 interface RecentActivityTimelineProps {
   doctorId: string;
 }
 
+type ActivityItem = {
+  id: string;
+  type: 'ordonnance' | 'interaction';
+  date: string;
+  patientName: string;
+  details: string;
+  riskLevel: string | null;
+};
+
 export function RecentActivityTimeline({ doctorId }: RecentActivityTimelineProps) {
-  const [activities, setActivities] = useState<Array<any>>([]);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!doctorId) return;
     loadRecentActivity();
   }, [doctorId]);
 
   const loadRecentActivity = async () => {
     try {
-      const { data: logs } = await supabase
-        .from('interaction_logs')
-        .select('*, patients(nom_complet)')
-        .eq('doctor_id', doctorId)
-        .order('timestamp', { ascending: false })
-        .limit(10);
-
-      if (logs) {
-        setActivities(logs);
-      }
+      const { data, error } = await supabase.rpc('get_recent_activity', {
+        p_doctor_id: doctorId,
+        p_limit: 15,
+      });
+      if (error) throw error;
+      setActivities(
+        (data || []).map((row: {
+          id: string;
+          activity_type: string;
+          activity_date: string;
+          patient_name: string;
+          details: string;
+          risk_level: string | null;
+        }) => ({
+          id: row.id,
+          type: row.activity_type as 'ordonnance' | 'interaction',
+          date: row.activity_date,
+          patientName: row.patient_name || '',
+          details: row.details || '',
+          riskLevel: row.risk_level || null,
+        }))
+      );
     } catch (error) {
       console.error('Error loading recent activity:', error);
+      setActivities([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    if (status === 'safe') return 'text-green-700 bg-green-50 border-green-200';
-    if (status === 'attention') return 'text-yellow-700 bg-yellow-50 border-yellow-200';
-    return 'text-red-700 bg-red-50 border-red-200';
+  const getRiskColor = (level: string | null) => {
+    if (level === 'safe')      return 'text-green-700 bg-green-50 border-green-200';
+    if (level === 'attention') return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+    if (level === 'dangerous') return 'text-red-700 bg-red-50 border-red-200';
+    return '';
   };
 
-  const getStatusIcon = (status: string) => {
-    if (status === 'safe') return '🟢';
-    if (status === 'attention') return '🟡';
-    return '🔴';
+  const getRiskIcon = (level: string | null) => {
+    if (level === 'safe')      return '🟢';
+    if (level === 'attention') return '🟡';
+    if (level === 'dangerous') return '🔴';
+    return '⚪';
   };
 
-  const getStatusLabel = (status: string) => {
-    if (status === 'safe') return 'SÉCURITAIRE';
-    if (status === 'attention') return 'ATTENTION';
-    return 'DANGEREUX';
+  const getRiskLabel = (level: string | null) => {
+    if (level === 'safe')      return 'SÉCURITAIRE';
+    if (level === 'attention') return 'ATTENTION';
+    if (level === 'dangerous') return 'DANGEREUX';
+    return '';
   };
 
-  const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp);
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 60) return `Il y a ${diffMins}min`;
+    if (diffMins < 1)   return 'À l\'instant';
+    if (diffMins < 60)  return `Il y a ${diffMins}min`;
     if (diffHours < 24) return `Il y a ${diffHours}h`;
-    return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+    if (diffDays < 30)  return `Il y a ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   };
 
   return (
@@ -466,20 +474,40 @@ export function RecentActivityTimeline({ doctorId }: RecentActivityTimelineProps
         ) : activities.length > 0 ? (
           activities.map((activity, idx) => (
             <div key={idx} className="flex items-start space-x-3 pb-3 border-b border-slate-100 last:border-b-0">
-              <span className="text-lg mt-0.5">{getStatusIcon(activity.risk_level)}</span>
+              {/* Icon */}
+              {activity.type === 'ordonnance' ? (
+                <div className="w-7 h-7 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <FileText className="w-3.5 h-3.5 text-primary-600" />
+                </div>
+              ) : (
+                <span className="text-lg mt-0.5 flex-shrink-0">{getRiskIcon(activity.riskLevel)}</span>
+              )}
+
+              {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-semibold text-slate-900">
-                    {activity.patients?.nom_complet || 'Patient'}
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-sm font-semibold text-slate-900 truncate">
+                    {activity.type === 'ordonnance'
+                      ? (activity.patientName || 'Patient')
+                      : 'Vérification'}
                   </span>
-                  <span className="text-xs text-slate-500">{formatTime(activity.timestamp)}</span>
+                  <span className="text-xs text-slate-400 ml-2 flex-shrink-0">
+                    {formatTime(activity.date)}
+                  </span>
                 </div>
-                <div className="text-xs text-slate-600 mb-1">
-                  {activity.medicament_a} + {activity.medicament_b}
+                <div className="text-xs text-slate-600 mb-1 truncate">
+                  {activity.details}
                 </div>
-                <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold border ${getStatusColor(activity.risk_level)}`}>
-                  {getStatusLabel(activity.risk_level)}
-                </span>
+                {activity.type === 'interaction' && activity.riskLevel && (
+                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold border ${getRiskColor(activity.riskLevel)}`}>
+                    {getRiskLabel(activity.riskLevel)}
+                  </span>
+                )}
+                {activity.type === 'ordonnance' && (
+                  <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200">
+                    ORDONNANCE
+                  </span>
+                )}
               </div>
             </div>
           ))

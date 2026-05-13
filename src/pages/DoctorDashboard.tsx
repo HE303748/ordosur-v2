@@ -176,13 +176,15 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       label: 'Évolution patients',
       value: stats.evolution === 0
         ? '—'
+        : stats.evolution >= 9999
+        ? 'Forte crois.'
         : stats.evolution > 0
         ? `+${stats.evolution}%`
         : `${stats.evolution}%`,
       icon: BarChart3,
-      color: stats.evolution >= 0 ? 'bg-emerald-500' : 'bg-amber-500',
-      light: stats.evolution >= 0 ? 'bg-emerald-50' : 'bg-amber-50',
-      text:  stats.evolution >= 0 ? 'text-emerald-600' : 'text-amber-600',
+      color: stats.evolution === 0 ? 'bg-slate-400' : stats.evolution > 0 ? 'bg-emerald-500' : 'bg-amber-500',
+      light: stats.evolution === 0 ? 'bg-slate-50'  : stats.evolution > 0 ? 'bg-emerald-50'  : 'bg-amber-50',
+      text:  stats.evolution === 0 ? 'text-slate-500' : stats.evolution > 0 ? 'text-emerald-600' : 'text-amber-600',
       sub: 'Nouveaux patients ce mois vs. mois précédent',
     },
   ];
@@ -898,9 +900,9 @@ function StatsView({ userId, doctorId }: { userId: string; doctorId: string }) {
           <RiskDistributionChart doctorId={doctorId} />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <AllMedicationsHistory doctorId={userId} />
-          <TopMedicationsSection doctorId={userId} />
-          <RecentActivityTimeline doctorId={userId} />
+          <AllMedicationsHistory doctorId={doctorId} />
+          <TopMedicationsSection doctorId={doctorId} />
+          <RecentActivityTimeline doctorId={doctorId} />
         </div>
       </div>
     </PageTransition>
@@ -2024,10 +2026,11 @@ export function DoctorDashboard() {
       const lastMonth      = lastMonthPats.count    ?? 0;
       const interactions   = interactionsRes.count  ?? 0;
 
-      // Evolution: % change in new patients month-over-month
+      // Evolution: % change in new patients month-over-month.
+      // 9999 = sentinel meaning "new patients this month but zero last month" (no valid % baseline).
       const evolution = lastMonth > 0
-        ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100)
-        : thisMonth > 0 ? 100 : 0;
+        ? Math.min(999, Math.max(-100, Math.round(((thisMonth - lastMonth) / lastMonth) * 100)))
+        : thisMonth > 0 ? 9999 : 0;
 
       setStats({ totalPatients, ordonnances, evolution, interactions });
     } catch (err) {
