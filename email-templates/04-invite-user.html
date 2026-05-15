@@ -1,0 +1,100 @@
+<!--
+  Ordosur — Email "Invitation à une clinique"
+  Template Supabase Auth → Authentication > Email Templates > Invite user
+  Variables disponibles : {{ .ConfirmationURL }}, {{ .Email }}, {{ .Data.prenom }},
+                          {{ .Data.clinique }}, {{ .Data.invited_by }}
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>Invitation à rejoindre Ordosur</title>
+  <style>
+    body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+    a { text-decoration: none; }
+    @media only screen and (max-width: 600px) {
+      .container { width: 100% !important; max-width: 100% !important; }
+      .content { padding: 32px 24px !important; }
+      .h1 { font-size: 22px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#F8F8F5;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;color:#0A1628;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F8F8F5;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#FFFFFF;border:1px solid #E5E5E0;border-radius:8px;">
+          <tr>
+            <td class="content" style="padding:48px 48px 16px 48px;">
+              <img src="https://ordosur.com/email-assets/logo-horizontal-light.png" alt="Ordosur" width="120" height="32" style="display:block;height:32px;width:auto;max-width:120px;">
+            </td>
+          </tr>
+          <tr>
+            <td class="content" style="padding:24px 48px 8px 48px;">
+              <p style="margin:0 0 8px 0;font-size:15px;line-height:1.6;color:#475569;">
+                Bonjour Dr. {{ .Data.prenom }},
+              </p>
+              <h1 class="h1" style="margin:16px 0 16px 0;font-family:inherit;font-size:24px;font-weight:700;line-height:1.3;color:#0A1628;letter-spacing:-0.01em;">
+                Vous êtes invité(e) à rejoindre {{ .Data.clinique }}
+              </h1>
+              <p style="margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#475569;">
+                {{ .Data.invited_by }} vous invite à rejoindre l'équipe médicale de <strong style="color:#0A1628;font-weight:600;">{{ .Data.clinique }}</strong> sur Ordosur, la plateforme de prescription médicale sécurisée.
+              </p>
+              <p style="margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#475569;">
+                Cliquez sur le bouton ci-dessous pour accepter l'invitation et créer votre compte&nbsp;:
+              </p>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+                <tr>
+                  <td style="border-radius:6px;background-color:#00A86B;">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 28px;font-family:inherit;font-size:15px;font-weight:600;color:#FFFFFF;text-decoration:none;border-radius:6px;">
+                      Accepter l'invitation
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#475569;">
+                Une fois inscrit(e), vous aurez accès à&nbsp;:
+              </p>
+              <ul style="margin:0 0 16px 0;padding-left:20px;font-size:15px;line-height:1.7;color:#475569;">
+                <li>Le carnet de patients de la clinique</li>
+                <li>L'historique des ordonnances</li>
+                <li>Le vérificateur d'interactions médicamenteuses</li>
+                <li>L'assistant IA médical</li>
+              </ul>
+              <p style="margin:24px 0 0 0;font-size:14px;line-height:1.6;color:#94A3B8;">
+                Cette invitation expire dans 7 jours. Si vous ne souhaitez pas rejoindre, ignorez simplement cet email.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td class="content" style="padding:32px 48px 40px 48px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="border-top:1px solid #E5E5E0;padding-top:24px;">
+                    <p style="margin:0 0 6px 0;font-size:13px;line-height:1.5;color:#94A3B8;">
+                      Ordosur — La prescription, sécurisée.
+                    </p>
+                    <p style="margin:0;font-size:13px;line-height:1.5;color:#94A3B8;">
+                      <a href="https://ordosur.com" style="color:#94A3B8;text-decoration:none;">ordosur.com</a>
+                      &nbsp;·&nbsp;
+                      <a href="mailto:contact@ordosur.com" style="color:#94A3B8;text-decoration:none;">contact@ordosur.com</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:16px 0 0 0;font-size:12px;line-height:1.5;color:#94A3B8;text-align:center;">
+          Invitation envoyée à {{ .Email }}.
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
