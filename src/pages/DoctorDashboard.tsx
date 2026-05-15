@@ -2068,20 +2068,11 @@ export function DoctorDashboard() {
         ? Math.min(999, Math.max(-100, Math.round(((thisMonth - lastMonth) / lastMonth) * 100)))
         : thisMonth > 0 ? 9999 : 0;
 
-      // "Données insuffisantes" si compte < 30 jours OU mois précédent = 0 patient (division par zéro).
+      // "Données insuffisantes" si compte < 60 jours OU masse critique insuffisante
+      // (< 10 patients ajoutés sur les 2 derniers mois → un -100% n'a pas de sens).
       const doctorCreatedAt = doctorProfile?.created_at ? new Date(doctorProfile.created_at).getTime() : null;
       const accountAgeDays = doctorCreatedAt ? (Date.now() - doctorCreatedAt) / 86_400_000 : Infinity;
-      const evolutionInsufficient = accountAgeDays < 30 || lastMonth === 0;
-
-      // ── DEBUG Sprint #2.6 (à retirer après diagnostic) ──────────────────
-      console.log('[DEBUG 2.6]', {
-        doctorCreatedAt: doctorProfile?.created_at,
-        accountAgeDays,
-        thisMonth,
-        lastMonth,
-        evolutionInsufficient,
-        evolution,
-      });
+      const evolutionInsufficient = accountAgeDays < 60 || (thisMonth + lastMonth) < 10;
 
       setStats({ totalPatients, ordonnances, evolution, evolutionInsufficient, interactions });
     } catch (err) {
