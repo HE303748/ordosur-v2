@@ -72,7 +72,7 @@ export function DoctorManagementPage() {
           rpps: doctor.rpps,
           specialite: doctor.specialite,
           ordre_number: doctor.ordre_number,
-          prenom: profile?.prenom || 'Prénom',
+          prenom: profile?.prenom || 'PrÃƒÂ©nom',
           nom: profile?.nom || 'Nom',
           email: '',
         };
@@ -81,14 +81,14 @@ export function DoctorManagementPage() {
       setDoctors(rows);
     } catch (error: any) {
       console.error('Error loading doctors:', error);
-      setError('Erreur lors du chargement des médecins');
+      setError('Erreur lors du chargement des mÃƒÂ©decins');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#FAFAF7] via-white to-[#E6F4EE]">
       <div className="flex">
         <aside className="w-64 min-h-screen bg-white border-r border-gray-200 shadow-sm">
           <div className="p-6 border-b border-gray-200">
@@ -96,7 +96,7 @@ export function DoctorManagementPage() {
               onClick={() => navigate('/clinic/admin')}
               className="flex items-center gap-3 w-full"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br [#00A86B] rounded-lg flex items-center justify-center">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <div className="text-left">
@@ -123,7 +123,7 @@ export function DoctorManagementPage() {
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left bg-blue-50 text-blue-700 font-medium"
               >
                 <Users className="w-5 h-5" />
-                <span>Médecins</span>
+                <span>MÃƒÂ©decins</span>
               </button>
 
               <button
@@ -144,7 +144,7 @@ export function DoctorManagementPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span>Paramètres</span>
+                <span>ParamÃƒÂ¨tres</span>
               </button>
             </div>
           </nav>
@@ -154,8 +154,8 @@ export function DoctorManagementPage() {
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestion des médecins</h1>
-                <p className="text-gray-600">Médecins rattachés à votre organisation</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestion des mÃƒÂ©decins</h1>
+                <p className="text-gray-600">MÃƒÂ©decins rattachÃƒÂ©s ÃƒÂ  votre organisation</p>
               </div>
             </div>
 
@@ -168,16 +168,16 @@ export function DoctorManagementPage() {
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Médecin
+                        MÃƒÂ©decin
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Spécialité
+                        SpÃƒÂ©cialitÃƒÂ©
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        N° RPPS
+                        NÃ‚Â° RPPS
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        N° Ordre
+                        NÃ‚Â° Ordre
                       </th>
                     </tr>
                   </thead>
@@ -195,9 +195,9 @@ export function DoctorManagementPage() {
                         <td colSpan={4} className="px-6 py-12 text-center">
                           <div className="flex flex-col items-center gap-3">
                             <Users className="w-12 h-12 text-gray-300" />
-                            <p className="text-gray-500">Aucun médecin enregistré</p>
+                            <p className="text-gray-500">Aucun mÃƒÂ©decin enregistrÃƒÂ©</p>
                             <p className="text-sm text-gray-400">
-                              Les médecins apparaissent ici après leur inscription avec votre organisation.
+                              Les mÃƒÂ©decins apparaissent ici aprÃƒÂ¨s leur inscription avec votre organisation.
                             </p>
                           </div>
                         </td>

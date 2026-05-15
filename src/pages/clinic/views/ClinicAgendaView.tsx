@@ -5,7 +5,7 @@ import { supabase } from '../../../lib/supabase';
 import { PageTransition } from '../../../components/ui/PageTransition';
 import type { DoctorWithProfile } from './ClinicMedecinsView';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Types Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface RendezVous {
   id: string;
@@ -23,15 +23,15 @@ interface RendezVous {
 
 type CalView = 'semaine' | 'mois';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Constants Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
-const HOURS   = Array.from({ length: 13 }, (_, i) => i + 8); // 8h–20h
+const HOURS   = Array.from({ length: 13 }, (_, i) => i + 8); // 8hÃ¢â‚¬â€œ20h
 const DAYS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const MONTHS_FR = ['Janvier','FÃƒÂ©vrier','Mars','Avril','Mai','Juin','Juillet','AoÃƒÂ»t','Septembre','Octobre','Novembre','DÃƒÂ©cembre'];
 
 const TYPE_LABELS: Record<string, string> = {
   consultation: 'Consultation', suivi: 'Suivi', urgence: 'Urgence',
-  teleconsultation: 'Téléconsultation', autre: 'Autre',
+  teleconsultation: 'TÃƒÂ©lÃƒÂ©consultation', autre: 'Autre',
 };
 
 const DURATIONS = [
@@ -41,8 +41,8 @@ const DURATIONS = [
 
 // Deterministic doctor colors from index
 const DOC_COLORS = [
-  '#0EA5E9','#8B5CF6','#10B981','#F59E0B','#EF4444',
-  '#EC4899','#06B6D4','#84CC16','#F97316','#6366F1',
+  '#00A86B','#8B5CF6','#10B981','#F59E0B','#EF4444',
+  '#EC4899','#00A86B','#84CC16','#F97316','#6366F1',
 ];
 
 function docColor(idx: number) { return DOC_COLORS[idx % DOC_COLORS.length]; }
@@ -56,7 +56,7 @@ function docColorLight(idx: number) {
   return lights[idx % lights.length];
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function fmt(d: Date) { return d.toISOString().split('T')[0]; }
 function isSameDay(a: Date, b: Date) { return fmt(a) === fmt(b); }
@@ -78,15 +78,15 @@ function addMinutes(time: string, minutes: number): string {
   return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
 }
 
-// ─── Shared input/label ───────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Shared input/label Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 const inputCls = `w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm
   bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0]
   placeholder-slate-400 dark:placeholder-slate-600
-  focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 transition-all`;
+  focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 transition-all`;
 const labelCls = 'block text-xs font-semibold text-slate-600 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide';
 
-// ─── New RDV Modal (clinic-specific) ─────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ New RDV Modal (clinic-specific) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface RdvModalProps {
   rdv?: RendezVous | null;
@@ -171,7 +171,7 @@ function RdvModal({ rdv, defaultDate, doctors, patients, onSave, onClose }: RdvM
               value={form.patient_nom}
               onChange={e => onPatientInput(e.target.value)}
               list="clinic-patients-list"
-              placeholder="Nom du patient…"
+              placeholder="Nom du patientÃ¢â‚¬Â¦"
               required
               className={inputCls}
             />
@@ -184,23 +184,23 @@ function RdvModal({ rdv, defaultDate, doctors, patients, onSave, onClose }: RdvM
 
           {/* Doctor selector */}
           <div>
-            <label className={labelCls}>Médecin <span className="text-red-500">*</span></label>
+            <label className={labelCls}>MÃƒÂ©decin <span className="text-red-500">*</span></label>
             <select
               value={form.doctor_id}
               onChange={e => set('doctor_id', e.target.value)}
               required
               className={`${inputCls} appearance-none`}
             >
-              <option value="">Sélectionner un médecin…</option>
+              <option value="">SÃƒÂ©lectionner un mÃƒÂ©decinÃ¢â‚¬Â¦</option>
               {doctors.map(d => (
                 <option key={d.id} value={d.user_id}>
-                  Dr. {d.prenom} {d.nom}{d.specialite ? ` — ${d.specialite}` : ''}
+                  Dr. {d.prenom} {d.nom}{d.specialite ? ` Ã¢â‚¬â€ ${d.specialite}` : ''}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Date + Heure + Durée */}
+          {/* Date + Heure + DurÃƒÂ©e */}
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className={labelCls}>Date</label>
@@ -211,7 +211,7 @@ function RdvModal({ rdv, defaultDate, doctors, patients, onSave, onClose }: RdvM
               <input type="time" value={form.heure_debut} onChange={e => set('heure_debut', e.target.value)} required className={inputCls} />
             </div>
             <div>
-              <label className={labelCls}>Durée</label>
+              <label className={labelCls}>DurÃƒÂ©e</label>
               <select value={form.duration} onChange={e => set('duration', Number(e.target.value))} className={`${inputCls} appearance-none`}>
                 {DURATIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
               </select>
@@ -229,22 +229,22 @@ function RdvModal({ rdv, defaultDate, doctors, patients, onSave, onClose }: RdvM
             <div>
               <label className={labelCls}>Statut</label>
               <select value={form.statut} onChange={e => set('statut', e.target.value as RendezVous['statut'])} className={`${inputCls} appearance-none`}>
-                <option value="confirme">Confirmé</option>
+                <option value="confirme">ConfirmÃƒÂ©</option>
                 <option value="en_attente">En attente</option>
-                <option value="annule">Annulé</option>
-                <option value="termine">Terminé</option>
+                <option value="annule">AnnulÃƒÂ©</option>
+                <option value="termine">TerminÃƒÂ©</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className={labelCls}>Motif</label>
-            <input value={form.motif} onChange={e => set('motif', e.target.value)} placeholder="Motif de la consultation…" className={inputCls} />
+            <input value={form.motif} onChange={e => set('motif', e.target.value)} placeholder="Motif de la consultationÃ¢â‚¬Â¦" className={inputCls} />
           </div>
 
           <div>
-            <label className={labelCls}>Notes préliminaires</label>
-            <textarea value={form.notes} onChange={e => set('notes', e.target.value)} rows={2} placeholder="Notes internes…" className={`${inputCls} resize-none`} />
+            <label className={labelCls}>Notes prÃƒÂ©liminaires</label>
+            <textarea value={form.notes} onChange={e => set('notes', e.target.value)} rows={2} placeholder="Notes internesÃ¢â‚¬Â¦" className={`${inputCls} resize-none`} />
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -253,9 +253,9 @@ function RdvModal({ rdv, defaultDate, doctors, patients, onSave, onClose }: RdvM
               Annuler
             </button>
             <button type="submit" disabled={saving}
-              className="flex-1 px-4 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
+              className="flex-1 px-4 py-2.5 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 flex items-center justify-center gap-2">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              {rdv ? 'Mettre à jour' : 'Créer le RDV'}
+              {rdv ? 'Mettre ÃƒÂ  jour' : 'CrÃƒÂ©er le RDV'}
             </button>
           </div>
         </form>
@@ -264,7 +264,7 @@ function RdvModal({ rdv, defaultDate, doctors, patients, onSave, onClose }: RdvM
   );
 }
 
-// ─── Week View ────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Week View Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit, docColorMap }: {
   weekDays: Date[];
@@ -282,13 +282,13 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit, docColorMap }
         {weekDays.map((day, i) => {
           const isToday = isSameDay(day, today);
           return (
-            <div key={i} className={`py-3 text-center border-r border-slate-100 dark:border-white/[0.06] last:border-r-0 ${isToday ? 'bg-sky-50 dark:bg-sky-500/[0.08]' : ''}`}>
+            <div key={i} className={`py-3 text-center border-r border-slate-100 dark:border-white/[0.06] last:border-r-0 ${isToday ? 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.08]' : ''}`}>
               <p className="text-xs text-slate-400 dark:text-[#475569] font-medium">{DAYS_FR[i]}</p>
-              <p className={`text-lg font-bold mt-0.5 ${isToday ? 'text-sky-600 dark:text-sky-400' : 'text-slate-800 dark:text-[#E2E8F0]'}`}>
+              <p className={`text-lg font-bold mt-0.5 ${isToday ? 'text-[#00A86B]' : 'text-slate-800 dark:text-[#E2E8F0]'}`}>
                 {day.getDate()}
               </p>
               {rdvsForDay(day).length > 0 && (
-                <p className="text-[10px] text-sky-500 font-semibold">{rdvsForDay(day).length} RDV</p>
+                <p className="text-[10px] text-[#00A86B] font-semibold">{rdvsForDay(day).length} RDV</p>
               )}
             </div>
           );
@@ -312,7 +312,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit, docColorMap }
           return (
             <div
               key={di}
-              className={`border-r border-slate-100 dark:border-white/[0.06] last:border-r-0 relative cursor-pointer ${isToday ? 'bg-sky-50/20 dark:bg-sky-500/[0.03]' : ''}`}
+              className={`border-r border-slate-100 dark:border-white/[0.06] last:border-r-0 relative cursor-pointer ${isToday ? 'bg-[#E6F4EE]/20 dark:bg-[#00A86B]/[0.03]' : ''}`}
               onClick={() => onAddRdv(fmt(day))}
             >
               {HOURS.map(h => (
@@ -335,7 +335,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit, docColorMap }
                       {rdv.patient_nom}
                     </p>
                     <p className="text-[9px] truncate opacity-70" style={{ color: dc.color }}>
-                      {rdv.heure_debut.slice(0, 5)} – {rdv.heure_fin.slice(0, 5)}
+                      {rdv.heure_debut.slice(0, 5)} Ã¢â‚¬â€œ {rdv.heure_fin.slice(0, 5)}
                     </p>
                   </div>
                 );
@@ -348,7 +348,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit, docColorMap }
   );
 }
 
-// ─── Month View ───────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Month View Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function MonthView({ refDate, rdvsForDay, today, onAddRdv, onEdit, docColorMap }: {
   refDate: Date;
@@ -387,11 +387,11 @@ function MonthView({ refDate, rdvsForDay, today, onAddRdv, onEdit, docColorMap }
               onClick={() => onAddRdv(fmt(day))}
               className={`min-h-[90px] rounded-xl p-2 cursor-pointer border transition-all ${
                 isToday
-                  ? 'bg-sky-50 dark:bg-sky-500/10 border-sky-300 dark:border-sky-500/40'
-                  : 'bg-white dark:bg-white/[0.03] border-slate-100 dark:border-white/[0.06] hover:border-sky-200 dark:hover:border-sky-500/30'
+                  ? 'bg-[#E6F4EE] dark:bg-[#00A86B]/10 border-[#00A86B] dark:border-[#00A86B]/40'
+                  : 'bg-white dark:bg-white/[0.03] border-slate-100 dark:border-white/[0.06] hover:border-[#00A86B]/20 dark:hover:border-[#00A86B]/30'
               }`}
             >
-              <p className={`text-xs font-bold mb-1 ${isToday ? 'text-sky-600 dark:text-sky-400' : 'text-slate-700 dark:text-[#94A3B8]'}`}>
+              <p className={`text-xs font-bold mb-1 ${isToday ? 'text-[#00A86B]' : 'text-slate-700 dark:text-[#94A3B8]'}`}>
                 {day.getDate()}
               </p>
               <div className="space-y-0.5">
@@ -420,7 +420,7 @@ function MonthView({ refDate, rdvsForDay, today, onAddRdv, onEdit, docColorMap }
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Main Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface ClinicAgendaViewProps {
   orgId?:     string;
@@ -443,7 +443,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
   const weekDays = getWeekDays(refDate);
   const today    = new Date();
 
-  // Build doctor color map: doctor.user_id → { color, colorLight }
+  // Build doctor color map: doctor.user_id Ã¢â€ â€™ { color, colorLight }
   const docColorMap = new Map(
     doctors.map((d, idx) => [d.user_id, { color: docColor(idx), colorLight: docColorLight(idx) }])
   );
@@ -488,10 +488,10 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
     try {
       if (editingRdv) {
         await supabase.from('rendez_vous').update(formData).eq('id', editingRdv.id);
-        showToast('Rendez-vous mis à jour', 'success');
+        showToast('Rendez-vous mis ÃƒÂ  jour', 'success');
       } else {
         await supabase.from('rendez_vous').insert({ ...formData, org_id: orgId });
-        showToast('Rendez-vous créé', 'success');
+        showToast('Rendez-vous crÃƒÂ©ÃƒÂ©', 'success');
       }
       setShowModal(false); setEditingRdv(null); load();
     } catch {
@@ -513,7 +513,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
   const rdvsForDay = (day: Date) => rdvs.filter(r => r.date === fmt(day));
 
   const topLabel = view === 'semaine'
-    ? `${weekDays[0].getDate()} – ${weekDays[6].getDate()} ${MONTHS_FR[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`
+    ? `${weekDays[0].getDate()} Ã¢â‚¬â€œ ${weekDays[6].getDate()} ${MONTHS_FR[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`
     : `${MONTHS_FR[refDate.getMonth()]} ${refDate.getFullYear()}`;
 
   return (
@@ -535,7 +535,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
             </button>
             <button
               onClick={() => setRefDate(new Date())}
-              className="px-3 py-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-xl transition-colors"
+              className="px-3 py-1.5 text-xs font-semibold text-[#00A86B] hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/10 rounded-xl transition-colors"
             >
               Aujourd'hui
             </button>
@@ -561,17 +561,17 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
             ))}
           </div>
 
-          {/* Doctor filter — premium dropdown */}
+          {/* Doctor filter Ã¢â‚¬â€ premium dropdown */}
           <div className="relative">
             {filterDocId === 'all' ? (
               <button
                 onClick={() => setShowDocDropdown(v => !v)}
-                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-xs font-medium text-slate-700 dark:text-[#94A3B8] hover:border-sky-300 dark:hover:border-sky-500/40 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-xs font-medium text-slate-700 dark:text-[#94A3B8] hover:border-[#00A86B] dark:hover:border-[#00A86B]/40 transition-colors"
               >
                 <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-white/[0.1] flex items-center justify-center flex-shrink-0">
                   <Users className="w-3 h-3 text-slate-500 dark:text-slate-400" />
                 </div>
-                Tous les médecins
+                Tous les mÃƒÂ©decins
                 <ChevronDown className="w-3 h-3 text-slate-400 ml-0.5" />
               </button>
             ) : (() => {
@@ -597,13 +597,13 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
                     </div>
                     Dr. {selDoc.prenom} {selDoc.nom}
                     {selDoc.specialite && (
-                      <span className="opacity-60">· {selDoc.specialite.slice(0, 12)}{selDoc.specialite.length > 12 ? '…' : ''}</span>
+                      <span className="opacity-60">Ã‚Â· {selDoc.specialite.slice(0, 12)}{selDoc.specialite.length > 12 ? 'Ã¢â‚¬Â¦' : ''}</span>
                     )}
                     <ChevronDown className="w-3 h-3 opacity-60 ml-0.5" />
                   </button>
                   <button
                     onClick={() => setFilterDocId('all')}
-                    title="Tous les médecins"
+                    title="Tous les mÃƒÂ©decins"
                     className="p-1.5 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-lg transition-colors"
                   >
                     <X className="w-3.5 h-3.5 text-slate-400" />
@@ -633,7 +633,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
                     onClick={() => { setFilterDocId('all'); setShowDocDropdown(false); }}
                     className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-colors ${
                       filterDocId === 'all'
-                        ? 'bg-sky-50 dark:bg-sky-500/10'
+                        ? 'bg-[#E6F4EE] dark:bg-[#00A86B]/10'
                         : 'hover:bg-slate-50 dark:hover:bg-white/[0.04]'
                     }`}
                   >
@@ -641,10 +641,10 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
                       <Users className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                     </div>
                     <span className="text-xs font-semibold text-slate-700 dark:text-[#E2E8F0]">
-                      Tous les médecins
+                      Tous les mÃƒÂ©decins
                     </span>
                     {filterDocId === 'all' && (
-                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-sky-500 flex-shrink-0" />
+                      <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00A86B] flex-shrink-0" />
                     )}
                   </button>
 
@@ -658,7 +658,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
                       onClick={() => { setFilterDocId(d.user_id); setShowDocDropdown(false); }}
                       className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-left transition-colors ${
                         filterDocId === d.user_id
-                          ? 'bg-sky-50 dark:bg-sky-500/10'
+                          ? 'bg-[#E6F4EE] dark:bg-[#00A86B]/10'
                           : 'hover:bg-slate-50 dark:hover:bg-white/[0.04]'
                       }`}
                     >
@@ -689,7 +689,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
           {/* New RDV */}
           <button
             onClick={() => openNew()}
-            className="ml-auto flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
+            className="ml-auto flex items-center gap-2 px-4 py-2 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Nouveau RDV
@@ -699,7 +699,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
         {/* Calendar body */}
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-sky-500 animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#00A86B] animate-spin" />
           </div>
         ) : view === 'semaine' ? (
           <WeekView
@@ -717,10 +717,10 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
           />
         )}
 
-        {/* Doctor legend — filtered when a doctor is selected */}
+        {/* Doctor legend Ã¢â‚¬â€ filtered when a doctor is selected */}
         {doctors.length > 0 && (
           <div className="flex items-center gap-4 px-6 py-3 border-t border-slate-100 dark:border-white/[0.06] bg-white dark:bg-[#111827] flex-shrink-0 flex-wrap">
-            <span className="text-[11px] font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wide">Médecins :</span>
+            <span className="text-[11px] font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wide">MÃƒÂ©decins :</span>
             {doctors
               .filter(d => filterDocId === 'all' || d.user_id === filterDocId)
               .map((d) => {

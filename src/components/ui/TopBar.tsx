@@ -58,10 +58,10 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
         onClick={() => setOpen(true)}
         className="flex-1 max-w-lg mx-auto flex items-center gap-2.5 pl-3 pr-4 py-2
           bg-slate-50 dark:bg-white/[0.05]
-          border border-slate-200 dark:border-white/[0.08]
-          rounded-xl text-sm
-          text-slate-400 dark:text-slate-500
-          hover:border-sky-300 dark:hover:border-sky-500/30
+          border border-[#E5E5E0] dark:border-white/[0.08]
+          rounded-md text-sm
+          text-[#94A3B8] dark:text-slate-500
+          hover:border-[#00A86B] dark:hover:border-[#00A86B]/40
           hover:bg-white dark:hover:bg-white/[0.07]
           transition-all cursor-pointer text-left"
       >
@@ -129,10 +129,10 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
                       key={p.id}
                       onClick={() => { onNavigate?.('patients'); setOpen(false); }}
                       className="w-full flex items-center gap-3 px-4 py-3
-                        hover:bg-sky-50 dark:hover:bg-sky-500/[0.1]
+                        hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/10
                         transition-colors text-left"
                     >
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      <div className="w-8 h-8 rounded-md bg-[#00A86B] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                         {p.prenom[0]}{p.nom[0]}
                       </div>
                       <div>
@@ -166,9 +166,9 @@ function GlobalSearch({ patients = [], onNavigate }: { patients: any[]; onNaviga
                         onClick={() => { onNavigate?.(item.view); setOpen(false); }}
                         className="flex items-center gap-2.5 px-4 py-3
                           bg-slate-50 dark:bg-white/[0.05]
-                          hover:bg-sky-50 dark:hover:bg-sky-500/[0.08]
-                          rounded-xl transition-colors text-sm font-semibold
-                          text-slate-700 dark:text-[#94A3B8]"
+                          hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.08]
+                          rounded-md transition-colors text-sm font-semibold
+                          text-[#475569] dark:text-[#94A3B8]"
                       >
                         <item.icon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                         {item.label}
@@ -228,7 +228,7 @@ export function TopBar({ activeView, userInitials, patients = [], onNavigate }: 
 
         <button
           onClick={() => navigate('/profile')}
-          className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 text-white text-sm font-bold flex items-center justify-center hover:shadow-md hover:shadow-sky-500/25 transition-shadow"
+          className="w-9 h-9 rounded-full bg-[#00A86B] text-white text-sm font-bold flex items-center justify-center hover:shadow-md hover:shadow-[#00A86B]/25 transition-shadow"
         >
           {userInitials || 'MD'}
         </button>

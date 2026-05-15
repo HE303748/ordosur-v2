@@ -9,7 +9,7 @@ import { validatePassword } from '../lib/validation';
 import { Lock, Shield } from 'lucide-react';
 
 // Cette page permet un changement de mot de passe simple.
-// La fonctionnalité "mot de passe temporaire obligatoire" de v1 (RPCs supprimés) n'existe plus en v2.
+// La fonctionnalitÃƒÂ© "mot de passe temporaire obligatoire" de v1 (RPCs supprimÃƒÂ©s) n'existe plus en v2.
 
 export function MandatoryPasswordResetPage() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export function MandatoryPasswordResetPage() {
     setSuccess('');
 
     if (!user) {
-      setError('Utilisateur non connecté');
+      setError('Utilisateur non connectÃƒÂ©');
       return;
     }
 
@@ -41,7 +41,7 @@ export function MandatoryPasswordResetPage() {
     }
 
     if (passwordStrength.score < 5) {
-      setError('Le mot de passe ne répond pas à tous les critères de sécurité');
+      setError('Le mot de passe ne rÃƒÂ©pond pas ÃƒÂ  tous les critÃƒÂ¨res de sÃƒÂ©curitÃƒÂ©');
       return;
     }
 
@@ -54,7 +54,7 @@ export function MandatoryPasswordResetPage() {
 
       if (updateError) throw updateError;
 
-      setSuccess('Mot de passe changé avec succès ! Redirection...');
+      setSuccess('Mot de passe changÃƒÂ© avec succÃƒÂ¨s ! Redirection...');
 
       setTimeout(() => {
         if (user.role === 'doctor') {
@@ -78,7 +78,7 @@ export function MandatoryPasswordResetPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#FAFAF7] via-white to-[#E6F4EE] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
           <div className="flex items-center justify-center mb-6">
@@ -91,7 +91,7 @@ export function MandatoryPasswordResetPage() {
             Changement de mot de passe
           </h1>
           <p className="text-center text-gray-600 mb-8 text-sm">
-            Choisissez un nouveau mot de passe sécurisé
+            Choisissez un nouveau mot de passe sÃƒÂ©curisÃƒÂ©
           </p>
 
           {error && (
@@ -137,7 +137,7 @@ export function MandatoryPasswordResetPage() {
                 onClick={handleLogout}
                 className="flex-1"
               >
-                Se déconnecter
+                Se dÃƒÂ©connecter
               </Button>
               <Button
                 type="submit"

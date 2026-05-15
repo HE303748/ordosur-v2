@@ -16,7 +16,7 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { id: 'home',          label: 'Tableau de bord', icon: LayoutDashboard },
-  { id: 'medecins',      label: 'Médecins',         icon: UserCog         },
+  { id: 'medecins',      label: 'MÃƒÆ’Ã‚Â©decins',         icon: UserCog         },
   { id: 'patients',      label: 'Patients',          icon: Users           },
   { id: 'agenda',        label: 'Agenda',            icon: Calendar        },
   { id: 'ordonnances',   label: 'Ordonnances',       icon: FileText        },
@@ -25,10 +25,10 @@ const mainNav: NavItem[] = [
 
 const toolsNav: NavItem[] = [
   { id: 'stats',    label: 'Statistiques', icon: BarChart3 },
-  { id: 'settings', label: 'Paramètres',  icon: Settings  },
+  { id: 'settings', label: 'ParamÃƒÆ’Ã‚Â¨tres',  icon: Settings  },
 ];
 
-/* ── Tooltip wrapper for collapsed mode ────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Tooltip wrapper for collapsed mode ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 interface TooltipProps {
   label: string;
   children: React.ReactNode;
@@ -72,7 +72,7 @@ function Tooltip({ label, children, collapsed }: TooltipProps) {
   );
 }
 
-/* ── Nav button ─────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Nav button ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 interface NavButtonProps {
   item: NavItem;
   isActive: boolean;
@@ -93,7 +93,7 @@ function NavButton({ item, isActive, onClick, badge, collapsed }: NavButtonProps
           collapsed ? 'px-2.5 py-2.5 justify-center' : 'px-3 py-2.5'
         } ${
           isActive
-            ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/25'
+            ? 'bg-[#00A86B] text-white shadow-lg shadow-[#00A86B]/25'
             : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
         }`}
         style={
@@ -128,7 +128,7 @@ function NavButton({ item, isActive, onClick, badge, collapsed }: NavButtonProps
   );
 }
 
-/* ── Props ──────────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Props ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 export interface ClinicSidebarProps {
   activeView: ClinicViewType;
   onNavigate: (v: ClinicViewType) => void;
@@ -142,7 +142,7 @@ export interface ClinicSidebarProps {
   notifCount?: number;
 }
 
-/* ── Main component ─────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Main component ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 export function ClinicSidebar({
   activeView, onNavigate, onAIChat, onLogout,
   clinicName, adminInitials, adminName,
@@ -169,30 +169,30 @@ export function ClinicSidebar({
       style={{ background: 'linear-gradient(180deg, #060B14 0%, #0A0F1E 100%)' }}
       className="h-screen flex flex-col border-r border-white/[0.06] overflow-hidden select-none flex-shrink-0"
     >
-      {/* ── Logo row ── */}
+      {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Logo row ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
       <div className={`flex items-center border-b border-white/[0.08] flex-shrink-0 ${
         collapsed ? 'flex-col px-2 py-4 gap-2' : 'px-5 pt-6 pb-5'
       }`}>
         {!collapsed && (
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-9 h-9 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/25 flex-shrink-0">
+            <div className="w-9 h-9 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center shadow-lg shadow-[#00A86B]/25 flex-shrink-0">
               <Activity className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
               <h1 className="text-white font-bold text-[17px] tracking-tight leading-none">OrdoSur</h1>
-              <p className="text-sky-400/60 text-[11px] font-medium mt-0.5">Plateforme médicale</p>
+              <p className="text-[#00A86B]/60 text-[11px] font-medium mt-0.5">Plateforme mÃƒÆ’Ã‚Â©dicale</p>
             </div>
           </div>
         )}
         {collapsed && (
-          <div className="w-9 h-9 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/25">
+          <div className="w-9 h-9 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center shadow-lg shadow-[#00A86B]/25">
             <Activity className="w-5 h-5 text-white" />
           </div>
         )}
         <button
           onClick={toggle}
           className="p-1.5 text-slate-600 hover:text-slate-300 hover:bg-white/[0.07] rounded-lg transition-colors flex-shrink-0"
-          title={collapsed ? 'Agrandir' : 'Réduire'}
+          title={collapsed ? 'Agrandir' : 'RÃƒÆ’Ã‚Â©duire'}
         >
           {collapsed
             ? <ChevronRight className="w-3.5 h-3.5" />
@@ -200,7 +200,7 @@ export function ClinicSidebar({
         </button>
       </div>
 
-      {/* ── Admin card (expanded only) ── */}
+      {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Admin card (expanded only) ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
       <AnimatePresence>
         {!collapsed && (
           <motion.div
@@ -210,13 +210,13 @@ export function ClinicSidebar({
             transition={{ duration: 0.15 }}
             className="px-5 py-3.5 border-b border-white/[0.06] flex items-center gap-3 flex-shrink-0"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br bg-[#00A86B] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
               {adminInitials || 'CA'}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <p className="text-white text-[13px] font-semibold truncate leading-tight">{clinicName || 'Ma Clinique'}</p>
-                <span className="px-1.5 py-0.5 bg-sky-500/20 border border-sky-500/30 rounded-md text-sky-400 text-[10px] font-bold flex-shrink-0">Admin</span>
+                <span className="px-1.5 py-0.5 bg-[#00A86B]/20 border border-[#00A86B]/30 rounded-md text-[#00A86B] text-[10px] font-bold flex-shrink-0">Admin</span>
               </div>
               <p className="text-slate-500 text-[11px] truncate mt-0.5">{adminName || 'Administrateur'}</p>
             </div>
@@ -224,19 +224,19 @@ export function ClinicSidebar({
         )}
       </AnimatePresence>
 
-      {/* ── Collapsed: avatar + Admin dot ── */}
+      {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Collapsed: avatar + Admin dot ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
       {collapsed && (
         <div className="flex justify-center py-3 border-b border-white/[0.06] flex-shrink-0">
           <div className="relative">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white font-bold text-xs">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br bg-[#00A86B] flex items-center justify-center text-white font-bold text-xs">
               {adminInitials || 'CA'}
             </div>
-            <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-sky-500 rounded-full border-2 border-[#060B14] flex-shrink-0" />
+            <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-[#00A86B] rounded-full border-2 border-[#060B14] flex-shrink-0" />
           </div>
         </div>
       )}
 
-      {/* ── Navigation ── */}
+      {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Navigation ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
       <nav className={`flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-0.5 ${collapsed ? 'px-2' : 'px-3'}`}>
         {!collapsed && (
           <p className="px-3 pb-2 text-[10px] font-bold text-slate-600 uppercase tracking-[0.12em]">
@@ -277,14 +277,14 @@ export function ClinicSidebar({
         ))}
       </nav>
 
-      {/* ── Bottom ── */}
+      {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Bottom ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
       <div className={`pb-5 pt-3 border-t border-white/[0.08] space-y-1.5 flex-shrink-0 ${collapsed ? 'px-2' : 'px-3'}`}>
         {/* AI Chat */}
         <Tooltip label="Assistant IA" collapsed={collapsed}>
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={onAIChat}
-            className={`w-full flex items-center rounded-xl text-[13px] font-semibold bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20 hover:shadow-sky-500/35 transition-shadow ${
+            className={`w-full flex items-center rounded-xl text-[13px] font-semibold bg-[#00A86B] text-white shadow-lg shadow-[#00A86B]/20 hover:shadow-[#00A86B]/35 transition-shadow ${
               collapsed ? 'px-2.5 py-2.5 justify-center' : 'gap-3 px-3 py-3'
             }`}
           >
@@ -299,7 +299,7 @@ export function ClinicSidebar({
         </Tooltip>
 
         {/* Logout */}
-        <Tooltip label="Déconnexion" collapsed={collapsed}>
+        <Tooltip label="DÃƒÆ’Ã‚Â©connexion" collapsed={collapsed}>
           <motion.button
             whileHover={{ x: collapsed ? 0 : 2 }}
             transition={{ duration: 0.12 }}
@@ -309,14 +309,14 @@ export function ClinicSidebar({
             }`}
           >
             <LogOut className="w-[18px] h-[18px] flex-shrink-0" />
-            {!collapsed && <span>Déconnexion</span>}
+            {!collapsed && <span>DÃƒÆ’Ã‚Â©connexion</span>}
           </motion.button>
         </Tooltip>
 
         {/* Collapse toggle hint at very bottom (expanded only) */}
         {!collapsed && (
           <p className="text-center text-[10px] text-slate-700 pt-1 select-none">
-            ← Réduire
+            ÃƒÂ¢Ã¢â‚¬Â Ã‚Â RÃƒÆ’Ã‚Â©duire
           </p>
         )}
       </div>

@@ -34,7 +34,7 @@ import { AgendaView } from '../components/ui/AgendaView';
 import { EncyclopedieView } from '../components/ui/EncyclopedieView';
 import { DocumentsView } from '../components/ui/DocumentsView';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Types Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface InteractionResult {
   severity: 'safe' | 'attention' | 'dangerous';
@@ -69,7 +69,7 @@ interface InteractionAlert {
   involved: string[];
 }
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function normalizeDrugName(s: string): string {
   return s
@@ -92,15 +92,15 @@ function getPatientAge(dateNaissance: string | null | undefined): number | null 
 }
 
 function getSeveriteLabel(s: InteractionAlert['severite']) {
-  if (s === 'contre_indication') return '🔴 CONTRE-INDICATION';
-  if (s === 'majeure') return '🟠 INTERACTION MAJEURE';
-  if (s === 'moderee') return '🔵 INTERACTION MODÉRÉE';
-  return '🟡 INTERACTION MINEURE';
+  if (s === 'contre_indication') return 'Ã°Å¸â€Â´ CONTRE-INDICATION';
+  if (s === 'majeure') return 'Ã°Å¸Å¸Â  INTERACTION MAJEURE';
+  if (s === 'moderee') return 'Ã°Å¸â€Âµ INTERACTION MODÃƒâ€°RÃƒâ€°E';
+  return 'Ã°Å¸Å¸Â¡ INTERACTION MINEURE';
 }
 
-// ─── Sub-views ──────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Sub-views Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
-/* ── Skeleton helpers ────────────────────────────────────────────────────── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Skeleton helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 function SkeletonBox({ className }: { className?: string }) {
   return <div className={`animate-pulse bg-slate-200 dark:bg-slate-700 rounded-xl ${className || ''}`} />;
 }
@@ -149,10 +149,10 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       label: 'Patients totaux',
       value: stats.totalPatients,
       icon: Users,
-      color: 'bg-sky-500',
-      light: 'bg-sky-50',
-      text: 'text-sky-600',
-      sub: 'Patients enregistrés',
+      color: 'bg-[#00A86B]',
+      light: 'bg-[#E6F4EE]',
+      text: 'text-[#00A86B]',
+      sub: 'Patients enregistrÃƒÂ©s',
     },
     {
       label: 'Ordonnances',
@@ -161,7 +161,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       color: 'bg-violet-500',
       light: 'bg-violet-50',
       text: 'text-violet-600',
-      sub: 'Créées au total',
+      sub: 'CrÃƒÂ©ÃƒÂ©es au total',
     },
     {
       label: 'Interactions',
@@ -170,12 +170,12 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       color: stats.interactions > 0 ? 'bg-red-500' : 'bg-emerald-500',
       light: stats.interactions > 0 ? 'bg-red-50' : 'bg-emerald-50',
       text: stats.interactions > 0 ? 'text-red-600' : 'text-emerald-600',
-      sub: 'Détectées au total',
+      sub: 'DÃƒÂ©tectÃƒÂ©es au total',
     },
     {
-      label: 'Évolution patients',
+      label: 'Ãƒâ€°volution patients',
       value: stats.evolution === 0
-        ? '—'
+        ? 'Ã¢â‚¬â€'
         : stats.evolution >= 9999
         ? 'Forte crois.'
         : stats.evolution > 0
@@ -185,7 +185,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       color: stats.evolution === 0 ? 'bg-slate-400' : stats.evolution > 0 ? 'bg-emerald-500' : 'bg-amber-500',
       light: stats.evolution === 0 ? 'bg-slate-50'  : stats.evolution > 0 ? 'bg-emerald-50'  : 'bg-amber-50',
       text:  stats.evolution === 0 ? 'text-slate-500' : stats.evolution > 0 ? 'text-emerald-600' : 'text-amber-600',
-      sub: 'Nouveaux patients ce mois vs. mois précédent',
+      sub: 'Nouveaux patients ce mois vs. mois prÃƒÂ©cÃƒÂ©dent',
     },
   ];
 
@@ -195,7 +195,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
         {/* Welcome */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">
-            Tableau de bord 👋
+            Tableau de bord Ã°Å¸â€˜â€¹
           </h1>
           <p className="text-slate-500 dark:text-[#94A3B8] mt-0.5 text-sm capitalize">{today}</p>
         </div>
@@ -227,15 +227,15 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
 
         {/* Content grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Recent patients — 2/3 */}
+          {/* Recent patients Ã¢â‚¬â€ 2/3 */}
           <div className="xl:col-span-2 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.1)]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/[0.06]">
-              <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients récents</h2>
+              <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients rÃƒÂ©cents</h2>
               <button
                 onClick={() => onNavigate('patients')}
-                className="text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 font-semibold transition-colors"
+                className="text-sm text-[#00A86B] hover:text-[#006B47] font-semibold transition-colors"
               >
-                Voir tous →
+                Voir tous Ã¢â€ â€™
               </button>
             </div>
 
@@ -250,15 +250,15 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
                 >
                   <PatientAvatar name={`${p.prenom} ${p.nom}`} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm group-hover:text-sky-700 dark:group-hover:text-sky-400 transition-colors">
+                    <p className="font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm group-hover:text-[#006B47] dark:group-hover:text-[#00A86B] transition-colors">
                       {p.prenom} {p.nom}
                     </p>
                     <p className="text-xs text-slate-400 dark:text-[#475569] truncate">
-                      {p.pathologies?.[0] || 'Aucune pathologie renseignée'}
-                      {p.date_naissance && ` • ${getPatientAge(p.date_naissance)} ans`}
+                      {p.pathologies?.[0] || 'Aucune pathologie renseignÃƒÂ©e'}
+                      {p.date_naissance && ` Ã¢â‚¬Â¢ ${getPatientAge(p.date_naissance)} ans`}
                     </p>
                   </div>
-                  <span className="text-xs text-slate-300 dark:text-slate-700 group-hover:text-sky-500 dark:group-hover:text-sky-400 transition-colors flex-shrink-0">→</span>
+                  <span className="text-xs text-slate-300 dark:text-slate-700 group-hover:text-[#00A86B] dark:group-hover:text-[#00A86B] transition-colors flex-shrink-0">Ã¢â€ â€™</span>
                 </div>
               ))
               }
@@ -271,7 +271,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
                   action={
                     <button
                       onClick={onAddPatient}
-                      className="mt-2 px-5 py-2.5 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
+                      className="mt-2 px-5 py-2.5 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors"
                     >
                       + Ajouter un patient
                     </button>
@@ -281,16 +281,16 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
             </div>
           </div>
 
-          {/* Quick actions — 1/3 */}
+          {/* Quick actions Ã¢â‚¬â€ 1/3 */}
           <div className="space-y-4">
             <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
               <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">Actions rapides</h2>
               <div className="space-y-2">
                 {[
-                  { label: '+ Nouveau patient',     view: 'patients' as ViewType,    action: onAddPatient, color: 'bg-sky-500 hover:bg-sky-600 text-white' },
-                  { label: '💊 Vérifier interactions', view: 'checker' as ViewType,  color: 'bg-violet-50 dark:bg-violet-500/[0.1] hover:bg-violet-100 dark:hover:bg-violet-500/[0.18] text-violet-700 dark:text-violet-400' },
-                  { label: '📋 Voir ordonnances',   view: 'ordonnances' as ViewType, color: 'bg-emerald-50 dark:bg-emerald-500/[0.1] hover:bg-emerald-100 dark:hover:bg-emerald-500/[0.18] text-emerald-700 dark:text-emerald-400' },
-                  { label: '📊 Statistiques',       view: 'stats' as ViewType,       color: 'bg-slate-50 dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.07] text-slate-700 dark:text-[#94A3B8]' },
+                  { label: '+ Nouveau patient',     view: 'patients' as ViewType,    action: onAddPatient, color: 'bg-[#00A86B] hover:bg-[#006B47] text-white' },
+                  { label: 'Ã°Å¸â€™Å  VÃƒÂ©rifier interactions', view: 'checker' as ViewType,  color: 'bg-violet-50 dark:bg-violet-500/[0.1] hover:bg-violet-100 dark:hover:bg-violet-500/[0.18] text-violet-700 dark:text-violet-400' },
+                  { label: 'Ã°Å¸â€œâ€¹ Voir ordonnances',   view: 'ordonnances' as ViewType, color: 'bg-emerald-50 dark:bg-emerald-500/[0.1] hover:bg-emerald-100 dark:hover:bg-emerald-500/[0.18] text-emerald-700 dark:text-emerald-400' },
+                  { label: 'Ã°Å¸â€œÅ  Statistiques',       view: 'stats' as ViewType,       color: 'bg-slate-50 dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.07] text-slate-700 dark:text-[#94A3B8]' },
                 ].map(({ label, view, action, color }) => (
                   <button
                     key={label}
@@ -303,11 +303,11 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl p-5 text-white">
-              <h3 className="font-bold text-base mb-1">🤖 Assistant IA</h3>
-              <p className="text-sky-100 text-xs mb-4">Questions médicales, interactions, posologies...</p>
-              <p className="text-sky-100 text-xs opacity-80">
-                Cliquez sur "Assistant IA" dans la barre latérale pour accéder à l'IA médicale.
+            <div className="bg-gradient-to-br bg-[#00A86B] rounded-2xl p-5 text-white">
+              <h3 className="font-bold text-base mb-1">Ã°Å¸Â¤â€“ Assistant IA</h3>
+              <p className="text-white/80 text-xs mb-4">Questions mÃƒÂ©dicales, interactions, posologies...</p>
+              <p className="text-white/80 text-xs opacity-80">
+                Cliquez sur "Assistant IA" dans la barre latÃƒÂ©rale pour accÃƒÂ©der ÃƒÂ  l'IA mÃƒÂ©dicale.
               </p>
             </div>
           </div>
@@ -317,7 +317,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
   );
 }
 
-// ─── PatientsView ────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ PatientsView Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface PatientsViewProps {
   patients: Patient[];
@@ -356,7 +356,7 @@ function PatientsView({
 
   return (
     <PageTransition className="flex h-full">
-      {/* ── Left: patient list ─────────────────────────────────────────── */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Left: patient list Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className="w-[320px] min-w-[320px] border-r border-slate-200 dark:border-white/[0.06] flex flex-col bg-white dark:bg-[#111827] h-full">
         {/* Header */}
         <div className="px-4 pt-4 pb-3 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
@@ -364,7 +364,7 @@ function PatientsView({
             <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients</h2>
             <button
               onClick={onAddPatient}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500 text-white rounded-xl text-xs font-semibold hover:bg-sky-600 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00A86B] text-white rounded-xl text-xs font-semibold hover:bg-[#006B47] transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               Nouveau
@@ -376,7 +376,7 @@ function PatientsView({
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Rechercher un patient..."
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 focus:border-sky-300 dark:focus:border-sky-500/40"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 focus:border-[#00A86B] dark:focus:border-[#00A86B]/40"
             />
           </div>
         </div>
@@ -385,10 +385,10 @@ function PatientsView({
         <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 && (
             <EmptyState
-              title="Aucun patient trouvé"
+              title="Aucun patient trouvÃƒÂ©"
               icon={Users}
               action={
-                <button onClick={onAddPatient} className="px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors">
+                <button onClick={onAddPatient} className="px-4 py-2 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors">
                   + Ajouter
                 </button>
               }
@@ -403,13 +403,13 @@ function PatientsView({
                 onClick={() => selectPatient(p)}
                 className={`flex items-center gap-3 px-4 py-3.5 cursor-pointer transition-all border-l-[3px] group ${
                   isSelected
-                    ? 'bg-sky-50 dark:bg-sky-500/[0.1] border-l-sky-500'
+                    ? 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border-l-[#00A86B]'
                     : 'border-l-transparent hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:border-l-slate-200 dark:hover:border-l-white/[0.1]'
                 }`}
               >
                 <PatientAvatar name={`${p.prenom} ${p.nom}`} size="sm" />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold truncate ${isSelected ? 'text-sky-700 dark:text-sky-400' : 'text-slate-900 dark:text-[#E2E8F0]'}`}>
+                  <p className={`text-sm font-semibold truncate ${isSelected ? 'text-[#006B47] dark:text-[#00A86B]' : 'text-slate-900 dark:text-[#E2E8F0]'}`}>
                     {p.prenom} {p.nom}
                   </p>
                   <p className="text-xs text-slate-400 dark:text-[#475569] truncate">
@@ -419,7 +419,7 @@ function PatientsView({
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   <button
                     onClick={e => { e.stopPropagation(); onEditPatient(p); }}
-                    className="p-1.5 text-slate-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition-colors"
+                    className="p-1.5 text-slate-400 hover:text-[#00A86B] hover:bg-[#E6F4EE] rounded-lg transition-colors"
                   >
                     <Edit className="w-3.5 h-3.5" />
                   </button>
@@ -436,16 +436,16 @@ function PatientsView({
         </div>
       </div>
 
-      {/* ── Right: patient detail with tabs ──────────────────────────── */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Right: patient detail with tabs Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div className="flex-1 overflow-hidden bg-[#F8FAFC] dark:bg-[#0A0F1E] flex flex-col">
         {!selectedPatient ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-8">
             <div className="w-20 h-20 bg-slate-100 dark:bg-white/[0.05] rounded-3xl flex items-center justify-center mb-4">
               <Users className="w-10 h-10 text-slate-300 dark:text-slate-700" />
             </div>
-            <h3 className="text-lg font-bold text-slate-700 dark:text-[#94A3B8]">Sélectionnez un patient</h3>
+            <h3 className="text-lg font-bold text-slate-700 dark:text-[#94A3B8]">SÃƒÂ©lectionnez un patient</h3>
             <p className="text-slate-400 dark:text-[#475569] text-sm mt-1 max-w-xs">
-              Cliquez sur un patient dans la liste de gauche pour voir sa fiche détaillée
+              Cliquez sur un patient dans la liste de gauche pour voir sa fiche dÃƒÂ©taillÃƒÂ©e
             </p>
           </div>
         ) : (
@@ -461,7 +461,7 @@ function PatientsView({
   );
 }
 
-// ─── CheckerView ─────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ CheckerView Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface CheckerViewProps {
   patients: Patient[];
@@ -512,14 +512,14 @@ function CheckerView({
     <PageTransition>
       <div className="p-6 max-w-[1400px]">
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">Vérificateur d'interactions</h2>
-          <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Analysez les interactions médicamenteuses avant de prescrire</p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">VÃƒÂ©rificateur d'interactions</h2>
+          <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Analysez les interactions mÃƒÂ©dicamenteuses avant de prescrire</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* ── Patient selector ── */}
+          {/* Ã¢â€â‚¬Ã¢â€â‚¬ Patient selector Ã¢â€â‚¬Ã¢â€â‚¬ */}
           <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)]">
-            <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-sky-500 to-sky-600">
+            <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r [#00A86B]">
               <h3 className="text-white font-bold text-base">Patient</h3>
             </div>
             <div className="p-6">
@@ -533,7 +533,7 @@ function CheckerView({
                     onFocus={() => setShowPatientDropdown(true)}
                     onBlur={() => setTimeout(() => setShowPatientDropdown(false), 300)}
                     placeholder="Rechercher un patient..."
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 focus:border-sky-300 dark:focus:border-sky-500/40 transition-all"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 focus:border-[#00A86B] dark:focus:border-[#00A86B]/40 transition-all"
                   />
 
                   {showPatientDropdown && (patientSearchTerm.length === 0 ? patients.length > 0 : filteredPatientsForDropdown.length > 0) && (
@@ -549,14 +549,14 @@ function CheckerView({
                             resetAnalysis();
                             loadPatientOrdonnances(p.id);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-sky-50 dark:hover:bg-sky-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
                           <PatientAvatar name={`${p.prenom} ${p.nom}`} size="xs" />
                           <div>
                             <p className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">{p.prenom} {p.nom}</p>
                             <p className="text-xs text-slate-400 dark:text-[#475569]">
                               {p.date_naissance ? `${getPatientAge(p.date_naissance)} ans` : ''}
-                              {p.telephone ? ` • ${p.telephone}` : ''}
+                              {p.telephone ? ` Ã¢â‚¬Â¢ ${p.telephone}` : ''}
                             </p>
                           </div>
                         </button>
@@ -567,7 +567,7 @@ function CheckerView({
 
                 <button
                   onClick={onAddPatient}
-                  className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-500 hover:border-sky-300 hover:text-sky-600 hover:bg-sky-50 transition-all font-medium"
+                  className="mt-3 w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-500 hover:border-[#00A86B] hover:text-[#00A86B] hover:bg-[#E6F4EE] transition-all font-medium"
                 >
                   <UserPlus className="w-4 h-4" />
                   Nouveau patient
@@ -576,13 +576,13 @@ function CheckerView({
 
               {selectedPatient ? (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-4 bg-sky-50 rounded-xl border border-sky-100">
+                  <div className="flex items-center gap-3 p-4 bg-[#E6F4EE] rounded-xl border border-[#E5E5E0]">
                     <PatientAvatar name={`${selectedPatient.prenom} ${selectedPatient.nom}`} size="md" />
                     <div>
-                      <p className="font-bold text-sky-900">{selectedPatient.prenom} {selectedPatient.nom}</p>
-                      <p className="text-xs text-sky-600">
-                        {selectedPatient.date_naissance ? `${getPatientAge(selectedPatient.date_naissance)} ans` : 'Âge inconnu'}
-                        {selectedPatient.sexe ? ` • ${selectedPatient.sexe === 'M' ? 'Homme' : 'Femme'}` : ''}
+                      <p className="font-bold text-[#0A1628]">{selectedPatient.prenom} {selectedPatient.nom}</p>
+                      <p className="text-xs text-[#00A86B]">
+                        {selectedPatient.date_naissance ? `${getPatientAge(selectedPatient.date_naissance)} ans` : 'Ãƒâ€šge inconnu'}
+                        {selectedPatient.sexe ? ` Ã¢â‚¬Â¢ ${selectedPatient.sexe === 'M' ? 'Homme' : 'Femme'}` : ''}
                       </p>
                     </div>
                   </div>
@@ -600,7 +600,7 @@ function CheckerView({
                       {(selectedPatient.allergies_medicaments?.length ?? 0) > 0 && (
                         <div className="flex flex-wrap gap-1.5">
                           {selectedPatient.allergies_medicaments!.map(a => (
-                            <span key={a} className="px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full font-medium">⚠ {a}</span>
+                            <span key={a} className="px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full font-medium">Ã¢Å¡Â  {a}</span>
                           ))}
                         </div>
                       )}
@@ -610,16 +610,16 @@ function CheckerView({
               ) : (
                 <div className="text-center py-8 text-slate-400">
                   <Users className="w-10 h-10 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm">Sélectionnez un patient</p>
+                  <p className="text-sm">SÃƒÂ©lectionnez un patient</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* ── Prescription builder ── */}
+          {/* Ã¢â€â‚¬Ã¢â€â‚¬ Prescription builder Ã¢â€â‚¬Ã¢â€â‚¬ */}
           <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)]">
             <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-violet-500 to-violet-600">
-              <h3 className="text-white font-bold text-base">Médicaments</h3>
+              <h3 className="text-white font-bold text-base">MÃƒÂ©dicaments</h3>
             </div>
             <div className="p-6">
               {/* Med search */}
@@ -632,7 +632,7 @@ function CheckerView({
                     onChange={e => { const v = e.target.value; setMedSearchTerm(v); setShowMedDropdown(true); searchMedications(v); }}
                     onFocus={() => { setShowMedDropdown(true); if (medSearchTerm.length >= 2) searchMedications(medSearchTerm); }}
                     onBlur={() => setTimeout(() => setShowMedDropdown(false), 300)}
-                    placeholder="Ex: Doliprane, paracétamol..."
+                    placeholder="Ex: Doliprane, paracÃƒÂ©tamol..."
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40 focus:border-violet-300 dark:focus:border-violet-500/40 transition-all"
                   />
 
@@ -651,7 +651,7 @@ function CheckerView({
                           <div className="flex items-center gap-2 flex-wrap">
                             {med.pays === 'MA' && (
                               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40 flex-shrink-0">
-                                🇲🇦 MAR
+                                Ã°Å¸â€¡Â²Ã°Å¸â€¡Â¦ MAR
                               </span>
                             )}
                             <span className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm leading-tight">
@@ -664,10 +664,10 @@ function CheckerView({
                               <span className="text-xs text-slate-500 dark:text-slate-400">{med.dci}</span>
                             )}
                             {med.dosage && (
-                              <span className="text-xs text-violet-600 dark:text-violet-400 font-medium">· {med.dosage}</span>
+                              <span className="text-xs text-violet-600 dark:text-violet-400 font-medium">Ã‚Â· {med.dosage}</span>
                             )}
                             {med.forme && (
-                              <span className="text-xs text-slate-400 dark:text-slate-500 italic">· {med.forme}</span>
+                              <span className="text-xs text-slate-400 dark:text-slate-500 italic">Ã‚Â· {med.forme}</span>
                             )}
                           </div>
                           {/* Ligne 3 : laboratoire */}
@@ -678,13 +678,13 @@ function CheckerView({
                           )}
                         </button>
                       ))}
-                      {/* Ajout manuel quand aucun résultat */}
+                      {/* Ajout manuel quand aucun rÃƒÂ©sultat */}
                       {!medSearchLoading && medSearchResults.length === 0 && (
                         <button
                           onMouseDown={e => { e.preventDefault(); addManualMedication(medSearchTerm); }}
                           className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors flex items-center gap-2"
                         >
-                          <span className="text-violet-500 text-base leading-none">✏️</span>
+                          <span className="text-violet-500 text-base leading-none">Ã¢Å“ÂÃ¯Â¸Â</span>
                           <span className="text-sm text-violet-700 dark:text-violet-400 font-medium">
                             + Ajouter manuellement : <span className="font-bold">{medSearchTerm}</span>
                           </span>
@@ -698,7 +698,7 @@ function CheckerView({
               {/* Selected meds */}
               <div className="mb-5">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-                  Médicaments sélectionnés ({selectedMeds.length})
+                  MÃƒÂ©dicaments sÃƒÂ©lectionnÃƒÂ©s ({selectedMeds.length})
                 </p>
                 {selectedMeds.length > 0 ? (
                   <div className="space-y-2">
@@ -709,7 +709,7 @@ function CheckerView({
                         </span>
                         <span className="flex-1 font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm truncate">{med.nom}</span>
                         {med.manual && (
-                          <span title="Saisie manuelle — pas de vérification d'interaction" className="text-xs text-slate-400 dark:text-slate-500 flex-shrink-0">✏️</span>
+                          <span title="Saisie manuelle Ã¢â‚¬â€ pas de vÃƒÂ©rification d'interaction" className="text-xs text-slate-400 dark:text-slate-500 flex-shrink-0">Ã¢Å“ÂÃ¯Â¸Â</span>
                         )}
                         <button
                           onClick={() => removeMedication(med.id)}
@@ -721,7 +721,7 @@ function CheckerView({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-slate-400 text-center py-6 text-sm italic">Aucun médicament sélectionné</p>
+                  <p className="text-slate-400 text-center py-6 text-sm italic">Aucun mÃƒÂ©dicament sÃƒÂ©lectionnÃƒÂ©</p>
                 )}
               </div>
 
@@ -736,7 +736,7 @@ function CheckerView({
                           ? 'Aucune contre-indication connue'
                           : 'Aucune interaction connue'}
                         {!selectedPatient && (
-                          <span className="text-emerald-600 font-normal"> — sélectionnez un patient pour les contre-indications</span>
+                          <span className="text-emerald-600 font-normal"> Ã¢â‚¬â€ sÃƒÂ©lectionnez un patient pour les contre-indications</span>
                         )}
                       </span>
                     </div>
@@ -760,7 +760,7 @@ function CheckerView({
                             moderee: 'bg-blue-100 text-blue-800',
                             mineure: 'bg-yellow-100 text-yellow-800',
                           }[alert.severite];
-                          const icons = { contre_indication: '🔴', majeure: '🟠', moderee: '🔵', mineure: '🟡' };
+                          const icons = { contre_indication: 'Ã°Å¸â€Â´', majeure: 'Ã°Å¸Å¸Â ', moderee: 'Ã°Å¸â€Âµ', mineure: 'Ã°Å¸Å¸Â¡' };
                           return (
                             <div key={idx} className={`px-4 py-3 border rounded-xl ${cls}`}>
                               <div className="flex items-start gap-2">
@@ -770,7 +770,7 @@ function CheckerView({
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${badge}`}>
                                       {alert.severite === 'contre_indication' ? 'Contre-indication' :
                                        alert.severite === 'majeure' ? 'Majeure' :
-                                       alert.severite === 'moderee' ? 'Modérée' : 'Mineure'}
+                                       alert.severite === 'moderee' ? 'ModÃƒÂ©rÃƒÂ©e' : 'Mineure'}
                                     </span>
                                     <span className="text-xs font-semibold">{alert.involved.join(' + ')}</span>
                                   </div>
@@ -799,14 +799,14 @@ function CheckerView({
                   Analyser
                 </Button>
                 <Button onClick={resetAnalysis} variant="ghost" size="lg">
-                  Réinitialiser
+                  RÃƒÂ©initialiser
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Result ── */}
+        {/* Ã¢â€â‚¬Ã¢â€â‚¬ Result Ã¢â€â‚¬Ã¢â€â‚¬ */}
         {result && (
           <div
             ref={resultsRef}
@@ -826,8 +826,8 @@ function CheckerView({
                 {result.severity === 'dangerous' && <X className="w-10 h-10 text-white flex-shrink-0" />}
                 <div>
                   <h3 className="text-2xl font-black text-white uppercase tracking-tight">
-                    {result.severity === 'safe' ? '✓ Sécuritaire' :
-                     result.severity === 'attention' ? '⚠ Attention' : '⚠ Dangereux'}
+                    {result.severity === 'safe' ? 'Ã¢Å“â€œ SÃƒÂ©curitaire' :
+                     result.severity === 'attention' ? 'Ã¢Å¡Â  Attention' : 'Ã¢Å¡Â  Dangereux'}
                   </h3>
                   <p className="text-white/90 mt-0.5 text-sm">{result.description}</p>
                 </div>
@@ -837,11 +837,11 @@ function CheckerView({
             <div className="p-6 space-y-5">
               {result.reasons.length > 0 && (
                 <div className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-5">
-                  <h4 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-3">Analyse détaillée</h4>
+                  <h4 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-3">Analyse dÃƒÂ©taillÃƒÂ©e</h4>
                   <ul className="space-y-2.5">
                     {result.reasons.map((r, i) => (
                       <li key={i} className="flex items-start gap-3 text-slate-700 dark:text-[#94A3B8] text-sm">
-                        <span className="text-red-500 font-bold mt-0.5">•</span>
+                        <span className="text-red-500 font-bold mt-0.5">Ã¢â‚¬Â¢</span>
                         <span>{r}</span>
                       </li>
                     ))}
@@ -858,7 +858,7 @@ function CheckerView({
               <div className="flex flex-col items-center gap-2 pt-2">
                 {!selectedPatient && (
                   <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl px-4 py-2">
-                    ⚠️ Veuillez d'abord sélectionner un patient
+                    Ã¢Å¡Â Ã¯Â¸Â Veuillez d'abord sÃƒÂ©lectionner un patient
                   </p>
                 )}
                 <Button
@@ -872,7 +872,7 @@ function CheckerView({
                   disabled={!selectedPatient}
                 >
                   <FileText className="w-4 h-4 mr-2" />
-                  Créer une ordonnance
+                  CrÃƒÂ©er une ordonnance
                 </Button>
               </div>
             </div>
@@ -883,7 +883,7 @@ function CheckerView({
   );
 }
 
-// ─── StatsView ───────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ StatsView Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function StatsView({ userId, doctorId }: { userId: string; doctorId: string }) {
   return (
@@ -891,7 +891,7 @@ function StatsView({ userId, doctorId }: { userId: string; doctorId: string }) {
       <div className="p-6 max-w-[1400px] space-y-6">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">Statistiques</h2>
-          <p className="text-slate-500 text-sm mt-0.5">Analyse de votre activité médicale</p>
+          <p className="text-slate-500 text-sm mt-0.5">Analyse de votre activitÃƒÂ© mÃƒÂ©dicale</p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
@@ -909,7 +909,7 @@ function StatsView({ userId, doctorId }: { userId: string; doctorId: string }) {
   );
 }
 
-// ─── OrdonnancesView ─────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ OrdonnancesView Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 interface OrdonnancesViewProps {
   onNavigate: (v: ViewType) => void;
@@ -989,7 +989,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
         nom: l.medicament_nom || '',
         posologie: l.posologie || '',
         duree: l.duree || '',
-        quantite: l.instructions ? String(l.instructions).replace('Quantité: ', '') : '',
+        quantite: l.instructions ? String(l.instructions).replace('QuantitÃƒÂ©: ', '') : '',
       }));
       await generateOrdonnancePdf({
         ordreNumber: ord.ordre_number || ord.id.substring(0, 8).toUpperCase(),
@@ -1019,34 +1019,34 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
     <PageTransition>
       <div className="p-6 max-w-5xl">
 
-        {/* ── Header ── */}
+        {/* Ã¢â€â‚¬Ã¢â€â‚¬ Header Ã¢â€â‚¬Ã¢â€â‚¬ */}
         <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">
               Historique des ordonnances
             </h2>
             <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">
-              {loading ? '…' : `${ords.length} ordonnance${ords.length !== 1 ? 's' : ''} au total`}
+              {loading ? 'Ã¢â‚¬Â¦' : `${ords.length} ordonnance${ords.length !== 1 ? 's' : ''} au total`}
             </p>
           </div>
           <button
             onClick={() => onNavigate('checker')}
-            className="px-4 py-2 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors flex-shrink-0"
+            className="px-4 py-2 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors flex-shrink-0"
           >
             + Nouvelle ordonnance
           </button>
         </div>
 
-        {/* ── Search + filters ── */}
+        {/* Ã¢â€â‚¬Ã¢â€â‚¬ Search + filters Ã¢â€â‚¬Ã¢â€â‚¬ */}
         <div className="mb-5 space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <input
               type="text"
-              placeholder="Rechercher par patient ou numéro d'ordonnance…"
+              placeholder="Rechercher par patient ou numÃƒÂ©ro d'ordonnanceÃ¢â‚¬Â¦"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/30 text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-500"
+              className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-500"
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -1056,8 +1056,8 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
                 onClick={() => setTimeFilter(f)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                   timeFilter === f
-                    ? 'bg-sky-500 text-white shadow-sm'
-                    : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-white/[0.08] hover:border-sky-300 dark:hover:border-sky-500/30'
+                    ? 'bg-[#00A86B] text-white shadow-sm'
+                    : 'bg-white dark:bg-[#111827] text-slate-600 dark:text-[#94A3B8] border border-slate-200 dark:border-white/[0.08] hover:border-[#00A86B] dark:hover:border-[#00A86B]/30'
                 }`}
               >
                 {filterLabels[f]}
@@ -1066,7 +1066,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
           </div>
         </div>
 
-        {/* ── Content ── */}
+        {/* Ã¢â€â‚¬Ã¢â€â‚¬ Content Ã¢â€â‚¬Ã¢â€â‚¬ */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map(i => (
@@ -1077,19 +1077,19 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
           <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-12 text-center">
             <FileText className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
             <h3 className="text-lg font-bold text-slate-700 dark:text-[#94A3B8] mb-2">
-              {searchTerm || timeFilter !== 'all' ? 'Aucun résultat' : 'Aucune ordonnance'}
+              {searchTerm || timeFilter !== 'all' ? 'Aucun rÃƒÂ©sultat' : 'Aucune ordonnance'}
             </h3>
             <p className="text-slate-400 dark:text-[#475569] text-sm mb-6 max-w-sm mx-auto">
               {searchTerm || timeFilter !== 'all'
                 ? 'Essayez de modifier votre recherche ou vos filtres.'
-                : "Créez votre première ordonnance depuis le Vérificateur d'interactions."}
+                : "CrÃƒÂ©ez votre premiÃƒÂ¨re ordonnance depuis le VÃƒÂ©rificateur d'interactions."}
             </p>
             {!searchTerm && timeFilter === 'all' && (
               <button
                 onClick={() => onNavigate('checker')}
-                className="px-6 py-3 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
+                className="px-6 py-3 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors"
               >
-                💊 Créer une ordonnance
+                Ã°Å¸â€™Å  CrÃƒÂ©er une ordonnance
               </button>
             )}
           </div>
@@ -1105,12 +1105,12 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
               return (
                 <div
                   key={ord.id}
-                  className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-sky-200 dark:hover:border-sky-500/30 transition-all duration-200 p-5 flex flex-col gap-3"
+                  className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[#00A86B]/20 dark:hover:border-[#00A86B]/30 transition-all duration-200 p-5 flex flex-col gap-3"
                 >
                   {/* Patient + badge */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-500/[0.15] flex items-center justify-center text-sky-700 dark:text-sky-400 font-bold text-sm flex-shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-[#E6F4EE] dark:bg-[#00A86B]/[0.15] flex items-center justify-center text-[#006B47] dark:text-[#00A86B] font-bold text-sm flex-shrink-0">
                         {initials}
                       </div>
                       <div className="min-w-0">
@@ -1119,7 +1119,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
                       </div>
                     </div>
                     {ord.ordre_number && (
-                      <span className="text-[10px] font-bold px-2 py-1 bg-sky-50 dark:bg-sky-500/[0.12] text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-500/20 rounded-lg flex-shrink-0 font-mono tracking-wide">
+                      <span className="text-[10px] font-bold px-2 py-1 bg-[#E6F4EE] dark:bg-[#00A86B]/[0.12] text-[#006B47] dark:text-[#00A86B] border border-[#00A86B]/20 dark:border-[#00A86B]/20 rounded-lg flex-shrink-0 font-mono tracking-wide">
                         {ord.ordre_number}
                       </span>
                     )}
@@ -1128,7 +1128,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
                   {/* Medication pills */}
                   <div className="flex flex-wrap gap-1.5 min-h-[28px]">
                     {meds.length === 0 ? (
-                      <span className="text-xs text-slate-400 dark:text-[#475569]">Aucun médicament enregistré</span>
+                      <span className="text-xs text-slate-400 dark:text-[#475569]">Aucun mÃƒÂ©dicament enregistrÃƒÂ©</span>
                     ) : (
                       <>
                         {meds.slice(0, 3).map((m: any, i: number) => (
@@ -1148,18 +1148,18 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-white/[0.05] mt-auto">
                     <span className="text-xs text-slate-400 dark:text-[#475569]">
-                      {meds.length} médicament{meds.length !== 1 ? 's' : ''}
+                      {meds.length} mÃƒÂ©dicament{meds.length !== 1 ? 's' : ''}
                     </span>
                     {doctorInfo && orgInfo && (
                       <button
                         onClick={() => handleDownloadPdf(ord)}
                         disabled={isLoadingPdf}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-500/[0.1] border border-sky-200 dark:border-sky-500/20 rounded-lg hover:bg-sky-100 dark:hover:bg-sky-500/[0.18] transition-colors disabled:opacity-60"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#00A86B] bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border border-[#00A86B]/20 dark:border-[#00A86B]/20 rounded-lg hover:bg-[#d4eee0] dark:hover:bg-[#00A86B]/[0.18] transition-colors disabled:opacity-60"
                       >
                         {isLoadingPdf
-                          ? <span className="w-3 h-3 border border-sky-400 border-t-sky-700 rounded-full animate-spin" />
+                          ? <span className="w-3 h-3 border border-[#00A86B] border-t-[#006B47] rounded-full animate-spin" />
                           : <Download className="w-3 h-3" />}
-                        {isLoadingPdf ? 'Génération…' : 'Télécharger PDF'}
+                        {isLoadingPdf ? 'GÃƒÂ©nÃƒÂ©rationÃ¢â‚¬Â¦' : 'TÃƒÂ©lÃƒÂ©charger PDF'}
                       </button>
                     )}
                   </div>
@@ -1173,12 +1173,12 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
   );
 }
 
-// ─── SettingsView ─────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ SettingsView Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: string) => void; user: any; doctorProfile: any }) {
   const [activeSection, setActiveSection] = useState<'profil' | 'cabinet' | 'securite' | 'ia' | 'secretaire'>('profil');
 
-  // Secrétaire state
+  // SecrÃƒÂ©taire state
   const [secEmail, setSecEmail]       = useState('');
   const [secPrenom, setSecPrenom]     = useState('');
   const [secNom, setSecNom]           = useState('');
@@ -1223,7 +1223,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
       if (error) throw error;
       const link = `${window.location.origin}/accept-invitation?type=secretaire&token=${token}`;
       setSecInviteLink(link);
-      setSecMsg({ type: 'success', text: '✓ Invitation créée. Partagez le lien avec votre secrétaire.' });
+      setSecMsg({ type: 'success', text: 'Ã¢Å“â€œ Invitation crÃƒÂ©ÃƒÂ©e. Partagez le lien avec votre secrÃƒÂ©taire.' });
       setSecEmail(''); setSecPrenom(''); setSecNom('');
       loadSecretaires();
     } catch (err: unknown) {
@@ -1268,7 +1268,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
         loadSyncInfo();
       }
     } catch (err: unknown) {
-      setSyncResult({ success: false, error: err instanceof Error ? err.message : 'Erreur réseau' });
+      setSyncResult({ success: false, error: err instanceof Error ? err.message : 'Erreur rÃƒÂ©seau' });
     } finally {
       setSyncRunning(false);
     }
@@ -1316,7 +1316,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
       setLogoUrl(publicUrl);
       setLogoPreview(null);
       setLogoFile(null);
-      setLogoMsg({ type: 'success', text: '✓ Logo sauvegardé avec succès.' });
+      setLogoMsg({ type: 'success', text: 'Ã¢Å“â€œ Logo sauvegardÃƒÂ© avec succÃƒÂ¨s.' });
       setTimeout(() => setLogoMsg(null), 3000);
     } catch (err: unknown) {
       setLogoMsg({ type: 'error', text: `Erreur : ${err instanceof Error ? err.message : String(err)}` });
@@ -1338,7 +1338,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
       setLogoUrl(null);
       setLogoPreview(null);
       setLogoFile(null);
-      setLogoMsg({ type: 'success', text: '✓ Logo supprimé.' });
+      setLogoMsg({ type: 'success', text: 'Ã¢Å“â€œ Logo supprimÃƒÂ©.' });
       setTimeout(() => setLogoMsg(null), 3000);
     } catch (err: unknown) {
       setLogoMsg({ type: 'error', text: `Erreur : ${err instanceof Error ? err.message : String(err)}` });
@@ -1348,11 +1348,11 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
   };
 
   const sections = [
-    { id: 'profil',     label: '👤 Profil'     },
-    { id: 'cabinet',    label: '🏥 Cabinet'    },
-    { id: 'securite',   label: '🔒 Sécurité'  },
-    { id: 'ia',         label: '🤖 IA'         },
-    { id: 'secretaire', label: '🗂 Secrétaire' },
+    { id: 'profil',     label: 'Ã°Å¸â€˜Â¤ Profil'     },
+    { id: 'cabinet',    label: 'Ã°Å¸ÂÂ¥ Cabinet'    },
+    { id: 'securite',   label: 'Ã°Å¸â€â€™ SÃƒÂ©curitÃƒÂ©'  },
+    { id: 'ia',         label: 'Ã°Å¸Â¤â€“ IA'         },
+    { id: 'secretaire', label: 'Ã°Å¸â€”â€š SecrÃƒÂ©taire' },
   ] as const;
 
   // Load sync info when cabinet section becomes active
@@ -1371,8 +1371,8 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
     <PageTransition>
       <div className="p-6 max-w-3xl">
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">Paramètres</h2>
-          <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Gérez votre compte et vos préférences</p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">ParamÃƒÂ¨tres</h2>
+          <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">GÃƒÂ©rez votre compte et vos prÃƒÂ©fÃƒÂ©rences</p>
         </div>
 
         <div className="flex gap-6">
@@ -1385,7 +1385,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                   onClick={() => setActiveSection(s.id)}
                   className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                     activeSection === s.id
-                      ? 'bg-sky-500 text-white'
+                      ? 'bg-[#00A86B] text-white'
                       : 'text-slate-600 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-white/[0.06]'
                   }`}
                 >
@@ -1403,24 +1403,24 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                   <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">Informations personnelles</h3>
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      { label: 'Prénom', value: user?.prenom || '', type: 'text' },
+                      { label: 'PrÃƒÂ©nom', value: user?.prenom || '', type: 'text' },
                       { label: 'Nom', value: user?.nom || '', type: 'text' },
                       { label: 'Email', value: user?.email || '', type: 'email', colSpan: true },
-                      { label: 'Spécialité', value: doctorProfile?.specialite || '', type: 'text', colSpan: true },
+                      { label: 'SpÃƒÂ©cialitÃƒÂ©', value: doctorProfile?.specialite || '', type: 'text', colSpan: true },
                     ].map(f => (
                       <div key={f.label} className={f.colSpan ? 'col-span-2' : ''}>
                         <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">{f.label}</label>
                         <input defaultValue={f.value} type={f.type}
-                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
                         />
                       </div>
                     ))}
                   </div>
                   <button
                     onClick={() => navigate('/profile')}
-                    className="mt-4 px-5 py-2.5 bg-sky-500 text-white rounded-xl text-sm font-semibold hover:bg-sky-600 transition-colors"
+                    className="mt-4 px-5 py-2.5 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors"
                   >
-                    Modifier le profil complet →
+                    Modifier le profil complet Ã¢â€ â€™
                   </button>
                 </div>
               </>
@@ -1440,7 +1440,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                   </div>
                 )}
 
-                {/* Aperçu du logo actuel ou préview du nouveau */}
+                {/* AperÃƒÂ§u du logo actuel ou prÃƒÂ©view du nouveau */}
                 <div className="flex items-start gap-4">
                   <div className="w-28 h-20 rounded-xl border-2 border-dashed border-slate-200 dark:border-white/[0.1] bg-slate-50 dark:bg-[#1E293B] flex items-center justify-center overflow-hidden flex-shrink-0">
                     {(logoPreview ?? logoUrl)
@@ -1450,8 +1450,8 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                   </div>
                   <div className="flex-1 space-y-2">
                     <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-                      Le logo apparaîtra en haut à gauche des ordonnances générées en PDF.<br />
-                      Format : PNG ou JPEG · Max 2 Mo · Hauteur affichée : 60 px
+                      Le logo apparaÃƒÂ®tra en haut ÃƒÂ  gauche des ordonnances gÃƒÂ©nÃƒÂ©rÃƒÂ©es en PDF.<br />
+                      Format : PNG ou JPEG Ã‚Â· Max 2 Mo Ã‚Â· Hauteur affichÃƒÂ©e : 60 px
                     </p>
                     <label className="inline-block cursor-pointer px-4 py-2 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] text-slate-700 dark:text-[#E2E8F0] rounded-xl text-sm font-medium transition-colors">
                       Choisir un fichier
@@ -1464,7 +1464,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                     </label>
                     {logoFile && (
                       <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
-                        Sélectionné : <strong>{logoFile.name}</strong> ({(logoFile.size / 1024).toFixed(0)} Ko)
+                        SÃƒÂ©lectionnÃƒÂ© : <strong>{logoFile.name}</strong> ({(logoFile.size / 1024).toFixed(0)} Ko)
                       </p>
                     )}
                   </div>
@@ -1475,10 +1475,10 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                   <button
                     onClick={handleLogoUpload}
                     disabled={!logoFile || logoUploading}
-                    className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
+                    className="px-5 py-2.5 bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
                   >
                     {logoUploading && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
-                    {logoUploading ? 'Envoi…' : 'Sauvegarder le logo'}
+                    {logoUploading ? 'EnvoiÃ¢â‚¬Â¦' : 'Sauvegarder le logo'}
                   </button>
                   {logoUrl && !logoFile && (
                     <button
@@ -1501,26 +1501,26 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
               </div>
             )}
 
-            {/* OpenFDA sync card — separate from the logo block */}
+            {/* OpenFDA sync card Ã¢â‚¬â€ separate from the logo block */}
             {activeSection === 'cabinet' && (
               <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Synchronisation médicaments</h3>
-                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">Importe les nouveaux médicaments depuis la base OpenFDA (FDA américaine)</p>
+                    <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Synchronisation mÃƒÂ©dicaments</h3>
+                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">Importe les nouveaux mÃƒÂ©dicaments depuis la base OpenFDA (FDA amÃƒÂ©ricaine)</p>
                   </div>
                   {medCount != null && (
                     <div className="text-right flex-shrink-0">
-                      <p className="text-2xl font-bold text-sky-600 dark:text-sky-400">{medCount.toLocaleString('fr-FR')}</p>
-                      <p className="text-[10px] text-slate-400 uppercase tracking-wide">médicaments</p>
+                      <p className="text-2xl font-bold text-[#00A86B]">{medCount.toLocaleString('fr-FR')}</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-wide">mÃƒÂ©dicaments</p>
                     </div>
                   )}
                 </div>
 
                 {lastSync && (
                   <div className="p-3 bg-slate-50 dark:bg-white/[0.04] rounded-xl border border-slate-200 dark:border-white/[0.06] text-xs text-slate-500 dark:text-slate-400">
-                    ✅ Dernière sync réussie : {new Date(lastSync.finished_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    {' · '}{lastSync.inserted} ajoutés, {lastSync.skipped} ignorés
+                    Ã¢Å“â€¦ DerniÃƒÂ¨re sync rÃƒÂ©ussie : {new Date(lastSync.finished_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    {' Ã‚Â· '}{lastSync.inserted} ajoutÃƒÂ©s, {lastSync.skipped} ignorÃƒÂ©s
                   </div>
                 )}
 
@@ -1531,8 +1531,8 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                       : 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-800 dark:text-red-300'
                   }`}>
                     {syncResult.success
-                      ? `✅ Sync réussie : ${syncResult.inserted} médicaments ajoutés, ${syncResult.skipped} ignorés, ${syncResult.errors} erreurs`
-                      : `❌ Erreur : ${syncResult.error}`}
+                      ? `Ã¢Å“â€¦ Sync rÃƒÂ©ussie : ${syncResult.inserted} mÃƒÂ©dicaments ajoutÃƒÂ©s, ${syncResult.skipped} ignorÃƒÂ©s, ${syncResult.errors} erreurs`
+                      : `Ã¢ÂÅ’ Erreur : ${syncResult.error}`}
                     {syncResult.message && <p className="mt-1 opacity-70">{syncResult.message}</p>}
                   </div>
                 )}
@@ -1540,28 +1540,28 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                 <button
                   onClick={handleOpenFDASync}
                   disabled={syncRunning}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors"
                 >
                   {syncRunning && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
-                  {syncRunning ? 'Synchronisation en cours…' : '🔄 Synchroniser avec OpenFDA'}
+                  {syncRunning ? 'Synchronisation en coursÃ¢â‚¬Â¦' : 'Ã°Å¸â€â€ž Synchroniser avec OpenFDA'}
                 </button>
                 <p className="text-[10px] text-slate-400 dark:text-slate-600">
-                  Ajoute jusqu'à 100 médicaments de la base FDA par exécution. La rotation hebdomadaire couvre 13 classes thérapeutiques différentes.
+                  Ajoute jusqu'ÃƒÂ  100 mÃƒÂ©dicaments de la base FDA par exÃƒÂ©cution. La rotation hebdomadaire couvre 13 classes thÃƒÂ©rapeutiques diffÃƒÂ©rentes.
                 </p>
               </div>
             )}
 
             {activeSection === 'securite' && (
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
-                <h3 className="font-bold text-slate-900 mb-4">Sécurité du compte</h3>
+                <h3 className="font-bold text-slate-900 mb-4">SÃƒÂ©curitÃƒÂ© du compte</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Mot de passe actuel</label>
-                    <input type="password" className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                    <input type="password" className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50" />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Nouveau mot de passe</label>
-                    <input type="password" className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300" />
+                    <input type="password" className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50" />
                   </div>
                   <button className="px-5 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900 transition-colors">
                     Changer le mot de passe
@@ -1575,9 +1575,9 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                 <div>
                   <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-1">Assistant IA (Claude)</h3>
                   <p className="text-sm text-slate-500 dark:text-[#94A3B8]">
-                    L'Assistant IA utilise Claude d'Anthropic. Obtenez votre clé sur{' '}
+                    L'Assistant IA utilise Claude d'Anthropic. Obtenez votre clÃƒÂ© sur{' '}
                     <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer"
-                      className="text-sky-600 dark:text-sky-400 underline">console.anthropic.com</a>
+                      className="text-[#00A86B] underline">console.anthropic.com</a>
                   </p>
                 </div>
 
@@ -1593,14 +1593,14 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">
-                    Clé API Anthropic
+                    ClÃƒÂ© API Anthropic
                   </label>
                   <input
                     type="password"
                     value={apiKey}
                     onChange={e => setApiKey(e.target.value)}
                     placeholder="sk-ant-api03-..."
-                    className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40 font-mono"
+                    className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 font-mono"
                   />
                 </div>
 
@@ -1610,13 +1610,13 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                       try {
                         if (apiKey.trim()) localStorage.setItem('ordosur_anthropic_key', apiKey.trim());
                         else localStorage.removeItem('ordosur_anthropic_key');
-                        setApiKeyMsg({ type: 'success', text: '✓ Clé API sauvegardée dans le navigateur.' });
+                        setApiKeyMsg({ type: 'success', text: 'Ã¢Å“â€œ ClÃƒÂ© API sauvegardÃƒÂ©e dans le navigateur.' });
                         setTimeout(() => setApiKeyMsg(null), 3000);
                       } catch {
                         setApiKeyMsg({ type: 'error', text: 'Erreur lors de la sauvegarde.' });
                       }
                     }}
-                    className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold transition-colors"
+                    className="px-5 py-2.5 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors"
                   >
                     Sauvegarder
                   </button>
@@ -1639,10 +1639,10 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                             messages: [{ role: 'user', content: 'Test' }],
                           }),
                         });
-                        if (res.ok) setApiKeyMsg({ type: 'success', text: '✅ Connexion réussie ! Clé API valide.' });
+                        if (res.ok) setApiKeyMsg({ type: 'success', text: 'Ã¢Å“â€¦ Connexion rÃƒÂ©ussie ! ClÃƒÂ© API valide.' });
                         else { const d = await res.json().catch(() => ({})); throw new Error(d?.error?.message || `HTTP ${res.status}`); }
                       } catch (e: unknown) {
-                        setApiKeyMsg({ type: 'error', text: `❌ Erreur : ${e instanceof Error ? e.message : String(e)}` });
+                        setApiKeyMsg({ type: 'error', text: `Ã¢ÂÅ’ Erreur : ${e instanceof Error ? e.message : String(e)}` });
                       } finally {
                         setApiTesting(false);
                       }
@@ -1654,8 +1654,8 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                   </button>
                 </div>
 
-                <div className="p-3 bg-sky-50 dark:bg-sky-500/[0.08] rounded-xl border border-sky-100 dark:border-sky-500/20 text-xs text-sky-800 dark:text-sky-400">
-                  🤖 Modèle : <strong>claude-opus-4-5</strong> — Questions médicales, interactions, posologies, diagnostics différentiels
+                <div className="p-3 bg-[#E6F4EE] dark:bg-[#00A86B]/[0.08] rounded-xl border border-[#E5E5E0] dark:border-[#00A86B]/20 text-xs text-[#006B47] dark:text-[#00A86B]">
+                  Ã°Å¸Â¤â€“ ModÃƒÂ¨le : <strong>claude-opus-4-5</strong> Ã¢â‚¬â€ Questions mÃƒÂ©dicales, interactions, posologies, diagnostics diffÃƒÂ©rentiels
                 </div>
               </div>
             )}
@@ -1664,16 +1664,16 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
               <div className="space-y-4">
                 {/* Invite form */}
                 <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
-                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-1">Inviter une secrétaire</h3>
-                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Un lien d'activation sera généré. Transmettez-le à votre secrétaire.</p>
+                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-1">Inviter une secrÃƒÂ©taire</h3>
+                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Un lien d'activation sera gÃƒÂ©nÃƒÂ©rÃƒÂ©. Transmettez-le ÃƒÂ  votre secrÃƒÂ©taire.</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">Prénom</label>
+                      <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">PrÃƒÂ©nom</label>
                       <input
                         value={secPrenom}
                         onChange={e => setSecPrenom(e.target.value)}
                         placeholder="Fatima"
-                        className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                        className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
                       />
                     </div>
                     <div>
@@ -1682,7 +1682,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                         value={secNom}
                         onChange={e => setSecNom(e.target.value)}
                         placeholder="Benali"
-                        className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                        className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
                       />
                     </div>
                   </div>
@@ -1693,16 +1693,16 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                       value={secEmail}
                       onChange={e => setSecEmail(e.target.value)}
                       placeholder="secretaire@cabinet.ma"
-                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
                     />
                   </div>
                   <button
                     onClick={handleInviteSecretaire}
                     disabled={secInviting || !secEmail.trim()}
-                    className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
+                    className="px-5 py-2.5 bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
                   >
                     {secInviting && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
-                    Générer le lien d'invitation
+                    GÃƒÂ©nÃƒÂ©rer le lien d'invitation
                   </button>
 
                   {secMsg && (
@@ -1717,7 +1717,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
 
                   {secInviteLink && (
                     <div className="p-3 bg-slate-50 dark:bg-white/[0.04] rounded-xl border border-slate-200 dark:border-white/[0.08] space-y-2">
-                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">🔗 Lien d'invitation :</p>
+                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Ã°Å¸â€â€” Lien d'invitation :</p>
                       <div className="flex gap-2">
                         <input
                           readOnly
@@ -1726,23 +1726,23 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                         />
                         <button
                           onClick={() => { navigator.clipboard.writeText(secInviteLink); }}
-                          className="px-3 py-1.5 bg-sky-500 text-white text-xs font-semibold rounded-lg hover:bg-sky-600 transition-colors whitespace-nowrap"
+                          className="px-3 py-1.5 bg-[#00A86B] text-white text-xs font-semibold rounded-lg hover:bg-[#006B47] transition-colors whitespace-nowrap"
                         >
                           Copier
                         </button>
                       </div>
-                      <p className="text-[10px] text-slate-400">Expire dans 7 jours. Partagez ce lien uniquement avec votre secrétaire.</p>
+                      <p className="text-[10px] text-slate-400">Expire dans 7 jours. Partagez ce lien uniquement avec votre secrÃƒÂ©taire.</p>
                     </div>
                   )}
                 </div>
 
                 {/* Current secretaires */}
                 <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
-                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">Secrétaires actives</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">SecrÃƒÂ©taires actives</h3>
                   {secLoading ? (
-                    <p className="text-sm text-slate-400">Chargement…</p>
+                    <p className="text-sm text-slate-400">ChargementÃ¢â‚¬Â¦</p>
                   ) : secretaires.length === 0 ? (
-                    <p className="text-sm text-slate-400 italic">Aucune secrétaire enregistrée.</p>
+                    <p className="text-sm text-slate-400 italic">Aucune secrÃƒÂ©taire enregistrÃƒÂ©e.</p>
                   ) : (
                     <div className="space-y-2">
                       {secretaires.map(s => (
@@ -1770,7 +1770,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                             }}
                             className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
                           >
-                            {s.active ? 'Désactiver' : 'Réactiver'}
+                            {s.active ? 'DÃƒÂ©sactiver' : 'RÃƒÂ©activer'}
                           </button>
                         </div>
                       ))}
@@ -1786,7 +1786,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Main Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 export function DoctorDashboard() {
   const { user, signOut, doctorProfile, clinicProfile } = useAuth();
@@ -1858,7 +1858,7 @@ export function DoctorDashboard() {
     }
   }, [result]);
 
-  // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
+  // Real-time interaction check Ã¢â‚¬â€ DCI-based, pipe-pattern splitting, accent normalization
   useEffect(() => {
     if (selectedMeds.length === 0) { setInteractionAlerts([]); return; }
 
@@ -1877,7 +1877,7 @@ export function DoctorDashboard() {
       const alerts: InteractionAlert[] = [];
       const seen = new Set<string>();
 
-      // ── 1. Drug-drug interactions (≥ 2 meds) ──────────────────────────────
+      // Ã¢â€â‚¬Ã¢â€â‚¬ 1. Drug-drug interactions (Ã¢â€°Â¥ 2 meds) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
       if (selectedMeds.length >= 2) {
         const normalizedStrings = medDCIs.map(m => `${m.normalizedDCI} ${m.normalizedName}`);
         const { data: interactions } = await supabase.rpc(
@@ -1906,7 +1906,7 @@ export function DoctorDashboard() {
         }
       }
 
-      // ── 2. Contraindications (runs even with 1 med, requires patient) ──────
+      // Ã¢â€â‚¬Ã¢â€â‚¬ 2. Contraindications (runs even with 1 med, requires patient) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
       if (selectedPatient && allContraindications.length > 0) {
         const patientConditions = [
           ...(selectedPatient.pathologies || []),
@@ -1947,7 +1947,7 @@ export function DoctorDashboard() {
         }
       }
 
-      // ── 3. DCI non identifiée — avertissement ─────────────────────────────
+      // Ã¢â€â‚¬Ã¢â€â‚¬ 3. DCI non identifiÃƒÂ©e Ã¢â‚¬â€ avertissement Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
       for (const m of selectedMeds) {
         if (!m.dci || m.dci.trim() === '') {
           const key = `nodci|${m.nom}`;
@@ -1956,7 +1956,7 @@ export function DoctorDashboard() {
             alerts.push({
               type: 'contraindication',
               severite: 'mineure',
-              description: `⚠ DCI non identifiée pour "${m.nom}" — vérification des contre-indications limitée.`,
+              description: `Ã¢Å¡Â  DCI non identifiÃƒÂ©e pour "${m.nom}" Ã¢â‚¬â€ vÃƒÂ©rification des contre-indications limitÃƒÂ©e.`,
               involved: [m.nom],
             });
           }
@@ -1969,7 +1969,7 @@ export function DoctorDashboard() {
     runCheck();
   }, [selectedMeds, selectedPatient, allContraindications]);
 
-  // ── Data loaders ─────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Data loaders Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   const loadPatients = async () => {
     if (!user) return;
@@ -1999,7 +1999,7 @@ export function DoctorDashboard() {
         supabase.from('patients')
           .select('id', { count: 'exact', head: true })
           .eq('org_id', user.org_id),
-        // Ordonnances by this doctor — MUST use doctorProfile.id (doctors PK), NOT user.id (auth UUID)
+        // Ordonnances by this doctor Ã¢â‚¬â€ MUST use doctorProfile.id (doctors PK), NOT user.id (auth UUID)
         supabase.from('ordonnances')
           .select('id', { count: 'exact', head: true })
           .eq('doctor_id', doctorProfile?.id || user.id),
@@ -2014,7 +2014,7 @@ export function DoctorDashboard() {
           .eq('org_id', user.org_id)
           .gte('created_at', startOfLastMonth)
           .lte('created_at', endOfLastMonth),
-        // Interactions détectées (historique)
+        // Interactions dÃƒÂ©tectÃƒÂ©es (historique)
         supabase.from('interaction_logs')
           .select('id', { count: 'exact', head: true })
           .eq('doctor_id', doctorProfile?.id || user.id),
@@ -2067,13 +2067,13 @@ export function DoctorDashboard() {
             .select('user_id, prenom, nom').in('user_id', userIds);
           doctorsData.forEach((doctor: any) => {
             const profile = profilesData?.find((p: any) => p.user_id === doctor.user_id);
-            doctorMap.set(doctor.id, { name: profile ? `Dr. ${profile.prenom} ${profile.nom}` : 'Dr. Médecin', specialty: doctor.specialite || '' });
+            doctorMap.set(doctor.id, { name: profile ? `Dr. ${profile.prenom} ${profile.nom}` : 'Dr. MÃƒÂ©decin', specialty: doctor.specialite || '' });
           });
         }
       }
 
       setPatientOrdonnances(data.map((ord: any) => {
-        const di = doctorMap.get(ord.doctor_id) || { name: 'Dr. Médecin', specialty: '' };
+        const di = doctorMap.get(ord.doctor_id) || { name: 'Dr. MÃƒÂ©decin', specialty: '' };
         return {
           ...ord,
           doctor_name: di.name,
@@ -2086,17 +2086,17 @@ export function DoctorDashboard() {
     } catch { setPatientOrdonnances([]); }
   };
 
-  // ── Prescription save ─────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Prescription save Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   const handleSaveOrdonnance = async () => {
     if (!user || !selectedPatient || !prescriptionData) return;
 
     // BUG FIX: doctor_id must be doctors.id (PK), NOT user.id (auth UUID).
-    // The ordonnances table has a FK ordonnances.doctor_id → doctors.id,
+    // The ordonnances table has a FK ordonnances.doctor_id Ã¢â€ â€™ doctors.id,
     // and the RLS INSERT policy checks doctor_id = (SELECT doctors.id FROM doctors WHERE user_id = auth.uid()).
     const doctorId = doctorProfile?.id;
     if (!doctorId) {
-      showToast('Profil médecin non chargé — rechargez la page', 'error');
+      showToast('Profil mÃƒÂ©decin non chargÃƒÂ© Ã¢â‚¬â€ rechargez la page', 'error');
       return;
     }
 
@@ -2133,7 +2133,7 @@ export function DoctorDashboard() {
         medicament_nom: m.nom,
         posologie:      m.posologie ?? '',
         duree:          m.duree ?? '',
-        instructions:   m.quantite ? `Quantité: ${m.quantite}` : null,
+        instructions:   m.quantite ? `QuantitÃƒÂ©: ${m.quantite}` : null,
       }));
 
       console.log('[OrdoSur] Inserting lignes:', lignes);
@@ -2148,7 +2148,7 @@ export function DoctorDashboard() {
         }
       }
 
-      showToast('Ordonnance enregistrée avec succès', 'success');
+      showToast('Ordonnance enregistrÃƒÂ©e avec succÃƒÂ¨s', 'success');
       setShowPrescriptionPreview(false);
       setPrescriptionData(null);
       loadStats();
@@ -2163,7 +2163,7 @@ export function DoctorDashboard() {
     }
   };
 
-  // ── Actions ───────────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Actions Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   const handleSavePatient = async (patientData: Omit<Patient, 'id' | 'org_id' | 'created_at'>) => {
     if (!user) return;
@@ -2171,17 +2171,17 @@ export function DoctorDashboard() {
       if (editingPatient) {
         const { error } = await supabase.from('patients').update(patientData).eq('id', editingPatient.id);
         if (error) throw error;
-        // BUG 1+2 FIX: optimistic update — instantly reflect changes in list + detail panel
+        // BUG 1+2 FIX: optimistic update Ã¢â‚¬â€ instantly reflect changes in list + detail panel
         const updated: Patient = { ...editingPatient, ...patientData };
         setPatients(prev => prev.map(p => p.id === editingPatient.id ? updated : p));
         if (selectedPatient?.id === editingPatient.id) setSelectedPatient(updated);
-        showToast('Patient mis à jour avec succès', 'success');
+        showToast('Patient mis ÃƒÂ  jour avec succÃƒÂ¨s', 'success');
       } else {
         const { data, error } = await supabase
           .from('patients').insert({ ...patientData, org_id: user.org_id }).select().single();
         if (error) throw error;
         if (data) setPatients(prev => [data, ...prev]);
-        showToast('Patient ajouté', 'success');
+        showToast('Patient ajoutÃƒÂ©', 'success');
       }
       setShowPatientModal(false);
       setEditingPatient(null);
@@ -2198,7 +2198,7 @@ export function DoctorDashboard() {
       if (error) throw error;
       setPatients(prev => prev.filter(p => p.id !== patientId));
       if (selectedPatient?.id === patientId) setSelectedPatient(null);
-      showToast('Patient supprimé', 'info');
+      showToast('Patient supprimÃƒÂ©', 'info');
       loadStats();
     } catch (e: any) {
       showToast(e?.message || 'Erreur', 'error');
@@ -2224,21 +2224,21 @@ export function DoctorDashboard() {
   const removeMedication = (medId: string) => setSelectedMeds(selectedMeds.filter(m => m.id !== medId));
 
   const checkInteractions = async () => {
-    if (selectedMeds.length < 1) { showToast('Sélectionnez au moins 1 médicament', 'error'); return; }
-    if (!selectedPatient) { showToast('Sélectionnez un patient pour analyser les contre-indications', 'error'); return; }
+    if (selectedMeds.length < 1) { showToast('SÃƒÂ©lectionnez au moins 1 mÃƒÂ©dicament', 'error'); return; }
+    if (!selectedPatient) { showToast('SÃƒÂ©lectionnez un patient pour analyser les contre-indications', 'error'); return; }
     setLoading(true);
     await new Promise(r => setTimeout(r, 200));
 
     let overallSeverity: 'safe' | 'attention' | 'dangerous' = 'safe';
     const reasons: string[] = [];
 
-    // Doublons — uniquement si ≥ 2 médicaments
+    // Doublons Ã¢â‚¬â€ uniquement si Ã¢â€°Â¥ 2 mÃƒÂ©dicaments
     if (selectedMeds.length >= 2) {
       for (let i = 0; i < selectedMeds.length; i++) {
         for (let j = i + 1; j < selectedMeds.length; j++) {
           if (selectedMeds[i].nom === selectedMeds[j].nom) {
             overallSeverity = 'dangerous';
-            reasons.push(`DUPLICATION : ${selectedMeds[i].nom} prescrit en double — risque de surdosage`);
+            reasons.push(`DUPLICATION : ${selectedMeds[i].nom} prescrit en double Ã¢â‚¬â€ risque de surdosage`);
           }
         }
       }
@@ -2249,21 +2249,21 @@ export function DoctorDashboard() {
       else if (alert.severite === 'majeure' && overallSeverity !== 'dangerous') overallSeverity = 'attention';
       else if (alert.severite === 'moderee' && overallSeverity === 'safe') overallSeverity = 'attention';
       const prefix = alert.type === 'contraindication' ? `Contre-indication patient (${alert.involved[0]})` : alert.involved.join(' + ');
-      reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
+      reasons.push(`${getSeveriteLabel(alert.severite)} Ã¢â‚¬â€ ${prefix} : ${alert.description}`);
     }
 
     const nbCI  = interactionAlerts.filter(a => a.severite === 'contre_indication').length;
     const nbMaj = interactionAlerts.filter(a => a.severite === 'majeure').length;
     const description =
       overallSeverity === 'dangerous'
-        ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé`
+        ? `${nbCI} contre-indication(s) dÃƒÂ©tectÃƒÂ©e(s) Ã¢â‚¬â€ Prescription ÃƒÂ  risque ÃƒÂ©levÃƒÂ©`
         : overallSeverity === 'attention'
-          ? `${nbMaj} interaction(s) signalée(s) — Précautions requises`
+          ? `${nbMaj} interaction(s) signalÃƒÂ©e(s) Ã¢â‚¬â€ PrÃƒÂ©cautions requises`
           : reasons.length > 0
             ? reasons[0]
             : selectedMeds.length === 1
-              ? `✓ Aucune contre-indication connue pour ${selectedMeds[0].nom} avec le profil de ce patient`
-              : `✓ Aucune interaction connue entre les ${selectedMeds.length} médicaments sélectionnés`;
+              ? `Ã¢Å“â€œ Aucune contre-indication connue pour ${selectedMeds[0].nom} avec le profil de ce patient`
+              : `Ã¢Å“â€œ Aucune interaction connue entre les ${selectedMeds.length} mÃƒÂ©dicaments sÃƒÂ©lectionnÃƒÂ©s`;
 
     setResult({ severity: overallSeverity, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);
@@ -2278,7 +2278,7 @@ export function DoctorDashboard() {
     : [];
 
   const userInitials = `${user?.prenom?.[0] || ''}${user?.nom?.[0] || ''}`.toUpperCase() || 'MD';
-  const specialite = doctorProfile?.specialite || clinicProfile?.nom || 'Généraliste';
+  const specialite = doctorProfile?.specialite || clinicProfile?.nom || 'GÃƒÂ©nÃƒÂ©raliste';
 
   // Navigate to checker with patient pre-selected
   const navigateToChecker = () => setActiveView('checker');
@@ -2288,7 +2288,7 @@ export function DoctorDashboard() {
     setShowPatientModal(true);
   };
 
-  // ── Keyboard shortcuts (Escape only — Ctrl+K handled in TopBar) ──────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Keyboard shortcuts (Escape only Ã¢â‚¬â€ Ctrl+K handled in TopBar) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -2300,7 +2300,7 @@ export function DoctorDashboard() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Render Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] dark:bg-[#060D1A] overflow-hidden font-sans">

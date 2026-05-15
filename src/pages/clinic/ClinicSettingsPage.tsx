@@ -62,7 +62,7 @@ export function ClinicSettingsPage() {
       }
     } catch (error: any) {
       console.error('Error loading clinic settings:', error);
-      setError('Erreur lors du chargement des paramètres');
+      setError('Erreur lors du chargement des paramÃƒÂ¨tres');
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,7 @@ export function ClinicSettingsPage() {
 
       if (updateError) throw updateError;
 
-      setSuccess('Paramètres enregistrés avec succès');
+      setSuccess('ParamÃƒÂ¨tres enregistrÃƒÂ©s avec succÃƒÂ¨s');
     } catch (error: any) {
       setError(error.message || 'Erreur lors de l\'enregistrement');
     } finally {
@@ -96,7 +96,7 @@ export function ClinicSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
+    <div className="min-h-screen bg-gradient-to-br from-[#FAFAF7] via-white to-[#E6F4EE]">
       <div className="flex">
         <aside className="w-64 min-h-screen bg-white border-r border-gray-200 shadow-sm">
           <div className="p-6 border-b border-gray-200">
@@ -104,7 +104,7 @@ export function ClinicSettingsPage() {
               onClick={() => navigate('/clinic/admin')}
               className="flex items-center gap-3 w-full"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-teal-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br [#00A86B] rounded-lg flex items-center justify-center">
                 <Building2 className="w-6 h-6 text-white" />
               </div>
               <div className="text-left">
@@ -131,7 +131,7 @@ export function ClinicSettingsPage() {
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 <Users className="w-5 h-5" />
-                <span>Médecins</span>
+                <span>MÃƒÂ©decins</span>
               </button>
 
               <button
@@ -152,7 +152,7 @@ export function ClinicSettingsPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span>Paramètres</span>
+                <span>ParamÃƒÂ¨tres</span>
               </button>
             </div>
           </nav>
@@ -161,8 +161,8 @@ export function ClinicSettingsPage() {
         <main className="flex-1 p-8">
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Paramètres de la clinique</h1>
-              <p className="text-gray-600">Gérez les informations de votre clinique</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">ParamÃƒÂ¨tres de la clinique</h1>
+              <p className="text-gray-600">GÃƒÂ©rez les informations de votre clinique</p>
             </div>
 
             {error && (
@@ -188,7 +188,7 @@ export function ClinicSettingsPage() {
             ) : (
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Informations générales</h2>
+                  <h2 className="text-xl font-bold text-gray-900 mb-6">Informations gÃƒÂ©nÃƒÂ©rales</h2>
                   <form onSubmit={handleSaveSettings} className="space-y-6">
                     <Input
                       label="Nom de la clinique"
@@ -204,7 +204,7 @@ export function ClinicSettingsPage() {
                     />
 
                     <Input
-                      label="Téléphone"
+                      label="TÃƒÂ©lÃƒÂ©phone"
                       type="tel"
                       value={settings.telephone}
                       onChange={(e) => setSettings({ ...settings, telephone: e.target.value })}
@@ -230,12 +230,12 @@ export function ClinicSettingsPage() {
                     <div>
                       <h2 className="text-xl font-bold text-red-900 mb-2">Zone dangereuse</h2>
                       <p className="text-red-700 mb-4">
-                        Les actions suivantes sont irréversibles. Procédez avec prudence.
+                        Les actions suivantes sont irrÃƒÂ©versibles. ProcÃƒÂ©dez avec prudence.
                       </p>
                     </div>
                   </div>
                   <Button variant="secondary" disabled className="bg-red-600 text-white hover:bg-red-700">
-                    Désactiver la clinique
+                    DÃƒÂ©sactiver la clinique
                   </Button>
                 </div>
               </div>

@@ -242,13 +242,13 @@ export function AIChat({
         shadow-2xl"
     >
       {/* ── Header ── */}
-      <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-sky-500 to-cyan-500 flex-shrink-0">
-        <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
-          <Bot className="w-5 h-5 text-white" />
+      <div className="flex items-center gap-3 px-5 py-4 bg-[#0A1628] flex-shrink-0">
+        <div className="w-9 h-9 bg-[#00A86B]/20 rounded-md flex items-center justify-center">
+          <Bot className="w-5 h-5 text-[#00A86B]" />
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-white font-bold text-[15px] leading-tight">Assistant Ordosur</h2>
-          <p className="text-sky-100/70 text-xs">{contextLabel || 'Powered by Claude Haiku'}</p>
+          <p className="text-white/50 text-xs">{contextLabel || 'Powered by Claude Haiku'}</p>
         </div>
 
         {/* Nouvelle conversation */}
@@ -284,9 +284,9 @@ export function AIChat({
         <div className="px-3 py-2.5 border-b border-slate-100 dark:border-white/[0.06] bg-slate-50 dark:bg-[#0C1525] flex-shrink-0">
           {activePatient ? (
             <div className="flex items-center gap-2">
-              <div className="flex-1 flex items-center gap-2 px-3 py-1.5 bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/20 rounded-xl">
-                <UserCheck className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 flex-shrink-0" />
-                <span className="text-xs font-semibold text-sky-700 dark:text-sky-400 truncate">
+              <div className="flex-1 flex items-center gap-2 px-3 py-1.5 bg-[#E6F4EE] dark:bg-[#00A86B]/10 border border-[#00A86B]/20 dark:border-[#00A86B]/20 rounded-md">
+                <UserCheck className="w-3.5 h-3.5 text-[#00A86B] flex-shrink-0" />
+                <span className="text-xs font-semibold text-[#006B47] dark:text-[#00A86B] truncate">
                   {activePatient.prenom} {activePatient.nom}
                 </span>
               </div>
@@ -308,11 +308,11 @@ export function AIChat({
                   onBlur={() => setTimeout(() => setShowPatientDrop(false), 200)}
                   placeholder="Associer un patient…"
                   className="w-full pl-8 pr-3 py-1.5 text-xs
-                    border border-slate-200 dark:border-white/[0.1]
-                    rounded-xl bg-white dark:bg-[#1E293B]
-                    text-slate-900 dark:text-[#E2E8F0]
-                    placeholder-slate-400 dark:placeholder-slate-600
-                    focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+                    border border-[#E5E5E0] dark:border-white/[0.1]
+                    rounded-md bg-white dark:bg-[#1E293B]
+                    text-[#0A1628] dark:text-[#E2E8F0]
+                    placeholder-[#94A3B8] dark:placeholder-slate-600
+                    focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
                 />
               </div>
               {showPatientDrop && filteredPatients.length > 0 && (
@@ -321,7 +321,7 @@ export function AIChat({
                     <button
                       key={p.id}
                       onMouseDown={e => { e.preventDefault(); selectPatient(p); }}
-                      className="w-full px-3 py-2 text-left text-xs hover:bg-sky-50 dark:hover:bg-sky-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
+                      className="w-full px-3 py-2 text-left text-xs hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                     >
                       <span className="font-semibold text-slate-900 dark:text-[#E2E8F0]">{p.prenom} {p.nom}</span>
                       {p.pathologies?.[0] && (
@@ -347,13 +347,13 @@ export function AIChat({
         {messages.length === 0 && (
           <>
             <div className="flex gap-3">
-              <div className="w-8 h-8 bg-sky-100 dark:bg-sky-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+              <div className="w-8 h-8 bg-[#E6F4EE] dark:bg-[#00A86B]/20 rounded-md flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-4 h-4 text-[#00A86B]" />
               </div>
               <div className="bg-slate-100 dark:bg-white/[0.07] rounded-2xl rounded-tl-sm px-4 py-3 text-sm text-slate-700 dark:text-[#94A3B8] leading-relaxed">
                 Bonjour ! Je suis votre assistant médical. Posez-moi vos questions sur les interactions, posologies ou pathologies.
                 {activePatient && (
-                  <p className="mt-2 text-sky-600 dark:text-sky-400 font-semibold text-xs">
+                  <p className="mt-2 text-[#00A86B] font-semibold text-xs">
                     👤 Patient : {activePatient.prenom} {activePatient.nom}
                     {activePatient.pathologies?.length ? ` · ${activePatient.pathologies.slice(0, 2).join(', ')}` : ''}
                   </p>
@@ -375,11 +375,11 @@ export function AIChat({
                   key={q}
                   onClick={() => send(q)}
                   className="w-full text-left text-xs px-3 py-2.5
-                    bg-sky-50 dark:bg-sky-500/[0.08]
-                    text-sky-700 dark:text-sky-400
-                    rounded-xl hover:bg-sky-100 dark:hover:bg-sky-500/[0.14]
+                    bg-[#E6F4EE] dark:bg-[#00A86B]/[0.08]
+                    text-[#006B47] dark:text-[#00A86B]
+                    rounded-md hover:bg-[#d4eee0] dark:hover:bg-[#00A86B]/[0.14]
                     transition-colors
-                    border border-sky-100 dark:border-sky-500/20
+                    border border-[#00A86B]/10 dark:border-[#00A86B]/20
                     font-medium leading-relaxed"
                 >
                   {q}
@@ -392,8 +392,8 @@ export function AIChat({
         {/* Messages */}
         {messages.map((msg, i) => (
           <div key={i} className={`flex gap-2.5 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
-              msg.role === 'user' ? 'bg-sky-500' : 'bg-slate-100 dark:bg-white/[0.07]'
+            <div className={`w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0 ${
+              msg.role === 'user' ? 'bg-[#00A86B]' : 'bg-slate-100 dark:bg-white/[0.07]'
             }`}>
               {msg.role === 'user'
                 ? <User className="w-4 h-4 text-white" />
@@ -401,10 +401,10 @@ export function AIChat({
               }
             </div>
             <div className={`max-w-[78%] flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-              <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+              <div className={`rounded-xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
                 msg.role === 'user'
-                  ? 'bg-sky-500 text-white rounded-tr-sm'
-                  : 'bg-slate-100 dark:bg-white/[0.07] text-slate-700 dark:text-[#94A3B8] rounded-tl-sm'
+                  ? 'bg-[#00A86B] text-white rounded-br-[4px]'
+                  : 'bg-[#FAFAF7] dark:bg-white/[0.07] text-[#0A1628] dark:text-[#94A3B8] border border-[#E5E5E0] dark:border-white/[0.06] rounded-bl-[4px]'
               }`}>
                 {msg.content}
               </div>
@@ -454,23 +454,23 @@ export function AIChat({
                 : 'Posez votre question médicale…'
             }
             className="flex-1 px-4 py-2.5
-              bg-slate-50 dark:bg-[#1E293B]
-              border border-slate-200 dark:border-white/[0.1]
-              rounded-xl text-sm
-              text-slate-900 dark:text-[#E2E8F0]
-              placeholder-slate-400 dark:placeholder-slate-600
-              focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40
+              bg-[#FAFAF7] dark:bg-[#1E293B]
+              border border-[#E5E5E0] dark:border-white/[0.1]
+              rounded-md text-sm
+              text-[#0A1628] dark:text-[#E2E8F0]
+              placeholder-[#94A3B8] dark:placeholder-slate-600
+              focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]
               transition-all"
           />
           <button
             onClick={() => send(input)}
             disabled={!input.trim() || loading}
-            className="px-3.5 py-2.5 bg-sky-500 text-white rounded-xl hover:bg-sky-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="px-3.5 py-2.5 bg-[#00A86B] text-white rounded-md hover:bg-[#006B47] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <Send className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-[10px] text-slate-400 dark:text-slate-600 mt-2 text-center">
+        <p className="text-[10px] text-[#94A3B8] dark:text-slate-600 mt-2 text-center italic">
           Indicatif — ne remplace pas le jugement clinique
         </p>
       </div>

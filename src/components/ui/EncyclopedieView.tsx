@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
-/* ── Types ─────────────────────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Types ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 interface Medicament {
   id: string;
   nom: string;
@@ -53,31 +53,31 @@ interface DrugInteraction {
 
 const PAGE_SIZE = 20;
 
-/* ── helpers ─────────────────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ helpers ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 function getPaysFlag(pays: string | null): string {
-  if (pays === 'MA') return '🇲🇦';
-  if (pays === 'FR') return '🇫🇷';
+  if (pays === 'MA') return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â²ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â¦';
+  if (pays === 'FR') return 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â«ÃƒÂ°Ã…Â¸Ã¢â‚¬Â¡Ã‚Â·';
   return '';
 }
 
 /** Detect if a string looks like it's primarily in English (no French accents, common EN words) */
 function looksEnglish(text: string): boolean {
   if (!text) return false;
-  const frenchIndicators = /[àâäéèêëîïôùûüç]/i;
+  const frenchIndicators = /[ÃƒÆ’Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÆ’Ã‚Â¤ÃƒÆ’Ã‚Â©ÃƒÆ’Ã‚Â¨ÃƒÆ’Ã‚ÂªÃƒÆ’Ã‚Â«ÃƒÆ’Ã‚Â®ÃƒÆ’Ã‚Â¯ÃƒÆ’Ã‚Â´ÃƒÆ’Ã‚Â¹ÃƒÆ’Ã‚Â»ÃƒÆ’Ã‚Â¼ÃƒÆ’Ã‚Â§]/i;
   if (frenchIndicators.test(text)) return false;
   const englishWords = /\b(the|and|or|of|is|are|was|were|has|have|this|that|with|for|not|may|can|should|treatment|patient|condition|drug|dose|effect)\b/i;
   return englishWords.test(text);
 }
 
-/* ── Severity badge ─────────────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Severity badge ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 function SeverityBadge({ severite }: { severite: string }) {
   const s = (severite || '').toLowerCase();
   const cfg =
     s === 'absolue' || s === 'contre_indication' || s === 'contre-indication absolue' || s === 'majeure'
       ? { cls: 'bg-red-100 text-red-800 border-red-200', label: s === 'contre_indication' ? 'CI' : s === 'absolue' ? 'absolue' : s }
-      : s === 'relative' || s === 'moderee' || s === 'modérée' || s === 'modéree'
-      ? { cls: 'bg-orange-100 text-orange-800 border-orange-200', label: s === 'moderee' || s === 'modéree' ? 'modérée' : s }
-      : s === 'mineure' || s === 'précaution'
+      : s === 'relative' || s === 'moderee' || s === 'modÃƒÆ’Ã‚Â©rÃƒÆ’Ã‚Â©e' || s === 'modÃƒÆ’Ã‚Â©ree'
+      ? { cls: 'bg-orange-100 text-orange-800 border-orange-200', label: s === 'moderee' || s === 'modÃƒÆ’Ã‚Â©ree' ? 'modÃƒÆ’Ã‚Â©rÃƒÆ’Ã‚Â©e' : s }
+      : s === 'mineure' || s === 'prÃƒÆ’Ã‚Â©caution'
       ? { cls: 'bg-yellow-100 text-yellow-800 border-yellow-200', label: s }
       : { cls: 'bg-slate-100 text-slate-700 border-slate-200', label: s };
   return (
@@ -87,7 +87,7 @@ function SeverityBadge({ severite }: { severite: string }) {
   );
 }
 
-/* ── Pagination bar ──────────────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Pagination bar ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 function Pagination({ page, total, pageSize, onChange }: {
   page: number; total: number; pageSize: number; onChange: (p: number) => void;
 }) {
@@ -98,7 +98,7 @@ function Pagination({ page, total, pageSize, onChange }: {
   return (
     <div className="flex items-center justify-between px-3 py-2 border-t border-slate-100 dark:border-white/[0.06] flex-shrink-0 bg-slate-50 dark:bg-white/[0.02]">
       <span className="text-[10px] text-slate-400 tabular-nums">
-        {start.toLocaleString()}–{end.toLocaleString()} / {total.toLocaleString()}
+        {start.toLocaleString()}ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“{end.toLocaleString()} / {total.toLocaleString()}
       </span>
       <div className="flex items-center gap-1">
         <button
@@ -123,7 +123,7 @@ function Pagination({ page, total, pageSize, onChange }: {
   );
 }
 
-/* ── Empty state ─────────────────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Empty state ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 function EmptyState({ icon: Icon, text }: { icon: React.ElementType; text: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-slate-400">
@@ -133,7 +133,7 @@ function EmptyState({ icon: Icon, text }: { icon: React.ElementType; text: strin
   );
 }
 
-/* ── Médicament detail panel ─────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ MÃƒÆ’Ã‚Â©dicament detail panel ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
   const [contras, setContras]           = useState<Contraindication[]>([]);
   const [interactions, setInteractions] = useState<DrugInteraction[]>([]);
@@ -157,7 +157,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
           .limit(150),
       ]);
 
-      // Dédoublonnage contre-indications (condition_valeur + severite)
+      // DÃƒÆ’Ã‚Â©doublonnage contre-indications (condition_valeur + severite)
       const seenC = new Set<string>();
       const cleanContras = ((cRes.data as Contraindication[]) || []).filter(c => {
         const key = `${c.condition_valeur.toLowerCase()}|${c.severite}`;
@@ -166,7 +166,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
         return true;
       });
 
-      // Dédoublonnage interactions (paire triée + sévérité)
+      // DÃƒÆ’Ã‚Â©doublonnage interactions (paire triÃƒÆ’Ã‚Â©e + sÃƒÆ’Ã‚Â©vÃƒÆ’Ã‚Â©ritÃƒÆ’Ã‚Â©)
       const seenI = new Set<string>();
       const cleanInteractions = ((iRes.data as DrugInteraction[]) || []).filter(it => {
         const key = [it.dci_1_pattern.toLowerCase(), it.dci_2_pattern.toLowerCase()].sort().join('|') + `|${it.severite}`;
@@ -182,24 +182,24 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
     load();
   }, [med.id, med.dci]);
 
-  /* ── Groupement interactions par sévérité ── */
+  /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Groupement interactions par sÃƒÆ’Ã‚Â©vÃƒÆ’Ã‚Â©ritÃƒÆ’Ã‚Â© ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
   const isMajeure  = (s: string) => ['contre_indication', 'majeure'].includes(s.toLowerCase());
-  const isModeree  = (s: string) => ['moderee', 'modérée', 'modéree', 'modere'].includes(s.toLowerCase());
-  const isMineure  = (s: string) => ['mineure', 'précaution', 'precaution'].includes(s.toLowerCase());
+  const isModeree  = (s: string) => ['moderee', 'modÃƒÆ’Ã‚Â©rÃƒÆ’Ã‚Â©e', 'modÃƒÆ’Ã‚Â©ree', 'modere'].includes(s.toLowerCase());
+  const isMineure  = (s: string) => ['mineure', 'prÃƒÆ’Ã‚Â©caution', 'precaution'].includes(s.toLowerCase());
 
   const majorInt    = interactions.filter(it => isMajeure(it.severite)).slice(0, 10);
   const modereeInt  = interactions.filter(it => isModeree(it.severite)).slice(0, 5);
   const mineureInt  = interactions.filter(it => isMineure(it.severite));
 
-  /* ── Groupement contre-indications par sévérité ── */
+  /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Groupement contre-indications par sÃƒÆ’Ã‚Â©vÃƒÆ’Ã‚Â©ritÃƒÆ’Ã‚Â© ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
   const isAbsolue  = (s: string) => ['absolue', 'contre_indication', 'contre-indication absolue'].includes(s.toLowerCase());
-  const isRelative = (s: string) => ['relative', 'moderee', 'modérée', 'modéree'].includes(s.toLowerCase());
+  const isRelative = (s: string) => ['relative', 'moderee', 'modÃƒÆ’Ã‚Â©rÃƒÆ’Ã‚Â©e', 'modÃƒÆ’Ã‚Â©ree'].includes(s.toLowerCase());
 
   const absoluteCI = contras.filter(c => isAbsolue(c.severite));
   const relativeCI = contras.filter(c => isRelative(c.severite));
   const autresCI   = contras.filter(c => !isAbsolue(c.severite) && !isRelative(c.severite));
 
-  /* ── Obtenir le partenaire d'une interaction ── */
+  /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Obtenir le partenaire d'une interaction ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
   const getPartner = (it: DrugInteraction): string => {
     if (!med.dci) return it.dci_2_pattern;
     return it.dci_1_pattern.toLowerCase().includes(med.dci.toLowerCase())
@@ -213,10 +213,10 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
       transition={{ duration: 0.18 }} className="flex flex-col h-full overflow-hidden">
 
-      {/* ── En-tête ── */}
+      {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ En-tÃƒÆ’Ã‚Âªte ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
       <div className="px-5 py-4 border-b border-slate-100 dark:border-white/[0.06] flex items-start gap-3 flex-shrink-0">
-        <div className="w-10 h-10 bg-sky-100 dark:bg-sky-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-          <Pill className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+        <div className="w-10 h-10 bg-[#E6F4EE] dark:bg-[#00A86B]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+          <Pill className="w-5 h-5 text-[#00A86B]" />
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">
@@ -236,15 +236,15 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
 
       <div className="flex-1 overflow-y-auto p-5 space-y-6">
 
-        {/* ── 1. INFORMATIONS DU MÉDICAMENT ── */}
+        {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ 1. INFORMATIONS DU MÃƒÆ’Ã¢â‚¬Â°DICAMENT ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
         <section>
           <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5 text-sky-500" />
-            Informations du médicament
+            <Info className="w-3.5 h-3.5 text-[#00A86B]" />
+            Informations du mÃƒÆ’Ã‚Â©dicament
           </h3>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: 'Classe thérapeutique', value: med.classe_therapeutique, icon: BookOpen  },
+              { label: 'Classe thÃƒÆ’Ã‚Â©rapeutique', value: med.classe_therapeutique, icon: BookOpen  },
               { label: 'Forme',                value: med.forme,                 icon: FlaskConical },
               { label: 'Dosage',               value: med.dosage,                icon: Zap      },
               { label: 'Laboratoire',          value: med.laboratoire,           icon: Tag      },
@@ -263,26 +263,26 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
           </div>
         </section>
 
-        {/* ── 2. INTERACTIONS MÉDICAMENTEUSES ── */}
+        {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ 2. INTERACTIONS MÃƒÆ’Ã¢â‚¬Â°DICAMENTEUSES ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
         {loading ? (
-          <div className="text-center py-6 text-slate-400 text-sm">Chargement…</div>
+          <div className="text-center py-6 text-slate-400 text-sm">ChargementÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</div>
         ) : (
           <>
             <section>
               <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-1.5">
                 <Zap className="w-3.5 h-3.5 text-orange-500" />
-                Interactions médicamenteuses ({majorInt.length + modereeInt.length + mineureInt.length})
+                Interactions mÃƒÆ’Ã‚Â©dicamenteuses ({majorInt.length + modereeInt.length + mineureInt.length})
               </h3>
 
               {majorInt.length === 0 && modereeInt.length === 0 && mineureInt.length === 0 ? (
-                <p className="text-xs text-slate-400 italic">Aucune interaction enregistrée.</p>
+                <p className="text-xs text-slate-400 italic">Aucune interaction enregistrÃƒÆ’Ã‚Â©e.</p>
               ) : (
                 <div className="space-y-3">
                   {/* Majeures */}
                   {majorInt.length > 0 && (
                     <div>
                       <p className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase mb-1.5 flex items-center gap-1">
-                        🔴 Majeures ({majorInt.length})
+                        ÃƒÂ°Ã…Â¸Ã¢â‚¬ÂÃ‚Â´ Majeures ({majorInt.length})
                       </p>
                       <div className="space-y-2">
                         {majorInt.map((it, i) => (
@@ -300,11 +300,11 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
                     </div>
                   )}
 
-                  {/* Modérées */}
+                  {/* ModÃƒÆ’Ã‚Â©rÃƒÆ’Ã‚Â©es */}
                   {modereeInt.length > 0 && (
                     <div>
                       <p className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase mb-1.5 flex items-center gap-1">
-                        🟠 Modérées ({modereeInt.length})
+                        ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â  ModÃƒÆ’Ã‚Â©rÃƒÆ’Ã‚Â©es ({modereeInt.length})
                       </p>
                       <div className="space-y-2">
                         {modereeInt.map((it, i) => (
@@ -326,7 +326,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
                   {mineureInt.length > 0 && (
                     <div>
                       <p className="text-[10px] font-bold text-yellow-600 dark:text-yellow-400 uppercase mb-1.5 flex items-center gap-1">
-                        🟢 Mineures ({mineureInt.length})
+                        ÃƒÂ°Ã…Â¸Ã…Â¸Ã‚Â¢ Mineures ({mineureInt.length})
                       </p>
                       <div className="space-y-2">
                         {mineureInt.map((it, i) => (
@@ -347,7 +347,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
               )}
             </section>
 
-            {/* ── 3. CONTRE-INDICATIONS ── */}
+            {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ 3. CONTRE-INDICATIONS ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
             <section>
               <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3 flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
@@ -355,7 +355,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
               </h3>
 
               {contras.length === 0 ? (
-                <p className="text-xs text-slate-400 italic">Aucune contre-indication enregistrée.</p>
+                <p className="text-xs text-slate-400 italic">Aucune contre-indication enregistrÃƒÆ’Ã‚Â©e.</p>
               ) : (
                 <div className="space-y-3">
                   {/* CI Absolues */}
@@ -372,7 +372,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
                               <SeverityBadge severite={c.severite} />
                             </div>
                             {c.conduite_fr && (
-                              <p className="text-[10px] text-sky-600 dark:text-sky-400 mt-1 font-medium">→ {c.conduite_fr}</p>
+                              <p className="text-[10px] text-[#00A86B] mt-1 font-medium">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ {c.conduite_fr}</p>
                             )}
                           </div>
                         ))}
@@ -394,7 +394,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
                               <SeverityBadge severite={c.severite} />
                             </div>
                             {c.conduite_fr && (
-                              <p className="text-[10px] text-sky-600 dark:text-sky-400 mt-1 font-medium">→ {c.conduite_fr}</p>
+                              <p className="text-[10px] text-[#00A86B] mt-1 font-medium">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ {c.conduite_fr}</p>
                             )}
                           </div>
                         ))}
@@ -406,7 +406,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
                   {autresCI.length > 0 && (
                     <div>
                       <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">
-                        Précautions ({autresCI.length})
+                        PrÃƒÆ’Ã‚Â©cautions ({autresCI.length})
                       </p>
                       <div className="space-y-2">
                         {autresCI.map((c, i) => (
@@ -416,7 +416,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
                               <SeverityBadge severite={c.severite} />
                             </div>
                             {c.conduite_fr && (
-                              <p className="text-[10px] text-sky-600 dark:text-sky-400 mt-1 font-medium">→ {c.conduite_fr}</p>
+                              <p className="text-[10px] text-[#00A86B] mt-1 font-medium">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ {c.conduite_fr}</p>
                             )}
                           </div>
                         ))}
@@ -433,7 +433,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
   );
 }
 
-/* ── Pathologie detail panel ─────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Pathologie detail panel ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }) {
   const [contras, setContras] = useState<Contraindication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -446,7 +446,7 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
         .select('condition_type, condition_valeur, severite, description, mecanisme_fr, conduite_fr')
         .ilike('condition_valeur', `%${searchTerm}%`).limit(30);
 
-      // Dédoublonnage
+      // DÃƒÆ’Ã‚Â©doublonnage
       const seenC = new Set<string>();
       const cleaned = ((data as Contraindication[]) || []).filter(c => {
         const key = `${c.condition_valeur.toLowerCase()}|${c.severite}`;
@@ -469,7 +469,7 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
         </div>
         <div className="flex-1 min-w-0">
           <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">{path.nom_fr}</h2>
-          {/* nom_en supprimé — affichage uniquement en français */}
+          {/* nom_en supprimÃƒÆ’Ã‚Â© ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â affichage uniquement en franÃƒÆ’Ã‚Â§ais */}
         </div>
         <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-lg transition-colors">
           <X className="w-4 h-4" />
@@ -484,7 +484,7 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
             </span>
           )}
           {path.icd11_code && (
-            <span className="px-2.5 py-1 bg-cyan-100 dark:bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 rounded-full text-xs font-bold border border-cyan-200 dark:border-cyan-500/30">
+            <span className="px-2.5 py-1 bg-[#E6F4EE] dark:bg-[#00A86B]/20 text-[#006B47] dark:text-[#00A86B] rounded-full text-xs font-bold border border-[#00A86B]/20">
               CIM-11 : {path.icd11_code}
             </span>
           )}
@@ -495,7 +495,7 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
           )}
         </div>
 
-        {/* Description en français uniquement */}
+        {/* Description en franÃƒÆ’Ã‚Â§ais uniquement */}
         {path.description_fr && !looksEnglish(path.description_fr) && (
           <div className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-4 border border-slate-200 dark:border-white/[0.06]">
             <div className="flex items-center gap-1.5 mb-2">
@@ -506,12 +506,12 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
           </div>
         )}
 
-        {/* Symptômes */}
+        {/* SymptÃƒÆ’Ã‚Â´mes */}
         {path.symptomes_principaux && !looksEnglish(path.symptomes_principaux) && (
           <div className="bg-amber-50 dark:bg-amber-500/[0.07] rounded-xl p-4 border border-amber-200 dark:border-amber-500/20">
             <div className="flex items-center gap-1.5 mb-2">
               <Activity className="w-3.5 h-3.5 text-amber-500" />
-              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">Symptômes principaux</span>
+              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">SymptÃƒÆ’Ã‚Â´mes principaux</span>
             </div>
             <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{path.symptomes_principaux}</p>
           </div>
@@ -522,22 +522,22 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
           <div className="bg-emerald-50 dark:bg-emerald-500/[0.07] rounded-xl p-4 border border-emerald-200 dark:border-emerald-500/20">
             <div className="flex items-center gap-1.5 mb-2">
               <Pill className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Traitements recommandés</span>
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">Traitements recommandÃƒÆ’Ã‚Â©s</span>
             </div>
             <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{path.traitements_recommandes}</p>
           </div>
         )}
 
         {loading ? (
-          <div className="text-center py-6 text-slate-400 text-sm">Chargement…</div>
+          <div className="text-center py-6 text-slate-400 text-sm">ChargementÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</div>
         ) : (
           <section>
             <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2 flex items-center gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-              Médicaments avec précaution ({contras.length})
+              MÃƒÆ’Ã‚Â©dicaments avec prÃƒÆ’Ã‚Â©caution ({contras.length})
             </h3>
             {contras.length === 0
-              ? <p className="text-xs text-slate-400 italic">Aucune donnée enregistrée.</p>
+              ? <p className="text-xs text-slate-400 italic">Aucune donnÃƒÆ’Ã‚Â©e enregistrÃƒÆ’Ã‚Â©e.</p>
               : <div className="space-y-2">
                   {contras.map((c, i) => (
                     <div key={i} className="bg-red-50 dark:bg-red-500/[0.07] rounded-xl p-3 border border-red-100 dark:border-red-500/20">
@@ -545,7 +545,7 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
                         <span className="text-xs font-semibold text-red-800 dark:text-red-300 capitalize">{c.condition_valeur}</span>
                         <SeverityBadge severite={c.severite} />
                       </div>
-                      {c.conduite_fr && <p className="text-[10px] text-sky-600 dark:text-sky-400 mt-1 font-medium">→ {c.conduite_fr}</p>}
+                      {c.conduite_fr && <p className="text-[10px] text-[#00A86B] mt-1 font-medium">ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ {c.conduite_fr}</p>}
                     </div>
                   ))}
                 </div>
@@ -557,7 +557,7 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
   );
 }
 
-/* ── FilterSelect ────────────────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ FilterSelect ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 function FilterSelect({ value, onChange, options, placeholder }: {
   value: string; onChange: (v: string) => void;
   options: { value: string; label: string }[]; placeholder: string;
@@ -580,33 +580,33 @@ function FilterSelect({ value, onChange, options, placeholder }: {
   );
 }
 
-/* ── ICD-10 chapter options ──────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ ICD-10 chapter options ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 const ICD_CHAPTERS = [
-  { value: 'Maladies infectieuses et parasitaires',               label: 'A-B · Infectieuses' },
-  { value: 'Tumeurs malignes',                                     label: 'C · Tumeurs malignes' },
-  { value: 'Tumeurs bénignes et in situ',                          label: 'D0-49 · Tumeurs bénignes' },
-  { value: 'Maladies du sang et troubles immunitaires',            label: 'D50-89 · Sang' },
-  { value: 'Maladies endocriniennes, nutritionnelles et métaboliques', label: 'E · Endocrinologie' },
-  { value: 'Troubles mentaux et du comportement',                  label: 'F · Psychiatrie' },
-  { value: 'Maladies du système nerveux',                          label: 'G · Neurologie' },
-  { value: "Maladies de l'œil et de ses annexes",                  label: 'H0-59 · Ophtalmologie' },
-  { value: "Maladies de l'oreille et de l'apophyse mastoïde",      label: 'H60-95 · ORL' },
-  { value: "Maladies de l'appareil circulatoire",                  label: 'I · Cardiologie' },
-  { value: "Maladies de l'appareil respiratoire",                  label: 'J · Pneumologie' },
-  { value: "Maladies de l'appareil digestif",                      label: 'K · Gastro-entérologie' },
-  { value: 'Maladies de la peau et du tissu cellulaire sous-cutané',label: 'L · Dermatologie' },
-  { value: "Maladies de l'appareil locomoteur",                    label: 'M · Rhumatologie' },
-  { value: "Maladies de l'appareil génito-urinaire",               label: 'N · Urologie / Gynécologie' },
-  { value: 'Grossesse, accouchement et puerpéralité',              label: 'O · Obstétrique' },
-  { value: "Affections dont l'origine se situe dans la période périnatale", label: 'P · Pédiatrie néonatale' },
-  { value: 'Malformations congénitales et anomalies chromosomiques',label: 'Q · Malformations' },
-  { value: 'Symptômes, signes et résultats anormaux',              label: 'R · Symptômes' },
-  { value: 'Traumatismes, empoisonnements et autres causes externes',label: 'S-T · Traumatismes' },
-  { value: 'Causes externes de morbidité et de mortalité',         label: 'V-Y · Causes externes' },
-  { value: "Facteurs influant sur l'état de santé",                label: 'Z · Facteurs de santé' },
+  { value: 'Maladies infectieuses et parasitaires',               label: 'A-B Ãƒâ€šÃ‚Â· Infectieuses' },
+  { value: 'Tumeurs malignes',                                     label: 'C Ãƒâ€šÃ‚Â· Tumeurs malignes' },
+  { value: 'Tumeurs bÃƒÆ’Ã‚Â©nignes et in situ',                          label: 'D0-49 Ãƒâ€šÃ‚Â· Tumeurs bÃƒÆ’Ã‚Â©nignes' },
+  { value: 'Maladies du sang et troubles immunitaires',            label: 'D50-89 Ãƒâ€šÃ‚Â· Sang' },
+  { value: 'Maladies endocriniennes, nutritionnelles et mÃƒÆ’Ã‚Â©taboliques', label: 'E Ãƒâ€šÃ‚Â· Endocrinologie' },
+  { value: 'Troubles mentaux et du comportement',                  label: 'F Ãƒâ€šÃ‚Â· Psychiatrie' },
+  { value: 'Maladies du systÃƒÆ’Ã‚Â¨me nerveux',                          label: 'G Ãƒâ€šÃ‚Â· Neurologie' },
+  { value: "Maladies de l'Ãƒâ€¦Ã¢â‚¬Å“il et de ses annexes",                  label: 'H0-59 Ãƒâ€šÃ‚Â· Ophtalmologie' },
+  { value: "Maladies de l'oreille et de l'apophyse mastoÃƒÆ’Ã‚Â¯de",      label: 'H60-95 Ãƒâ€šÃ‚Â· ORL' },
+  { value: "Maladies de l'appareil circulatoire",                  label: 'I Ãƒâ€šÃ‚Â· Cardiologie' },
+  { value: "Maladies de l'appareil respiratoire",                  label: 'J Ãƒâ€šÃ‚Â· Pneumologie' },
+  { value: "Maladies de l'appareil digestif",                      label: 'K Ãƒâ€šÃ‚Â· Gastro-entÃƒÆ’Ã‚Â©rologie' },
+  { value: 'Maladies de la peau et du tissu cellulaire sous-cutanÃƒÆ’Ã‚Â©',label: 'L Ãƒâ€šÃ‚Â· Dermatologie' },
+  { value: "Maladies de l'appareil locomoteur",                    label: 'M Ãƒâ€šÃ‚Â· Rhumatologie' },
+  { value: "Maladies de l'appareil gÃƒÆ’Ã‚Â©nito-urinaire",               label: 'N Ãƒâ€šÃ‚Â· Urologie / GynÃƒÆ’Ã‚Â©cologie' },
+  { value: 'Grossesse, accouchement et puerpÃƒÆ’Ã‚Â©ralitÃƒÆ’Ã‚Â©',              label: 'O Ãƒâ€šÃ‚Â· ObstÃƒÆ’Ã‚Â©trique' },
+  { value: "Affections dont l'origine se situe dans la pÃƒÆ’Ã‚Â©riode pÃƒÆ’Ã‚Â©rinatale", label: 'P Ãƒâ€šÃ‚Â· PÃƒÆ’Ã‚Â©diatrie nÃƒÆ’Ã‚Â©onatale' },
+  { value: 'Malformations congÃƒÆ’Ã‚Â©nitales et anomalies chromosomiques',label: 'Q Ãƒâ€šÃ‚Â· Malformations' },
+  { value: 'SymptÃƒÆ’Ã‚Â´mes, signes et rÃƒÆ’Ã‚Â©sultats anormaux',              label: 'R Ãƒâ€šÃ‚Â· SymptÃƒÆ’Ã‚Â´mes' },
+  { value: 'Traumatismes, empoisonnements et autres causes externes',label: 'S-T Ãƒâ€šÃ‚Â· Traumatismes' },
+  { value: 'Causes externes de morbiditÃƒÆ’Ã‚Â© et de mortalitÃƒÆ’Ã‚Â©',         label: 'V-Y Ãƒâ€šÃ‚Â· Causes externes' },
+  { value: "Facteurs influant sur l'ÃƒÆ’Ã‚Â©tat de santÃƒÆ’Ã‚Â©",                label: 'Z Ãƒâ€šÃ‚Â· Facteurs de santÃƒÆ’Ã‚Â©' },
 ];
 
-/* ── Main EncyclopedieView ───────────────────────────────────────────────────── */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Main EncyclopedieView ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 type Tab = 'medicaments' | 'pathologies';
 
 export function EncyclopedieView() {
@@ -614,7 +614,7 @@ export function EncyclopedieView() {
   const [search, setSearch]         = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  // Médicaments state
+  // MÃƒÆ’Ã‚Â©dicaments state
   const [meds, setMeds]             = useState<Medicament[]>([]);
   const [medsLoading, setMedsLoading] = useState(false);
   const [medsTotal, setMedsTotal]   = useState(0);
@@ -646,7 +646,7 @@ export function EncyclopedieView() {
   useEffect(() => { setMedsPage(1); }, [debouncedSearch]);
   useEffect(() => { setPathsPage(1); }, [debouncedSearch, filterCat]);
 
-  /* ── Fetch médicaments ── */
+  /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Fetch mÃƒÆ’Ã‚Â©dicaments ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
   const fetchMeds = useCallback(async (q: string, page: number) => {
     setMedsLoading(true);
     try {
@@ -659,7 +659,7 @@ export function EncyclopedieView() {
         });
         const raw = (data as Medicament[]) || [];
 
-        // Dédoublonnage par clé nom_commercial+dci
+        // DÃƒÆ’Ã‚Â©doublonnage par clÃƒÆ’Ã‚Â© nom_commercial+dci
         const seen = new Set<string>();
         const unique = raw.filter(m => {
           const key = (m.nom_commercial || m.nom || '').toLowerCase() + '|' + (m.dci || '').toLowerCase();
@@ -691,7 +691,7 @@ export function EncyclopedieView() {
     }
   }, []);
 
-  /* ── Fetch pathologies ── */
+  /* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Fetch pathologies ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
   const fetchPaths = useCallback(async (q: string, page: number, cat: string) => {
     setPathsLoading(true);
     try {
@@ -740,16 +740,16 @@ export function EncyclopedieView() {
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-[#0A0F1E]">
-      {/* ── Header ── */}
+      {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Header ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
       <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/25">
             <BookOpen className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Encyclopédie médicale</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white">EncyclopÃƒÆ’Ã‚Â©die mÃƒÆ’Ã‚Â©dicale</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Médicaments, pathologies, contre-indications &amp; interactions
+              MÃƒÆ’Ã‚Â©dicaments, pathologies, contre-indications &amp; interactions
             </p>
           </div>
         </div>
@@ -757,7 +757,7 @@ export function EncyclopedieView() {
         <div className="flex items-center gap-3">
           <div className="flex gap-1 p-1 bg-slate-100 dark:bg-white/[0.06] rounded-xl">
             {([
-              { id: 'medicaments', label: 'Médicaments', icon: Pill },
+              { id: 'medicaments', label: 'MÃƒÆ’Ã‚Â©dicaments', icon: Pill },
               { id: 'pathologies', label: 'Pathologies', icon: Stethoscope },
             ] as const).map(t => (
               <button key={t.id} onClick={() => setTab(t.id)}
@@ -771,7 +771,7 @@ export function EncyclopedieView() {
                 <span className="text-[10px] font-bold px-1.5 py-0.5 bg-slate-200 dark:bg-white/[0.1] text-slate-500 dark:text-slate-400 rounded-full">
                   {tab === t.id
                     ? (t.id === 'medicaments' ? medsTotal.toLocaleString() : pathsTotal.toLocaleString())
-                    : '…'}
+                    : 'ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦'}
                 </span>
               </button>
             ))}
@@ -779,7 +779,7 @@ export function EncyclopedieView() {
         </div>
       </div>
 
-      {/* ── Body ── */}
+      {/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Body ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left panel */}
         <div className={`flex flex-col border-r border-slate-100 dark:border-white/[0.06] flex-shrink-0 transition-all ${hasDetail ? 'w-[340px]' : 'flex-1'}`}>
@@ -791,7 +791,7 @@ export function EncyclopedieView() {
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder={tab === 'medicaments' ? 'Rechercher un médicament, DCI…' : 'Rechercher une pathologie, code CIM…'}
+                placeholder={tab === 'medicaments' ? 'Rechercher un mÃƒÆ’Ã‚Â©dicament, DCIÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦' : 'Rechercher une pathologie, code CIMÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦'}
                 className="w-full pl-9 pr-4 py-2.5 text-sm bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40"
               />
             </div>
@@ -810,9 +810,9 @@ export function EncyclopedieView() {
           <div className="flex-1 overflow-y-auto">
             {tab === 'medicaments' ? (
               medsLoading ? (
-                <div className="flex items-center justify-center py-16 text-slate-400 text-sm">Recherche…</div>
+                <div className="flex items-center justify-center py-16 text-slate-400 text-sm">RechercheÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</div>
               ) : meds.length === 0 ? (
-                <EmptyState icon={Pill} text="Aucun médicament trouvé" />
+                <EmptyState icon={Pill} text="Aucun mÃƒÆ’Ã‚Â©dicament trouvÃƒÆ’Ã‚Â©" />
               ) : (
                 <div className="p-2 space-y-1">
                   {meds.map(med => (
@@ -829,7 +829,7 @@ export function EncyclopedieView() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{med.nom_commercial || med.nom}</p>
                         {med.dci && <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{med.dci}</p>}
-                        {med.forme && <p className="text-[10px] text-slate-400 dark:text-slate-600 truncate">{med.forme}{med.dosage ? ` · ${med.dosage}` : ''}</p>}
+                        {med.forme && <p className="text-[10px] text-slate-400 dark:text-slate-600 truncate">{med.forme}{med.dosage ? ` Ãƒâ€šÃ‚Â· ${med.dosage}` : ''}</p>}
                       </div>
                       <div className="flex flex-col items-end gap-1 flex-shrink-0">
                         {med.pays && (
@@ -847,9 +847,9 @@ export function EncyclopedieView() {
               )
             ) : (
               pathsLoading ? (
-                <div className="flex items-center justify-center py-16 text-slate-400 text-sm">Recherche…</div>
+                <div className="flex items-center justify-center py-16 text-slate-400 text-sm">RechercheÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</div>
               ) : paths.length === 0 ? (
-                <EmptyState icon={Stethoscope} text="Aucune pathologie trouvée" />
+                <EmptyState icon={Stethoscope} text="Aucune pathologie trouvÃƒÆ’Ã‚Â©e" />
               ) : (
                 <div className="p-2 space-y-1">
                   {paths.map(path => (
@@ -864,7 +864,7 @@ export function EncyclopedieView() {
                         <Stethoscope className={`w-4 h-4 ${selectedPath?.id === path.id ? 'text-violet-600 dark:text-violet-400' : 'text-slate-400'}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        {/* Nom en français uniquement — nom_en supprimé */}
+                        {/* Nom en franÃƒÆ’Ã‚Â§ais uniquement ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â nom_en supprimÃƒÆ’Ã‚Â© */}
                         <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{path.nom_fr}</p>
                         {path.categorie && <p className="text-[10px] text-slate-400 dark:text-slate-600 truncate">{path.categorie}</p>}
                       </div>
@@ -901,8 +901,8 @@ export function EncyclopedieView() {
             <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="flex-1 flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
               <BookOpen className="w-16 h-16 mb-4 opacity-30" />
-              <p className="text-sm font-medium">Sélectionnez un élément</p>
-              <p className="text-xs mt-1 opacity-70">pour afficher les détails</p>
+              <p className="text-sm font-medium">SÃƒÆ’Ã‚Â©lectionnez un ÃƒÆ’Ã‚Â©lÃƒÆ’Ã‚Â©ment</p>
+              <p className="text-xs mt-1 opacity-70">pour afficher les dÃƒÆ’Ã‚Â©tails</p>
             </motion.div>
           )}
         </AnimatePresence>

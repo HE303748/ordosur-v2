@@ -220,13 +220,13 @@ function OrdonnancesTab({ ordonnances }: { ordonnances: any[] }) {
             key={ord.id}
             className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-4
               border border-slate-100 dark:border-white/[0.06]
-              hover:border-sky-200 dark:hover:border-sky-500/30
-              dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.15)]
+              hover:border-[#00A86B]/30 dark:hover:border-[#00A86B]/30
+              dark:hover:shadow-[0_0_0_1px_rgba(0,168,107,0.12)]
               transition-all"
           >
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 bg-sky-100 dark:bg-sky-500/20 rounded-lg flex items-center justify-center">
-                <FileText className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+              <div className="w-8 h-8 bg-[#E6F4EE] dark:bg-[#00A86B]/20 rounded-md flex items-center justify-center">
+                <FileText className="w-4 h-4 text-[#00A86B]" />
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-700 dark:text-[#E2E8F0]">{dateLabel}</p>
@@ -243,7 +243,7 @@ function OrdonnancesTab({ ordonnances }: { ordonnances: any[] }) {
             <div className="space-y-1.5 pl-10">
               {(ord.medications || []).map((med: any, idx: number) => (
                 <div key={idx} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00A86B] flex-shrink-0" />
                   <span className="text-xs font-semibold text-slate-800 dark:text-[#E2E8F0]">{med.nom}</span>
                   {med.posologie && <span className="text-xs text-slate-400 dark:text-[#475569]">– {med.posologie}</span>}
                   {med.duree && <span className="text-xs text-slate-400 dark:text-[#475569]">/ {med.duree}</span>}
@@ -266,7 +266,7 @@ function PlaceholderTab({ icon: Icon, title, desc }: { icon: any; title: string;
       </div>
       <p className="text-sm font-semibold text-slate-500 dark:text-[#94A3B8]">{title}</p>
       <p className="text-xs text-slate-400 dark:text-[#475569] mt-1 max-w-xs mx-auto">{desc}</p>
-      <button className="mt-4 px-4 py-2 bg-sky-50 dark:bg-sky-500/[0.1] text-sky-600 dark:text-sky-400 rounded-xl text-xs font-semibold hover:bg-sky-100 dark:hover:bg-sky-500/[0.18] transition-colors flex items-center gap-1.5 mx-auto">
+      <button className="mt-4 px-4 py-2 bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] text-[#00A86B] rounded-md text-xs font-semibold hover:bg-[#d4eee0] dark:hover:bg-[#00A86B]/[0.18] transition-colors flex items-center gap-1.5 mx-auto">
         <Plus className="w-3.5 h-3.5" /> Ajouter
       </button>
     </div>
@@ -330,7 +330,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
             </button>
             <button
               onClick={onNavigateToChecker}
-              className="px-3 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
+              className="px-3 py-2 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5"
             >
               💊 Prescrire
             </button>
@@ -348,8 +348,8 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
                 onClick={() => setActiveTab(tab.id)}
                 className={`relative flex items-center gap-1.5 px-4 py-3 text-xs font-semibold transition-colors ${
                   isActive
-                    ? 'text-sky-600 dark:text-sky-400 border-b-2 border-sky-500 dark:border-sky-400'
-                    : 'text-slate-400 dark:text-[#475569] hover:text-slate-600 dark:hover:text-[#94A3B8] border-b-2 border-transparent'
+                    ? 'text-[#00A86B] border-b-2 border-[#00A86B]'
+                    : 'text-[#94A3B8] dark:text-[#475569] hover:text-[#475569] dark:hover:text-[#94A3B8] border-b-2 border-transparent'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -357,7 +357,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
                 {tab.id === 'ordonnances' && ordonnances.length > 0 && (
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                     isActive
-                      ? 'bg-sky-100 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400'
+                      ? 'bg-[#E6F4EE] text-[#006B47]'
                       : 'bg-slate-100 dark:bg-white/[0.07] text-slate-500 dark:text-[#475569]'
                   }`}>
                     {ordonnances.length}

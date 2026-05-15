@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, Shield, FileText,
-  BarChart3, Calendar, Settings, LogOut, Bot, Activity,
+  BarChart3, Calendar, Settings, LogOut, Bot,
   ChevronLeft, ChevronRight, BookOpen, FilePlus,
 } from 'lucide-react';
+import { Logo } from '../Logo';
 
 export type ViewType = 'home' | 'patients' | 'checker' | 'ordonnances' | 'stats' | 'agenda' | 'encyclopedie' | 'documents' | 'settings';
 
@@ -56,13 +57,13 @@ function Tooltip({ label, children, collapsed }: TooltipProps) {
           >
             <div
               className="px-2.5 py-1.5 rounded-lg text-white text-xs font-semibold whitespace-nowrap shadow-xl"
-              style={{ background: '#1E293B', border: '1px solid rgba(255,255,255,0.1)' }}
+              style={{ background: '#1A2B42', border: '1px solid rgba(255,255,255,0.1)' }}
             >
               {label}
               {/* Arrow */}
               <div
                 className="absolute top-1/2 -translate-y-1/2 -left-1.5 w-0 h-0"
-                style={{ borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderRight: '6px solid #1E293B' }}
+                style={{ borderTop: '5px solid transparent', borderBottom: '5px solid transparent', borderRight: '6px solid #1A2B42' }}
               />
             </div>
           </motion.div>
@@ -89,20 +90,20 @@ function NavButton({ item, isActive, onClick, badge, collapsed }: NavButtonProps
         whileHover={{ x: isActive || collapsed ? 0 : 2 }}
         transition={{ duration: 0.12, ease: 'easeOut' }}
         onClick={onClick}
-        className={`w-full flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-150 ${
+        className={`w-full flex items-center gap-3 rounded-md text-[13px] font-medium transition-all duration-150 ${
           collapsed ? 'px-2.5 py-2.5 justify-center' : 'px-3 py-2.5'
         } ${
           isActive
-            ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/25'
-            : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
+            ? 'bg-[#00A86B]/10 text-[#00A86B]'
+            : 'text-white/60 hover:text-white hover:bg-[#1A2B42]'
         }`}
         style={
           isActive
-            ? { borderLeft: collapsed ? 'none' : '2px solid rgba(255,255,255,0.35)' }
-            : { borderLeft: collapsed ? 'none' : '2px solid transparent' }
+            ? { borderLeft: collapsed ? 'none' : '3px solid #00A86B' }
+            : { borderLeft: collapsed ? 'none' : '3px solid transparent' }
         }
       >
-        <Icon className="w-[18px] h-[18px] flex-shrink-0" />
+        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-[#00A86B]' : 'text-white/50'}`} />
         <AnimatePresence>
           {!collapsed && (
             <motion.span
@@ -118,7 +119,9 @@ function NavButton({ item, isActive, onClick, badge, collapsed }: NavButtonProps
         </AnimatePresence>
         {!collapsed && badge !== undefined && badge > 0 && (
           <span className={`min-w-[20px] px-1.5 py-0.5 rounded-full text-[11px] font-bold text-center tabular-nums ${
-            isActive ? 'bg-white/25 text-white' : 'bg-white/[0.1] text-slate-300'
+            isActive
+              ? 'bg-[#006B47] text-white'
+              : 'bg-[#00A86B] text-white'
           }`}>
             {badge > 99 ? '99+' : badge}
           </span>
@@ -162,32 +165,24 @@ export function Sidebar({
     <motion.div
       animate={{ width: w }}
       transition={{ duration: 0.25, ease: 'easeInOut' }}
-      style={{ background: 'linear-gradient(180deg, #060B14 0%, #0A0F1E 100%)' }}
+      style={{ backgroundColor: '#0A1628' }}
       className="h-screen flex flex-col border-r border-white/[0.06] overflow-hidden select-none flex-shrink-0"
     >
       {/* ── Logo row ── */}
       <div className={`flex items-center border-b border-white/[0.08] flex-shrink-0 ${
-        collapsed ? 'flex-col px-2 py-4 gap-2' : 'px-5 pt-6 pb-5'
+        collapsed ? 'flex-col px-2 py-4 gap-2' : 'px-5 pt-5 pb-4'
       }`}>
         {!collapsed && (
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-9 h-9 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/25 flex-shrink-0">
-              <Activity className="w-5 h-5 text-white" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-white font-bold text-[17px] tracking-tight leading-none">OrdoSur</h1>
-              <p className="text-sky-400/60 text-[11px] font-medium mt-0.5">Plateforme médicale</p>
-            </div>
+          <div className="flex items-center flex-1 min-w-0">
+            <Logo variant="horizontal-dark" size="md" />
           </div>
         )}
         {collapsed && (
-          <div className="w-9 h-9 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/25">
-            <Activity className="w-5 h-5 text-white" />
-          </div>
+          <Logo variant="symbol-dark" size="sm" />
         )}
         <button
           onClick={toggle}
-          className="p-1.5 text-slate-600 hover:text-slate-300 hover:bg-white/[0.07] rounded-lg transition-colors flex-shrink-0"
+          className="p-1.5 text-white/30 hover:text-white/70 hover:bg-white/[0.07] rounded-md transition-colors flex-shrink-0"
           title={collapsed ? 'Agrandir' : 'Réduire'}
         >
           {collapsed
@@ -206,16 +201,16 @@ export function Sidebar({
             transition={{ duration: 0.15 }}
             className="px-5 py-3.5 border-b border-white/[0.06] flex items-center gap-3 flex-shrink-0"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-[#00A86B] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
               {userInitials || 'MD'}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-white text-[13px] font-semibold truncate leading-tight">{userName || 'Médecin'}</p>
-              <p className="text-slate-500 text-[11px] truncate mt-0.5">{specialite || 'Généraliste'}</p>
+              <p className="text-white text-[13px] font-bold truncate leading-tight">{userName || 'Médecin'}</p>
+              <p className="text-white/50 text-[11px] truncate mt-0.5">{specialite || 'Généraliste'}</p>
             </div>
             <span className="relative flex h-2.5 w-2.5 flex-shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00A86B] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00A86B]" />
             </span>
           </motion.div>
         )}
@@ -224,7 +219,7 @@ export function Sidebar({
       {/* ── Collapsed: avatar ── */}
       {collapsed && (
         <div className="flex justify-center py-3 border-b border-white/[0.06] flex-shrink-0">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-xs">
+          <div className="w-8 h-8 rounded-full bg-[#00A86B] flex items-center justify-center text-white font-bold text-xs">
             {userInitials || 'MD'}
           </div>
         </div>
@@ -233,7 +228,7 @@ export function Sidebar({
       {/* ── Navigation ── */}
       <nav className={`flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-0.5 ${collapsed ? 'px-2' : 'px-3'}`}>
         {!collapsed && (
-          <p className="px-3 pb-2 text-[10px] font-bold text-slate-600 uppercase tracking-[0.12em]">
+          <p className="px-3 pb-2 text-[10px] font-bold text-white/25 uppercase tracking-[0.12em]">
             Navigation
           </p>
         )}
@@ -250,7 +245,7 @@ export function Sidebar({
         ))}
 
         {!collapsed && (
-          <p className="px-3 pb-2 pt-5 text-[10px] font-bold text-slate-600 uppercase tracking-[0.12em]">
+          <p className="px-3 pb-2 pt-5 text-[10px] font-bold text-white/25 uppercase tracking-[0.12em]">
             Outils
           </p>
         )}
@@ -274,7 +269,7 @@ export function Sidebar({
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={onAIChat}
-            className={`w-full flex items-center rounded-xl text-[13px] font-semibold bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-sky-500/20 hover:shadow-sky-500/35 transition-shadow ${
+            className={`w-full flex items-center rounded-md text-[13px] font-semibold bg-[#00A86B] text-white hover:bg-[#006B47] transition-colors shadow-lg shadow-[#00A86B]/20 ${
               collapsed ? 'px-2.5 py-2.5 justify-center' : 'gap-3 px-3 py-3'
             }`}
           >
@@ -294,7 +289,7 @@ export function Sidebar({
             whileHover={{ x: collapsed ? 0 : 2 }}
             transition={{ duration: 0.12 }}
             onClick={onLogout}
-            className={`w-full flex items-center text-slate-500 hover:text-red-400 hover:bg-red-400/[0.1] text-[13px] font-medium transition-colors duration-150 rounded-xl ${
+            className={`w-full flex items-center text-white/40 hover:text-[#DC2626] hover:bg-[#DC2626]/[0.1] text-[13px] font-medium transition-colors duration-150 rounded-md ${
               collapsed ? 'px-2.5 py-2.5 justify-center' : 'gap-3 px-3 py-2.5'
             }`}
           >
@@ -305,7 +300,7 @@ export function Sidebar({
 
         {/* Collapse toggle hint at very bottom (expanded only) */}
         {!collapsed && (
-          <p className="text-center text-[10px] text-slate-700 pt-1 select-none">
+          <p className="text-center text-[10px] text-white/20 pt-1 select-none">
             ← Réduire
           </p>
         )}

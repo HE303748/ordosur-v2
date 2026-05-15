@@ -12,7 +12,7 @@ import { AgendaView } from '../components/ui/AgendaView';
 import { PageTransition } from '../components/ui/PageTransition';
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
 
-/* ── Types ──────────────────────────────────────────────────────────────────── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Types Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 interface Ordonnance {
   id: string;
   created_at: string;
@@ -23,7 +23,7 @@ interface Ordonnance {
 
 type ViewType = 'patients' | 'agenda' | 'ordonnances';
 
-/* ── Sidebar secrétaire ─────────────────────────────────────────────────────── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Sidebar secrÃƒÂ©taire Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 const NAV: { id: ViewType; label: string; icon: React.ElementType }[] = [
   { id: 'patients',    label: 'Patients',    icon: Users    },
   { id: 'agenda',      label: 'Agenda',      icon: Calendar },
@@ -53,17 +53,17 @@ function SecretaireSidebar({
       <div className={`flex items-center border-b border-white/[0.08] flex-shrink-0 ${collapsed ? 'flex-col px-2 py-4 gap-2' : 'px-4 pt-5 pb-4'}`}>
         {!collapsed && (
           <div className="flex items-center gap-2.5 flex-1 min-w-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+            <div className="w-8 h-8 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
               <Activity className="w-4 h-4 text-white" />
             </div>
             <div className="min-w-0">
               <h1 className="text-white font-bold text-[15px] leading-none">OrdoSur</h1>
-              <p className="text-sky-400/60 text-[10px] font-medium mt-0.5 truncate">{orgName}</p>
+              <p className="text-[#00A86B]/60 text-[10px] font-medium mt-0.5 truncate">{orgName}</p>
             </div>
           </div>
         )}
         {collapsed && (
-          <div className="w-8 h-8 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-xl flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center">
             <Activity className="w-4 h-4 text-white" />
           </div>
         )}
@@ -83,7 +83,7 @@ function SecretaireSidebar({
           </div>
           <div className="min-w-0">
             <p className="text-white text-[12px] font-semibold truncate leading-tight">{userName}</p>
-            <p className="text-violet-400/70 text-[10px] font-medium mt-0.5">Secrétaire médicale</p>
+            <p className="text-violet-400/70 text-[10px] font-medium mt-0.5">SecrÃƒÂ©taire mÃƒÂ©dicale</p>
           </div>
         </div>
       )}
@@ -101,7 +101,7 @@ function SecretaireSidebar({
                 collapsed ? 'px-2.5 py-2.5 justify-center' : 'px-3 py-2.5'
               } ${
                 isActive
-                  ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/25'
+                  ? 'bg-[#00A86B] text-white shadow-lg shadow-[#00A86B]/25'
                   : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
               }`}
             >
@@ -121,14 +121,14 @@ function SecretaireSidebar({
           }`}
         >
           <LogOut className="w-[18px] h-[18px] flex-shrink-0" />
-          {!collapsed && <span>Déconnexion</span>}
+          {!collapsed && <span>DÃƒÂ©connexion</span>}
         </button>
       </div>
     </motion.div>
   );
 }
 
-/* ── Patients view (read-only) ──────────────────────────────────────────────── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Patients view (read-only) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 function PatientsView({ patients, loading }: { patients: Patient[]; loading: boolean }) {
   const [search, setSearch] = useState('');
   const filtered = patients.filter(p =>
@@ -150,26 +150,26 @@ function PatientsView({ patients, loading }: { patients: Patient[]; loading: boo
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher un patient…"
-            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+            placeholder="Rechercher un patientÃ¢â‚¬Â¦"
+            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
           />
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20 text-slate-400">Chargement…</div>
+          <div className="flex items-center justify-center py-20 text-slate-400">ChargementÃ¢â‚¬Â¦</div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400">
             <Users className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm">Aucun patient trouvé</p>
+            <p className="text-sm">Aucun patient trouvÃƒÂ©</p>
           </div>
         ) : (
           <div className="space-y-2">
             {filtered.map(p => (
               <div
                 key={p.id}
-                className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] rounded-xl px-4 py-3 flex items-center gap-4 hover:border-sky-200 dark:hover:border-sky-500/30 transition-colors"
+                className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] rounded-xl px-4 py-3 flex items-center gap-4 hover:border-[#00A86B]/20 dark:hover:border-[#00A86B]/30 transition-colors"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br bg-[#00A86B] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                   {p.prenom[0]}{p.nom[0]}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -213,7 +213,7 @@ function PatientsView({ patients, loading }: { patients: Patient[]; loading: boo
   );
 }
 
-/* ── Ordonnances view (read-only) ───────────────────────────────────────────── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Ordonnances view (read-only) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 function OrdonnancesView({ orgId }: { orgId: string }) {
   const [ordonnances, setOrdonnances] = useState<Ordonnance[]>([]);
   const [loading, setLoading] = useState(true);
@@ -251,17 +251,17 @@ function OrdonnancesView({ orgId }: { orgId: string }) {
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher par patient…"
-            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+            placeholder="Rechercher par patientÃ¢â‚¬Â¦"
+            className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
           />
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20 text-slate-400">Chargement…</div>
+          <div className="flex items-center justify-center py-20 text-slate-400">ChargementÃ¢â‚¬Â¦</div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400">
             <FileText className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm">Aucune ordonnance trouvée</p>
+            <p className="text-sm">Aucune ordonnance trouvÃƒÂ©e</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -286,7 +286,7 @@ function OrdonnancesView({ orgId }: { orgId: string }) {
                 </div>
                 {o.medications && Array.isArray(o.medications) && o.medications.length > 0 && (
                   <span className="text-xs text-slate-400 dark:text-slate-500">
-                    {o.medications.length} médicament{o.medications.length > 1 ? 's' : ''}
+                    {o.medications.length} mÃƒÂ©dicament{o.medications.length > 1 ? 's' : ''}
                   </span>
                 )}
               </div>
@@ -298,7 +298,7 @@ function OrdonnancesView({ orgId }: { orgId: string }) {
   );
 }
 
-/* ── Main SecretaireDashboard ───────────────────────────────────────────────── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Main SecretaireDashboard Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 export function SecretaireDashboard() {
   const { user, clinicProfile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -345,7 +345,7 @@ export function SecretaireDashboard() {
     navigate('/');
   };
 
-  const userName = user?.full_name || `${user?.prenom || ''} ${user?.nom || ''}`.trim() || 'Secrétaire';
+  const userName = user?.full_name || `${user?.prenom || ''} ${user?.nom || ''}`.trim() || 'SecrÃƒÂ©taire';
   const orgName = clinicProfile?.name || 'Cabinet';
 
   return (

@@ -1,6 +1,6 @@
 const AVATAR_COLORS = [
-  'bg-sky-500', 'bg-violet-500', 'bg-emerald-500', 'bg-rose-500',
-  'bg-amber-500', 'bg-cyan-500', 'bg-indigo-500', 'bg-pink-500',
+  'bg-[#00A86B]', 'bg-violet-500', 'bg-emerald-500', 'bg-rose-500',
+  'bg-amber-500', 'bg-[#006B47]', 'bg-indigo-500', 'bg-pink-500',
 ];
 
 function getColor(name: string): string {

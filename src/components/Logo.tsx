@@ -18,12 +18,12 @@
  * <Logo variant="symbol-primary" size="lg" />
  */
 
-import logHorizontalLight from '@/assets/brand/ordosur_logo_horizontal_light.svg';
-import logHorizontalDark  from '@/assets/brand/ordosur_logo_horizontal_dark.svg';
-import logVertical        from '@/assets/brand/ordosur_logo_vertical.svg';
-import symPrimary         from '@/assets/brand/ordosur_symbol_primary.svg';
-import symDark            from '@/assets/brand/ordosur_symbol_dark.svg';
-import symWhite           from '@/assets/brand/ordosur_symbol_white.svg';
+import logHorizontalLight from '../assets/brand/ordosur_logo_horizontal_light.svg';
+import logHorizontalDark  from '../assets/brand/ordosur_logo_horizontal_dark.svg';
+import logVertical        from '../assets/brand/ordosur_logo_vertical.svg';
+import symPrimary         from '../assets/brand/ordosur_symbol_primary.svg';
+import symDark            from '../assets/brand/ordosur_symbol_dark.svg';
+import symWhite           from '../assets/brand/ordosur_symbol_white.svg';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 

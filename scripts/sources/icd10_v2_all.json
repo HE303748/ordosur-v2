@@ -1,0 +1,2002 @@
+[
+  {
+    "code": "A00.0",
+    "name": "Cholera due to Vibrio cholerae 01, biovar cholerae"
+  },
+  {
+    "code": "A00.1",
+    "name": "Cholera due to Vibrio cholerae 01, biovar eltor"
+  },
+  {
+    "code": "A00.9",
+    "name": "Cholera, unspecified"
+  },
+  {
+    "code": "A01.00",
+    "name": "Typhoid fever, unspecified"
+  },
+  {
+    "code": "A01.01",
+    "name": "Typhoid meningitis"
+  },
+  {
+    "code": "A01.02",
+    "name": "Typhoid fever with heart involvement"
+  },
+  {
+    "code": "A01.03",
+    "name": "Typhoid pneumonia"
+  },
+  {
+    "code": "A01.04",
+    "name": "Typhoid arthritis"
+  },
+  {
+    "code": "A01.05",
+    "name": "Typhoid osteomyelitis"
+  },
+  {
+    "code": "A01.09",
+    "name": "Typhoid fever with other complications"
+  },
+  {
+    "code": "A01.1",
+    "name": "Paratyphoid fever A"
+  },
+  {
+    "code": "A01.2",
+    "name": "Paratyphoid fever B"
+  },
+  {
+    "code": "A01.3",
+    "name": "Paratyphoid fever C"
+  },
+  {
+    "code": "A01.4",
+    "name": "Paratyphoid fever, unspecified"
+  },
+  {
+    "code": "A02.0",
+    "name": "Salmonella enteritis"
+  },
+  {
+    "code": "A02.1",
+    "name": "Salmonella sepsis"
+  },
+  {
+    "code": "A02.20",
+    "name": "Localized salmonella infection, unspecified"
+  },
+  {
+    "code": "A02.21",
+    "name": "Salmonella meningitis"
+  },
+  {
+    "code": "A02.22",
+    "name": "Salmonella pneumonia"
+  },
+  {
+    "code": "A02.23",
+    "name": "Salmonella arthritis"
+  },
+  {
+    "code": "A02.24",
+    "name": "Salmonella osteomyelitis"
+  },
+  {
+    "code": "A02.25",
+    "name": "Salmonella pyelonephritis"
+  },
+  {
+    "code": "A02.29",
+    "name": "Salmonella with other localized infection"
+  },
+  {
+    "code": "A02.8",
+    "name": "Other specified salmonella infections"
+  },
+  {
+    "code": "A02.9",
+    "name": "Salmonella infection, unspecified"
+  },
+  {
+    "code": "A03.0",
+    "name": "Shigellosis due to Shigella dysenteriae"
+  },
+  {
+    "code": "A03.1",
+    "name": "Shigellosis due to Shigella flexneri"
+  },
+  {
+    "code": "A03.2",
+    "name": "Shigellosis due to Shigella boydii"
+  },
+  {
+    "code": "A03.3",
+    "name": "Shigellosis due to Shigella sonnei"
+  },
+  {
+    "code": "A03.8",
+    "name": "Other shigellosis"
+  },
+  {
+    "code": "A03.9",
+    "name": "Shigellosis, unspecified"
+  },
+  {
+    "code": "A04.0",
+    "name": "Enteropathogenic Escherichia coli infection"
+  },
+  {
+    "code": "A04.1",
+    "name": "Enterotoxigenic Escherichia coli infection"
+  },
+  {
+    "code": "A04.2",
+    "name": "Enteroinvasive Escherichia coli infection"
+  },
+  {
+    "code": "A04.3",
+    "name": "Enterohemorrhagic Escherichia coli infection"
+  },
+  {
+    "code": "A04.4",
+    "name": "Other intestinal Escherichia coli infections"
+  },
+  {
+    "code": "A04.5",
+    "name": "Campylobacter enteritis"
+  },
+  {
+    "code": "A04.6",
+    "name": "Enteritis due to Yersinia enterocolitica"
+  },
+  {
+    "code": "A04.71",
+    "name": "Enterocolitis due to Clostridium difficile, recurrent"
+  },
+  {
+    "code": "A04.72",
+    "name": "Enterocolitis due to Clostridium difficile, not specified as recurrent"
+  },
+  {
+    "code": "A04.8",
+    "name": "Other specified bacterial intestinal infections"
+  },
+  {
+    "code": "A04.9",
+    "name": "Bacterial intestinal infection, unspecified"
+  },
+  {
+    "code": "A05.0",
+    "name": "Foodborne staphylococcal intoxication"
+  },
+  {
+    "code": "A05.1",
+    "name": "Botulism food poisoning"
+  },
+  {
+    "code": "A05.2",
+    "name": "Foodborne Clostridium perfringens [Clostridium welchii] intoxication"
+  },
+  {
+    "code": "A05.3",
+    "name": "Foodborne Vibrio parahaemolyticus intoxication"
+  },
+  {
+    "code": "A05.4",
+    "name": "Foodborne Bacillus cereus intoxication"
+  },
+  {
+    "code": "A05.5",
+    "name": "Foodborne Vibrio vulnificus intoxication"
+  },
+  {
+    "code": "A05.8",
+    "name": "Other specified bacterial foodborne intoxications"
+  },
+  {
+    "code": "A05.9",
+    "name": "Bacterial foodborne intoxication, unspecified"
+  },
+  {
+    "code": "A06.0",
+    "name": "Acute amebic dysentery"
+  },
+  {
+    "code": "A06.1",
+    "name": "Chronic intestinal amebiasis"
+  },
+  {
+    "code": "A06.2",
+    "name": "Amebic nondysenteric colitis"
+  },
+  {
+    "code": "A06.3",
+    "name": "Ameboma of intestine"
+  },
+  {
+    "code": "A06.4",
+    "name": "Amebic liver abscess"
+  },
+  {
+    "code": "A06.5",
+    "name": "Amebic lung abscess"
+  },
+  {
+    "code": "A06.6",
+    "name": "Amebic brain abscess"
+  },
+  {
+    "code": "A06.7",
+    "name": "Cutaneous amebiasis"
+  },
+  {
+    "code": "A06.81",
+    "name": "Amebic cystitis"
+  },
+  {
+    "code": "A06.82",
+    "name": "Other amebic genitourinary infections"
+  },
+  {
+    "code": "A06.89",
+    "name": "Other amebic infections"
+  },
+  {
+    "code": "A06.9",
+    "name": "Amebiasis, unspecified"
+  },
+  {
+    "code": "A07.0",
+    "name": "Balantidiasis"
+  },
+  {
+    "code": "A07.1",
+    "name": "Giardiasis [lambliasis]"
+  },
+  {
+    "code": "A07.2",
+    "name": "Cryptosporidiosis"
+  },
+  {
+    "code": "A07.3",
+    "name": "Isosporiasis"
+  },
+  {
+    "code": "A07.4",
+    "name": "Cyclosporiasis"
+  },
+  {
+    "code": "A07.8",
+    "name": "Other specified protozoal intestinal diseases"
+  },
+  {
+    "code": "A07.9",
+    "name": "Protozoal intestinal disease, unspecified"
+  },
+  {
+    "code": "A08.0",
+    "name": "Rotaviral enteritis"
+  },
+  {
+    "code": "A08.11",
+    "name": "Acute gastroenteropathy due to Norwalk agent"
+  },
+  {
+    "code": "A08.19",
+    "name": "Acute gastroenteropathy due to other small round viruses"
+  },
+  {
+    "code": "A08.2",
+    "name": "Adenoviral enteritis"
+  },
+  {
+    "code": "A08.31",
+    "name": "Calicivirus enteritis"
+  },
+  {
+    "code": "A08.32",
+    "name": "Astrovirus enteritis"
+  },
+  {
+    "code": "A08.39",
+    "name": "Other viral enteritis"
+  },
+  {
+    "code": "A08.4",
+    "name": "Viral intestinal infection, unspecified"
+  },
+  {
+    "code": "A08.8",
+    "name": "Other specified intestinal infections"
+  },
+  {
+    "code": "A09",
+    "name": "Infectious gastroenteritis and colitis, unspecified"
+  },
+  {
+    "code": "QA0.0102",
+    "name": "CACNA1A-related neurodevelopmental disorder"
+  },
+  {
+    "code": "QA0.0131",
+    "name": "SLC6A1-related disorder"
+  },
+  {
+    "code": "O36.1111",
+    "name": "Maternal care for Anti-A sensitization, first trimester, fetus 1"
+  },
+  {
+    "code": "O36.1121",
+    "name": "Maternal care for Anti-A sensitization, second trimester, fetus 1"
+  },
+  {
+    "code": "O36.1131",
+    "name": "Maternal care for Anti-A sensitization, third trimester, fetus 1"
+  },
+  {
+    "code": "O36.1191",
+    "name": "Maternal care for Anti-A sensitization, unspecified trimester, fetus 1"
+  },
+  {
+    "code": "A15.0",
+    "name": "Tuberculosis of lung"
+  },
+  {
+    "code": "A15.4",
+    "name": "Tuberculosis of intrathoracic lymph nodes"
+  },
+  {
+    "code": "A15.5",
+    "name": "Tuberculosis of larynx, trachea and bronchus"
+  },
+  {
+    "code": "A15.6",
+    "name": "Tuberculous pleurisy"
+  },
+  {
+    "code": "A15.7",
+    "name": "Primary respiratory tuberculosis"
+  },
+  {
+    "code": "A15.8",
+    "name": "Other respiratory tuberculosis"
+  },
+  {
+    "code": "A15.9",
+    "name": "Respiratory tuberculosis unspecified"
+  },
+  {
+    "code": "A17.0",
+    "name": "Tuberculous meningitis"
+  },
+  {
+    "code": "A17.1",
+    "name": "Meningeal tuberculoma"
+  },
+  {
+    "code": "A17.81",
+    "name": "Tuberculoma of brain and spinal cord"
+  },
+  {
+    "code": "A17.82",
+    "name": "Tuberculous meningoencephalitis"
+  },
+  {
+    "code": "A17.83",
+    "name": "Tuberculous neuritis"
+  },
+  {
+    "code": "A17.89",
+    "name": "Other tuberculosis of nervous system"
+  },
+  {
+    "code": "A17.9",
+    "name": "Tuberculosis of nervous system, unspecified"
+  },
+  {
+    "code": "A18.01",
+    "name": "Tuberculosis of spine"
+  },
+  {
+    "code": "A18.02",
+    "name": "Tuberculous arthritis of other joints"
+  },
+  {
+    "code": "A18.03",
+    "name": "Tuberculosis of other bones"
+  },
+  {
+    "code": "A18.09",
+    "name": "Other musculoskeletal tuberculosis"
+  },
+  {
+    "code": "A18.10",
+    "name": "Tuberculosis of genitourinary system, unspecified"
+  },
+  {
+    "code": "A18.11",
+    "name": "Tuberculosis of kidney and ureter"
+  },
+  {
+    "code": "A18.12",
+    "name": "Tuberculosis of bladder"
+  },
+  {
+    "code": "A18.13",
+    "name": "Tuberculosis of other urinary organs"
+  },
+  {
+    "code": "A18.14",
+    "name": "Tuberculosis of prostate"
+  },
+  {
+    "code": "A18.15",
+    "name": "Tuberculosis of other male genital organs"
+  },
+  {
+    "code": "A18.16",
+    "name": "Tuberculosis of cervix"
+  },
+  {
+    "code": "A18.17",
+    "name": "Tuberculous female pelvic inflammatory disease"
+  },
+  {
+    "code": "A18.18",
+    "name": "Tuberculosis of other female genital organs"
+  },
+  {
+    "code": "A18.2",
+    "name": "Tuberculous peripheral lymphadenopathy"
+  },
+  {
+    "code": "A18.31",
+    "name": "Tuberculous peritonitis"
+  },
+  {
+    "code": "A18.32",
+    "name": "Tuberculous enteritis"
+  },
+  {
+    "code": "A18.39",
+    "name": "Retroperitoneal tuberculosis"
+  },
+  {
+    "code": "A18.4",
+    "name": "Tuberculosis of skin and subcutaneous tissue"
+  },
+  {
+    "code": "A18.50",
+    "name": "Tuberculosis of eye, unspecified"
+  },
+  {
+    "code": "A18.51",
+    "name": "Tuberculous episcleritis"
+  },
+  {
+    "code": "A18.52",
+    "name": "Tuberculous keratitis"
+  },
+  {
+    "code": "A18.53",
+    "name": "Tuberculous chorioretinitis"
+  },
+  {
+    "code": "A18.54",
+    "name": "Tuberculous iridocyclitis"
+  },
+  {
+    "code": "A18.59",
+    "name": "Other tuberculosis of eye"
+  },
+  {
+    "code": "A18.6",
+    "name": "Tuberculosis of (inner) (middle) ear"
+  },
+  {
+    "code": "A18.7",
+    "name": "Tuberculosis of adrenal glands"
+  },
+  {
+    "code": "A18.81",
+    "name": "Tuberculosis of thyroid gland"
+  },
+  {
+    "code": "A18.82",
+    "name": "Tuberculosis of other endocrine glands"
+  },
+  {
+    "code": "A18.83",
+    "name": "Tuberculosis of digestive tract organs, not elsewhere classified"
+  },
+  {
+    "code": "A18.84",
+    "name": "Tuberculosis of heart"
+  },
+  {
+    "code": "A18.85",
+    "name": "Tuberculosis of spleen"
+  },
+  {
+    "code": "A18.89",
+    "name": "Tuberculosis of other sites"
+  },
+  {
+    "code": "A19.0",
+    "name": "Acute miliary tuberculosis of a single specified site"
+  },
+  {
+    "code": "A19.1",
+    "name": "Acute miliary tuberculosis of multiple sites"
+  },
+  {
+    "code": "A19.2",
+    "name": "Acute miliary tuberculosis, unspecified"
+  },
+  {
+    "code": "A19.8",
+    "name": "Other miliary tuberculosis"
+  },
+  {
+    "code": "A19.9",
+    "name": "Miliary tuberculosis, unspecified"
+  },
+  {
+    "code": "D68.020",
+    "name": "Von Willebrand disease, type 2A"
+  },
+  {
+    "code": "QA0.0101",
+    "name": "SCN2A-related neurodevelopmental disorder"
+  },
+  {
+    "code": "O36.1112",
+    "name": "Maternal care for Anti-A sensitization, first trimester, fetus 2"
+  },
+  {
+    "code": "O36.1122",
+    "name": "Maternal care for Anti-A sensitization, second trimester, fetus 2"
+  },
+  {
+    "code": "O36.1132",
+    "name": "Maternal care for Anti-A sensitization, third trimester, fetus 2"
+  },
+  {
+    "code": "O36.1192",
+    "name": "Maternal care for Anti-A sensitization, unspecified trimester, fetus 2"
+  },
+  {
+    "code": "A20.0",
+    "name": "Bubonic plague"
+  },
+  {
+    "code": "A20.1",
+    "name": "Cellulocutaneous plague"
+  },
+  {
+    "code": "A20.2",
+    "name": "Pneumonic plague"
+  },
+  {
+    "code": "A20.3",
+    "name": "Plague meningitis"
+  },
+  {
+    "code": "A20.7",
+    "name": "Septicemic plague"
+  },
+  {
+    "code": "A20.8",
+    "name": "Other forms of plague"
+  },
+  {
+    "code": "A20.9",
+    "name": "Plague, unspecified"
+  },
+  {
+    "code": "A21.0",
+    "name": "Ulceroglandular tularemia"
+  },
+  {
+    "code": "A21.1",
+    "name": "Oculoglandular tularemia"
+  },
+  {
+    "code": "A21.2",
+    "name": "Pulmonary tularemia"
+  },
+  {
+    "code": "A21.3",
+    "name": "Gastrointestinal tularemia"
+  },
+  {
+    "code": "A21.7",
+    "name": "Generalized tularemia"
+  },
+  {
+    "code": "A21.8",
+    "name": "Other forms of tularemia"
+  },
+  {
+    "code": "A21.9",
+    "name": "Tularemia, unspecified"
+  },
+  {
+    "code": "A22.0",
+    "name": "Cutaneous anthrax"
+  },
+  {
+    "code": "A22.1",
+    "name": "Pulmonary anthrax"
+  },
+  {
+    "code": "A22.2",
+    "name": "Gastrointestinal anthrax"
+  },
+  {
+    "code": "A22.7",
+    "name": "Anthrax sepsis"
+  },
+  {
+    "code": "A22.8",
+    "name": "Other forms of anthrax"
+  },
+  {
+    "code": "A22.9",
+    "name": "Anthrax, unspecified"
+  },
+  {
+    "code": "A23.0",
+    "name": "Brucellosis due to Brucella melitensis"
+  },
+  {
+    "code": "A23.1",
+    "name": "Brucellosis due to Brucella abortus"
+  },
+  {
+    "code": "A23.2",
+    "name": "Brucellosis due to Brucella suis"
+  },
+  {
+    "code": "A23.3",
+    "name": "Brucellosis due to Brucella canis"
+  },
+  {
+    "code": "A23.8",
+    "name": "Other brucellosis"
+  },
+  {
+    "code": "A23.9",
+    "name": "Brucellosis, unspecified"
+  },
+  {
+    "code": "A24.0",
+    "name": "Glanders"
+  },
+  {
+    "code": "A24.1",
+    "name": "Acute and fulminating melioidosis"
+  },
+  {
+    "code": "A24.2",
+    "name": "Subacute and chronic melioidosis"
+  },
+  {
+    "code": "A24.3",
+    "name": "Other melioidosis"
+  },
+  {
+    "code": "A24.9",
+    "name": "Melioidosis, unspecified"
+  },
+  {
+    "code": "A25.0",
+    "name": "Spirillosis"
+  },
+  {
+    "code": "A25.1",
+    "name": "Streptobacillosis"
+  },
+  {
+    "code": "A25.9",
+    "name": "Rat-bite fever, unspecified"
+  },
+  {
+    "code": "A26.0",
+    "name": "Cutaneous erysipeloid"
+  },
+  {
+    "code": "A26.7",
+    "name": "Erysipelothrix sepsis"
+  },
+  {
+    "code": "A26.8",
+    "name": "Other forms of erysipeloid"
+  },
+  {
+    "code": "A26.9",
+    "name": "Erysipeloid, unspecified"
+  },
+  {
+    "code": "A27.0",
+    "name": "Leptospirosis icterohemorrhagica"
+  },
+  {
+    "code": "A27.81",
+    "name": "Aseptic meningitis in leptospirosis"
+  },
+  {
+    "code": "A27.89",
+    "name": "Other forms of leptospirosis"
+  },
+  {
+    "code": "A27.9",
+    "name": "Leptospirosis, unspecified"
+  },
+  {
+    "code": "A28.0",
+    "name": "Pasteurellosis"
+  },
+  {
+    "code": "A28.1",
+    "name": "Cat-scratch disease"
+  },
+  {
+    "code": "A28.2",
+    "name": "Extraintestinal yersiniosis"
+  },
+  {
+    "code": "A28.8",
+    "name": "Other specified zoonotic bacterial diseases, not elsewhere classified"
+  },
+  {
+    "code": "A28.9",
+    "name": "Zoonotic bacterial disease, unspecified"
+  },
+  {
+    "code": "N18.31",
+    "name": "Chronic kidney disease, stage 3a"
+  },
+  {
+    "code": "O36.1113",
+    "name": "Maternal care for Anti-A sensitization, first trimester, fetus 3"
+  },
+  {
+    "code": "O36.1123",
+    "name": "Maternal care for Anti-A sensitization, second trimester, fetus 3"
+  },
+  {
+    "code": "O36.1133",
+    "name": "Maternal care for Anti-A sensitization, third trimester, fetus 3"
+  },
+  {
+    "code": "O36.1193",
+    "name": "Maternal care for Anti-A sensitization, unspecified trimester, fetus 3"
+  },
+  {
+    "code": "V86.45XS",
+    "name": "Person injured while boarding or alighting from a 3- or 4- wheeled all-terrain vehicle (ATV), sequela"
+  },
+  {
+    "code": "V86.45XA",
+    "name": "Person injured while boarding or alighting from a 3- or 4- wheeled all-terrain vehicle (ATV), initial encounter"
+  },
+  {
+    "code": "V86.45XD",
+    "name": "Person injured while boarding or alighting from a 3- or 4- wheeled all-terrain vehicle (ATV), subsequent encounter"
+  },
+  {
+    "code": "A30.0",
+    "name": "Indeterminate leprosy"
+  },
+  {
+    "code": "A30.1",
+    "name": "Tuberculoid leprosy"
+  },
+  {
+    "code": "A30.2",
+    "name": "Borderline tuberculoid leprosy"
+  },
+  {
+    "code": "A30.3",
+    "name": "Borderline leprosy"
+  },
+  {
+    "code": "A30.4",
+    "name": "Borderline lepromatous leprosy"
+  },
+  {
+    "code": "A30.5",
+    "name": "Lepromatous leprosy"
+  },
+  {
+    "code": "A30.8",
+    "name": "Other forms of leprosy"
+  },
+  {
+    "code": "A30.9",
+    "name": "Leprosy, unspecified"
+  },
+  {
+    "code": "A31.0",
+    "name": "Pulmonary mycobacterial infection"
+  },
+  {
+    "code": "A31.1",
+    "name": "Cutaneous mycobacterial infection"
+  },
+  {
+    "code": "A31.2",
+    "name": "Disseminated mycobacterium avium-intracellulare complex (DMAC)"
+  },
+  {
+    "code": "A31.8",
+    "name": "Other mycobacterial infections"
+  },
+  {
+    "code": "A31.9",
+    "name": "Mycobacterial infection, unspecified"
+  },
+  {
+    "code": "A32.0",
+    "name": "Cutaneous listeriosis"
+  },
+  {
+    "code": "A32.11",
+    "name": "Listerial meningitis"
+  },
+  {
+    "code": "A32.12",
+    "name": "Listerial meningoencephalitis"
+  },
+  {
+    "code": "A32.7",
+    "name": "Listerial sepsis"
+  },
+  {
+    "code": "A32.81",
+    "name": "Oculoglandular listeriosis"
+  },
+  {
+    "code": "A32.82",
+    "name": "Listerial endocarditis"
+  },
+  {
+    "code": "A32.89",
+    "name": "Other forms of listeriosis"
+  },
+  {
+    "code": "A32.9",
+    "name": "Listeriosis, unspecified"
+  },
+  {
+    "code": "A33",
+    "name": "Tetanus neonatorum"
+  },
+  {
+    "code": "A34",
+    "name": "Obstetrical tetanus"
+  },
+  {
+    "code": "A35",
+    "name": "Other tetanus"
+  },
+  {
+    "code": "A36.0",
+    "name": "Pharyngeal diphtheria"
+  },
+  {
+    "code": "A36.1",
+    "name": "Nasopharyngeal diphtheria"
+  },
+  {
+    "code": "A36.2",
+    "name": "Laryngeal diphtheria"
+  },
+  {
+    "code": "A36.3",
+    "name": "Cutaneous diphtheria"
+  },
+  {
+    "code": "A36.81",
+    "name": "Diphtheritic cardiomyopathy"
+  },
+  {
+    "code": "A36.82",
+    "name": "Diphtheritic radiculomyelitis"
+  },
+  {
+    "code": "A36.83",
+    "name": "Diphtheritic polyneuritis"
+  },
+  {
+    "code": "A36.84",
+    "name": "Diphtheritic tubulo-interstitial nephropathy"
+  },
+  {
+    "code": "A36.85",
+    "name": "Diphtheritic cystitis"
+  },
+  {
+    "code": "A36.86",
+    "name": "Diphtheritic conjunctivitis"
+  },
+  {
+    "code": "A36.89",
+    "name": "Other diphtheritic complications"
+  },
+  {
+    "code": "A36.9",
+    "name": "Diphtheria, unspecified"
+  },
+  {
+    "code": "A37.00",
+    "name": "Whooping cough due to Bordetella pertussis without pneumonia"
+  },
+  {
+    "code": "A37.01",
+    "name": "Whooping cough due to Bordetella pertussis with pneumonia"
+  },
+  {
+    "code": "A37.10",
+    "name": "Whooping cough due to Bordetella parapertussis without pneumonia"
+  },
+  {
+    "code": "A37.11",
+    "name": "Whooping cough due to Bordetella parapertussis with pneumonia"
+  },
+  {
+    "code": "A37.80",
+    "name": "Whooping cough due to other Bordetella species without pneumonia"
+  },
+  {
+    "code": "A37.81",
+    "name": "Whooping cough due to other Bordetella species with pneumonia"
+  },
+  {
+    "code": "A37.90",
+    "name": "Whooping cough, unspecified species without pneumonia"
+  },
+  {
+    "code": "A37.91",
+    "name": "Whooping cough, unspecified species with pneumonia"
+  },
+  {
+    "code": "A38.0",
+    "name": "Scarlet fever with otitis media"
+  },
+  {
+    "code": "A38.1",
+    "name": "Scarlet fever with myocarditis"
+  },
+  {
+    "code": "A38.8",
+    "name": "Scarlet fever with other complications"
+  },
+  {
+    "code": "A38.9",
+    "name": "Scarlet fever, uncomplicated"
+  },
+  {
+    "code": "A39.0",
+    "name": "Meningococcal meningitis"
+  },
+  {
+    "code": "A39.1",
+    "name": "Waterhouse-Friderichsen syndrome"
+  },
+  {
+    "code": "A39.2",
+    "name": "Acute meningococcemia"
+  },
+  {
+    "code": "A39.3",
+    "name": "Chronic meningococcemia"
+  },
+  {
+    "code": "A39.4",
+    "name": "Meningococcemia, unspecified"
+  },
+  {
+    "code": "A39.50",
+    "name": "Meningococcal carditis, unspecified"
+  },
+  {
+    "code": "A39.51",
+    "name": "Meningococcal endocarditis"
+  },
+  {
+    "code": "A39.52",
+    "name": "Meningococcal myocarditis"
+  },
+  {
+    "code": "A39.53",
+    "name": "Meningococcal pericarditis"
+  },
+  {
+    "code": "A39.81",
+    "name": "Meningococcal encephalitis"
+  },
+  {
+    "code": "A39.82",
+    "name": "Meningococcal retrobulbar neuritis"
+  },
+  {
+    "code": "A39.83",
+    "name": "Meningococcal arthritis"
+  },
+  {
+    "code": "A39.84",
+    "name": "Postmeningococcal arthritis"
+  },
+  {
+    "code": "A39.89",
+    "name": "Other meningococcal infections"
+  },
+  {
+    "code": "A39.9",
+    "name": "Meningococcal infection, unspecified"
+  },
+  {
+    "code": "O36.1114",
+    "name": "Maternal care for Anti-A sensitization, first trimester, fetus 4"
+  },
+  {
+    "code": "O36.1124",
+    "name": "Maternal care for Anti-A sensitization, second trimester, fetus 4"
+  },
+  {
+    "code": "O36.1134",
+    "name": "Maternal care for Anti-A sensitization, third trimester, fetus 4"
+  },
+  {
+    "code": "O36.1194",
+    "name": "Maternal care for Anti-A sensitization, unspecified trimester, fetus 4"
+  },
+  {
+    "code": "A40.0",
+    "name": "Sepsis due to streptococcus, group A"
+  },
+  {
+    "code": "A40.1",
+    "name": "Sepsis due to streptococcus, group B"
+  },
+  {
+    "code": "A40.3",
+    "name": "Sepsis due to Streptococcus pneumoniae"
+  },
+  {
+    "code": "A40.8",
+    "name": "Other streptococcal sepsis"
+  },
+  {
+    "code": "A40.9",
+    "name": "Streptococcal sepsis, unspecified"
+  },
+  {
+    "code": "A41.01",
+    "name": "Sepsis due to Methicillin susceptible Staphylococcus aureus"
+  },
+  {
+    "code": "A41.02",
+    "name": "Sepsis due to Methicillin resistant Staphylococcus aureus"
+  },
+  {
+    "code": "A41.1",
+    "name": "Sepsis due to other specified staphylococcus"
+  },
+  {
+    "code": "A41.2",
+    "name": "Sepsis due to unspecified staphylococcus"
+  },
+  {
+    "code": "A41.3",
+    "name": "Sepsis due to Hemophilus influenzae"
+  },
+  {
+    "code": "A41.4",
+    "name": "Sepsis due to anaerobes"
+  },
+  {
+    "code": "A41.50",
+    "name": "Gram-negative sepsis, unspecified"
+  },
+  {
+    "code": "A41.51",
+    "name": "Sepsis due to Escherichia coli [E. coli]"
+  },
+  {
+    "code": "A41.52",
+    "name": "Sepsis due to Pseudomonas"
+  },
+  {
+    "code": "A41.53",
+    "name": "Sepsis due to Serratia"
+  },
+  {
+    "code": "A41.54",
+    "name": "Sepsis due to Acinetobacter baumannii"
+  },
+  {
+    "code": "A41.59",
+    "name": "Other Gram-negative sepsis"
+  },
+  {
+    "code": "A41.81",
+    "name": "Sepsis due to Enterococcus"
+  },
+  {
+    "code": "A41.89",
+    "name": "Other specified sepsis"
+  },
+  {
+    "code": "A41.9",
+    "name": "Sepsis, unspecified organism"
+  },
+  {
+    "code": "A42.0",
+    "name": "Pulmonary actinomycosis"
+  },
+  {
+    "code": "A42.1",
+    "name": "Abdominal actinomycosis"
+  },
+  {
+    "code": "A42.2",
+    "name": "Cervicofacial actinomycosis"
+  },
+  {
+    "code": "A42.7",
+    "name": "Actinomycotic sepsis"
+  },
+  {
+    "code": "A42.81",
+    "name": "Actinomycotic meningitis"
+  },
+  {
+    "code": "A42.82",
+    "name": "Actinomycotic encephalitis"
+  },
+  {
+    "code": "A42.89",
+    "name": "Other forms of actinomycosis"
+  },
+  {
+    "code": "A42.9",
+    "name": "Actinomycosis, unspecified"
+  },
+  {
+    "code": "A43.0",
+    "name": "Pulmonary nocardiosis"
+  },
+  {
+    "code": "A43.1",
+    "name": "Cutaneous nocardiosis"
+  },
+  {
+    "code": "A43.8",
+    "name": "Other forms of nocardiosis"
+  },
+  {
+    "code": "A43.9",
+    "name": "Nocardiosis, unspecified"
+  },
+  {
+    "code": "A44.0",
+    "name": "Systemic bartonellosis"
+  },
+  {
+    "code": "A44.1",
+    "name": "Cutaneous and mucocutaneous bartonellosis"
+  },
+  {
+    "code": "A44.8",
+    "name": "Other forms of bartonellosis"
+  },
+  {
+    "code": "A44.9",
+    "name": "Bartonellosis, unspecified"
+  },
+  {
+    "code": "A46",
+    "name": "Erysipelas"
+  },
+  {
+    "code": "A48.0",
+    "name": "Gas gangrene"
+  },
+  {
+    "code": "A48.1",
+    "name": "Legionnaires' disease"
+  },
+  {
+    "code": "A48.2",
+    "name": "Nonpneumonic Legionnaires' disease [Pontiac fever]"
+  },
+  {
+    "code": "A48.3",
+    "name": "Toxic shock syndrome"
+  },
+  {
+    "code": "A48.4",
+    "name": "Brazilian purpuric fever"
+  },
+  {
+    "code": "A48.51",
+    "name": "Infant botulism"
+  },
+  {
+    "code": "A48.52",
+    "name": "Wound botulism"
+  },
+  {
+    "code": "A48.8",
+    "name": "Other specified bacterial diseases"
+  },
+  {
+    "code": "A49.01",
+    "name": "Methicillin susceptible Staphylococcus aureus infection, unspecified site"
+  },
+  {
+    "code": "A49.02",
+    "name": "Methicillin resistant Staphylococcus aureus infection, unspecified site"
+  },
+  {
+    "code": "A49.1",
+    "name": "Streptococcal infection, unspecified site"
+  },
+  {
+    "code": "A49.2",
+    "name": "Hemophilus influenzae infection, unspecified site"
+  },
+  {
+    "code": "A49.3",
+    "name": "Mycoplasma infection, unspecified site"
+  },
+  {
+    "code": "A49.8",
+    "name": "Other bacterial infections of unspecified site"
+  },
+  {
+    "code": "A49.9",
+    "name": "Bacterial infection, unspecified"
+  },
+  {
+    "code": "E74.820",
+    "name": "SLC13A5 Citrate Transporter Disorder"
+  },
+  {
+    "code": "O36.1115",
+    "name": "Maternal care for Anti-A sensitization, first trimester, fetus 5"
+  },
+  {
+    "code": "O36.1125",
+    "name": "Maternal care for Anti-A sensitization, second trimester, fetus 5"
+  },
+  {
+    "code": "O36.1135",
+    "name": "Maternal care for Anti-A sensitization, third trimester, fetus 5"
+  },
+  {
+    "code": "O36.1195",
+    "name": "Maternal care for Anti-A sensitization, unspecified trimester, fetus 5"
+  },
+  {
+    "code": "A50.01",
+    "name": "Early congenital syphilitic oculopathy"
+  },
+  {
+    "code": "A50.02",
+    "name": "Early congenital syphilitic osteochondropathy"
+  },
+  {
+    "code": "A50.03",
+    "name": "Early congenital syphilitic pharyngitis"
+  },
+  {
+    "code": "A50.04",
+    "name": "Early congenital syphilitic pneumonia"
+  },
+  {
+    "code": "A50.05",
+    "name": "Early congenital syphilitic rhinitis"
+  },
+  {
+    "code": "A50.06",
+    "name": "Early cutaneous congenital syphilis"
+  },
+  {
+    "code": "A50.07",
+    "name": "Early mucocutaneous congenital syphilis"
+  },
+  {
+    "code": "A50.08",
+    "name": "Early visceral congenital syphilis"
+  },
+  {
+    "code": "A50.09",
+    "name": "Other early congenital syphilis, symptomatic"
+  },
+  {
+    "code": "A50.1",
+    "name": "Early congenital syphilis, latent"
+  },
+  {
+    "code": "A50.2",
+    "name": "Early congenital syphilis, unspecified"
+  },
+  {
+    "code": "A50.30",
+    "name": "Late congenital syphilitic oculopathy, unspecified"
+  },
+  {
+    "code": "A50.31",
+    "name": "Late congenital syphilitic interstitial keratitis"
+  },
+  {
+    "code": "A50.32",
+    "name": "Late congenital syphilitic chorioretinitis"
+  },
+  {
+    "code": "A50.39",
+    "name": "Other late congenital syphilitic oculopathy"
+  },
+  {
+    "code": "A50.40",
+    "name": "Late congenital neurosyphilis, unspecified"
+  },
+  {
+    "code": "A50.41",
+    "name": "Late congenital syphilitic meningitis"
+  },
+  {
+    "code": "A50.42",
+    "name": "Late congenital syphilitic encephalitis"
+  },
+  {
+    "code": "A50.43",
+    "name": "Late congenital syphilitic polyneuropathy"
+  },
+  {
+    "code": "A50.44",
+    "name": "Late congenital syphilitic optic nerve atrophy"
+  },
+  {
+    "code": "A50.45",
+    "name": "Juvenile general paresis"
+  },
+  {
+    "code": "A50.49",
+    "name": "Other late congenital neurosyphilis"
+  },
+  {
+    "code": "A50.51",
+    "name": "Clutton's joints"
+  },
+  {
+    "code": "A50.52",
+    "name": "Hutchinson's teeth"
+  },
+  {
+    "code": "A50.53",
+    "name": "Hutchinson's triad"
+  },
+  {
+    "code": "A50.54",
+    "name": "Late congenital cardiovascular syphilis"
+  },
+  {
+    "code": "A50.55",
+    "name": "Late congenital syphilitic arthropathy"
+  },
+  {
+    "code": "A50.56",
+    "name": "Late congenital syphilitic osteochondropathy"
+  },
+  {
+    "code": "A50.57",
+    "name": "Syphilitic saddle nose"
+  },
+  {
+    "code": "A50.59",
+    "name": "Other late congenital syphilis, symptomatic"
+  },
+  {
+    "code": "A50.6",
+    "name": "Late congenital syphilis, latent"
+  },
+  {
+    "code": "A50.7",
+    "name": "Late congenital syphilis, unspecified"
+  },
+  {
+    "code": "A50.9",
+    "name": "Congenital syphilis, unspecified"
+  },
+  {
+    "code": "A51.0",
+    "name": "Primary genital syphilis"
+  },
+  {
+    "code": "A51.1",
+    "name": "Primary anal syphilis"
+  },
+  {
+    "code": "A51.2",
+    "name": "Primary syphilis of other sites"
+  },
+  {
+    "code": "A51.31",
+    "name": "Condyloma latum"
+  },
+  {
+    "code": "A51.32",
+    "name": "Syphilitic alopecia"
+  },
+  {
+    "code": "A51.39",
+    "name": "Other secondary syphilis of skin"
+  },
+  {
+    "code": "A51.41",
+    "name": "Secondary syphilitic meningitis"
+  },
+  {
+    "code": "A51.42",
+    "name": "Secondary syphilitic female pelvic disease"
+  },
+  {
+    "code": "A51.43",
+    "name": "Secondary syphilitic oculopathy"
+  },
+  {
+    "code": "A51.44",
+    "name": "Secondary syphilitic nephritis"
+  },
+  {
+    "code": "A51.45",
+    "name": "Secondary syphilitic hepatitis"
+  },
+  {
+    "code": "A51.46",
+    "name": "Secondary syphilitic osteopathy"
+  },
+  {
+    "code": "A51.49",
+    "name": "Other secondary syphilitic conditions"
+  },
+  {
+    "code": "A51.5",
+    "name": "Early syphilis, latent"
+  },
+  {
+    "code": "A51.9",
+    "name": "Early syphilis, unspecified"
+  },
+  {
+    "code": "A52.00",
+    "name": "Cardiovascular syphilis, unspecified"
+  },
+  {
+    "code": "A52.01",
+    "name": "Syphilitic aneurysm of aorta"
+  },
+  {
+    "code": "A52.02",
+    "name": "Syphilitic aortitis"
+  },
+  {
+    "code": "A52.03",
+    "name": "Syphilitic endocarditis"
+  },
+  {
+    "code": "A52.04",
+    "name": "Syphilitic cerebral arteritis"
+  },
+  {
+    "code": "A52.05",
+    "name": "Other cerebrovascular syphilis"
+  },
+  {
+    "code": "A52.06",
+    "name": "Other syphilitic heart involvement"
+  },
+  {
+    "code": "A52.09",
+    "name": "Other cardiovascular syphilis"
+  },
+  {
+    "code": "A52.10",
+    "name": "Symptomatic neurosyphilis, unspecified"
+  },
+  {
+    "code": "A52.11",
+    "name": "Tabes dorsalis"
+  },
+  {
+    "code": "A52.12",
+    "name": "Other cerebrospinal syphilis"
+  },
+  {
+    "code": "A52.13",
+    "name": "Late syphilitic meningitis"
+  },
+  {
+    "code": "A52.14",
+    "name": "Late syphilitic encephalitis"
+  },
+  {
+    "code": "A52.15",
+    "name": "Late syphilitic neuropathy"
+  },
+  {
+    "code": "A52.16",
+    "name": "Charcot's arthropathy (tabetic)"
+  },
+  {
+    "code": "A52.17",
+    "name": "General paresis"
+  },
+  {
+    "code": "A52.19",
+    "name": "Other symptomatic neurosyphilis"
+  },
+  {
+    "code": "A52.2",
+    "name": "Asymptomatic neurosyphilis"
+  },
+  {
+    "code": "A52.3",
+    "name": "Neurosyphilis, unspecified"
+  },
+  {
+    "code": "A52.71",
+    "name": "Late syphilitic oculopathy"
+  },
+  {
+    "code": "A52.72",
+    "name": "Syphilis of lung and bronchus"
+  },
+  {
+    "code": "A52.73",
+    "name": "Symptomatic late syphilis of other respiratory organs"
+  },
+  {
+    "code": "A52.74",
+    "name": "Syphilis of liver and other viscera"
+  },
+  {
+    "code": "A52.75",
+    "name": "Syphilis of kidney and ureter"
+  },
+  {
+    "code": "A52.76",
+    "name": "Other genitourinary symptomatic late syphilis"
+  },
+  {
+    "code": "A52.77",
+    "name": "Syphilis of bone and joint"
+  },
+  {
+    "code": "A52.78",
+    "name": "Syphilis of other musculoskeletal tissue"
+  },
+  {
+    "code": "A52.79",
+    "name": "Other symptomatic late syphilis"
+  },
+  {
+    "code": "A52.8",
+    "name": "Late syphilis, latent"
+  },
+  {
+    "code": "A52.9",
+    "name": "Late syphilis, unspecified"
+  },
+  {
+    "code": "A53.0",
+    "name": "Latent syphilis, unspecified as early or late"
+  },
+  {
+    "code": "A53.9",
+    "name": "Syphilis, unspecified"
+  },
+  {
+    "code": "A54.00",
+    "name": "Gonococcal infection of lower genitourinary tract, unspecified"
+  },
+  {
+    "code": "A54.01",
+    "name": "Gonococcal cystitis and urethritis, unspecified"
+  },
+  {
+    "code": "A54.02",
+    "name": "Gonococcal vulvovaginitis, unspecified"
+  },
+  {
+    "code": "A54.03",
+    "name": "Gonococcal cervicitis, unspecified"
+  },
+  {
+    "code": "A54.09",
+    "name": "Other gonococcal infection of lower genitourinary tract"
+  },
+  {
+    "code": "A54.1",
+    "name": "Gonococcal infection of lower genitourinary tract with periurethral and accessory gland abscess"
+  },
+  {
+    "code": "A54.21",
+    "name": "Gonococcal infection of kidney and ureter"
+  },
+  {
+    "code": "A54.22",
+    "name": "Gonococcal prostatitis"
+  },
+  {
+    "code": "A54.23",
+    "name": "Gonococcal infection of other male genital organs"
+  },
+  {
+    "code": "A54.24",
+    "name": "Gonococcal female pelvic inflammatory disease"
+  },
+  {
+    "code": "A54.29",
+    "name": "Other gonococcal genitourinary infections"
+  },
+  {
+    "code": "A54.30",
+    "name": "Gonococcal infection of eye, unspecified"
+  },
+  {
+    "code": "A54.31",
+    "name": "Gonococcal conjunctivitis"
+  },
+  {
+    "code": "A54.32",
+    "name": "Gonococcal iridocyclitis"
+  },
+  {
+    "code": "A54.33",
+    "name": "Gonococcal keratitis"
+  },
+  {
+    "code": "A54.39",
+    "name": "Other gonococcal eye infection"
+  },
+  {
+    "code": "A54.40",
+    "name": "Gonococcal infection of musculoskeletal system, unspecified"
+  },
+  {
+    "code": "A54.41",
+    "name": "Gonococcal spondylopathy"
+  },
+  {
+    "code": "A54.42",
+    "name": "Gonococcal arthritis"
+  },
+  {
+    "code": "A54.43",
+    "name": "Gonococcal osteomyelitis"
+  },
+  {
+    "code": "A54.49",
+    "name": "Gonococcal infection of other musculoskeletal tissue"
+  },
+  {
+    "code": "A54.5",
+    "name": "Gonococcal pharyngitis"
+  },
+  {
+    "code": "A54.6",
+    "name": "Gonococcal infection of anus and rectum"
+  },
+  {
+    "code": "A54.81",
+    "name": "Gonococcal meningitis"
+  },
+  {
+    "code": "A54.82",
+    "name": "Gonococcal brain abscess"
+  },
+  {
+    "code": "A54.83",
+    "name": "Gonococcal heart infection"
+  },
+  {
+    "code": "A54.84",
+    "name": "Gonococcal pneumonia"
+  },
+  {
+    "code": "A54.85",
+    "name": "Gonococcal peritonitis"
+  },
+  {
+    "code": "A54.86",
+    "name": "Gonococcal sepsis"
+  },
+  {
+    "code": "A54.89",
+    "name": "Other gonococcal infections"
+  },
+  {
+    "code": "A54.9",
+    "name": "Gonococcal infection, unspecified"
+  },
+  {
+    "code": "A55",
+    "name": "Chlamydial lymphogranuloma (venereum)"
+  },
+  {
+    "code": "A56.00",
+    "name": "Chlamydial infection of lower genitourinary tract, unspecified"
+  },
+  {
+    "code": "A56.01",
+    "name": "Chlamydial cystitis and urethritis"
+  },
+  {
+    "code": "A56.02",
+    "name": "Chlamydial vulvovaginitis"
+  },
+  {
+    "code": "A56.09",
+    "name": "Other chlamydial infection of lower genitourinary tract"
+  },
+  {
+    "code": "A56.11",
+    "name": "Chlamydial female pelvic inflammatory disease"
+  },
+  {
+    "code": "A56.19",
+    "name": "Other chlamydial genitourinary infection"
+  },
+  {
+    "code": "A56.2",
+    "name": "Chlamydial infection of genitourinary tract, unspecified"
+  },
+  {
+    "code": "A56.3",
+    "name": "Chlamydial infection of anus and rectum"
+  },
+  {
+    "code": "A56.4",
+    "name": "Chlamydial infection of pharynx"
+  },
+  {
+    "code": "A56.8",
+    "name": "Sexually transmitted chlamydial infection of other sites"
+  },
+  {
+    "code": "A57",
+    "name": "Chancroid"
+  },
+  {
+    "code": "A58",
+    "name": "Granuloma inguinale"
+  },
+  {
+    "code": "A59.00",
+    "name": "Urogenital trichomoniasis, unspecified"
+  },
+  {
+    "code": "A59.01",
+    "name": "Trichomonal vulvovaginitis"
+  },
+  {
+    "code": "A59.02",
+    "name": "Trichomonal prostatitis"
+  },
+  {
+    "code": "A59.03",
+    "name": "Trichomonal cystitis and urethritis"
+  },
+  {
+    "code": "A59.09",
+    "name": "Other urogenital trichomoniasis"
+  },
+  {
+    "code": "A59.8",
+    "name": "Trichomoniasis of other sites"
+  },
+  {
+    "code": "A59.9",
+    "name": "Trichomoniasis, unspecified"
+  },
+  {
+    "code": "A60.00",
+    "name": "Herpesviral infection of urogenital system, unspecified"
+  },
+  {
+    "code": "A60.01",
+    "name": "Herpesviral infection of penis"
+  },
+  {
+    "code": "A60.02",
+    "name": "Herpesviral infection of other male genital organs"
+  },
+  {
+    "code": "A60.03",
+    "name": "Herpesviral cervicitis"
+  },
+  {
+    "code": "A60.04",
+    "name": "Herpesviral vulvovaginitis"
+  },
+  {
+    "code": "A60.09",
+    "name": "Herpesviral infection of other urogenital tract"
+  },
+  {
+    "code": "A60.1",
+    "name": "Herpesviral infection of perianal skin and rectum"
+  },
+  {
+    "code": "A60.9",
+    "name": "Anogenital herpesviral infection, unspecified"
+  },
+  {
+    "code": "A63.0",
+    "name": "Anogenital (venereal) warts"
+  },
+  {
+    "code": "A63.8",
+    "name": "Other specified predominantly sexually transmitted diseases"
+  },
+  {
+    "code": "A64",
+    "name": "Unspecified sexually transmitted disease"
+  },
+  {
+    "code": "A65",
+    "name": "Nonvenereal syphilis"
+  },
+  {
+    "code": "A66.0",
+    "name": "Initial lesions of yaws"
+  },
+  {
+    "code": "A66.1",
+    "name": "Multiple papillomata and wet crab yaws"
+  },
+  {
+    "code": "A66.2",
+    "name": "Other early skin lesions of yaws"
+  },
+  {
+    "code": "A66.3",
+    "name": "Hyperkeratosis of yaws"
+  },
+  {
+    "code": "A66.4",
+    "name": "Gummata and ulcers of yaws"
+  },
+  {
+    "code": "A66.5",
+    "name": "Gangosa"
+  },
+  {
+    "code": "A66.6",
+    "name": "Bone and joint lesions of yaws"
+  },
+  {
+    "code": "A66.7",
+    "name": "Other manifestations of yaws"
+  },
+  {
+    "code": "A66.8",
+    "name": "Latent yaws"
+  },
+  {
+    "code": "A66.9",
+    "name": "Yaws, unspecified"
+  },
+  {
+    "code": "A67.0",
+    "name": "Primary lesions of pinta"
+  },
+  {
+    "code": "A67.1",
+    "name": "Intermediate lesions of pinta"
+  },
+  {
+    "code": "A67.2",
+    "name": "Late lesions of pinta"
+  },
+  {
+    "code": "A67.3",
+    "name": "Mixed lesions of pinta"
+  },
+  {
+    "code": "A67.9",
+    "name": "Pinta, unspecified"
+  },
+  {
+    "code": "A68.0",
+    "name": "Louse-borne relapsing fever"
+  },
+  {
+    "code": "A68.1",
+    "name": "Tick-borne relapsing fever"
+  },
+  {
+    "code": "A68.9",
+    "name": "Relapsing fever, unspecified"
+  },
+  {
+    "code": "A69.0",
+    "name": "Necrotizing ulcerative stomatitis"
+  },
+  {
+    "code": "A69.1",
+    "name": "Other Vincent's infections"
+  },
+  {
+    "code": "A69.20",
+    "name": "Lyme disease, unspecified"
+  },
+  {
+    "code": "A69.21",
+    "name": "Meningitis due to Lyme disease"
+  },
+  {
+    "code": "A69.22",
+    "name": "Other neurologic disorders in Lyme disease"
+  },
+  {
+    "code": "A69.23",
+    "name": "Arthritis due to Lyme disease"
+  },
+  {
+    "code": "A69.29",
+    "name": "Other conditions associated with Lyme disease"
+  },
+  {
+    "code": "A69.8",
+    "name": "Other specified spirochetal infections"
+  },
+  {
+    "code": "A69.9",
+    "name": "Spirochetal infection, unspecified"
+  },
+  {
+    "code": "A70",
+    "name": "Chlamydia psittaci infections"
+  },
+  {
+    "code": "A71.0",
+    "name": "Initial stage of trachoma"
+  },
+  {
+    "code": "A71.1",
+    "name": "Active stage of trachoma"
+  },
+  {
+    "code": "A71.9",
+    "name": "Trachoma, unspecified"
+  },
+  {
+    "code": "A74.0",
+    "name": "Chlamydial conjunctivitis"
+  },
+  {
+    "code": "A74.81",
+    "name": "Chlamydial peritonitis"
+  },
+  {
+    "code": "A74.89",
+    "name": "Other chlamydial diseases"
+  },
+  {
+    "code": "A74.9",
+    "name": "Chlamydial infection, unspecified"
+  },
+  {
+    "code": "A75.0",
+    "name": "Epidemic louse-borne typhus fever due to Rickettsia prowazekii"
+  }
+]

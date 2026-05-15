@@ -6,7 +6,7 @@ import {
 import { PageTransition } from '../../../components/ui/PageTransition';
 import { supabase } from '../../../lib/supabase';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface OrdonnanceRow {
   id: string;
@@ -17,7 +17,7 @@ interface OrdonnanceRow {
   doctor_id: string;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function shortId(id: string) {
   return id.slice(0, 8).toUpperCase();
@@ -37,12 +37,12 @@ function StatusBadge({ statut }: { statut: string | null }) {
   );
   if (statut === 'expired') return (
     <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400">
-      Expirée
+      ExpirÃ©e
     </span>
   );
   return (
     <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-white/[0.07] text-slate-500 dark:text-slate-400">
-      —
+      â€”
     </span>
   );
 }
@@ -59,7 +59,7 @@ function SkeletonRow() {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface Props { orgId?: string; }
 
@@ -104,7 +104,7 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
         setPatientNames(m);
       }
 
-      // Load doctor names (via doctors → user_profiles)
+      // Load doctor names (via doctors â†’ user_profiles)
       const docIds = [...new Set(data.map(o => o.doctor_id).filter(Boolean))];
       if (docIds.length) {
         const { data: docs } = await supabase
@@ -117,7 +117,7 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
           (profs ?? []).forEach(p => profMap.set(p.user_id, `Dr. ${p.prenom} ${p.nom}`));
           const m = new Map<string, string>();
           (docs ?? []).forEach(d => {
-            const name = profMap.get(d.user_id) ?? 'Médecin';
+            const name = profMap.get(d.user_id) ?? 'MÃ©decin';
             m.set(d.id, name);
           });
           setDoctorNames(m);
@@ -145,7 +145,7 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
   const FILTERS: { key: FilterType; label: string }[] = [
     { key: 'all',     label: 'Toutes'  },
     { key: 'active',  label: 'Actives' },
-    { key: 'expired', label: 'Expirées'},
+    { key: 'expired', label: 'ExpirÃ©es'},
   ];
 
   return (
@@ -164,8 +164,8 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
         <div className="grid grid-cols-3 gap-4 mb-6">
           {[
             { label: 'Actives',  value: activeCount,  color: 'text-emerald-600 dark:text-emerald-400' },
-            { label: 'Expirées', value: expiredCount, color: 'text-red-500 dark:text-red-400'         },
-            { label: 'Ce mois',  value: thisMonth,    color: 'text-sky-600 dark:text-sky-400'          },
+            { label: 'ExpirÃ©es', value: expiredCount, color: 'text-red-500 dark:text-red-400'         },
+            { label: 'Ce mois',  value: thisMonth,    color: 'text-[#00A86B]'          },
           ].map(s => (
             <div key={s.label} className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] rounded-xl px-5 py-3 flex items-center gap-3">
               <span className={`text-2xl font-bold ${s.color}`}>{s.value}</span>
@@ -181,8 +181,8 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher…"
-              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40"
+              placeholder="Rechercherâ€¦"
+              className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
             />
           </div>
           <div className="flex items-center gap-1.5">
@@ -193,8 +193,8 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
                 onClick={() => setFilter(f.key)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   filter === f.key
-                    ? 'bg-sky-500 text-white'
-                    : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-[#94A3B8] hover:border-sky-300'
+                    ? 'bg-[#00A86B] text-white'
+                    : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-[#94A3B8] hover:border-[#00A86B]'
                 }`}
               >
                 {f.label}
@@ -209,7 +209,7 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-100 dark:border-white/[0.06] bg-slate-50/50 dark:bg-white/[0.02]">
-                  {['N°', 'Date', 'Patient', 'Médecin', 'Statut', 'Actions'].map(h => (
+                  {['NÂ°', 'Date', 'Patient', 'MÃ©decin', 'Statut', 'Actions'].map(h => (
                     <th key={h} className="px-5 py-3.5 text-left text-[11px] font-bold text-slate-500 dark:text-[#475569] uppercase tracking-wide">
                       {h}
                     </th>
@@ -252,16 +252,16 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
                               {formatDate(o.date || o.created_at)}
                             </td>
                             <td className="px-5 py-4 text-sm font-medium text-slate-900 dark:text-[#E2E8F0]">
-                              {patientNames.get(o.patient_id) ?? '—'}
+                              {patientNames.get(o.patient_id) ?? 'â€”'}
                             </td>
                             <td className="px-5 py-4 text-sm text-slate-600 dark:text-[#94A3B8]">
-                              {doctorNames.get(o.doctor_id) ?? '—'}
+                              {doctorNames.get(o.doctor_id) ?? 'â€”'}
                             </td>
                             <td className="px-5 py-4">
                               <StatusBadge statut={o.statut} />
                             </td>
                             <td className="px-5 py-4">
-                              <button className="text-xs font-medium text-sky-600 dark:text-sky-400 hover:text-sky-700 transition-colors">
+                              <button className="text-xs font-medium text-[#00A86B] hover:text-[#006B47] transition-colors">
                                 Voir
                               </button>
                             </td>

@@ -20,7 +20,7 @@ export function Toggle({ enabled, onChange, label }: ToggleProps) {
           width: 44,
           height: 24,
           borderRadius: 12,
-          backgroundColor: enabled ? '#0EA5E9' : '#CBD5E1',
+          backgroundColor: enabled ? '#00A86B' : '#CBD5E1',
           transition: 'background-color 0.2s ease',
           flexShrink: 0,
         }}

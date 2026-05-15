@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Bell, CheckCheck, AlertTriangle, UserPlus, FileText, Activity, Info } from 'lucide-react';
 import { PageTransition } from '../../../components/ui/PageTransition';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 type NotifCategory = 'all' | 'alerts' | 'system' | 'activity';
 
@@ -16,29 +16,29 @@ interface MockNotif {
   read: boolean;
 }
 
-// ─── Mock data (à remplacer par Supabase realtime) ────────────────────────────
+// â”€â”€â”€ Mock data (Ã  remplacer par Supabase realtime) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const MOCK: MockNotif[] = [
   {
     id: '1',
     type: 'alert',
-    title: 'Interaction médicamenteuse détectée',
-    body: 'Patient Mohamed A. — Amoxicilline + Warfarine (risque hémorragique)',
+    title: 'Interaction mÃ©dicamenteuse dÃ©tectÃ©e',
+    body: 'Patient Mohamed A. â€” Amoxicilline + Warfarine (risque hÃ©morragique)',
     time: "Il y a 12 min",
     read: false,
   },
   {
     id: '2',
     type: 'activity',
-    title: 'Nouvelle ordonnance créée',
-    body: 'Dr. Benali a créé une ordonnance pour Fatima Z.',
+    title: 'Nouvelle ordonnance crÃ©Ã©e',
+    body: 'Dr. Benali a crÃ©Ã© une ordonnance pour Fatima Z.',
     time: "Il y a 45 min",
     read: false,
   },
   {
     id: '3',
     type: 'system',
-    title: 'Invitation médecin acceptée',
+    title: 'Invitation mÃ©decin acceptÃ©e',
     body: 'Dr. Rachidi a rejoint la clinique via votre invitation.',
     time: "Il y a 2 h",
     read: false,
@@ -46,8 +46,8 @@ const MOCK: MockNotif[] = [
   {
     id: '4',
     type: 'activity',
-    title: 'Nouveau patient enregistré',
-    body: 'Karim L. a été ajouté par Dr. El Amrani.',
+    title: 'Nouveau patient enregistrÃ©',
+    body: 'Karim L. a Ã©tÃ© ajoutÃ© par Dr. El Amrani.',
     time: "Il y a 3 h",
     read: true,
   },
@@ -55,29 +55,29 @@ const MOCK: MockNotif[] = [
     id: '5',
     type: 'info',
     title: 'Rapport mensuel disponible',
-    body: 'Le rapport statistique de mars 2026 est prêt à télécharger.',
+    body: 'Le rapport statistique de mars 2026 est prÃªt Ã  tÃ©lÃ©charger.',
     time: "Hier",
     read: true,
   },
   {
     id: '6',
     type: 'alert',
-    title: 'Ordonnance expirée',
-    body: '3 ordonnances ont expiré cette semaine sans renouvellement.',
+    title: 'Ordonnance expirÃ©e',
+    body: '3 ordonnances ont expirÃ© cette semaine sans renouvellement.',
     time: "Hier",
     read: true,
   },
   {
     id: '7',
     type: 'system',
-    title: 'Mise à jour système',
-    body: 'OrdoSur v2.4 déployé — vérificateur d\'interactions amélioré.',
+    title: 'Mise Ã  jour systÃ¨me',
+    body: 'OrdoSur v2.4 dÃ©ployÃ© â€” vÃ©rificateur d\'interactions amÃ©liorÃ©.',
     time: "Il y a 2 jours",
     read: true,
   },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const TYPE_META: Record<MockNotif['type'], {
   icon: React.ElementType;
@@ -93,9 +93,9 @@ const TYPE_META: Record<MockNotif['type'], {
   },
   activity: {
     icon: Activity,
-    bg: 'bg-sky-50 dark:bg-sky-500/10',
-    text: 'text-sky-600 dark:text-sky-400',
-    dot: 'bg-sky-500',
+    bg: 'bg-[#E6F4EE] dark:bg-[#00A86B]/10',
+    text: 'text-[#00A86B]',
+    dot: 'bg-[#00A86B]',
   },
   system: {
     icon: UserPlus,
@@ -114,11 +114,11 @@ const TYPE_META: Record<MockNotif['type'], {
 const CATEGORIES: { key: NotifCategory; label: string }[] = [
   { key: 'all',      label: 'Toutes'     },
   { key: 'alerts',   label: 'Alertes'    },
-  { key: 'activity', label: 'Activité'   },
-  { key: 'system',   label: 'Système'    },
+  { key: 'activity', label: 'ActivitÃ©'   },
+  { key: 'system',   label: 'SystÃ¨me'    },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function ClinicNotificationsView() {
   const [notifs, setNotifs] = useState<MockNotif[]>(MOCK);
@@ -148,7 +148,7 @@ export function ClinicNotificationsView() {
             <p className="text-sm text-slate-500 dark:text-[#94A3B8] mt-0.5">
               {unreadCount > 0
                 ? `${unreadCount} notification${unreadCount > 1 ? 's' : ''} non lue${unreadCount > 1 ? 's' : ''}`
-                : 'Tout est à jour'}
+                : 'Tout est Ã  jour'}
             </p>
           </div>
           {unreadCount > 0 && (
@@ -170,8 +170,8 @@ export function ClinicNotificationsView() {
               onClick={() => setCategory(cat.key)}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 category === cat.key
-                  ? 'bg-sky-500 text-white'
-                  : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-[#94A3B8] hover:border-sky-300'
+                  ? 'bg-[#00A86B] text-white'
+                  : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-[#94A3B8] hover:border-[#00A86B]'
               }`}
             >
               {cat.label}
@@ -207,7 +207,7 @@ export function ClinicNotificationsView() {
                   className={`flex items-start gap-4 px-5 py-4 cursor-pointer transition-colors ${
                     n.read
                       ? 'hover:bg-slate-50/70 dark:hover:bg-white/[0.02]'
-                      : 'bg-sky-50/30 dark:bg-sky-500/[0.04] hover:bg-sky-50/60 dark:hover:bg-sky-500/[0.07]'
+                      : 'bg-[#E6F4EE]/30 dark:bg-[#00A86B]/[0.04] hover:bg-[#E6F4EE]/60 dark:hover:bg-[#00A86B]/[0.07]'
                   }`}
                 >
                   {/* Icon */}
@@ -246,7 +246,7 @@ export function ClinicNotificationsView() {
 
         {/* Footer note */}
         <p className="text-center text-xs text-slate-400 dark:text-slate-600 mt-4">
-          Les notifications en temps réel via Supabase Realtime seront activées dans un prochain sprint.
+          Les notifications en temps rÃ©el via Supabase Realtime seront activÃ©es dans un prochain sprint.
         </p>
 
       </div>

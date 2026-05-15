@@ -18,7 +18,7 @@ export function Toast({ message, type, onClose, duration = 4000 }: ToastProps) {
   const config = {
     success: { icon: CheckCircle2, bg: 'bg-emerald-500', bar: 'bg-emerald-400' },
     error:   { icon: XCircle,      bg: 'bg-red-500',     bar: 'bg-red-400'     },
-    info:    { icon: Info,          bg: 'bg-sky-500',     bar: 'bg-sky-400'     },
+    info:    { icon: Info,          bg: 'bg-[#00A86B]',     bar: 'bg-[#00A86B]'     },
     warning: { icon: AlertTriangle, bg: 'bg-amber-500',   bar: 'bg-amber-400'   },
   }[type];
 
@@ -51,7 +51,7 @@ export function Toast({ message, type, onClose, duration = 4000 }: ToastProps) {
   );
 }
 
-/* ── Toast manager (multi-toast support) ──────────────────────── */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Toast manager (multi-toast support) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 export interface ToastItem {
   id: string;
   message: string;

@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { PageTransition } from './PageTransition';
 
-/* ── Types ─────────────────────────────────────────────────────── */
+/* â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 interface RendezVous {
   id: string;
   patient_nom: string;
@@ -25,7 +25,7 @@ interface RendezVous {
 type CalView = 'semaine' | 'jour' | 'mois';
 
 const TYPE_COLORS: Record<string, string> = {
-  consultation:     'bg-sky-500',
+  consultation:     'bg-[#00A86B]',
   suivi:            'bg-violet-500',
   urgence:          'bg-red-500',
   teleconsultation: 'bg-emerald-500',
@@ -36,7 +36,7 @@ const TYPE_LABELS: Record<string, string> = {
   consultation:     'Consultation',
   suivi:            'Suivi',
   urgence:          'Urgence',
-  teleconsultation: 'Téléconsultation',
+  teleconsultation: 'TÃ©lÃ©consultation',
   autre:            'Autre',
 };
 
@@ -49,7 +49,7 @@ const STATUT_COLORS: Record<string, string> = {
 
 const HOURS = Array.from({ length: 14 }, (_, i) => i + 7);
 const DAYS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const MONTHS_FR = ['Janvier','FÃ©vrier','Mars','Avril','Mai','Juin','Juillet','AoÃ»t','Septembre','Octobre','Novembre','DÃ©cembre'];
 
 function getWeekDays(refDate: Date): Date[] {
   const d = new Date(refDate);
@@ -65,18 +65,18 @@ function getWeekDays(refDate: Date): Date[] {
 function fmt(d: Date) { return d.toISOString().split('T')[0]; }
 function isSameDay(a: Date, b: Date) { return fmt(a) === fmt(b); }
 
-/* ── Shared input class ─────────────────────────────────────────── */
+/* â”€â”€ Shared input class â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 const inputCls = `w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm
   bg-white dark:bg-[#1E293B]
   text-slate-900 dark:text-[#E2E8F0]
   placeholder-slate-400 dark:placeholder-slate-600
-  focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-500/40
-  focus:border-sky-300 dark:focus:border-sky-500/40
+  focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 dark:focus:ring-[#00A86B]/40
+  focus:border-[#00A86B] dark:focus:border-[#00A86B]/40
   transition-all`;
 
 const labelCls = 'block text-xs font-semibold text-slate-600 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide';
 
-/* ── RDV Modal ──────────────────────────────────────────────────── */
+/* â”€â”€ RDV Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 interface RdvModalProps {
   rdv?: RendezVous | null;
   defaultDate?: string;
@@ -177,7 +177,7 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
                         set('patient_id', p.id);
                         setShowPatDrop(false);
                       }}
-                      className="w-full px-4 py-2.5 text-left hover:bg-sky-50 dark:hover:bg-sky-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
+                      className="w-full px-4 py-2.5 text-left hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                     >
                       <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
                         {p.prenom} {p.nom}
@@ -192,10 +192,10 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
                         set('patient_nom', patSearch.trim());
                         setShowPatDrop(false);
                       }}
-                      className="w-full px-4 py-2.5 text-left text-sm text-sky-600 dark:text-sky-400 font-semibold hover:bg-sky-50 dark:hover:bg-sky-500/[0.08] transition-colors flex items-center gap-2"
+                      className="w-full px-4 py-2.5 text-left text-sm text-[#00A86B] font-semibold hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.08] transition-colors flex items-center gap-2"
                     >
                       <UserPlus className="w-4 h-4 flex-shrink-0" />
-                      Créer un RDV pour « {patSearch.trim()} »
+                      CrÃ©er un RDV pour Â« {patSearch.trim()} Â»
                     </button>
                   )}
                 </div>
@@ -209,7 +209,7 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
               <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required className={inputCls} />
             </div>
             <div>
-              <label className={labelCls}>Début</label>
+              <label className={labelCls}>DÃ©but</label>
               <input type="time" value={form.heure_debut} onChange={e => set('heure_debut', e.target.value)} required className={inputCls} />
             </div>
             <div>
@@ -232,10 +232,10 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
               <select value={form.statut} onChange={e => set('statut', e.target.value)}
                 className={`${inputCls} appearance-none`}
               >
-                <option value="confirme">Confirmé</option>
+                <option value="confirme">ConfirmÃ©</option>
                 <option value="en_attente">En attente</option>
-                <option value="annule">Annulé</option>
-                <option value="termine">Terminé</option>
+                <option value="annule">AnnulÃ©</option>
+                <option value="termine">TerminÃ©</option>
               </select>
             </div>
           </div>
@@ -261,9 +261,9 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
             </button>
             <button
               type="submit" disabled={saving}
-              className="flex-1 px-4 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-60"
+              className="flex-1 px-4 py-2.5 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-60"
             >
-              {saving ? 'Enregistrement...' : rdv ? 'Mettre à jour' : 'Créer le RDV'}
+              {saving ? 'Enregistrement...' : rdv ? 'Mettre Ã  jour' : 'CrÃ©er le RDV'}
             </button>
           </div>
         </form>
@@ -272,7 +272,7 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
   );
 }
 
-/* ── Main AgendaView ────────────────────────────────────────────── */
+/* â”€â”€ Main AgendaView â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 interface AgendaViewProps {
   patients: Array<{ id: string; prenom: string; nom: string }>;
   showToast: (msg: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
@@ -312,10 +312,10 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
     try {
       if (editingRdv) {
         await supabase.from('rendez_vous').update(formData).eq('id', editingRdv.id);
-        showToast('Rendez-vous mis à jour', 'success');
+        showToast('Rendez-vous mis Ã  jour', 'success');
       } else {
         await supabase.from('rendez_vous').insert({ ...formData, org_id: user.org_id, doctor_id: user.id });
-        showToast('Rendez-vous créé', 'success');
+        showToast('Rendez-vous crÃ©Ã©', 'success');
       }
       setShowModal(false); setEditingRdv(null); load();
     } catch {
@@ -326,7 +326,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
   const handleDelete = async (id: string) => {
     if (!confirm('Supprimer ce rendez-vous ?')) return;
     await supabase.from('rendez_vous').delete().eq('id', id);
-    showToast('Rendez-vous supprimé', 'info');
+    showToast('Rendez-vous supprimÃ©', 'info');
     load();
   };
 
@@ -343,7 +343,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
   const rdvsForDay = (day: Date) => rdvs.filter(r => r.date === fmt(day));
 
   const topLabel = view === 'semaine'
-    ? `${weekDays[0].getDate()} – ${weekDays[6].getDate()} ${MONTHS_FR[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`
+    ? `${weekDays[0].getDate()} â€“ ${weekDays[6].getDate()} ${MONTHS_FR[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`
     : view === 'jour'
     ? refDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     : `${MONTHS_FR[refDate.getMonth()]} ${refDate.getFullYear()}`;
@@ -364,7 +364,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
             </button>
             <button
               onClick={() => setRefDate(new Date())}
-              className="px-3 py-1.5 text-xs font-semibold text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-500/[0.1] rounded-xl transition-colors"
+              className="px-3 py-1.5 text-xs font-semibold text-[#00A86B] hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.1] rounded-xl transition-colors"
             >
               Aujourd'hui
             </button>
@@ -391,7 +391,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
 
           <button
             onClick={() => openNew()}
-            className="ml-auto flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
+            className="ml-auto flex items-center gap-2 px-4 py-2 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Nouveau RDV
@@ -401,7 +401,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
         {/* Calendar body */}
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#00A86B] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : view === 'semaine' ? (
           <WeekView weekDays={weekDays} rdvsForDay={rdvsForDay} today={today} onAddRdv={openNew}
@@ -430,7 +430,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
   );
 }
 
-/* ── Week View ──────────────────────────────────────────────────── */
+/* â”€â”€ Week View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
   return (
     <div className="flex-1 overflow-auto">
@@ -440,14 +440,14 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
           const isToday = isSameDay(day, today);
           return (
             <div key={i} className={`py-3 text-center border-r border-slate-100 dark:border-white/[0.06] ${
-              isToday ? 'bg-sky-50 dark:bg-sky-500/[0.08]' : ''
+              isToday ? 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.08]' : ''
             }`}>
               <p className="text-xs text-slate-400 dark:text-[#475569] font-medium">{DAYS_FR[i]}</p>
-              <p className={`text-lg font-bold mt-0.5 ${isToday ? 'text-sky-600 dark:text-sky-400' : 'text-slate-800 dark:text-[#E2E8F0]'}`}>
+              <p className={`text-lg font-bold mt-0.5 ${isToday ? 'text-[#00A86B]' : 'text-slate-800 dark:text-[#E2E8F0]'}`}>
                 {day.getDate()}
               </p>
               {rdvsForDay(day).length > 0 && (
-                <p className="text-[10px] text-sky-500 dark:text-sky-400 font-semibold">{rdvsForDay(day).length} RDV</p>
+                <p className="text-[10px] text-[#00A86B] font-semibold">{rdvsForDay(day).length} RDV</p>
               )}
             </div>
           );
@@ -470,7 +470,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
             <div
               key={di}
               className={`border-r border-slate-100 dark:border-white/[0.06] relative cursor-pointer ${
-                isToday ? 'bg-sky-50/30 dark:bg-sky-500/[0.04]' : ''
+                isToday ? 'bg-[#E6F4EE]/30 dark:bg-[#00A86B]/[0.04]' : ''
               }`}
               onClick={() => onAddRdv(fmt(day))}
             >
@@ -482,7 +482,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
                 const [eh, em] = rdv.heure_fin.split(':').map(Number);
                 const top = ((sh - 7) * 60 + sm) / 60 * 64;
                 const height = Math.max(((eh - sh) * 60 + (em - sm)) / 60 * 64, 28);
-                const color = TYPE_COLORS[rdv.type] || 'bg-sky-500';
+                const color = TYPE_COLORS[rdv.type] || 'bg-[#00A86B]';
                 return (
                   <div
                     key={rdv.id}
@@ -491,7 +491,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
                     style={{ top, height }}
                   >
                     <p className="text-white text-[10px] font-bold truncate leading-tight">{rdv.patient_nom}</p>
-                    <p className="text-white/80 text-[9px] truncate">{rdv.heure_debut.slice(0,5)} – {rdv.heure_fin.slice(0,5)}</p>
+                    <p className="text-white/80 text-[9px] truncate">{rdv.heure_debut.slice(0,5)} â€“ {rdv.heure_fin.slice(0,5)}</p>
                   </div>
                 );
               })}
@@ -503,7 +503,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
   );
 }
 
-/* ── Day View ───────────────────────────────────────────────────── */
+/* â”€â”€ Day View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function DayView({ day, rdvs, today, onAddRdv, onEdit }: any) {
   const isToday = isSameDay(day, today);
   return (
@@ -517,7 +517,7 @@ function DayView({ day, rdvs, today, onAddRdv, onEdit }: any) {
           ))}
         </div>
         <div
-          className={`relative cursor-pointer ${isToday ? 'bg-sky-50/20 dark:bg-sky-500/[0.04]' : ''}`}
+          className={`relative cursor-pointer ${isToday ? 'bg-[#E6F4EE]/20 dark:bg-[#00A86B]/[0.04]' : ''}`}
           onClick={() => onAddRdv(fmt(day))}
         >
           {HOURS.map(h => (<div key={h} className="h-20 border-b border-slate-100 dark:border-white/[0.06]" />))}
@@ -526,7 +526,7 @@ function DayView({ day, rdvs, today, onAddRdv, onEdit }: any) {
             const [eh, em] = rdv.heure_fin.split(':').map(Number);
             const top = ((sh - 7) * 60 + sm) / 60 * 80;
             const height = Math.max(((eh - sh) * 60 + (em - sm)) / 60 * 80, 40);
-            const color = TYPE_COLORS[rdv.type] || 'bg-sky-500';
+            const color = TYPE_COLORS[rdv.type] || 'bg-[#00A86B]';
             return (
               <div
                 key={rdv.id}
@@ -537,11 +537,11 @@ function DayView({ day, rdvs, today, onAddRdv, onEdit }: any) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-white text-sm font-bold truncate">{rdv.patient_nom}</p>
-                    <p className="text-white/80 text-xs mt-0.5">{rdv.heure_debut.slice(0,5)} – {rdv.heure_fin.slice(0,5)}</p>
+                    <p className="text-white/80 text-xs mt-0.5">{rdv.heure_debut.slice(0,5)} â€“ {rdv.heure_fin.slice(0,5)}</p>
                     {rdv.motif && <p className="text-white/70 text-xs mt-0.5 truncate">{rdv.motif}</p>}
                   </div>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${STATUT_COLORS[rdv.statut]}`}>
-                    {rdv.statut === 'confirme' ? '✓' : rdv.statut === 'annule' ? '✕' : '⏳'}
+                    {rdv.statut === 'confirme' ? 'âœ“' : rdv.statut === 'annule' ? 'âœ•' : 'â³'}
                   </span>
                 </div>
               </div>
@@ -553,7 +553,7 @@ function DayView({ day, rdvs, today, onAddRdv, onEdit }: any) {
   );
 }
 
-/* ── Month View ─────────────────────────────────────────────────── */
+/* â”€â”€ Month View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 function MonthView({ refDate, rdvsForDay, today, onAddRdv, onEdit }: any) {
   const year = refDate.getFullYear();
   const month = refDate.getMonth();
@@ -584,11 +584,11 @@ function MonthView({ refDate, rdvsForDay, today, onAddRdv, onEdit }: any) {
               onClick={() => onAddRdv(fmt(day))}
               className={`min-h-[90px] rounded-xl p-2 cursor-pointer border transition-all ${
                 isToday
-                  ? 'bg-sky-50 dark:bg-sky-500/[0.1] border-sky-300 dark:border-sky-500/40'
-                  : 'bg-white dark:bg-white/[0.03] border-slate-100 dark:border-white/[0.06] hover:border-sky-200 dark:hover:border-sky-500/30 hover:bg-sky-50/30 dark:hover:bg-sky-500/[0.05]'
+                  ? 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border-[#00A86B] dark:border-[#00A86B]/40'
+                  : 'bg-white dark:bg-white/[0.03] border-slate-100 dark:border-white/[0.06] hover:border-[#00A86B]/30 dark:hover:border-[#00A86B]/30 hover:bg-[#E6F4EE]/30 dark:hover:bg-[#00A86B]/[0.05]'
               }`}
             >
-              <p className={`text-xs font-bold mb-1 ${isToday ? 'text-sky-600 dark:text-sky-400' : 'text-slate-700 dark:text-[#94A3B8]'}`}>
+              <p className={`text-xs font-bold mb-1 ${isToday ? 'text-[#00A86B]' : 'text-slate-700 dark:text-[#94A3B8]'}`}>
                 {day.getDate()}
               </p>
               <div className="space-y-0.5">

@@ -1,0 +1,802 @@
+[
+  {
+    "nom": "PRAZOSIN",
+    "dci": "prazosin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "NICOTINE",
+    "dci": "nicotine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "OFLOXACIN",
+    "dci": "ofloxacin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "NALIDIXIC ACID",
+    "dci": "nalidixic acid",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "INDOMETHACIN",
+    "dci": "indometacin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULBACTAM",
+    "dci": "sulbactam",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TAZOBACTAM",
+    "dci": "tazobactam",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "CIPROFLOXACIN",
+    "dci": "ciprofloxacin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "NORFLOXACIN",
+    "dci": "norfloxacin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "AMPHETAMINE",
+    "dci": "amfetamine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ISOSORBIDE DINITRATE",
+    "dci": "isosorbide dinitrate",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "MIANSERIN",
+    "dci": "mianserin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "IMIPRAMINE",
+    "dci": "imipramine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "INDAPAMIDE",
+    "dci": "indapamide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "FLUMAZENIL",
+    "dci": "flumazenil",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TROGLITAZONE",
+    "dci": "troglitazone",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "BICALUTAMIDE",
+    "dci": "bicalutamide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "DIAZEPAM",
+    "dci": "diazepam",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "METOPROLOL",
+    "dci": "metoprolol",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "DIETHYLSTILBESTROL",
+    "dci": "diethylstilbestrol",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "MECAMYLAMINE",
+    "dci": "mecamylamine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "CARBACHOL",
+    "dci": "carbachol",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "PHENYTOIN",
+    "dci": "phenytoin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SIROLIMUS",
+    "dci": "sirolimus",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TACROLIMUS ANHYDROUS",
+    "dci": "tacrolimus anhydrous",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "CLOMIPRAMINE",
+    "dci": "clomipramine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "METHOXSALEN",
+    "dci": "methoxsalen",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "DICHLORPHENAMIDE",
+    "dci": "diclofenamide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ETHOXZOLAMIDE",
+    "dci": "ethoxzolamide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "EPIRUBICIN",
+    "dci": "epirubicin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "METHAZOLAMIDE",
+    "dci": "methazolamide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ACETAZOLAMIDE",
+    "dci": "acetazolamide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "MAFENIDE",
+    "dci": "mafenide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFANILAMIDE",
+    "dci": "sulfanilamide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "GUANABENZ",
+    "dci": "guanabenz",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TRIMETHOPRIM",
+    "dci": "trimethoprim",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "VERAPAMIL",
+    "dci": "verapamil",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFASALAZINE",
+    "dci": "sulfasalazine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "COUMARIN",
+    "dci": "coumarin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "DILTIAZEM",
+    "dci": "diltiazem",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ATENOLOL",
+    "dci": "atenolol",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ASPIRIN",
+    "dci": "aspirin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TRIFLUOPERAZINE",
+    "dci": "trifluoperazine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "BETAXOLOL",
+    "dci": "betaxolol",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "OLSALAZINE",
+    "dci": "olsalazine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "PROPRANOLOL",
+    "dci": "propranolol",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "PRACTOLOL",
+    "dci": "practolol",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "MECHLORETHAMINE",
+    "dci": "chlormethine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "PENICILLIN G",
+    "dci": "benzylpenicillin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TROVAFLOXACIN",
+    "dci": "trovafloxacin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "CIMETIDINE",
+    "dci": "cimetidine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "GATIFLOXACIN",
+    "dci": "gatifloxacin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "LABETALOL",
+    "dci": "labetalol",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "MOXIFLOXACIN",
+    "dci": "moxifloxacin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "LEVOFLOXACIN ANHYDROUS",
+    "dci": "levofloxacin (anhydrous)",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "GEMIFLOXACIN",
+    "dci": "gemifloxacin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SPIRAPRIL",
+    "dci": "spirapril",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "VALPROATE SODIUM",
+    "dci": "valproate sodium",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ISOPROTERENOL",
+    "dci": "isoprenaline",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "HYDROCHLOROTHIAZIDE",
+    "dci": "hydrochlorothiazide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "FUROSEMIDE",
+    "dci": "furosemide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "PYRIMETHAMINE",
+    "dci": "pyrimethamine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TOLRESTAT",
+    "dci": "tolrestat",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFATHIAZOLE",
+    "dci": "sulfathiazole",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFAMERAZINE",
+    "dci": "sulfamerazine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFADIAZINE",
+    "dci": "sulfadiazine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "THIAMYLAL",
+    "dci": "thiamylal",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "THIOPENTAL",
+    "dci": "thiopental",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "CYCLOBARBITAL",
+    "dci": "cyclobarbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ERGOTAMINE",
+    "dci": "ergotamine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TRETINOIN",
+    "dci": "tretinoin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "METHOHEXITAL",
+    "dci": "methohexital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "PHENOBARBITAL",
+    "dci": "phenobarbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "FLUOXETINE",
+    "dci": "fluoxetine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFAMETHOXAZOLE",
+    "dci": "sulfamethoxazole",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "CLOZAPINE",
+    "dci": "clozapine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "NORTRIPTYLINE",
+    "dci": "nortriptyline",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFAMETHAZINE",
+    "dci": "sulfadimidine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SECOBARBITAL",
+    "dci": "secobarbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "PENTOBARBITAL",
+    "dci": "pentobarbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "QUINACRINE",
+    "dci": "mepacrine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "AMOBARBITAL",
+    "dci": "amobarbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "HEXOBARBITAL",
+    "dci": "hexobarbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "BUTABARBITAL",
+    "dci": "secbutabarbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "APROBARBITAL",
+    "dci": "aprobarbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "METHARBITAL",
+    "dci": "metharbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "CHLORDIAZEPOXIDE",
+    "dci": "chlordiazepoxide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "MELAGATRAN",
+    "dci": "melagatran",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "CLONAZEPAM",
+    "dci": "clonazepam",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFISOXAZOLE",
+    "dci": "sulfafurazole",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFAMETHOXYPYRIDAZINE",
+    "dci": "sulfamethoxypyridazine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "BUTALBITAL",
+    "dci": "butalbital",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "SULFACETAMIDE",
+    "dci": "sulfacetamide",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "AMSACRINE",
+    "dci": "amsacrine",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ETHACRYNIC ACID",
+    "dci": "etacrynic acid",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "TICRYNAFEN",
+    "dci": "tienilic acid",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "GEMFIBROZIL",
+    "dci": "gemfibrozil",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "MELATONIN",
+    "dci": "melatonin",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "ONDANSETRON",
+    "dci": "ondansetron",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  },
+  {
+    "nom": "BUSPIRONE",
+    "dci": "buspirone",
+    "forme": null,
+    "voie": null,
+    "classe": null,
+    "pays": "INT"
+  }
+]

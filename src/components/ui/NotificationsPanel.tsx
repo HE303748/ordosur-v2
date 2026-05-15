@@ -23,7 +23,7 @@ const NOTIF_ICONS: Record<string, any> = {
 };
 
 const NOTIF_COLORS: Record<string, string> = {
-  info:        'bg-sky-100 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400',
+  info:        'bg-[#E6F4EE] dark:bg-[#00A86B]/20 text-[#006B47] dark:text-[#00A86B]',
   warning:     'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400',
   success:     'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400',
   rdv:         'bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400',
@@ -32,7 +32,7 @@ const NOTIF_COLORS: Record<string, string> = {
 
 function timeAgo(dateStr: string): string {
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 60)    return 'À l\'instant';
+  if (diff < 60)    return 'Ã€ l\'instant';
   if (diff < 3600)  return `Il y a ${Math.floor(diff / 60)} min`;
   if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
   return `Il y a ${Math.floor(diff / 86400)} j`;
@@ -106,8 +106,8 @@ export function NotificationsPanel({
                 {unreadCount > 0 && (
                   <button
                     onClick={onMarkAllRead}
-                    className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-700 font-semibold flex items-center gap-1
-                      hover:bg-sky-50 dark:hover:bg-sky-500/[0.1] px-2 py-1 rounded-lg transition-colors"
+                    className="text-xs text-[#00A86B] hover:text-[#006B47] font-semibold flex items-center gap-1
+                      hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.1] px-2 py-1 rounded-lg transition-colors"
                   >
                     <CheckCheck className="w-3.5 h-3.5" />
                     Tout lire
@@ -141,7 +141,7 @@ export function NotificationsPanel({
                         animate={{ opacity: 1, x: 0 }}
                         className={`group flex items-start gap-3 px-5 py-4 cursor-pointer transition-colors ${
                           !n.lu
-                            ? 'bg-sky-50/40 dark:bg-sky-500/[0.05] hover:bg-sky-50 dark:hover:bg-sky-500/[0.1]'
+                            ? 'bg-[#E6F4EE]/40 dark:bg-[#00A86B]/[0.05] hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.1]'
                             : 'hover:bg-slate-50 dark:hover:bg-white/[0.03]'
                         }`}
                         onClick={() => onMarkRead(n.id)}
@@ -158,7 +158,7 @@ export function NotificationsPanel({
                             }`}>
                               {n.titre}
                             </p>
-                            {!n.lu && <span className="w-2 h-2 bg-sky-500 rounded-full flex-shrink-0 mt-1" />}
+                            {!n.lu && <span className="w-2 h-2 bg-[#00A86B] rounded-full flex-shrink-0 mt-1" />}
                           </div>
                           {n.message && (
                             <p className="text-xs text-slate-400 dark:text-[#475569] mt-0.5 line-clamp-2">{n.message}</p>
@@ -184,7 +184,7 @@ export function NotificationsPanel({
   );
 }
 
-/* ── Hook ─────────────────────────────────────────────────────── */
+/* â”€â”€ Hook â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export function useNotifications() {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
