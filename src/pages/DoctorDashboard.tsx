@@ -2157,6 +2157,13 @@ export function DoctorDashboard() {
         const loggableAlerts = (interactionAlerts || []).filter(
           a => a.severite !== 'mineure'
         );
+        // ── DEBUG Sprint #2.7 (à retirer après diagnostic) ─────────────────
+        console.log('[DEBUG] Sprint 2.7', {
+          loggableAlertsCount: loggableAlerts.length,
+          doctorId: doctorProfile?.id || user.id,
+          patientId: selectedPatient?.id,
+          rawAlerts: interactionAlerts,
+        });
         if (loggableAlerts.length > 0) {
           const severityToRisk: Record<
             InteractionAlert['severite'],
