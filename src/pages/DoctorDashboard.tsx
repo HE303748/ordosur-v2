@@ -2073,6 +2073,16 @@ export function DoctorDashboard() {
       const accountAgeDays = doctorCreatedAt ? (Date.now() - doctorCreatedAt) / 86_400_000 : Infinity;
       const evolutionInsufficient = accountAgeDays < 30 || lastMonth === 0;
 
+      // ── DEBUG Sprint #2.6 (à retirer après diagnostic) ──────────────────
+      console.log('[DEBUG 2.6]', {
+        doctorCreatedAt: doctorProfile?.created_at,
+        accountAgeDays,
+        thisMonth,
+        lastMonth,
+        evolutionInsufficient,
+        evolution,
+      });
+
       setStats({ totalPatients, ordonnances, evolution, evolutionInsufficient, interactions });
     } catch (err) {
       console.error('[DoctorDashboard] loadStats error:', err);
