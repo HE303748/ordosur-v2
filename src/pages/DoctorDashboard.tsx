@@ -2148,6 +2148,46 @@ export function DoctorDashboard() {
         }
       }
 
+      // ── Sprint #2.7 — Log detected interactions to interaction_logs ─────
+      // One row per non-"mineure" alert (mineure = "DCI non identifiée"
+      // is a data-quality warning, not a clinical interaction).
+      // Failure here MUST NOT invalidate the prescription, which is already
+      // saved at this point — wrap in an isolated try/catch.
+      try {
+        const loggableAlerts = (interactionAlerts || []).filter(
+          a => a.severite !== 'mineure'
+        );
+        if (loggableAlerts.length > 0) {
+          const severityToRisk: Record<
+            InteractionAlert['severite'],
+            'safe' | 'attention' | 'dangerous'
+          > = {
+            contre_indication: 'dangerous',
+            majeure:           'dangerous',
+            moderee:           'attention',
+            mineure:           'attention',
+          };
+          const interactionRows = loggableAlerts.map(alert => ({
+            doctor_id:    doctorId,
+            patient_id:   selectedPatient.id,
+            medicament_a: alert.involved[0],
+            // contraindications only have 1 involved med — duplicate to satisfy NOT NULL
+            medicament_b: alert.involved[1] ?? alert.involved[0],
+            risk_level:   severityToRisk[alert.severite],
+          }));
+          const { error: logErr } = await supabase
+            .from('interaction_logs')
+            .insert(interactionRows);
+          if (logErr) {
+            console.error('[OrdoSur] interaction_logs insert error (non-blocking):', logErr);
+          } else {
+            console.log('[OrdoSur] Logged', interactionRows.length, 'interaction(s) to interaction_logs');
+          }
+        }
+      } catch (logErr) {
+        console.error('[OrdoSur] interaction_logs logging failed (non-blocking):', logErr);
+      }
+
       showToast('Ordonnance enregistrée avec succès', 'success');
       setShowPrescriptionPreview(false);
       setPrescriptionData(null);
