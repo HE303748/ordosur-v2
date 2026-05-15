@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
-  Search, Plus, X, AlertTriangle,
+  Search, Plus, X, AlertTriangle, ShieldCheck,
   CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
   BarChart3, Heart, Users, Calendar, Trash2, CreditCard as Edit,
   Download,
@@ -131,7 +131,13 @@ function SkeletonPatientRow() {
 }
 
 interface HomeViewProps {
-  stats: { totalPatients: number; ordonnances: number; evolution: number; interactions: number };
+  stats: {
+    totalPatients: number;
+    ordonnances: number;
+    evolution: number;
+    evolutionInsufficient: boolean;
+    interactions: number;
+  };
   patients: Patient[];
   interactionAlerts: InteractionAlert[];
   onNavigate: (v: ViewType) => void;
@@ -166,15 +172,18 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
     {
       label: 'Interactions',
       value: stats.interactions,
-      icon: AlertTriangle,
-      color: stats.interactions > 0 ? 'bg-red-500' : 'bg-emerald-500',
-      light: stats.interactions > 0 ? 'bg-red-50' : 'bg-emerald-50',
-      text: stats.interactions > 0 ? 'text-red-600' : 'text-emerald-600',
+      // Compte = 0 → bouclier vert (sécurité). Compte > 0 → triangle rouge (alerte).
+      icon: stats.interactions > 0 ? AlertTriangle : ShieldCheck,
+      color: stats.interactions > 0 ? 'bg-red-500'  : 'bg-[#00A86B]',
+      light: stats.interactions > 0 ? 'bg-red-50'   : 'bg-[#E6F4EE]',
+      text:  stats.interactions > 0 ? 'text-red-600': 'text-[#00A86B]',
       sub: 'Détectées au total',
     },
     {
       label: 'Évolution patients',
-      value: stats.evolution === 0
+      value: stats.evolutionInsufficient
+        ? '—'
+        : stats.evolution === 0
         ? '—'
         : stats.evolution >= 9999
         ? 'Forte crois.'
@@ -182,10 +191,18 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
         ? `+${stats.evolution}%`
         : `${stats.evolution}%`,
       icon: BarChart3,
-      color: stats.evolution === 0 ? 'bg-slate-400' : stats.evolution > 0 ? 'bg-emerald-500' : 'bg-amber-500',
-      light: stats.evolution === 0 ? 'bg-slate-50'  : stats.evolution > 0 ? 'bg-emerald-50'  : 'bg-amber-50',
-      text:  stats.evolution === 0 ? 'text-slate-500' : stats.evolution > 0 ? 'text-emerald-600' : 'text-amber-600',
-      sub: 'Nouveaux patients ce mois vs. mois précédent',
+      color: stats.evolutionInsufficient || stats.evolution === 0
+        ? 'bg-slate-400'
+        : stats.evolution > 0 ? 'bg-emerald-500' : 'bg-amber-500',
+      light: stats.evolutionInsufficient || stats.evolution === 0
+        ? 'bg-slate-50'
+        : stats.evolution > 0 ? 'bg-emerald-50'  : 'bg-amber-50',
+      text:  stats.evolutionInsufficient || stats.evolution === 0
+        ? 'text-slate-500'
+        : stats.evolution > 0 ? 'text-emerald-600' : 'text-amber-600',
+      sub: stats.evolutionInsufficient
+        ? 'Données insuffisantes'
+        : 'Nouveaux patients ce mois vs. mois précédent',
     },
   ];
 
@@ -253,9 +270,28 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
                     <p className="font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm group-hover:text-[#006B47] dark:group-hover:text-[#00A86B] transition-colors">
                       {p.prenom} {p.nom}
                     </p>
-                    <p className="text-xs text-slate-400 dark:text-[#475569] truncate">
-                      {p.pathologies?.[0] || 'Aucune pathologie renseignée'}
-                      {p.date_naissance && ` • ${getPatientAge(p.date_naissance)} ans`}
+                    <p className="text-xs truncate">
+                      {p.pathologies?.[0] && p.pathologies[0] !== 'Aucune pathologie renseignée' ? (
+                        <>
+                          <span className="text-slate-400 dark:text-[#475569]">{p.pathologies[0]}</span>
+                          {p.date_naissance && (
+                            <span className="text-slate-400 dark:text-[#475569]">
+                              {' • '}{getPatientAge(p.date_naissance)} ans
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <span className="italic text-[#94A3B8] dark:text-[#94A3B8]">
+                            Aucune pathologie renseignée
+                          </span>
+                          {p.date_naissance && (
+                            <span className="not-italic text-[#475569] dark:text-[#475569]">
+                              {' • '}{getPatientAge(p.date_naissance)} ans
+                            </span>
+                          )}
+                        </>
+                      )}
                     </p>
                   </div>
                   <span className="text-xs text-slate-300 dark:text-slate-700 group-hover:text-[#00A86B] dark:group-hover:text-[#00A86B] transition-colors flex-shrink-0">→</span>
@@ -1836,7 +1872,7 @@ export function DoctorDashboard() {
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
 
   // Stats
-  const [stats, setStats] = useState({ totalPatients: 0, ordonnances: 0, evolution: 0, interactions: 0 });
+  const [stats, setStats] = useState({ totalPatients: 0, ordonnances: 0, evolution: 0, evolutionInsufficient: false, interactions: 0 });
   const [dataLoading, setDataLoading] = useState(true);
   const [ordRefreshKey, setOrdRefreshKey] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -2032,7 +2068,12 @@ export function DoctorDashboard() {
         ? Math.min(999, Math.max(-100, Math.round(((thisMonth - lastMonth) / lastMonth) * 100)))
         : thisMonth > 0 ? 9999 : 0;
 
-      setStats({ totalPatients, ordonnances, evolution, interactions });
+      // "Données insuffisantes" si compte < 30 jours OU mois précédent = 0 patient (division par zéro).
+      const doctorCreatedAt = doctorProfile?.created_at ? new Date(doctorProfile.created_at).getTime() : null;
+      const accountAgeDays = doctorCreatedAt ? (Date.now() - doctorCreatedAt) / 86_400_000 : Infinity;
+      const evolutionInsufficient = accountAgeDays < 30 || lastMonth === 0;
+
+      setStats({ totalPatients, ordonnances, evolution, evolutionInsufficient, interactions });
     } catch (err) {
       console.error('[DoctorDashboard] loadStats error:', err);
     }
@@ -2157,13 +2198,6 @@ export function DoctorDashboard() {
         const loggableAlerts = (interactionAlerts || []).filter(
           a => a.severite !== 'mineure'
         );
-        // ── DEBUG Sprint #2.7 (à retirer après diagnostic) ─────────────────
-        console.log('[DEBUG] Sprint 2.7', {
-          loggableAlertsCount: loggableAlerts.length,
-          doctorId: doctorProfile?.id || user.id,
-          patientId: selectedPatient?.id,
-          rawAlerts: interactionAlerts,
-        });
         if (loggableAlerts.length > 0) {
           const severityToRisk: Record<
             InteractionAlert['severite'],
