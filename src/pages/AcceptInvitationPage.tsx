@@ -225,7 +225,12 @@ export function AcceptInvitationPage() {
         password: pwd,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: { role: isSecretaire ? 'secretaire' : 'doctor' },
+          // Sprint #3.0.1 — prenom/nom in user_metadata so {{ .Data.prenom }} renders in email templates.
+          data: {
+            role:   isSecretaire ? 'secretaire' : 'doctor',
+            prenom,
+            nom,
+          },
         },
       });
 
