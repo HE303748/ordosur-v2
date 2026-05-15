@@ -1,0 +1,13 @@
+{
+  "name": "Ordosur — Plateforme médicale",
+  "short_name": "Ordosur",
+  "description": "La prescription médicale, sécurisée.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A1628",
+  "theme_color": "#0A1628",
+  "icons": [
+    { "src": "/favicon-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

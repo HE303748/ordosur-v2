@@ -5,6 +5,30 @@ export default {
   theme: {
     extend: {
       colors: {
+        // ── OrdoSur Brand Palette ────────────────────────────────────────────
+        // Text / dark backgrounds
+        'ink-navy':      '#0A1628',
+        'ink-navy-soft': '#1A2B42',
+        'ink-muted':     '#475569',
+        'ink-faint':     '#94A3B8',
+
+        // Brand accent
+        'medical-green':      '#00A86B',
+        'medical-green-soft': '#E6F4EE',
+        'medical-green-deep': '#006B47',
+
+        // Backgrounds
+        'paper':      '#FAFAF7',
+        'paper-pure': '#FFFFFF',
+
+        // Alerts
+        'alert-red':      '#DC2626',
+        'alert-red-soft': '#FEF2F2',
+
+        // Structural
+        'divider': '#E5E5E0',
+
+        // ── Legacy scales (kept for backward compat — migrate at Sprint #2) ──
         primary: {
           50: '#e6f2ff',
           100: '#cce5ff',
@@ -67,14 +91,15 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'ui-sans-serif', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
       boxShadow: {
-        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-        'medical': '0 4px 20px rgba(0, 102, 204, 0.1)',
+        'glass':   '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+        'medical': '0 4px 20px rgba(0, 168, 107, 0.12)',
+        'brand':   '0 0 0 2px rgba(0, 168, 107, 0.35)',
       },
       backdropBlur: {
         xs: '2px',

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 100">
+  <!-- Cercle symbole -->
+  <circle cx="50" cy="50" r="34" fill="#0A1628"/>
+  <path d="M 32 56 L 45 70 L 70 40" fill="none" stroke="#00A86B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Texte -->
+  <text x="105" y="42" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#0A1628" letter-spacing="2">VÉRIFIÉ PAR ORDOSUR</text>
+  <text x="105" y="68" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#475569" font-style="italic">Interactions vérifiées • Ordonnance horodatée • ordosur.com</text>
+</svg>

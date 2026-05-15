@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <title>Ordosur — Logo complet (dark)</title>
+  <desc>Logo officiel Ordosur — symbole + lettrage horizontal, fond sombre</desc>
+  <!-- Symbole -->
+  <circle cx="100" cy="100" r="76" fill="#00A86B"/>
+  <path d="M 60 110 L 88 138 L 145 75" fill="none" stroke="#FAFAF7" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Lettrage -->
+  <text x="220" y="135" font-family="Helvetica, Arial, sans-serif" font-size="110" font-weight="700" letter-spacing="-3">
+    <tspan fill="#FAFAF7">Ordo</tspan><tspan fill="#00A86B">sur</tspan><tspan fill="#FAFAF7">.</tspan>
+  </text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <title>Ordosur — Symbole monochrome blanc</title>
+  <desc>Logo officiel Ordosur — monochrome blanc</desc>
+  <circle cx="100" cy="100" r="76" fill="#FFFFFF"/>
+  <path d="M 60 110 L 88 138 L 145 75" fill="none" stroke="#00A86B" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

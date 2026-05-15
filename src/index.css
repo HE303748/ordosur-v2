@@ -1,8 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── OrdoSur Design Tokens ─────────────────────────────────────────────────── */
+:root {
+  /* Text / dark backgrounds */
+  --color-ink-navy:       #0A1628;
+  --color-ink-navy-soft:  #1A2B42;
+  --color-ink-muted:      #475569;
+  --color-ink-faint:      #94A3B8;
+
+  /* Brand accent */
+  --color-medical-green:      #00A86B;
+  --color-medical-green-soft: #E6F4EE;
+  --color-medical-green-deep: #006B47;
+
+  /* Backgrounds */
+  --color-paper:      #FAFAF7;
+  --color-paper-pure: #FFFFFF;
+
+  /* Alerts */
+  --color-alert-red:      #DC2626;
+  --color-alert-red-soft: #FEF2F2;
+
+  /* Structural */
+  --color-divider: #E5E5E0;
+}
 
 /* ── Base ──────────────────────────────────────────────────────────────────── */
 @layer base {
@@ -62,7 +87,7 @@
     transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
   .dark .card-hover-glow:hover {
-    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 0 1px rgba(0, 168, 107, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
   /* Applied to all dashboard cards automatically in dark mode */
@@ -70,7 +95,7 @@
     transition: box-shadow 0.2s ease;
   }
   .dark .bg-\[\#111827\]:hover {
-    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.12), 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 0 1px rgba(0, 168, 107, 0.12), 0 4px 20px rgba(0, 0, 0, 0.3);
   }
 
   /* Recharts dark mode text */
@@ -104,7 +129,7 @@
   .dark input:focus,
   .dark textarea:focus,
   .dark select:focus {
-    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.35) !important;
+    box-shadow: 0 0 0 2px rgba(0, 168, 107, 0.35) !important;
     outline: none !important;
   }
 
@@ -134,7 +159,7 @@
 
   /* Selection color */
   ::selection {
-    background-color: rgba(14, 165, 233, 0.25);
+    background-color: rgba(0, 168, 107, 0.25);
     color: inherit;
   }
 }

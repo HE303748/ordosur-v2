@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <title>Ordosur — Logo vertical</title>
+  <desc>Logo officiel Ordosur — symbole au-dessus du lettrage</desc>
+  <!-- Symbole centré en haut -->
+  <g transform="translate(120,40)">
+    <circle cx="80" cy="80" r="76" fill="#0A1628"/>
+    <path d="M 40 90 L 68 118 L 125 55" fill="none" stroke="#00A86B" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- Lettrage centré en dessous -->
+  <text x="200" y="370" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="78" font-weight="700" letter-spacing="-2">
+    <tspan fill="#0A1628">Ordo</tspan><tspan fill="#00A86B">sur</tspan><tspan fill="#0A1628">.</tspan>
+  </text>
+  <!-- Tagline optionnelle -->
+  <text x="200" y="420" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="400" fill="#475569" letter-spacing="0.5">
+    La prescription, sécurisée.
+  </text>
+</svg>
