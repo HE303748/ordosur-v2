@@ -12,7 +12,7 @@ import { AgendaView } from '../components/ui/AgendaView';
 import { PageTransition } from '../components/ui/PageTransition';
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Types Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Types ──────────────────────────────────────────────────────────────────── */
 interface Ordonnance {
   id: string;
   created_at: string;
@@ -23,7 +23,7 @@ interface Ordonnance {
 
 type ViewType = 'patients' | 'agenda' | 'ordonnances';
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Sidebar secrÃƒÂ©taire Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Sidebar secrétaire ─────────────────────────────────────────────────────── */
 const NAV: { id: ViewType; label: string; icon: React.ElementType }[] = [
   { id: 'patients',    label: 'Patients',    icon: Users    },
   { id: 'agenda',      label: 'Agenda',      icon: Calendar },
@@ -83,7 +83,7 @@ function SecretaireSidebar({
           </div>
           <div className="min-w-0">
             <p className="text-white text-[12px] font-semibold truncate leading-tight">{userName}</p>
-            <p className="text-violet-400/70 text-[10px] font-medium mt-0.5">SecrÃƒÂ©taire mÃƒÂ©dicale</p>
+            <p className="text-violet-400/70 text-[10px] font-medium mt-0.5">Secrétaire médicale</p>
           </div>
         </div>
       )}
@@ -121,14 +121,14 @@ function SecretaireSidebar({
           }`}
         >
           <LogOut className="w-[18px] h-[18px] flex-shrink-0" />
-          {!collapsed && <span>DÃƒÂ©connexion</span>}
+          {!collapsed && <span>Déconnexion</span>}
         </button>
       </div>
     </motion.div>
   );
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Patients view (read-only) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Patients view (read-only) ──────────────────────────────────────────────── */
 function PatientsView({ patients, loading }: { patients: Patient[]; loading: boolean }) {
   const [search, setSearch] = useState('');
   const filtered = patients.filter(p =>
@@ -150,17 +150,17 @@ function PatientsView({ patients, loading }: { patients: Patient[]; loading: boo
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher un patientÃ¢â‚¬Â¦"
+            placeholder="Rechercher un patient…"
             className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
           />
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20 text-slate-400">ChargementÃ¢â‚¬Â¦</div>
+          <div className="flex items-center justify-center py-20 text-slate-400">Chargement…</div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400">
             <Users className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm">Aucun patient trouvÃƒÂ©</p>
+            <p className="text-sm">Aucun patient trouvé</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -213,7 +213,7 @@ function PatientsView({ patients, loading }: { patients: Patient[]; loading: boo
   );
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Ordonnances view (read-only) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Ordonnances view (read-only) ───────────────────────────────────────────── */
 function OrdonnancesView({ orgId }: { orgId: string }) {
   const [ordonnances, setOrdonnances] = useState<Ordonnance[]>([]);
   const [loading, setLoading] = useState(true);
@@ -251,17 +251,17 @@ function OrdonnancesView({ orgId }: { orgId: string }) {
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher par patientÃ¢â‚¬Â¦"
+            placeholder="Rechercher par patient…"
             className="w-full pl-9 pr-4 py-2.5 text-sm bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
           />
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20 text-slate-400">ChargementÃ¢â‚¬Â¦</div>
+          <div className="flex items-center justify-center py-20 text-slate-400">Chargement…</div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400">
             <FileText className="w-12 h-12 mb-3 opacity-30" />
-            <p className="text-sm">Aucune ordonnance trouvÃƒÂ©e</p>
+            <p className="text-sm">Aucune ordonnance trouvée</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -286,7 +286,7 @@ function OrdonnancesView({ orgId }: { orgId: string }) {
                 </div>
                 {o.medications && Array.isArray(o.medications) && o.medications.length > 0 && (
                   <span className="text-xs text-slate-400 dark:text-slate-500">
-                    {o.medications.length} mÃƒÂ©dicament{o.medications.length > 1 ? 's' : ''}
+                    {o.medications.length} médicament{o.medications.length > 1 ? 's' : ''}
                   </span>
                 )}
               </div>
@@ -298,7 +298,7 @@ function OrdonnancesView({ orgId }: { orgId: string }) {
   );
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Main SecretaireDashboard Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* ── Main SecretaireDashboard ───────────────────────────────────────────────── */
 export function SecretaireDashboard() {
   const { user, clinicProfile, signOut } = useAuth();
   const navigate = useNavigate();
@@ -345,7 +345,7 @@ export function SecretaireDashboard() {
     navigate('/');
   };
 
-  const userName = user?.full_name || `${user?.prenom || ''} ${user?.nom || ''}`.trim() || 'SecrÃƒÂ©taire';
+  const userName = user?.full_name || `${user?.prenom || ''} ${user?.nom || ''}`.trim() || 'Secrétaire';
   const orgName = clinicProfile?.name || 'Cabinet';
 
   return (

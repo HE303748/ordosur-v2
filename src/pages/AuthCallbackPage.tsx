@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Activity, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-// Role Ã¢â€ â€™ route mapping
+// Role → route mapping
 const ROLE_ROUTES: Record<string, string> = {
   doctor:      '/doctor',
   clinic_admin: '/clinic/admin',
@@ -18,7 +18,7 @@ export function AuthCallbackPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [errorMsg, setErrorMsg] = useState('');
-  const [status, setStatus] = useState('Traitement du lienÃ¢â‚¬Â¦');
+  const [status, setStatus] = useState('Traitement du lien…');
 
   useEffect(() => {
     handleCallback();
@@ -48,7 +48,7 @@ export function AuthCallbackPage() {
 
       console.log('[AUTH CALLBACK] type:', type, '| error:', errorParam);
 
-      // Ã¢â€â‚¬Ã¢â€â‚¬ Supabase error in URL Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+      // ── Supabase error in URL ────────────────────────────────────────────
       if (errorParam) {
         console.error('[AUTH CALLBACK] Auth error:', errorDescription);
         setErrorMsg(errorDescription || 'Une erreur est survenue lors de la confirmation.');
@@ -56,28 +56,28 @@ export function AuthCallbackPage() {
         return;
       }
 
-      // Ã¢â€â‚¬Ã¢â€â‚¬ Password recovery Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+      // ── Password recovery ────────────────────────────────────────────────
       if (type === 'recovery') {
-        setStatus('Redirection vers la rÃƒÂ©initialisation du mot de passeÃ¢â‚¬Â¦');
+        setStatus('Redirection vers la réinitialisation du mot de passe…');
         navigate('/reset-password', { replace: true });
         return;
       }
 
-      // Ã¢â€â‚¬Ã¢â€â‚¬ Signup / email change Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+      // ── Signup / email change ────────────────────────────────────────────
       if (type === 'signup' || type === 'email_change' || !type) {
-        setStatus('Confirmation de l\'email en coursÃ¢â‚¬Â¦');
+        setStatus('Confirmation de l\'email en cours…');
 
         // Wait until Supabase has processed the token and established a session
         const session = await waitForSession(8000);
 
         if (!session) {
           console.warn('[AUTH CALLBACK] No session established after waiting');
-          // Redirect to login Ã¢â‚¬â€ the user can log in manually
+          // Redirect to login — the user can log in manually
           navigate('/', { replace: true });
           return;
         }
 
-        setStatus('Chargement de votre profilÃ¢â‚¬Â¦');
+        setStatus('Chargement de votre profil…');
 
         // Fetch user role from user_profiles
         const { data: profile, error: profileError } = await supabase
@@ -91,9 +91,9 @@ export function AuthCallbackPage() {
         }
 
         const destination = getDestinationByRole(profile?.role);
-        console.log('[AUTH CALLBACK] role:', profile?.role, 'Ã¢â€ â€™ redirect to', destination);
+        console.log('[AUTH CALLBACK] role:', profile?.role, '→ redirect to', destination);
 
-        setStatus(`Bienvenue ! Redirection vers votre espaceÃ¢â‚¬Â¦`);
+        setStatus(`Bienvenue ! Redirection vers votre espace…`);
         // Small delay so the welcome message is visible
         await new Promise(r => setTimeout(r, 600));
 
@@ -101,7 +101,7 @@ export function AuthCallbackPage() {
         return;
       }
 
-      // Ã¢â€â‚¬Ã¢â€â‚¬ Magic link Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+      // ── Magic link ───────────────────────────────────────────────────────
       if (type === 'magiclink') {
         const session = await waitForSession(6000);
         if (session) {
@@ -117,16 +117,16 @@ export function AuthCallbackPage() {
         return;
       }
 
-      // Ã¢â€â‚¬Ã¢â€â‚¬ Fallback Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+      // ── Fallback ─────────────────────────────────────────────────────────
       navigate('/', { replace: true });
     } catch (err: any) {
       console.error('[AUTH CALLBACK] Unexpected error:', err);
-      setErrorMsg('Une erreur inattendue est survenue. Vous allez ÃƒÂªtre redirigÃƒÂ©Ã¢â‚¬Â¦');
+      setErrorMsg('Une erreur inattendue est survenue. Vous allez être redirigé…');
       setTimeout(() => navigate('/', { replace: true }), 3000);
     }
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Error state Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // ── Error state ───────────────────────────────────────────────────────────
   if (errorMsg) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
@@ -139,13 +139,13 @@ export function AuthCallbackPage() {
           </div>
           <h2 className="text-xl font-bold text-gray-900">Erreur de confirmation</h2>
           <p className="text-gray-600 text-sm">{errorMsg}</p>
-          <p className="text-xs text-gray-400">Redirection en coursÃ¢â‚¬Â¦</p>
+          <p className="text-xs text-gray-400">Redirection en cours…</p>
         </div>
       </div>
     );
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Loading state Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // ── Loading state ─────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FAFAF7] via-white to-[#E6F4EE]">
       <div className="flex flex-col items-center gap-6 text-center">

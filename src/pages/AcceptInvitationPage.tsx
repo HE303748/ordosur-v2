@@ -7,7 +7,7 @@ import {
   AlertCircle, ArrowRight, Loader2,
 } from 'lucide-react';
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Types Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface InvitationData {
   id: string;
@@ -21,7 +21,7 @@ interface InvitationData {
   clinic_name: string;
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function passwordStrength(pwd: string): { score: number; label: string; color: string } {
   if (!pwd) return { score: 0, label: '', color: '' };
@@ -39,7 +39,7 @@ function passwordStrength(pwd: string): { score: number; label: string; color: s
   return map[score - 1] ?? { score: 0, label: '', color: '' };
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Sub-components Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function LoadingScreen() {
   return (
@@ -61,13 +61,13 @@ function ErrorScreen({ message }: { message: string }) {
         <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-5">
           <AlertCircle className="w-8 h-8 text-red-400" />
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">Lien invalide ou expirÃƒÂ©</h2>
+        <h2 className="text-xl font-bold text-white mb-2">Lien invalide ou expiré</h2>
         <p className="text-sm text-slate-400 mb-6 leading-relaxed">{message}</p>
         <button
           onClick={() => navigate('/')}
           className="w-full py-3 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors"
         >
-          Retour ÃƒÂ  la connexion
+          Retour à la connexion
         </button>
       </motion.div>
     </div>
@@ -90,14 +90,14 @@ function SuccessScreen({ clinicName, prenom }: { clinicName: string; prenom: str
         >
           <CheckCircle className="w-10 h-10 text-emerald-400" />
         </motion.div>
-        <h2 className="text-2xl font-bold text-white mb-2">Compte crÃƒÂ©ÃƒÂ© !</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">Compte créé !</h2>
         <p className="text-slate-400 mb-1">
-          Bienvenue{prenom ? `, Dr. ${prenom}` : ''} dans l'ÃƒÂ©quipe de
+          Bienvenue{prenom ? `, Dr. ${prenom}` : ''} dans l'équipe de
         </p>
         <p className="text-[#00A86B] font-semibold mb-5">{clinicName}</p>
         <div className="p-4 bg-[#00A86B]/10 border border-[#00A86B]/20 rounded-xl mb-6">
           <p className="text-sm text-[#00A86B] leading-relaxed">
-            Un email de confirmation vous a ÃƒÂ©tÃƒÂ© envoyÃƒÂ©. Cliquez sur le lien pour activer votre compte et accÃƒÂ©der ÃƒÂ  votre espace mÃƒÂ©decin.
+            Un email de confirmation vous a été envoyé. Cliquez sur le lien pour activer votre compte et accéder à votre espace médecin.
           </p>
         </div>
         <p className="text-xs text-slate-600">Vous pouvez fermer cette page.</p>
@@ -106,7 +106,7 @@ function SuccessScreen({ clinicName, prenom }: { clinicName: string; prenom: str
   );
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Main Component Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export function AcceptInvitationPage() {
   const navigate     = useNavigate();
@@ -132,7 +132,7 @@ export function AcceptInvitationPage() {
 
   useEffect(() => {
     if (!token) {
-      setErrMsg("Lien d'invitation manquant. VÃƒÂ©rifiez votre email.");
+      setErrMsg("Lien d'invitation manquant. Vérifiez votre email.");
       setLoading(false);
       return;
     }
@@ -158,19 +158,19 @@ export function AcceptInvitationPage() {
       if (invErr) throw invErr;
 
       if (!inv) {
-        setErrMsg("Ce lien d'invitation est invalide. Il a peut-ÃƒÂªtre dÃƒÂ©jÃƒÂ  ÃƒÂ©tÃƒÂ© utilisÃƒÂ© ou n'existe pas.");
+        setErrMsg("Ce lien d'invitation est invalide. Il a peut-être déjà été utilisé ou n'existe pas.");
         setLoading(false);
         return;
       }
 
       if (inv.statut !== 'pending') {
-        setErrMsg("Cette invitation a dÃƒÂ©jÃƒÂ  ÃƒÂ©tÃƒÂ© acceptÃƒÂ©e ou annulÃƒÂ©e.");
+        setErrMsg("Cette invitation a déjà été acceptée ou annulée.");
         setLoading(false);
         return;
       }
 
       if (new Date(inv.expires_at) < new Date()) {
-        setErrMsg("Ce lien d'invitation a expirÃƒÂ©. Contactez le mÃƒÂ©decin pour en recevoir un nouveau.");
+        setErrMsg("Ce lien d'invitation a expiré. Contactez le médecin pour en recevoir un nouveau.");
         setLoading(false);
         return;
       }
@@ -192,7 +192,7 @@ export function AcceptInvitationPage() {
       setNom(inv.nom ?? '');
     } catch (err) {
       console.error('[AcceptInvitation] validateToken error:', err);
-      setErrMsg("Erreur lors de la validation du lien. RÃƒÂ©essayez ou contactez l'administrateur.");
+      setErrMsg("Erreur lors de la validation du lien. Réessayez ou contactez l'administrateur.");
     } finally {
       setLoading(false);
     }
@@ -202,14 +202,14 @@ export function AcceptInvitationPage() {
     e.preventDefault();
     setSubmitError('');
 
-    if (!prenom.trim()) { setSubmitError('Le prÃƒÂ©nom est requis.');  return; }
+    if (!prenom.trim()) { setSubmitError('Le prénom est requis.');  return; }
     if (!nom.trim())    { setSubmitError('Le nom est requis.');      return; }
-    if (pwd.length < 8) { setSubmitError('Le mot de passe doit contenir au moins 8 caractÃƒÂ¨res.'); return; }
+    if (pwd.length < 8) { setSubmitError('Le mot de passe doit contenir au moins 8 caractères.'); return; }
     if (pwd !== pwd2)   { setSubmitError('Les mots de passe ne correspondent pas.'); return; }
 
     const str = passwordStrength(pwd);
     if (str.score < 2) {
-      setSubmitError('Mot de passe trop faible. Ajoutez des majuscules, chiffres ou caractÃƒÂ¨res spÃƒÂ©ciaux.');
+      setSubmitError('Mot de passe trop faible. Ajoutez des majuscules, chiffres ou caractères spéciaux.');
       return;
     }
 
@@ -231,7 +231,7 @@ export function AcceptInvitationPage() {
 
       if (signUpErr) {
         if (signUpErr.message.includes('already registered') || signUpErr.message.includes('already been registered')) {
-          setSubmitError('Un compte existe dÃƒÂ©jÃƒÂ  avec cette adresse email. Connectez-vous directement.');
+          setSubmitError('Un compte existe déjà avec cette adresse email. Connectez-vous directement.');
         } else {
           setSubmitError(signUpErr.message);
         }
@@ -239,7 +239,7 @@ export function AcceptInvitationPage() {
         return;
       }
 
-      if (!authData.user) throw new Error('Ãƒâ€°chec crÃƒÂ©ation compte auth.');
+      if (!authData.user) throw new Error('Échec création compte auth.');
 
       // 2. Accept invitation via the appropriate SECURITY DEFINER RPC
       const rpcName = isSecretaire ? 'accept_secretaire_invitation' : 'accept_clinic_invitation';
@@ -259,13 +259,13 @@ export function AcceptInvitationPage() {
       setDone(true);
     } catch (err: unknown) {
       console.error('[AcceptInvitation] submit error:', err);
-      setSubmitError(err instanceof Error ? err.message : 'Erreur inattendue. RÃƒÂ©essayez.');
+      setSubmitError(err instanceof Error ? err.message : 'Erreur inattendue. Réessayez.');
     } finally {
       setSubmitting(false);
     }
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Render states
+  // ── Render states
   if (loading)                    return <LoadingScreen />;
   if (errMsg && !invitation)      return <ErrorScreen message={errMsg} />;
   if (done && invitation)         return <SuccessScreen clinicName={invitation.clinic_name} prenom={prenom} />;
@@ -295,11 +295,11 @@ export function AcceptInvitationPage() {
               </div>
               <div>
                 <h1 className="text-white font-bold text-lg leading-tight">OrdoSur</h1>
-                <p className="text-white/80 text-xs">Invitation ÃƒÂ  rejoindre</p>
+                <p className="text-white/80 text-xs">Invitation à rejoindre</p>
               </div>
             </div>
             <div className="mt-4">
-              <p className="text-white/80 text-sm">Vous avez ÃƒÂ©tÃƒÂ© invitÃƒÂ©(e) ÃƒÂ  rejoindre</p>
+              <p className="text-white/80 text-sm">Vous avez été invité(e) à rejoindre</p>
               <p className="text-white font-bold text-xl mt-0.5">{invitation.clinic_name}</p>
               {invitation.specialite && (
                 <span className="inline-block mt-2 px-2.5 py-1 bg-white/20 rounded-full text-xs text-white font-medium">
@@ -313,7 +313,7 @@ export function AcceptInvitationPage() {
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <div>
               <p className="text-sm font-semibold text-white mb-4">
-                {invType === 'secretaire' ? 'CrÃƒÂ©ez votre compte secrÃƒÂ©taire' : 'CrÃƒÂ©ez votre compte mÃƒÂ©decin'}
+                {invType === 'secretaire' ? 'Créez votre compte secrétaire' : 'Créez votre compte médecin'}
               </p>
             </div>
 
@@ -326,13 +326,13 @@ export function AcceptInvitationPage() {
                 disabled
                 className={`${inputCls} opacity-60 cursor-not-allowed`}
               />
-              <p className="text-[11px] text-slate-600 mt-1">PrÃƒÂ©-rempli depuis votre invitation</p>
+              <p className="text-[11px] text-slate-600 mt-1">Pré-rempli depuis votre invitation</p>
             </div>
 
             {/* Prenom + Nom */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>PrÃƒÂ©nom <span className="text-red-400">*</span></label>
+                <label className={labelCls}>Prénom <span className="text-red-400">*</span></label>
                 <input
                   type="text"
                   value={prenom}
@@ -361,7 +361,7 @@ export function AcceptInvitationPage() {
                   type={showPwd ? 'text' : 'password'}
                   value={pwd}
                   onChange={e => setPwd(e.target.value)}
-                  placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢"
+                  placeholder="••••••••"
                   className={`${inputCls} pr-10`}
                 />
                 <button
@@ -407,7 +407,7 @@ export function AcceptInvitationPage() {
                   type={showPwd2 ? 'text' : 'password'}
                   value={pwd2}
                   onChange={e => setPwd2(e.target.value)}
-                  placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢"
+                  placeholder="••••••••"
                   className={`${inputCls} pr-10 ${
                     pwd2 && pwd !== pwd2 ? 'border-red-500/50 focus:ring-red-500/30' : ''
                   }`}
@@ -451,14 +451,14 @@ export function AcceptInvitationPage() {
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
-                  CrÃƒÂ©er mon compte
+                  Créer mon compte
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
 
             <p className="text-center text-xs text-slate-600 pt-1">
-              DÃƒÂ©jÃƒÂ  un compte ?{' '}
+              Déjà un compte ?{' '}
               <button type="button" onClick={() => navigate('/')} className="text-[#00A86B] hover:text-[#00A86B] font-medium transition-colors">
                 Se connecter
               </button>

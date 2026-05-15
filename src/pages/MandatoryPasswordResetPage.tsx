@@ -9,7 +9,7 @@ import { validatePassword } from '../lib/validation';
 import { Lock, Shield } from 'lucide-react';
 
 // Cette page permet un changement de mot de passe simple.
-// La fonctionnalitÃƒÂ© "mot de passe temporaire obligatoire" de v1 (RPCs supprimÃƒÂ©s) n'existe plus en v2.
+// La fonctionnalité "mot de passe temporaire obligatoire" de v1 (RPCs supprimés) n'existe plus en v2.
 
 export function MandatoryPasswordResetPage() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export function MandatoryPasswordResetPage() {
     setSuccess('');
 
     if (!user) {
-      setError('Utilisateur non connectÃƒÂ©');
+      setError('Utilisateur non connecté');
       return;
     }
 
@@ -41,7 +41,7 @@ export function MandatoryPasswordResetPage() {
     }
 
     if (passwordStrength.score < 5) {
-      setError('Le mot de passe ne rÃƒÂ©pond pas ÃƒÂ  tous les critÃƒÂ¨res de sÃƒÂ©curitÃƒÂ©');
+      setError('Le mot de passe ne répond pas à tous les critères de sécurité');
       return;
     }
 
@@ -54,7 +54,7 @@ export function MandatoryPasswordResetPage() {
 
       if (updateError) throw updateError;
 
-      setSuccess('Mot de passe changÃƒÂ© avec succÃƒÂ¨s ! Redirection...');
+      setSuccess('Mot de passe changé avec succès ! Redirection...');
 
       setTimeout(() => {
         if (user.role === 'doctor') {
@@ -91,7 +91,7 @@ export function MandatoryPasswordResetPage() {
             Changement de mot de passe
           </h1>
           <p className="text-center text-gray-600 mb-8 text-sm">
-            Choisissez un nouveau mot de passe sÃƒÂ©curisÃƒÂ©
+            Choisissez un nouveau mot de passe sécurisé
           </p>
 
           {error && (
@@ -137,7 +137,7 @@ export function MandatoryPasswordResetPage() {
                 onClick={handleLogout}
                 className="flex-1"
               >
-                Se dÃƒÂ©connecter
+                Se déconnecter
               </Button>
               <Button
                 type="submit"

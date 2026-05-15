@@ -12,7 +12,7 @@ import {
 import { PageTransition } from '../../../components/ui/PageTransition';
 import { supabase } from '../../../lib/supabase';
 
-// ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Types ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface DoctorWithProfile {
   id: string;
@@ -47,8 +47,8 @@ interface ChartDay {
 type FilterType = 'all' | 'actifs' | 'conge';
 
 const SPECIALITES = [
-  'GÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â©raliste', 'Cardiologue', 'Dermatologue', 'PÃƒÆ’Ã‚Â©diatre',
-  'GynÃƒÆ’Ã‚Â©cologue', 'Ophtalmologue', 'ORL', 'Neurologue',
+  'Généraliste', 'Cardiologue', 'Dermatologue', 'Pédiatre',
+  'Gynécologue', 'Ophtalmologue', 'ORL', 'Neurologue',
   'Psychiatre', 'Chirurgien', 'Urgentiste', 'Autre',
 ];
 
@@ -61,7 +61,7 @@ const AVATAR_GRADIENTS = [
   '[#00A86B]',
 ];
 
-// ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Invite Modal ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+// ─── Invite Modal ─────────────────────────────────────────────────────────────
 
 function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void }) {
   const [form, setForm] = useState({
@@ -80,7 +80,7 @@ function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void })
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.email.trim())  { setError("L'email est requis");  return; }
-    if (!form.prenom.trim()) { setError('Le prÃƒÆ’Ã‚Â©nom est requis'); return; }
+    if (!form.prenom.trim()) { setError('Le prénom est requis'); return; }
     if (!form.nom.trim())    { setError('Le nom est requis');    return; }
     setError('');
     setLoading(true);
@@ -95,7 +95,7 @@ function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void })
         .maybeSingle();
 
       if (existing) {
-        setError('Une invitation est dÃƒÆ’Ã‚Â©jÃƒÆ’Ã‚Â  en attente pour cet email.');
+        setError('Une invitation est déjà en attente pour cet email.');
         setLoading(false);
         return;
       }
@@ -158,7 +158,7 @@ function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void })
               <UserPlus className="w-5 h-5 text-[#00A86B]" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Inviter un mÃƒÆ’Ã‚Â©decin</h3>
+              <h3 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Inviter un médecin</h3>
               <p className="text-xs text-slate-400 dark:text-[#64748B]">Lien valable 7 jours</p>
             </div>
           </div>
@@ -173,10 +173,10 @@ function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void })
               <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                  Invitation crÃƒÆ’Ã‚Â©ÃƒÆ’Ã‚Â©e pour {form.prenom} {form.nom}
+                  Invitation créée pour {form.prenom} {form.nom}
                 </p>
                 <p className="text-xs text-emerald-600 dark:text-emerald-500 mt-0.5">
-                  Copiez le lien et envoyez-le au mÃƒÆ’Ã‚Â©decin
+                  Copiez le lien et envoyez-le au médecin
                 </p>
               </div>
             </div>
@@ -213,7 +213,7 @@ function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void })
             {/* Prenom + Nom */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>PrÃƒÆ’Ã‚Â©nom <span className="text-red-500">*</span></label>
+                <label className={labelCls}>Prénom <span className="text-red-500">*</span></label>
                 <input type="text" value={form.prenom} onChange={update('prenom')}
                   placeholder="Mohamed" className={inputCls} />
               </div>
@@ -226,19 +226,19 @@ function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void })
 
             {/* Specialite select */}
             <div>
-              <label className={labelCls}>SpÃƒÆ’Ã‚Â©cialitÃƒÆ’Ã‚Â©</label>
+              <label className={labelCls}>Spécialité</label>
               <select value={form.specialite} onChange={update('specialite')} className={inputCls}>
-                <option value="">SÃƒÆ’Ã‚Â©lectionnerÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦</option>
+                <option value="">Sélectionner…</option>
                 {SPECIALITES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
 
             {/* Message optionnel */}
             <div>
-              <label className={labelCls}>Message personnalisÃƒÆ’Ã‚Â© (optionnel)</label>
+              <label className={labelCls}>Message personnalisé (optionnel)</label>
               <textarea
                 value={form.message} onChange={update('message')} rows={2}
-                placeholder="Bienvenue dans notre ÃƒÆ’Ã‚Â©quipeÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦"
+                placeholder="Bienvenue dans notre équipe…"
                 className={`${inputCls} resize-none`}
               />
             </div>
@@ -270,7 +270,7 @@ function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void })
   );
 }
 
-// ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Custom Recharts Tooltip ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+// ─── Custom Recharts Tooltip ──────────────────────────────────────────────────
 
 function CustomBarTooltip({ active, payload, label }: {
   active?: boolean; payload?: Array<{ value: number }>; label?: string;
@@ -284,7 +284,7 @@ function CustomBarTooltip({ active, payload, label }: {
   );
 }
 
-// ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Main Component ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 interface ClinicMedecinsViewProps {
   doctors: DoctorWithProfile[];
@@ -309,18 +309,18 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
 
   const loadedRef = useRef<string | null>(null);
 
-  // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Filter + search
+  // ── Filter + search
   const filtered = doctors.filter(d => {
     const q = search.toLowerCase();
     const matchQ = !q
       || d.prenom.toLowerCase().includes(q)
       || d.nom.toLowerCase().includes(q)
       || (d.specialite ?? '').toLowerCase().includes(q);
-    // No real status on doctors table ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ filterTab is UI-only for now
+    // No real status on doctors table → filterTab is UI-only for now
     return matchQ;
   });
 
-  // ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Load detail data when doctor selected
+  // ── Load detail data when doctor selected
   useEffect(() => {
     if (!selected || selected.id === loadedRef.current) return;
     loadedRef.current = selected.id;
@@ -364,13 +364,13 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
       const { data: pats } = await supabase
         .from('patients').select('id, prenom, nom').in('id', patIds);
       const patMap = new Map((pats ?? []).map(p => [p.id, `${p.prenom} ${p.nom}`]));
-      setRecentOrds(ords.map(o => ({ ...o, patient_name: patMap.get(o.patient_id) ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â' })));
+      setRecentOrds(ords.map(o => ({ ...o, patient_name: patMap.get(o.patient_id) ?? '—' })));
     } else {
       setRecentOrds([]);
     }
     setOrdsLoading(false);
 
-    // Activity chart ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â last 30 days
+    // Activity chart — last 30 days
     setChartLoading(true);
     const { data: actData } = await supabase
       .from('ordonnances')
@@ -406,14 +406,14 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
   const FILTERS: { key: FilterType; label: string }[] = [
     { key: 'all',    label: 'Tous'     },
     { key: 'actifs', label: 'Actifs'   },
-    { key: 'conge',  label: 'En congÃƒÆ’Ã‚Â©' },
+    { key: 'conge',  label: 'En congé' },
   ];
 
   return (
     <PageTransition>
       <div className="flex gap-5 p-6 h-[calc(100vh-4rem)] overflow-hidden">
 
-        {/* ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â LEFT: doctor list ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â */}
+        {/* ══ LEFT: doctor list ══════════════════════════════════════════ */}
         <div className="w-[360px] flex-shrink-0 flex flex-col gap-3">
 
           {/* Invite button */}
@@ -422,7 +422,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
             className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#00A86B] hover:bg-[#006B47] active:scale-[0.98] text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-[#00A86B]/20"
           >
             <UserPlus className="w-4 h-4" />
-            + Inviter un mÃƒÆ’Ã‚Â©decin
+            + Inviter un médecin
           </button>
 
           {/* Search */}
@@ -430,7 +430,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher par nom ou spÃƒÆ’Ã‚Â©cialitÃƒÆ’Ã‚Â©ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦"
+              placeholder="Rechercher par nom ou spécialité…"
               className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 placeholder-slate-400"
             />
           </div>
@@ -457,7 +457,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-40 text-center">
                 <Users className="w-10 h-10 text-slate-200 dark:text-slate-700 mb-3" />
-                <p className="text-sm text-slate-400 dark:text-slate-600">Aucun mÃƒÆ’Ã‚Â©decin trouvÃƒÆ’Ã‚Â©</p>
+                <p className="text-sm text-slate-400 dark:text-slate-600">Aucun médecin trouvé</p>
               </div>
             ) : filtered.map((doc, idx) => {
               const initials = `${doc.prenom[0] ?? ''}${doc.nom[0] ?? ''}`.toUpperCase();
@@ -484,7 +484,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                       Dr. {doc.prenom} {doc.nom}
                     </p>
                     <p className="text-xs text-slate-400 dark:text-[#94A3B8] truncate">
-                      {doc.specialite ?? 'MÃƒÆ’Ã‚Â©decin gÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â©raliste'}
+                      {doc.specialite ?? 'Médecin généraliste'}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
@@ -497,11 +497,11 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
           </div>
 
           <p className="text-xs text-center text-slate-400 dark:text-slate-600 pb-1">
-            {filtered.length} mÃƒÆ’Ã‚Â©decin{filtered.length !== 1 ? 's' : ''}
+            {filtered.length} médecin{filtered.length !== 1 ? 's' : ''}
           </p>
         </div>
 
-        {/* ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â RIGHT: detail panel ÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚ÂÃƒÂ¢Ã¢â‚¬Â¢Ã‚Â */}
+        {/* ══ RIGHT: detail panel ════════════════════════════════════════ */}
         <div className="flex-1 bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] rounded-2xl shadow-sm overflow-y-auto">
           <AnimatePresence mode="wait">
             {selected ? (
@@ -525,7 +525,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                       Dr. {selected.prenom} {selected.nom}
                     </h2>
                     <p className="text-sm text-slate-500 dark:text-[#94A3B8] mt-0.5">
-                      {selected.specialite ?? 'MÃƒÆ’Ã‚Â©decin gÃƒÆ’Ã‚Â©nÃƒÆ’Ã‚Â©raliste'}
+                      {selected.specialite ?? 'Médecin généraliste'}
                     </p>
                     <div className="flex items-center gap-3 mt-2 flex-wrap">
                       {selected.rpps && (
@@ -558,7 +558,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                       </div>
                       {statsLoading
                         ? <div className="h-5 w-8 bg-slate-200 dark:bg-white/[0.07] rounded animate-pulse mx-auto mb-1" />
-                        : <p className="text-lg font-bold text-slate-900 dark:text-[#E2E8F0]">{value ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</p>}
+                        : <p className="text-lg font-bold text-slate-900 dark:text-[#E2E8F0]">{value ?? '—'}</p>}
                       <p className="text-xs text-slate-400 dark:text-[#94A3B8]">{label}</p>
                     </div>
                   ))}
@@ -569,7 +569,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                   <div className="flex items-center gap-2 mb-3">
                     <BarChart2 className="w-4 h-4 text-[#00A86B]" />
                     <h3 className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
-                      ActivitÃƒÆ’Ã‚Â© ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 30 derniers jours
+                      Activité — 30 derniers jours
                     </h3>
                   </div>
                   {chartLoading ? (
@@ -606,7 +606,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                   <div className="flex items-center gap-2 mb-3">
                     <FileText className="w-4 h-4 text-violet-500" />
                     <h3 className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
-                      5 derniÃƒÆ’Ã‚Â¨res ordonnances
+                      5 dernières ordonnances
                     </h3>
                   </div>
                   {ordsLoading ? (
@@ -637,7 +637,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                               ? 'bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400'
                               : 'bg-slate-100 text-slate-400 dark:bg-white/[0.07]'
                           }`}>
-                            {o.statut === 'active' ? 'Active' : o.statut === 'expired' ? 'ExpirÃƒÆ’Ã‚Â©e' : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}
+                            {o.statut === 'active' ? 'Active' : o.statut === 'expired' ? 'Expirée' : '—'}
                           </span>
                         </div>
                       ))}
@@ -650,7 +650,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                   <button
                     disabled
                     className="flex-1 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-400 dark:text-slate-600 rounded-xl text-sm font-medium cursor-not-allowed opacity-60"
-                    title="BientÃƒÆ’Ã‚Â´t disponible"
+                    title="Bientôt disponible"
                   >
                     Modifier profil
                   </button>
@@ -665,7 +665,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                       <button
                         disabled
                         className="flex-1 py-2.5 bg-red-500 text-white rounded-xl text-xs font-semibold opacity-60 cursor-not-allowed"
-                        title="FonctionnalitÃƒÆ’Ã‚Â© bientÃƒÆ’Ã‚Â´t disponible"
+                        title="Fonctionnalité bientôt disponible"
                       >
                         Confirmer
                       </button>
@@ -676,7 +676,7 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                       className="flex-1 py-2.5 border border-red-200 dark:border-red-500/30 text-red-500 dark:text-red-400 rounded-xl text-sm font-medium hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center justify-center gap-2"
                     >
                       <ShieldOff className="w-4 h-4" />
-                      DÃƒÆ’Ã‚Â©sactiver compte
+                      Désactiver compte
                     </button>
                   )}
                 </div>
@@ -693,10 +693,10 @@ export function ClinicMedecinsView({ doctors, orgId, onDoctorsChange }: ClinicMe
                   <Stethoscope className="w-8 h-8 text-slate-300 dark:text-slate-600" />
                 </div>
                 <p className="text-sm font-semibold text-slate-400 dark:text-slate-600">
-                  SÃƒÆ’Ã‚Â©lectionnez un mÃƒÆ’Ã‚Â©decin
+                  Sélectionnez un médecin
                 </p>
                 <p className="text-xs text-slate-300 dark:text-slate-700 mt-1">
-                  pour afficher sa fiche, ses statistiques et son activitÃƒÆ’Ã‚Â©
+                  pour afficher sa fiche, ses statistiques et son activité
                 </p>
               </motion.div>
             )}

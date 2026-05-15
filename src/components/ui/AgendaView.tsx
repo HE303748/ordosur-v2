@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { PageTransition } from './PageTransition';
 
-/* â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Types ─────────────────────────────────────────────────────── */
 interface RendezVous {
   id: string;
   patient_nom: string;
@@ -36,7 +36,7 @@ const TYPE_LABELS: Record<string, string> = {
   consultation:     'Consultation',
   suivi:            'Suivi',
   urgence:          'Urgence',
-  teleconsultation: 'TÃ©lÃ©consultation',
+  teleconsultation: 'Téléconsultation',
   autre:            'Autre',
 };
 
@@ -49,7 +49,7 @@ const STATUT_COLORS: Record<string, string> = {
 
 const HOURS = Array.from({ length: 14 }, (_, i) => i + 7);
 const DAYS_FR = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-const MONTHS_FR = ['Janvier','FÃ©vrier','Mars','Avril','Mai','Juin','Juillet','AoÃ»t','Septembre','Octobre','Novembre','DÃ©cembre'];
+const MONTHS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
 
 function getWeekDays(refDate: Date): Date[] {
   const d = new Date(refDate);
@@ -65,7 +65,7 @@ function getWeekDays(refDate: Date): Date[] {
 function fmt(d: Date) { return d.toISOString().split('T')[0]; }
 function isSameDay(a: Date, b: Date) { return fmt(a) === fmt(b); }
 
-/* â”€â”€ Shared input class â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Shared input class ─────────────────────────────────────────── */
 const inputCls = `w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm
   bg-white dark:bg-[#1E293B]
   text-slate-900 dark:text-[#E2E8F0]
@@ -76,7 +76,7 @@ const inputCls = `w-full px-3 py-2.5 border border-slate-200 dark:border-white/[
 
 const labelCls = 'block text-xs font-semibold text-slate-600 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide';
 
-/* â”€â”€ RDV Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── RDV Modal ──────────────────────────────────────────────────── */
 interface RdvModalProps {
   rdv?: RendezVous | null;
   defaultDate?: string;
@@ -195,7 +195,7 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
                       className="w-full px-4 py-2.5 text-left text-sm text-[#00A86B] font-semibold hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.08] transition-colors flex items-center gap-2"
                     >
                       <UserPlus className="w-4 h-4 flex-shrink-0" />
-                      CrÃ©er un RDV pour Â« {patSearch.trim()} Â»
+                      Créer un RDV pour « {patSearch.trim()} »
                     </button>
                   )}
                 </div>
@@ -209,7 +209,7 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
               <input type="date" value={form.date} onChange={e => set('date', e.target.value)} required className={inputCls} />
             </div>
             <div>
-              <label className={labelCls}>DÃ©but</label>
+              <label className={labelCls}>Début</label>
               <input type="time" value={form.heure_debut} onChange={e => set('heure_debut', e.target.value)} required className={inputCls} />
             </div>
             <div>
@@ -232,10 +232,10 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
               <select value={form.statut} onChange={e => set('statut', e.target.value)}
                 className={`${inputCls} appearance-none`}
               >
-                <option value="confirme">ConfirmÃ©</option>
+                <option value="confirme">Confirmé</option>
                 <option value="en_attente">En attente</option>
-                <option value="annule">AnnulÃ©</option>
-                <option value="termine">TerminÃ©</option>
+                <option value="annule">Annulé</option>
+                <option value="termine">Terminé</option>
               </select>
             </div>
           </div>
@@ -263,7 +263,7 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
               type="submit" disabled={saving}
               className="flex-1 px-4 py-2.5 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-60"
             >
-              {saving ? 'Enregistrement...' : rdv ? 'Mettre Ã  jour' : 'CrÃ©er le RDV'}
+              {saving ? 'Enregistrement...' : rdv ? 'Mettre à jour' : 'Créer le RDV'}
             </button>
           </div>
         </form>
@@ -272,7 +272,7 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
   );
 }
 
-/* â”€â”€ Main AgendaView â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Main AgendaView ────────────────────────────────────────────── */
 interface AgendaViewProps {
   patients: Array<{ id: string; prenom: string; nom: string }>;
   showToast: (msg: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
@@ -312,10 +312,10 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
     try {
       if (editingRdv) {
         await supabase.from('rendez_vous').update(formData).eq('id', editingRdv.id);
-        showToast('Rendez-vous mis Ã  jour', 'success');
+        showToast('Rendez-vous mis à jour', 'success');
       } else {
         await supabase.from('rendez_vous').insert({ ...formData, org_id: user.org_id, doctor_id: user.id });
-        showToast('Rendez-vous crÃ©Ã©', 'success');
+        showToast('Rendez-vous créé', 'success');
       }
       setShowModal(false); setEditingRdv(null); load();
     } catch {
@@ -326,7 +326,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
   const handleDelete = async (id: string) => {
     if (!confirm('Supprimer ce rendez-vous ?')) return;
     await supabase.from('rendez_vous').delete().eq('id', id);
-    showToast('Rendez-vous supprimÃ©', 'info');
+    showToast('Rendez-vous supprimé', 'info');
     load();
   };
 
@@ -343,7 +343,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
   const rdvsForDay = (day: Date) => rdvs.filter(r => r.date === fmt(day));
 
   const topLabel = view === 'semaine'
-    ? `${weekDays[0].getDate()} â€“ ${weekDays[6].getDate()} ${MONTHS_FR[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`
+    ? `${weekDays[0].getDate()} – ${weekDays[6].getDate()} ${MONTHS_FR[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`
     : view === 'jour'
     ? refDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     : `${MONTHS_FR[refDate.getMonth()]} ${refDate.getFullYear()}`;
@@ -430,7 +430,7 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
   );
 }
 
-/* â”€â”€ Week View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Week View ──────────────────────────────────────────────────── */
 function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
   return (
     <div className="flex-1 overflow-auto">
@@ -491,7 +491,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
                     style={{ top, height }}
                   >
                     <p className="text-white text-[10px] font-bold truncate leading-tight">{rdv.patient_nom}</p>
-                    <p className="text-white/80 text-[9px] truncate">{rdv.heure_debut.slice(0,5)} â€“ {rdv.heure_fin.slice(0,5)}</p>
+                    <p className="text-white/80 text-[9px] truncate">{rdv.heure_debut.slice(0,5)} – {rdv.heure_fin.slice(0,5)}</p>
                   </div>
                 );
               })}
@@ -503,7 +503,7 @@ function WeekView({ weekDays, rdvsForDay, today, onAddRdv, onEdit }: any) {
   );
 }
 
-/* â”€â”€ Day View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Day View ───────────────────────────────────────────────────── */
 function DayView({ day, rdvs, today, onAddRdv, onEdit }: any) {
   const isToday = isSameDay(day, today);
   return (
@@ -537,11 +537,11 @@ function DayView({ day, rdvs, today, onAddRdv, onEdit }: any) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-white text-sm font-bold truncate">{rdv.patient_nom}</p>
-                    <p className="text-white/80 text-xs mt-0.5">{rdv.heure_debut.slice(0,5)} â€“ {rdv.heure_fin.slice(0,5)}</p>
+                    <p className="text-white/80 text-xs mt-0.5">{rdv.heure_debut.slice(0,5)} – {rdv.heure_fin.slice(0,5)}</p>
                     {rdv.motif && <p className="text-white/70 text-xs mt-0.5 truncate">{rdv.motif}</p>}
                   </div>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${STATUT_COLORS[rdv.statut]}`}>
-                    {rdv.statut === 'confirme' ? 'âœ“' : rdv.statut === 'annule' ? 'âœ•' : 'â³'}
+                    {rdv.statut === 'confirme' ? '✓' : rdv.statut === 'annule' ? '✕' : '⏳'}
                   </span>
                 </div>
               </div>
@@ -553,7 +553,7 @@ function DayView({ day, rdvs, today, onAddRdv, onEdit }: any) {
   );
 }
 
-/* â”€â”€ Month View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Month View ─────────────────────────────────────────────────── */
 function MonthView({ refDate, rdvsForDay, today, onAddRdv, onEdit }: any) {
   const year = refDate.getFullYear();
   const month = refDate.getMonth();

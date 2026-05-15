@@ -12,7 +12,7 @@ import { supabase, Patient } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { PageTransition } from './PageTransition';
 
-/* â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Types ─────────────────────────────────────────────────────────────────── */
 type CertType =
   | 'arret_travail'
   | 'accident_travail'
@@ -69,7 +69,7 @@ interface DocumentsViewProps {
   } | null;
 }
 
-/* â”€â”€ Certificate configs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Certificate configs ────────────────────────────────────────────────────── */
 interface CertConfig {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -80,125 +80,125 @@ interface CertConfig {
 }
 
 const CERT_CONFIGS: Record<CertType, CertConfig> = {
-  arret_travail:   { label: 'ArrÃªt de travail',        icon: Clock,          color: 'text-orange-600',  bgColor: 'bg-orange-50',  borderColor: 'border-orange-200', description: 'CongÃ© maladie / arrÃªt de travail' },
-  accident_travail:{ label: 'Accident de travail',     icon: AlertTriangle,  color: 'text-red-600',     bgColor: 'bg-red-50',     borderColor: 'border-red-200',    description: 'Constatation mÃ©dicale suite Ã  accident' },
-  general:         { label: 'Certificat mÃ©dical',      icon: FileText,       color: 'text-blue-600',    bgColor: 'bg-blue-50',    borderColor: 'border-blue-200',   description: 'Certificat mÃ©dical gÃ©nÃ©ral' },
-  aptitude:        { label: "Certificat d'aptitude",   icon: CheckCircle2,   color: 'text-emerald-600', bgColor: 'bg-emerald-50', borderColor: 'border-emerald-200',description: 'Aptitude Ã  une activitÃ© / emploi' },
-  inaptitude:      { label: "Certificat d'inaptitude", icon: Shield,         color: 'text-slate-600',   bgColor: 'bg-slate-50',   borderColor: 'border-slate-200',  description: 'Inaptitude mÃ©dicale constatÃ©e' },
+  arret_travail:   { label: 'Arrêt de travail',        icon: Clock,          color: 'text-orange-600',  bgColor: 'bg-orange-50',  borderColor: 'border-orange-200', description: 'Congé maladie / arrêt de travail' },
+  accident_travail:{ label: 'Accident de travail',     icon: AlertTriangle,  color: 'text-red-600',     bgColor: 'bg-red-50',     borderColor: 'border-red-200',    description: 'Constatation médicale suite à accident' },
+  general:         { label: 'Certificat médical',      icon: FileText,       color: 'text-blue-600',    bgColor: 'bg-blue-50',    borderColor: 'border-blue-200',   description: 'Certificat médical général' },
+  aptitude:        { label: "Certificat d'aptitude",   icon: CheckCircle2,   color: 'text-emerald-600', bgColor: 'bg-emerald-50', borderColor: 'border-emerald-200',description: 'Aptitude à une activité / emploi' },
+  inaptitude:      { label: "Certificat d'inaptitude", icon: Shield,         color: 'text-slate-600',   bgColor: 'bg-slate-50',   borderColor: 'border-slate-200',  description: 'Inaptitude médicale constatée' },
   vaccination:     { label: 'Certificat de vaccination', icon: Heart,        color: 'text-pink-600',    bgColor: 'bg-pink-50',    borderColor: 'border-pink-200',   description: 'Attestation de vaccination' },
-  transport:       { label: 'Bon de transport mÃ©dical',icon: Activity,       color: 'text-violet-600',  bgColor: 'bg-violet-50',  borderColor: 'border-violet-200', description: 'Prescription de transport sanitaire' },
-  autre:           { label: 'Autre certificat',        icon: Star,           color: 'text-amber-600',   bgColor: 'bg-amber-50',   borderColor: 'border-amber-200',  description: 'Document mÃ©dical personnalisÃ©' },
+  transport:       { label: 'Bon de transport médical',icon: Activity,       color: 'text-violet-600',  bgColor: 'bg-violet-50',  borderColor: 'border-violet-200', description: 'Prescription de transport sanitaire' },
+  autre:           { label: 'Autre certificat',        icon: Star,           color: 'text-amber-600',   bgColor: 'bg-amber-50',   borderColor: 'border-amber-200',  description: 'Document médical personnalisé' },
 };
 
-/* â”€â”€ Templates â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Templates ──────────────────────────────────────────────────────────────── */
 function getTemplate(type: CertType, doctorNom: string, patientNom: string, date: string): string {
   const patient = patientNom || '[NOM DU PATIENT]';
-  const doctor  = doctorNom  || '[NOM DU MÃ‰DECIN]';
+  const doctor  = doctorNom  || '[NOM DU MÉDECIN]';
   const d = date || new Date().toLocaleDateString('fr-FR');
 
   switch (type) {
     case 'arret_travail':
-      return `Je soussignÃ©, Docteur ${doctor}, certifie avoir examinÃ© ce jour M./Mme ${patient}.
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}.
 
-Suite Ã  cet examen, je prescris un arrÃªt de travail de _____ jours Ã  compter du ${d}.
+Suite à cet examen, je prescris un arrêt de travail de _____ jours à compter du ${d}.
 
-Motif mÃ©dical : [PRÃ‰CISER LE MOTIF]
+Motif médical : [PRÉCISER LE MOTIF]
 
-Autorisation de sortie : â˜ Oui  â˜ Non
-Si oui, sorties autorisÃ©es de ___h Ã  ___h.
+Autorisation de sortie : ☐ Oui  ☐ Non
+Si oui, sorties autorisées de ___h à ___h.
 
-Ce certificat est Ã©tabli Ã  la demande de l'intÃ©ressÃ©(e) et lui est remis pour faire valoir ce que de droit.`;
+Ce certificat est établi à la demande de l'intéressé(e) et lui est remis pour faire valoir ce que de droit.`;
 
     case 'accident_travail':
-      return `Je soussignÃ©, Docteur ${doctor}, certifie avoir examinÃ© ce jour M./Mme ${patient}, suite Ã  un accident survenu le ${d}.
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}, suite à un accident survenu le ${d}.
 
 CONSTATATIONS CLINIQUES :
-[DÃ©crire les lÃ©sions constatÃ©es]
+[Décrire les lésions constatées]
 
-Ã‰TAT GÃ‰NÃ‰RAL :
-[Description de l'Ã©tat gÃ©nÃ©ral]
+ÉTAT GÉNÉRAL :
+[Description de l'état général]
 
 TRAITEMENT PRESCRIT :
 [Traitement ou soins prescrits]
 
-SUITES PRÃ‰VISIBLES :
-DurÃ©e d'incapacitÃ© de travail estimÃ©e : _____ jours
-Consolidation prÃ©visible le : ___________
+SUITES PRÉVISIBLES :
+Durée d'incapacité de travail estimée : _____ jours
+Consolidation prévisible le : ___________
 
-Ce certificat est Ã©tabli Ã  la demande de l'intÃ©ressÃ©(e) pour faire valoir ce que de droit.`;
+Ce certificat est établi à la demande de l'intéressé(e) pour faire valoir ce que de droit.`;
 
     case 'general':
-      return `Je soussignÃ©, Docteur ${doctor}, certifie avoir examinÃ© ce jour M./Mme ${patient}.
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}.
 
-[OBJET DU CERTIFICAT â€” dÃ©crire les constations mÃ©dicales ou l'objet du certificat]
+[OBJET DU CERTIFICAT — décrire les constations médicales ou l'objet du certificat]
 
-En foi de quoi, je dÃ©livre le prÃ©sent certificat Ã  l'intÃ©ressÃ©(e) pour faire valoir ce que de droit.`;
+En foi de quoi, je délivre le présent certificat à l'intéressé(e) pour faire valoir ce que de droit.`;
 
     case 'aptitude':
-      return `Je soussignÃ©, Docteur ${doctor}, certifie avoir examinÃ© ce jour M./Mme ${patient}.
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}.
 
-Ã€ l'issue de cet examen mÃ©dical, je dÃ©clare que l'intÃ©ressÃ©(e) est :
+À l'issue de cet examen médical, je déclare que l'intéressé(e) est :
 
-âœ“ APTE Ã  [PRÃ‰CISER L'ACTIVITÃ‰ / L'EMPLOI / LE SPORT]
+✓ APTE à [PRÉCISER L'ACTIVITÉ / L'EMPLOI / LE SPORT]
 
-[Observations Ã©ventuelles ou restrictions particuliÃ¨res]
+[Observations éventuelles ou restrictions particulières]
 
-Ce certificat est Ã©tabli Ã  la demande de l'intÃ©ressÃ©(e) et lui est remis pour faire valoir ce que de droit.`;
+Ce certificat est établi à la demande de l'intéressé(e) et lui est remis pour faire valoir ce que de droit.`;
 
     case 'inaptitude':
-      return `Je soussignÃ©, Docteur ${doctor}, certifie avoir examinÃ© ce jour M./Mme ${patient}.
+      return `Je soussigné, Docteur ${doctor}, certifie avoir examiné ce jour M./Mme ${patient}.
 
-Ã€ l'issue de cet examen mÃ©dical, je dÃ©clare que l'intÃ©ressÃ©(e) est :
+À l'issue de cet examen médical, je déclare que l'intéressé(e) est :
 
-âœ— INAPTE Ã  [PRÃ‰CISER L'ACTIVITÃ‰ / L'EMPLOI]
+✗ INAPTE à [PRÉCISER L'ACTIVITÉ / L'EMPLOI]
 
-Motif de l'inaptitude : [PRÃ‰CISER LA RAISON MÃ‰DICALE]
+Motif de l'inaptitude : [PRÉCISER LA RAISON MÉDICALE]
 
-DurÃ©e de l'inaptitude : â˜ Temporaire (jusqu'au __________)  â˜ DÃ©finitive
+Durée de l'inaptitude : ☐ Temporaire (jusqu'au __________)  ☐ Définitive
 
-Ce certificat est Ã©tabli Ã  la demande de l'intÃ©ressÃ©(e) et lui est remis pour faire valoir ce que de droit.`;
+Ce certificat est établi à la demande de l'intéressé(e) et lui est remis pour faire valoir ce que de droit.`;
 
     case 'vaccination':
-      return `Je soussignÃ©, Docteur ${doctor}, certifie avoir vaccinÃ© ce jour M./Mme ${patient}.
+      return `Je soussigné, Docteur ${doctor}, certifie avoir vacciné ce jour M./Mme ${patient}.
 
-VACCIN ADMINISTRÃ‰ : [NOM DU VACCIN]
-Fabricant / Lot nÂ° : ___________
+VACCIN ADMINISTRÉ : [NOM DU VACCIN]
+Fabricant / Lot n° : ___________
 Voie d'administration : ___________
 Site d'injection : ___________
 
-Prochaine dose / rappel prÃ©vu le : ___________
+Prochaine dose / rappel prévu le : ___________
 
-RÃ©actions post-vaccinales observÃ©es : â˜ Aucune  â˜ Autres : ___________
+Réactions post-vaccinales observées : ☐ Aucune  ☐ Autres : ___________
 
-Ce certificat est Ã©tabli conformÃ©ment aux recommandations vaccinales en vigueur.`;
+Ce certificat est établi conformément aux recommandations vaccinales en vigueur.`;
 
     case 'transport':
-      return `Je soussignÃ©, Docteur ${doctor}, prescris le transport sanitaire de M./Mme ${patient}.
+      return `Je soussigné, Docteur ${doctor}, prescris le transport sanitaire de M./Mme ${patient}.
 
-MOTIF DU TRANSPORT : [PRÃ‰CISER LE MOTIF MÃ‰DICAL]
+MOTIF DU TRANSPORT : [PRÉCISER LE MOTIF MÉDICAL]
 
 TYPE DE TRANSPORT :
-â˜ Ambulance  â˜ VSL (vÃ©hicule sanitaire lÃ©ger)  â˜ Taxi mÃ©dical
+☐ Ambulance  ☐ VSL (véhicule sanitaire léger)  ☐ Taxi médical
 
-De : [LIEU DE DÃ‰PART]
-Vers : [LIEU DE DESTINATION / Ã‰TABLISSEMENT DE SOINS]
+De : [LIEU DE DÉPART]
+Vers : [LIEU DE DESTINATION / ÉTABLISSEMENT DE SOINS]
 
-Date et heure prÃ©vues : ___________
+Date et heure prévues : ___________
 
-FrÃ©quence : â˜ Aller simple  â˜ Aller-retour  â˜ RÃ©pÃ©tÃ© (_____ fois/semaine)
+Fréquence : ☐ Aller simple  ☐ Aller-retour  ☐ Répété (_____ fois/semaine)
 
-Ce bon de transport est Ã©tabli conformÃ©ment aux exigences mÃ©dicales du patient.`;
+Ce bon de transport est établi conformément aux exigences médicales du patient.`;
 
     case 'autre':
-      return `Je soussignÃ©, Docteur ${doctor}, certifie que M./Mme ${patient} :
+      return `Je soussigné, Docteur ${doctor}, certifie que M./Mme ${patient} :
 
 [INDIQUER LE CONTENU DU CERTIFICAT]
 
-En foi de quoi, je dÃ©livre le prÃ©sent certificat Ã  l'intÃ©ressÃ©(e) pour faire valoir ce que de droit.`;
+En foi de quoi, je délivre le présent certificat à l'intéressé(e) pour faire valoir ce que de droit.`;
   }
 }
 
-/* â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Helpers ────────────────────────────────────────────────────────────────── */
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -218,7 +218,7 @@ function generateNumero(type: CertType): string {
   return `${codes[type]}-${year}-${rand}`;
 }
 
-/* â”€â”€ PDF generation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── PDF generation ──────────────────────────────────────────────────────────── */
 async function generateCertificatPdf(params: {
   type: CertType;
   certName: string;
@@ -240,20 +240,20 @@ async function generateCertificatPdf(params: {
   const cW = pageW - mL - mR;
   let y = mT;
 
-  // â”€â”€ QR code (optional) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── QR code (optional) ─────────────────────────────────────────────────────
   let qrDataUrl: string | null = null;
   if (inclureQR) {
     const qrText = [
-      `NÂ° ${numero}`,
+      `N° ${numero}`,
       `${CERT_CONFIGS[type].label}`,
       `Patient: ${patient.prenom} ${patient.nom}`,
-      `MÃ©decin: Dr. ${doctor.prenom} ${doctor.nom}`,
+      `Médecin: Dr. ${doctor.prenom} ${doctor.nom}`,
       `Date: ${formatDateFr(certDate)}`,
     ].join('\n');
     qrDataUrl = await QRCode.toDataURL(qrText, { width: 100, margin: 1, color: { dark: '#1e3a8a' } });
   }
 
-  // â”€â”€ Logo (optional) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Logo (optional) ───────────────────────────────────────────────────────
   if (inclureLogo && logoUrl) {
     try {
       const resp = await fetch(logoUrl);
@@ -270,7 +270,7 @@ async function generateCertificatPdf(params: {
     } catch { /* skip logo on error */ }
   }
 
-  // â”€â”€ Header: Cabinet info left / Date + NumÃ©ro right â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Header: Cabinet info left / Date + Numéro right ─────────────────────
   const headerY = y;
 
   // Cabinet / Doctor info (left)
@@ -285,11 +285,11 @@ async function generateCertificatPdf(params: {
   doc.setTextColor(70, 70, 70);
   doc.text(`Dr. ${doctor.prenom} ${doctor.nom}`, mL, y); y += 4.5;
   if (doctor.specialite) { doc.text(doctor.specialite, mL, y); y += 4.5; }
-  if (doctor.inpe) { doc.text(`NÂ° INPE : ${doctor.inpe}`, mL, y); y += 4.5; }
+  if (doctor.inpe) { doc.text(`N° INPE : ${doctor.inpe}`, mL, y); y += 4.5; }
   if (doctor.adresse) { doc.text(doctor.adresse, mL, y); y += 4.5; }
-  if (doctor.telephone) { doc.text(`TÃ©l : ${doctor.telephone}`, mL, y); y += 4.5; }
+  if (doctor.telephone) { doc.text(`Tél : ${doctor.telephone}`, mL, y); y += 4.5; }
 
-  // Date + NumÃ©ro (right)
+  // Date + Numéro (right)
   doc.setFontSize(8.5);
   doc.setTextColor(70, 70, 70);
   doc.text(`Le ${formatDateFr(certDate)}`, pageW - mR, headerY, { align: 'right' });
@@ -304,14 +304,14 @@ async function generateCertificatPdf(params: {
     doc.addImage(qrDataUrl, 'PNG', pageW - mR - qrSize, headerY + 9, qrSize, qrSize);
   }
 
-  // â”€â”€ Separator â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Separator ─────────────────────────────────────────────────────────────
   y = Math.max(y + 4, headerY + 34);
   doc.setDrawColor(180, 200, 240);
   doc.setLineWidth(0.5);
   doc.line(mL, y, pageW - mR, y);
   y += 10;
 
-  // â”€â”€ Patient block â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Patient block ─────────────────────────────────────────────────────────
   if (patient.nom || patient.prenom) {
     doc.setFillColor(248, 250, 252);
     doc.roundedRect(mL, y - 3, cW, (patient.dateNaissance ? 18 : 12), 2, 2, 'F');
@@ -323,13 +323,13 @@ async function generateCertificatPdf(params: {
     doc.setFontSize(8.5);
     doc.setTextColor(80, 80, 80);
     if (patient.dateNaissance) {
-      doc.text(`NÃ©(e) le : ${formatDateFr(patient.dateNaissance)}`, mL + 4, y + 10);
+      doc.text(`Né(e) le : ${formatDateFr(patient.dateNaissance)}`, mL + 4, y + 10);
       if (patient.sexe) doc.text(`Sexe : ${patient.sexe}`, mL + 80, y + 10);
     }
     y += (patient.dateNaissance ? 22 : 15);
   }
 
-  // â”€â”€ Certificate title â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Certificate title ─────────────────────────────────────────────────────
   const title = (type === 'autre' && certName) ? certName.toUpperCase() : CERT_CONFIGS[type].label.toUpperCase();
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
@@ -343,7 +343,7 @@ async function generateCertificatPdf(params: {
   doc.line(pageW / 2 - titleW / 2, y - 3, pageW / 2 + titleW / 2, y - 3);
   y += 6;
 
-  // â”€â”€ Body text â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Body text ─────────────────────────────────────────────────────────────
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   doc.setTextColor(30, 30, 30);
@@ -358,20 +358,20 @@ async function generateCertificatPdf(params: {
     y += 5.5;
   }
 
-  // â”€â”€ Closing / Fait Ã  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Closing / Fait à ─────────────────────────────────────────────────────
   y = Math.max(y + 8, pageH - 65);
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(9.5);
   doc.setTextColor(60, 60, 60);
-  doc.text(`Fait Ã  ${doctor.ville || 'Casablanca'}, le ${formatDateFr(certDate)}`, pageW - mR, y, { align: 'right' });
+  doc.text(`Fait à ${doctor.ville || 'Casablanca'}, le ${formatDateFr(certDate)}`, pageW - mR, y, { align: 'right' });
   y += 10;
 
-  // â”€â”€ Signature zone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Signature zone ────────────────────────────────────────────────────────
   const sigX = pageW - mR - 65;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(9);
   doc.setTextColor(30, 30, 30);
-  doc.text('Signature et cachet du mÃ©decin', sigX, y, { align: 'left' });
+  doc.text('Signature et cachet du médecin', sigX, y, { align: 'left' });
   y += 4;
   doc.setDrawColor(160, 160, 160);
   doc.setLineWidth(0.3);
@@ -381,21 +381,21 @@ async function generateCertificatPdf(params: {
   doc.line(sigX, y, pageW - mR, y);
   doc.setLineDash([]);
 
-  // â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Footer ────────────────────────────────────────────────────────────────
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.5);
   doc.setTextColor(160, 160, 160);
   doc.text(
-    `Document gÃ©nÃ©rÃ© par OrdoSur â€¢ ${numero} â€¢ ${formatDateFr(certDate)}`,
+    `Document généré par OrdoSur • ${numero} • ${formatDateFr(certDate)}`,
     pageW / 2, pageH - 8, { align: 'center' }
   );
 
   doc.save(`certificat-${type}-${numero}.pdf`);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ══════════════════════════════════════════════════════════════════════════════
    Main component
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+══════════════════════════════════════════════════════════════════════════════ */
 export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsViewProps) {
   const { user } = useAuth();
 
@@ -536,7 +536,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
         logoUrl: doctorProfile?.logo_url,
       });
     } catch (e: any) {
-      showToast('Erreur lors de la gÃ©nÃ©ration du PDF', 'error');
+      showToast('Erreur lors de la génération du PDF', 'error');
     } finally {
       setGeneratingPdf(false);
     }
@@ -567,7 +567,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
         org_id: user?.org_id ?? null,
       };
       const { error } = await supabase.from('documents_medicaux').insert(payload);
-      if (!error) showToast('Certificat enregistrÃ©', 'success');
+      if (!error) showToast('Certificat enregistré', 'success');
       await loadCerts();
     } catch { /* ignore DB errors, PDF still generated */ }
     await handleDownloadPdf();
@@ -592,7 +592,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
     setView('create');
   };
 
-  /* â”€â”€ List view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── List view ─────────────────────────────────────────────────────────────── */
   if (view === 'list') {
     const filtered = certs.filter(c => {
       if (filterType !== 'all' && c.type !== filterType) return false;
@@ -606,8 +606,8 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Certificats mÃ©dicaux</h1>
-              <p className="text-sm text-slate-500 mt-0.5">RÃ©digez et tÃ©lÃ©chargez vos certificats en PDF</p>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Certificats médicaux</h1>
+              <p className="text-sm text-slate-500 mt-0.5">Rédigez et téléchargez vos certificats en PDF</p>
             </div>
             <motion.button
               whileTap={{ scale: 0.97 }}
@@ -640,7 +640,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
             <input
               value={searchList}
               onChange={e => setSearchList(e.target.value)}
-              placeholder="Rechercher par patient ou numÃ©roâ€¦"
+              placeholder="Rechercher par patient ou numéro…"
               className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white"
             />
           </div>
@@ -653,8 +653,8 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
           ) : filtered.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl border border-slate-100">
               <FileText className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-              <p className="text-slate-500 font-medium">Aucun certificat trouvÃ©</p>
-              <p className="text-slate-400 text-sm mt-1">CrÃ©ez votre premier certificat mÃ©dical</p>
+              <p className="text-slate-500 font-medium">Aucun certificat trouvé</p>
+              <p className="text-slate-400 text-sm mt-1">Créez votre premier certificat médical</p>
               <button onClick={handleNewCert} className="mt-4 px-4 py-2 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors">
                 + Nouveau certificat
               </button>
@@ -702,7 +702,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
     );
   }
 
-  /* â”€â”€ Create/Edit view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* ── Create/Edit view ──────────────────────────────────────────────────────── */
   const cfg = CERT_CONFIGS[certType];
   const CertIcon = cfg.icon;
 
@@ -719,7 +719,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* â”€â”€ Left column â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Left column ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1 space-y-4">
 
             {/* Type selector */}
@@ -757,7 +757,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     value={patientSearch}
                     onChange={e => { setPatientSearch(e.target.value); setShowPatientDropdown(true); setSelectedPatient(null); }}
                     onFocus={() => setShowPatientDropdown(true)}
-                    placeholder="Rechercher un patientâ€¦"
+                    placeholder="Rechercher un patient…"
                     className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
                   />
                   <AnimatePresence>
@@ -790,7 +790,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 onClick={() => { setUseManualPatient(!useManualPatient); setSelectedPatient(null); setPatientSearch(''); }}
                 className="mt-2 text-xs text-[#00A86B] hover:text-[#006B47] font-medium"
               >
-                {useManualPatient ? 'â† Rechercher un patient existant' : 'Saisir manuellement â†’'}
+                {useManualPatient ? '← Rechercher un patient existant' : 'Saisir manuellement →'}
               </button>
 
               {(useManualPatient || !selectedPatient) && (
@@ -799,7 +799,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     <input
                       value={manualPatient.prenom}
                       onChange={e => setManualPatient(p => ({ ...p, prenom: e.target.value }))}
-                      placeholder="PrÃ©nom"
+                      placeholder="Prénom"
                       className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
                     />
                     <input
@@ -823,7 +823,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                   >
                     <option value="">Sexe (optionnel)</option>
                     <option value="Masculin">Masculin</option>
-                    <option value="FÃ©minin">FÃ©minin</option>
+                    <option value="Féminin">Féminin</option>
                   </select>
                 </div>
               )}
@@ -853,7 +853,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
             </div>
           </div>
 
-          {/* â”€â”€ Right column â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+          {/* ── Right column ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-2 space-y-4">
 
             {/* Certificate header */}
@@ -894,7 +894,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 >
                   <Stethoscope className="w-3.5 h-3.5" />
                   <span>Dr. {doctorInfo.prenom} {doctorInfo.nom}</span>
-                  {doctorInfo.specialite && <span className="text-slate-400">Â· {doctorInfo.specialite}</span>}
+                  {doctorInfo.specialite && <span className="text-slate-400">· {doctorInfo.specialite}</span>}
                   <Edit2 className="w-3 h-3 ml-1 opacity-50" />
                 </button>
 
@@ -908,11 +908,11 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     >
                       <div className="grid grid-cols-2 gap-2 pb-2">
                         {[
-                          { key: 'prenom',     label: 'PrÃ©nom',      icon: User },
+                          { key: 'prenom',     label: 'Prénom',      icon: User },
                           { key: 'nom',        label: 'Nom',         icon: User },
-                          { key: 'specialite', label: 'SpÃ©cialitÃ©',  icon: Stethoscope },
-                          { key: 'inpe',       label: 'NÂ° INPE',     icon: FileText },
-                          { key: 'telephone',  label: 'TÃ©lÃ©phone',   icon: Phone },
+                          { key: 'specialite', label: 'Spécialité',  icon: Stethoscope },
+                          { key: 'inpe',       label: 'N° INPE',     icon: FileText },
+                          { key: 'telephone',  label: 'Téléphone',   icon: Phone },
                           { key: 'ville',      label: 'Ville',       icon: MapPin },
                           { key: 'adresse',    label: 'Adresse',     icon: MapPin },
                           { key: 'orgName',    label: 'Nom cabinet', icon: FileText },
@@ -946,7 +946,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                   }}
                   className="text-xs text-[#00A86B] hover:text-[#006B47] font-medium"
                 >
-                  â†º Recharger le modÃ¨le
+                  ↺ Recharger le modèle
                 </button>
               </div>
               <textarea
@@ -954,10 +954,10 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 onChange={e => setCertBody(e.target.value)}
                 rows={18}
                 className="w-full px-3 py-3 border border-slate-200 rounded-xl text-sm font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] resize-none"
-                placeholder="RÃ©digez le contenu du certificatâ€¦"
+                placeholder="Rédigez le contenu du certificat…"
               />
               <p className="text-xs text-slate-400 mt-1.5">
-                Le texte est prÃ©-rempli avec un modÃ¨le â€” modifiez-le librement avant de gÃ©nÃ©rer le PDF.
+                Le texte est pré-rempli avec un modèle — modifiez-le librement avant de générer le PDF.
               </p>
             </div>
 
@@ -975,7 +975,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
               >
                 <Eye className="w-4 h-4" />
-                AperÃ§u
+                Aperçu
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.97 }}
@@ -984,13 +984,13 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 className="flex items-center gap-2 px-5 py-2.5 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] disabled:opacity-60 transition-colors shadow-lg shadow-[#00A86B]/25"
               >
                 {generatingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                TÃ©lÃ©charger PDF
+                Télécharger PDF
               </motion.button>
             </div>
           </div>
         </div>
 
-        {/* â”€â”€ Preview modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+        {/* ── Preview modal ────────────────────────────────────────────────────── */}
         <AnimatePresence>
           {showPreview && (
             <motion.div
@@ -1010,7 +1010,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
               >
                 {/* Preview header */}
                 <div className="flex items-center justify-between p-5 border-b border-slate-100">
-                  <h3 className="font-bold text-slate-800">AperÃ§u du certificat</h3>
+                  <h3 className="font-bold text-slate-800">Aperçu du certificat</h3>
                   <button onClick={() => setShowPreview(false)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
@@ -1026,9 +1026,9 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                         <p className="font-bold text-blue-700 text-base">{doctorInfo.orgName}</p>
                         <p className="text-xs text-slate-500 mt-0.5">Dr. {doctorInfo.prenom} {doctorInfo.nom}</p>
                         {doctorInfo.specialite && <p className="text-xs text-slate-400">{doctorInfo.specialite}</p>}
-                        {doctorInfo.inpe && <p className="text-xs text-slate-400">NÂ° INPE : {doctorInfo.inpe}</p>}
+                        {doctorInfo.inpe && <p className="text-xs text-slate-400">N° INPE : {doctorInfo.inpe}</p>}
                         {doctorInfo.adresse && <p className="text-xs text-slate-400">{doctorInfo.adresse}</p>}
-                        {doctorInfo.telephone && <p className="text-xs text-slate-400">TÃ©l : {doctorInfo.telephone}</p>}
+                        {doctorInfo.telephone && <p className="text-xs text-slate-400">Tél : {doctorInfo.telephone}</p>}
                       </div>
                       <div className="text-right">
                         <p className="text-xs text-slate-500">Le {formatDateFr(certDate)}</p>
@@ -1042,7 +1042,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     {(currentPatient.nom || currentPatient.prenom) && (
                       <div className="bg-slate-50 rounded-lg p-3 mb-4">
                         <p className="text-sm font-semibold text-slate-800">{currentPatient.prenom} {currentPatient.nom}</p>
-                        {currentPatient.dateNaissance && <p className="text-xs text-slate-500 mt-0.5">NÃ©(e) le : {formatDateFr(currentPatient.dateNaissance)}</p>}
+                        {currentPatient.dateNaissance && <p className="text-xs text-slate-500 mt-0.5">Né(e) le : {formatDateFr(currentPatient.dateNaissance)}</p>}
                       </div>
                     )}
 
@@ -1058,18 +1058,18 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
 
                     {/* Closing */}
                     <p className="text-sm italic text-slate-600 text-right mb-6">
-                      Fait Ã  {doctorInfo.ville || 'Casablanca'}, le {formatDateFr(certDate)}
+                      Fait à {doctorInfo.ville || 'Casablanca'}, le {formatDateFr(certDate)}
                     </p>
 
                     {/* Signature */}
                     <div className="ml-auto w-64">
-                      <p className="text-xs text-slate-500 mb-1 text-center">Signature et cachet du mÃ©decin</p>
+                      <p className="text-xs text-slate-500 mb-1 text-center">Signature et cachet du médecin</p>
                       <div className="border-b border-dashed border-slate-300 h-12" />
                     </div>
 
                     {/* Footer */}
                     <p className="text-center text-xs text-slate-300 mt-6">
-                      Document gÃ©nÃ©rÃ© par OrdoSur â€¢ {certNumero}
+                      Document généré par OrdoSur • {certNumero}
                     </p>
                   </div>
                 </div>
@@ -1100,7 +1100,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     className="flex items-center gap-2 px-4 py-2 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] disabled:opacity-60 transition-colors shadow-lg shadow-[#00A86B]/25"
                   >
                     {generatingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                    TÃ©lÃ©charger PDF
+                    Télécharger PDF
                   </motion.button>
                 </div>
               </motion.div>

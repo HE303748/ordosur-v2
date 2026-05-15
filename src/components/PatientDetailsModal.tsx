@@ -51,8 +51,8 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
         if (usersData) {
           usersData.forEach((user: any) => {
             doctorMap.set(user.id, {
-              name: user.doctor_name || 'Dr. MÃƒÂ©decin',
-              specialty: 'MÃƒÂ©decine GÃƒÂ©nÃƒÂ©rale'
+              name: user.doctor_name || 'Dr. Médecin',
+              specialty: 'Médecine Générale'
             });
           });
         }
@@ -61,15 +61,15 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
           doctorsData.forEach((doctor: any) => {
             doctorMap.set(doctor.id, {
               name: `Dr. ${doctor.prenom} ${doctor.nom}`,
-              specialty: doctor.specialites?.[0] || 'MÃƒÂ©decine GÃƒÂ©nÃƒÂ©rale'
+              specialty: doctor.specialites?.[0] || 'Médecine Générale'
             });
           });
         }
 
         const ordonnancesWithDoctors = ordonnancesData.map((ord: any) => {
           const doctorInfo = doctorMap.get(ord.doctor_id) || {
-            name: 'Dr. MÃƒÂ©decin',
-            specialty: 'MÃƒÂ©decine GÃƒÂ©nÃƒÂ©rale'
+            name: 'Dr. Médecin',
+            specialty: 'Médecine Générale'
           };
 
           return {
@@ -107,13 +107,13 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
     : 'Aucune';
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="DÃƒÂ©tails du Patient" size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} title="Détails du Patient" size="xl">
       <div className="space-y-6">
         <div className="text-center pb-6 border-b border-slate-200">
           <h2 className="text-3xl font-bold text-slate-900 mb-2">{patient.nom_complet}</h2>
           <div className="flex items-center justify-center space-x-3 text-slate-600 text-lg">
             <span className="font-semibold">{patient.age} ans</span>
-            <span>Ã¢â‚¬Â¢</span>
+            <span>•</span>
             <span>{patient.sexe}</span>
           </div>
         </div>
@@ -121,7 +121,7 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
         <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
           <h3 className="font-bold text-slate-900 mb-4 text-lg flex items-center">
             <Activity className="w-5 h-5 mr-2 text-blue-600" />
-            Informations mÃƒÂ©dicales
+            Informations médicales
           </h3>
           <div className="grid grid-cols-3 gap-4">
             {patient.poids && (
@@ -145,7 +145,7 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
           </div>
           {patient.dfg && (
             <div className="mt-4 bg-white rounded-lg p-3">
-              <span className="text-sm text-slate-600">DFG estimÃƒÂ© : </span>
+              <span className="text-sm text-slate-600">DFG estimé : </span>
               <span className="text-lg font-bold text-slate-900">{patient.dfg} ml/min</span>
             </div>
           )}
@@ -154,13 +154,13 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
         {patient.maladies_chroniques && patient.maladies_chroniques.length > 0 && (
           <div className="bg-red-50 rounded-xl p-6 border border-red-200">
             <h3 className="font-bold text-danger-900 mb-3 text-lg flex items-center">
-              <span className="mr-2">Ã°Å¸â€Â´</span>
+              <span className="mr-2">🔴</span>
               Pathologies
             </h3>
             <ul className="space-y-2">
               {patient.maladies_chroniques.map((maladie: string, idx: number) => (
                 <li key={idx} className="flex items-start">
-                  <span className="text-danger-600 mr-2 mt-1">Ã¢â‚¬Â¢</span>
+                  <span className="text-danger-600 mr-2 mt-1">•</span>
                   <span className="text-slate-800 font-medium">{maladie}</span>
                 </li>
               ))}
@@ -171,13 +171,13 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
         {patient.allergies && patient.allergies.length > 0 && (
           <div className="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
             <h3 className="font-bold text-slate-900 mb-3 text-lg flex items-center">
-              <span className="mr-2">Ã¢Å¡Â Ã¯Â¸Â</span>
+              <span className="mr-2">⚠️</span>
               Allergies
             </h3>
             <ul className="space-y-2">
               {patient.allergies.map((allergie: string, idx: number) => (
                 <li key={idx} className="flex items-start">
-                  <span className="text-yellow-600 mr-2 mt-1">Ã¢â‚¬Â¢</span>
+                  <span className="text-yellow-600 mr-2 mt-1">•</span>
                   <span className="text-slate-800 font-medium">{allergie}</span>
                 </li>
               ))}
@@ -188,7 +188,7 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
         <div className="bg-gradient-to-r from-[#E6F4EE] to-[#FAFAF7] rounded-xl p-6 border border-blue-200">
           <h3 className="font-bold text-slate-900 mb-4 text-lg flex items-center">
             <BarChart3 className="w-5 h-5 mr-2 text-blue-600" />
-            Historique des MÃƒÂ©dicaments
+            Historique des Médicaments
           </h3>
 
           {loading ? (
@@ -227,7 +227,7 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
                       ))}
                       {ordonnance.medications.length > 3 && (
                         <li className="text-sm text-slate-500 italic">
-                          +{ordonnance.medications.length - 3} autre(s) mÃƒÂ©dicament(s)
+                          +{ordonnance.medications.length - 3} autre(s) médicament(s)
                         </li>
                       )}
                     </ul>
@@ -253,12 +253,12 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
           <div className="space-y-3">
             <div className="flex items-center">
               <User className="w-5 h-5 mr-2 text-primary-600" />
-              <span className="text-slate-700">MÃƒÂ©decin traitant : </span>
-              <span className="ml-2 font-bold text-slate-900">{doctorName || 'Non assignÃƒÂ©'}</span>
+              <span className="text-slate-700">Médecin traitant : </span>
+              <span className="ml-2 font-bold text-slate-900">{doctorName || 'Non assigné'}</span>
             </div>
             <div className="flex items-center">
               <Activity className="w-5 h-5 mr-2 text-secondary-600" />
-              <span className="text-slate-700">DerniÃƒÂ¨re consultation : </span>
+              <span className="text-slate-700">Dernière consultation : </span>
               <span className="ml-2 font-bold text-slate-900">{lastConsultationDate}</span>
             </div>
           </div>
@@ -276,11 +276,11 @@ export function PatientDetailsModal({ isOpen, onClose, patient, doctorName, onVi
             </div>
             <div className="bg-white rounded-lg p-4 text-center">
               <div className="text-2xl font-bold text-secondary-600 mb-1">{prescriptionsCount}</div>
-              <div className="text-sm text-slate-600">Ordonnances crÃƒÂ©ÃƒÂ©es</div>
+              <div className="text-sm text-slate-600">Ordonnances créées</div>
             </div>
             <div className="bg-white rounded-lg p-4 text-center">
               <div className="text-2xl font-bold text-safe-600 mb-1">{interactionsCount}</div>
-              <div className="text-sm text-slate-600">Interactions vÃƒÂ©rifiÃƒÂ©es</div>
+              <div className="text-sm text-slate-600">Interactions vérifiées</div>
             </div>
           </div>
         </div>

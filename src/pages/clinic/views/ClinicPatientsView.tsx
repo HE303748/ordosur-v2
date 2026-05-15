@@ -12,7 +12,7 @@ import type { Patient } from '../../../lib/supabase';
 import type { DoctorWithProfile } from './ClinicMedecinsView';
 import { calculateRiskScore } from '../../../lib/riskScore';
 
-// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type FilterType = 'all' | 'allergies' | 'pathologies' | 'recent';
 type SortKey    = 'nom' | 'age' | 'last_visit' | null;
@@ -23,7 +23,7 @@ interface PatientMeta {
   lastVisit:  string | null;
 }
 
-// â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getAge(dob: string | null | undefined): number | null {
   if (!dob) return null;
@@ -31,7 +31,7 @@ function getAge(dob: string | null | undefined): number | null {
 }
 
 function relativeDate(iso: string | null): string {
-  if (!iso) return 'â€”';
+  if (!iso) return '—';
   const diff = Date.now() - new Date(iso).getTime();
   const days = Math.floor(diff / 86400000);
   if (days === 0) return "Aujourd'hui";
@@ -43,12 +43,12 @@ function relativeDate(iso: string | null): string {
 }
 
 function buildCSV(patients: Patient[], metaMap: Map<string, PatientMeta>): string {
-  const COLS = ['PrÃ©nom','Nom','Date naissance','Ã‚ge','TÃ©lÃ©phone','Email',
-    'Groupe sanguin','Pathologies','Allergies mÃ©d.','Allergies alim.',
-    'AntÃ©cÃ©dents chirurgicaux','Traitements en cours','MÃ©decin rÃ©fÃ©rent','DerniÃ¨re visite'];
+  const COLS = ['Prénom','Nom','Date naissance','Âge','Téléphone','Email',
+    'Groupe sanguin','Pathologies','Allergies méd.','Allergies alim.',
+    'Antécédents chirurgicaux','Traitements en cours','Médecin référent','Dernière visite'];
   const rows = patients.map(p => {
     const age  = getAge(p.date_naissance);
-    const meta = metaMap.get(p.id) ?? { doctorName: 'â€”', lastVisit: null };
+    const meta = metaMap.get(p.id) ?? { doctorName: '—', lastVisit: null };
     return [
       p.prenom, p.nom, p.date_naissance ?? '',
       age !== null ? `${age} ans` : '',
@@ -59,7 +59,7 @@ function buildCSV(patients: Patient[], metaMap: Map<string, PatientMeta>): strin
       p.antecedents_chirurgicaux ?? '',
       p.traitements_en_cours ?? '',
       meta.doctorName,
-      meta.lastVisit ? new Date(meta.lastVisit).toLocaleDateString('fr-FR') : 'â€”',
+      meta.lastVisit ? new Date(meta.lastVisit).toLocaleDateString('fr-FR') : '—',
     ];
   });
   return [COLS, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
@@ -73,7 +73,7 @@ function downloadCSV(content: string, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-// â”€â”€â”€ Badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Badge ────────────────────────────────────────────────────────────────────
 
 function Badge({ label, color }: { label: string; color: string }) {
   return (
@@ -83,7 +83,7 @@ function Badge({ label, color }: { label: string; color: string }) {
   );
 }
 
-// â”€â”€â”€ Sort button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Sort button ──────────────────────────────────────────────────────────────
 
 function SortBtn({ col, active, dir, onClick }: {
   col: SortKey; active: boolean; dir: SortDir; onClick: () => void;
@@ -97,7 +97,7 @@ function SortBtn({ col, active, dir, onClick }: {
   );
 }
 
-// â”€â”€â”€ Skeleton row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Skeleton row ─────────────────────────────────────────────────────────────
 
 function SkeletonRow() {
   return (
@@ -111,7 +111,7 @@ function SkeletonRow() {
   );
 }
 
-// â”€â”€â”€ Patient Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Patient Detail Modal ─────────────────────────────────────────────────────
 
 interface PatientDetailModalProps {
   patient:  Patient;
@@ -208,7 +208,7 @@ function PatientDetailModal({ patient, meta, onClose }: PatientDetailModalProps)
 
           {/* Medical */}
           <div className="px-6 py-4 border-b border-slate-100 dark:border-white/[0.06] space-y-4">
-            <p className="text-[11px] font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wider">DonnÃ©es mÃ©dicales</p>
+            <p className="text-[11px] font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wider">Données médicales</p>
 
             <div>
               <p className="text-xs font-semibold text-slate-600 dark:text-[#94A3B8] mb-2">Pathologies chroniques</p>
@@ -222,7 +222,7 @@ function PatientDetailModal({ patient, meta, onClose }: PatientDetailModalProps)
             </div>
 
             <div>
-              <p className="text-xs font-semibold text-slate-600 dark:text-[#94A3B8] mb-2">Allergies mÃ©dicamenteuses</p>
+              <p className="text-xs font-semibold text-slate-600 dark:text-[#94A3B8] mb-2">Allergies médicamenteuses</p>
               {(patient.allergies_medicaments ?? []).length > 0 ? (
                 <div className="flex flex-wrap gap-1.5">
                   {(patient.allergies_medicaments ?? []).map(a => (
@@ -253,7 +253,7 @@ function PatientDetailModal({ patient, meta, onClose }: PatientDetailModalProps)
             )}
             {patient.antecedents_chirurgicaux && (
               <div>
-                <p className="text-xs font-semibold text-slate-600 dark:text-[#94A3B8] mb-1">AntÃ©cÃ©dents chirurgicaux</p>
+                <p className="text-xs font-semibold text-slate-600 dark:text-[#94A3B8] mb-1">Antécédents chirurgicaux</p>
                 <p className="text-xs text-slate-600 dark:text-[#94A3B8] bg-slate-50 dark:bg-white/[0.04] rounded-lg p-2.5 leading-relaxed">
                   {patient.antecedents_chirurgicaux}
                 </p>
@@ -295,16 +295,16 @@ function PatientDetailModal({ patient, meta, onClose }: PatientDetailModalProps)
             <div className="flex items-center gap-3">
               <UserCheck className="w-4 h-4 text-slate-400 flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-slate-400 dark:text-[#475569]">MÃ©decin rÃ©fÃ©rent</p>
+                <p className="text-[10px] text-slate-400 dark:text-[#475569]">Médecin référent</p>
                 <p className="text-sm font-medium text-slate-700 dark:text-[#E2E8F0]">{meta.doctorName}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Calendar className="w-4 h-4 text-slate-400 flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-slate-400 dark:text-[#475569]">DerniÃ¨re visite</p>
+                <p className="text-[10px] text-slate-400 dark:text-[#475569]">Dernière visite</p>
                 <p className="text-sm font-medium text-slate-700 dark:text-[#E2E8F0]">
-                  {meta.lastVisit ? `${relativeDate(meta.lastVisit)} (${new Date(meta.lastVisit).toLocaleDateString('fr-FR')})` : 'â€”'}
+                  {meta.lastVisit ? `${relativeDate(meta.lastVisit)} (${new Date(meta.lastVisit).toLocaleDateString('fr-FR')})` : '—'}
                 </p>
               </div>
             </div>
@@ -313,7 +313,7 @@ function PatientDetailModal({ patient, meta, onClose }: PatientDetailModalProps)
           {/* Ordonnances */}
           <div className="px-6 py-4">
             <p className="text-[11px] font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wider mb-3">
-              DerniÃ¨res ordonnances
+              Dernières ordonnances
             </p>
             {ordsLoading ? (
               <div className="space-y-2">
@@ -338,7 +338,7 @@ function PatientDetailModal({ patient, meta, onClose }: PatientDetailModalProps)
                         ? 'bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400'
                         : 'bg-slate-100 text-slate-400 dark:bg-white/[0.07]'
                     }`}>
-                      {o.statut === 'active' ? 'Active' : o.statut === 'expired' ? 'ExpirÃ©e' : 'â€”'}
+                      {o.statut === 'active' ? 'Active' : o.statut === 'expired' ? 'Expirée' : '—'}
                     </span>
                   </div>
                 ))}
@@ -351,7 +351,7 @@ function PatientDetailModal({ patient, meta, onClose }: PatientDetailModalProps)
   );
 }
 
-// â”€â”€â”€ Main Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 interface ClinicPatientsViewProps {
   orgId?:   string;
@@ -399,7 +399,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
       setPatients(data);
       setTotal(count ?? 0);
 
-      // Load metadata (mÃ©decin rÃ©fÃ©rent + derniÃ¨re visite)
+      // Load metadata (médecin référent + dernière visite)
       const patIds = data.map(p => p.id);
       if (patIds.length) {
         const m = new Map<string, PatientMeta>();
@@ -410,7 +410,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
 
         for (const c of (cons ?? [])) {
           if (!m.has(c.patient_id)) {
-            m.set(c.patient_id, { doctorName: doctorByUserId.get(c.doctor_id) ?? 'â€”', lastVisit: c.date });
+            m.set(c.patient_id, { doctorName: doctorByUserId.get(c.doctor_id) ?? '—', lastVisit: c.date });
           }
         }
 
@@ -421,13 +421,13 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
             .in('patient_id', noConsIds).order('created_at', { ascending: false });
           for (const o of (ords ?? [])) {
             if (!m.has(o.patient_id)) {
-              m.set(o.patient_id, { doctorName: doctorByUserId.get(o.doctor_id) ?? 'â€”', lastVisit: o.created_at });
+              m.set(o.patient_id, { doctorName: doctorByUserId.get(o.doctor_id) ?? '—', lastVisit: o.created_at });
             }
           }
         }
 
         for (const id of patIds) {
-          if (!m.has(id)) m.set(id, { doctorName: 'â€”', lastVisit: null });
+          if (!m.has(id)) m.set(id, { doctorName: '—', lastVisit: null });
         }
         setMetaMap(m);
       }
@@ -467,11 +467,11 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
           .in('patient_id', ids).order('date', { ascending: false });
         for (const c of (cons ?? [])) {
           if (!exportMeta.has(c.patient_id)) {
-            exportMeta.set(c.patient_id, { doctorName: doctorByUserId.get(c.doctor_id) ?? 'â€”', lastVisit: c.date });
+            exportMeta.set(c.patient_id, { doctorName: doctorByUserId.get(c.doctor_id) ?? '—', lastVisit: c.date });
           }
         }
         for (const id of ids) {
-          if (!exportMeta.has(id)) exportMeta.set(id, { doctorName: 'â€”', lastVisit: null });
+          if (!exportMeta.has(id)) exportMeta.set(id, { doctorName: '—', lastVisit: null });
         }
       }
       downloadCSV(buildCSV(data, exportMeta), `patients_clinique_${new Date().toISOString().slice(0,10)}.csv`);
@@ -484,7 +484,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
     { key: 'all',         label: 'Tous'             },
     { key: 'allergies',   label: 'Avec allergies'   },
     { key: 'pathologies', label: 'Avec pathologies' },
-    { key: 'recent',      label: 'RÃ©cents (30j)'    },
+    { key: 'recent',      label: 'Récents (30j)'    },
   ];
 
   function TH({ label, sKey }: { label: string; sKey?: SortKey }) {
@@ -509,7 +509,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-[#E2E8F0]">Patients de la clinique</h1>
             <p className="text-sm text-slate-500 dark:text-[#94A3B8] mt-0.5">
-              {total} patient{total !== 1 ? 's' : ''} enregistrÃ©{total !== 1 ? 's' : ''}
+              {total} patient{total !== 1 ? 's' : ''} enregistré{total !== 1 ? 's' : ''}
             </p>
           </div>
           <button
@@ -531,7 +531,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Nom, prÃ©nom, pathologieâ€¦"
+              placeholder="Nom, prénom, pathologie…"
               className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
             />
           </div>
@@ -560,13 +560,13 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
               <thead>
                 <tr className="border-b border-slate-100 dark:border-white/[0.06] bg-slate-50/50 dark:bg-white/[0.02]">
                   <TH label="Nom complet"       sKey="nom"        />
-                  <TH label="Ã‚ge"               sKey="age"        />
-                  <TH label="MÃ©decin rÃ©fÃ©rent"                    />
+                  <TH label="Âge"               sKey="age"        />
+                  <TH label="Médecin référent"                    />
                   <TH label="Pathologies"                         />
                   <TH label="Allergies"                           />
                   <TH label="Risque"                              />
-                  <TH label="DerniÃ¨re visite"   sKey="last_visit" />
-                  <TH label="TÃ©lÃ©phone"                           />
+                  <TH label="Dernière visite"   sKey="last_visit" />
+                  <TH label="Téléphone"                           />
                   <TH label="Actions"                             />
                 </tr>
               </thead>
@@ -578,13 +578,13 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
                     <tr>
                       <td colSpan={9} className="py-16 text-center">
                         <Users className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700 mb-3" />
-                        <p className="text-sm text-slate-400 dark:text-slate-600">Aucun patient trouvÃ©</p>
+                        <p className="text-sm text-slate-400 dark:text-slate-600">Aucun patient trouvé</p>
                       </td>
                     </tr>
                   )
                   : displayedPatients.map((p, i) => {
                     const age  = getAge(p.date_naissance);
-                    const meta = metaMap.get(p.id) ?? { doctorName: 'â€”', lastVisit: null };
+                    const meta = metaMap.get(p.id) ?? { doctorName: '—', lastVisit: null };
                     return (
                       <motion.tr
                         key={p.id}
@@ -605,7 +605,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
                           </div>
                         </td>
                         <td className="px-4 py-3.5 text-sm text-slate-600 dark:text-[#94A3B8]">
-                          {age !== null ? `${age} ans` : 'â€”'}
+                          {age !== null ? `${age} ans` : '—'}
                         </td>
                         <td className="px-4 py-3.5 text-sm text-slate-600 dark:text-[#94A3B8]">{meta.doctorName}</td>
                         <td className="px-4 py-3.5">
@@ -616,7 +616,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
                             {(p.pathologies ?? []).length > 2 && (
                               <Badge label={`+${p.pathologies!.length - 2}`} color="bg-slate-100 dark:bg-white/[0.07] text-slate-500" />
                             )}
-                            {!p.pathologies?.length && <span className="text-xs text-slate-300 dark:text-slate-700">â€”</span>}
+                            {!p.pathologies?.length && <span className="text-xs text-slate-300 dark:text-slate-700">—</span>}
                           </div>
                         </td>
                         <td className="px-4 py-3.5">
@@ -630,7 +630,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
                                 <span className="text-xs text-red-500">+{p.allergies_medicaments!.length - 2}</span>
                               </div>
                             )}
-                            {!p.allergies_medicaments?.length && <span className="text-xs text-slate-300 dark:text-slate-700">â€”</span>}
+                            {!p.allergies_medicaments?.length && <span className="text-xs text-slate-300 dark:text-slate-700">—</span>}
                           </div>
                         </td>
                         <td className="px-4 py-3.5 whitespace-nowrap">
@@ -653,9 +653,9 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
                                 {new Date(meta.lastVisit).toLocaleDateString('fr-FR')}
                               </p>
                             </div>
-                          ) : <span className="text-xs text-slate-300 dark:text-slate-700">â€”</span>}
+                          ) : <span className="text-xs text-slate-300 dark:text-slate-700">—</span>}
                         </td>
-                        <td className="px-4 py-3.5 text-sm text-slate-600 dark:text-[#94A3B8]">{p.telephone ?? 'â€”'}</td>
+                        <td className="px-4 py-3.5 text-sm text-slate-600 dark:text-[#94A3B8]">{p.telephone ?? '—'}</td>
                         <td className="px-4 py-3.5">
                           <button
                             onClick={() => setSelected(p)}
@@ -675,7 +675,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-5 py-3.5 border-t border-slate-100 dark:border-white/[0.06]">
               <p className="text-xs text-slate-400 dark:text-[#475569]">
-                Page {page + 1} / {totalPages} â€” {total} patients
+                Page {page + 1} / {totalPages} — {total} patients
               </p>
               <div className="flex items-center gap-2">
                 <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
@@ -694,7 +694,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
         {!loading && total === 0 && (
           <div className="mt-4 flex items-center gap-2 text-sm text-slate-400 dark:text-slate-600">
             <Activity className="w-4 h-4" />
-            <span>Aucun patient enregistrÃ© dans cette organisation</span>
+            <span>Aucun patient enregistré dans cette organisation</span>
           </div>
         )}
       </div>
@@ -704,7 +704,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
           <PatientDetailModal
             key={selected.id}
             patient={selected}
-            meta={metaMap.get(selected.id) ?? { doctorName: 'â€”', lastVisit: null }}
+            meta={metaMap.get(selected.id) ?? { doctorName: '—', lastVisit: null }}
             onClose={() => setSelected(null)}
           />
         )}
