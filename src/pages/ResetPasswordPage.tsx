@@ -21,78 +21,87 @@ export function ResetPasswordPage() {
     confirmPassword: '',
   });
 
-  // Verify recovery session on mount
+  // Sprint #3.0.4 — Détection recovery via le pattern Supabase v2 natif :
+  //   1. Lecture du hash URL au mount (#type=recovery)
+  //   2. Écoute de onAuthStateChange('PASSWORD_RECOVERY') au cas où l'event
+  //      arrive après le mount du composant
+  //   3. Vérification de la session active via getSession() (Supabase parse
+  //      le hash automatiquement et crée la session)
+  // Plus aucun localStorage maison — c'est Supabase qui gère.
   useEffect(() => {
-    const verifyRecoverySession = async () => {
-      try {
-        console.log('[RESET PASSWORD] Checking for recovery session...');
+    let mounted = true;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-        // Check if we have a recovery session flag
-        const isRecoverySession = localStorage.getItem('recovery_session') === 'true';
-        const recoveryTimestamp = localStorage.getItem('recovery_timestamp');
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+    const hasRecoveryHash = hashParams.get('type') === 'recovery';
 
-        console.log('[RESET PASSWORD] Recovery flag:', isRecoverySession);
+    console.log('[RESET PASSWORD] Mount — hasRecoveryHash:', hasRecoveryHash);
 
-        // Check if recovery session is still valid (within 1 hour)
-        if (isRecoverySession && recoveryTimestamp) {
-          const sessionAge = Date.now() - parseInt(recoveryTimestamp);
-          const oneHour = 60 * 60 * 1000;
+    // Listener — si Supabase fire PASSWORD_RECOVERY après le mount, on l'attrape.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      if (event === 'PASSWORD_RECOVERY' && session) {
+        console.log('[RESET PASSWORD] PASSWORD_RECOVERY event received');
+        setSessionReady(true);
+        setSessionLoading(false);
+        setError('');
+      }
+    });
 
-          if (sessionAge > oneHour) {
-            console.log('[RESET PASSWORD] Recovery session expired');
-            localStorage.removeItem('recovery_session');
-            localStorage.removeItem('recovery_timestamp');
-            setError('Votre session a expiré. Veuillez demander un nouveau lien de réinitialisation.');
-            setSessionReady(false);
-            setSessionLoading(false);
-            return;
-          }
-        }
-
-        // Get current session from Supabase
+    if (hasRecoveryHash) {
+      // Hash présent → laisse 500 ms à Supabase pour parser le hash et créer la session,
+      // puis vérifie via getSession (idempotent avec l'event ci-dessus).
+      timeoutId = setTimeout(async () => {
+        if (!mounted) return;
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
-        console.log('[RESET PASSWORD] Session check - hasSession:', !!session, 'error:', sessionError);
-
         if (sessionError) {
           console.error('[RESET PASSWORD] Session error:', sessionError);
-          setError('Erreur lors de la vérification de la session.');
+          setError('Erreur lors de la vérification du lien.');
           setSessionReady(false);
-          setSessionLoading(false);
-          return;
-        }
-
-        // Check if session exists and has a valid user
-        if (session && session.user) {
-          console.log('[RESET PASSWORD] Valid session found, user ID:', session.user.id);
-
-          // If we have both a session and the recovery flag, we're good to go
-          if (isRecoverySession) {
-            console.log('[RESET PASSWORD] Recovery session verified - showing form');
-            setSessionReady(true);
-          } else {
-            // If we have a session but no recovery flag, this might be a normal authenticated user
-            // trying to access the reset page directly
-            console.log('[RESET PASSWORD] Session exists but not a recovery session');
-            setError('Lien invalide. Veuillez demander un nouveau lien de réinitialisation.');
-            setSessionReady(false);
-          }
+        } else if (session) {
+          console.log('[RESET PASSWORD] Recovery session active');
+          setSessionReady(true);
         } else {
-          console.log('[RESET PASSWORD] No valid session found');
+          console.log('[RESET PASSWORD] Hash present but no session created');
           setError('Lien invalide ou expiré. Veuillez demander un nouveau lien de réinitialisation.');
           setSessionReady(false);
         }
-      } catch (err) {
-        console.error('[RESET PASSWORD] Unexpected error:', err);
-        setError('Erreur lors de la vérification du lien.');
-        setSessionReady(false);
-      } finally {
         setSessionLoading(false);
-      }
-    };
+      }, 500);
+    } else {
+      // Pas de hash recovery → accès direct illégitime. Mais on attend 600 ms
+      // au cas où le listener PASSWORD_RECOVERY ait quelque chose à dire (race rare).
+      timeoutId = setTimeout(() => {
+        if (!mounted) return;
+        // Si le listener a déjà setSessionReady(true), on ne touche rien.
+        // Sinon on affiche "lien invalide".
+        setSessionLoading(prev => {
+          if (!prev) return prev; // déjà terminé par le listener
+          setError('Lien invalide ou expiré. Veuillez demander un nouveau lien de réinitialisation.');
+          setSessionReady(false);
+          return false;
+        });
+      }, 600);
+    }
 
-    verifyRecoverySession();
+    return () => {
+      mounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
+
+  // Sprint #3.0.4 — La session recovery est une session Supabase active.
+  // Si l'utilisateur clique "Retour à la connexion" sans valider, il faut signOut
+  // sinon le routeur le redirige vers /doctor (bug observé).
+  const handleReturnToLogin = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn('[RESET PASSWORD] signOut error (non-blocking):', e);
+    }
+    navigate('/');
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -187,10 +196,6 @@ export function ResetPasswordPage() {
       }
 
       console.log('[RESET PASSWORD] Password updated successfully');
-
-      // Clear recovery session flags
-      localStorage.removeItem('recovery_session');
-      localStorage.removeItem('recovery_timestamp');
 
       // Success - show success message and sign out user
       setSuccess(true);
@@ -361,7 +366,7 @@ export function ResetPasswordPage() {
           <div className="text-center py-8">
             <p className="text-gray-600 mb-4">Le lien de réinitialisation n'est pas valide ou a expiré.</p>
             <Button
-              onClick={() => navigate('/')}
+              onClick={handleReturnToLogin}
               className="bg-[#00A86B] hover:bg-[#006B47] text-white"
             >
               Retour à la connexion
@@ -371,7 +376,7 @@ export function ResetPasswordPage() {
 
         {/* Back to Login Link */}
         <button
-          onClick={() => navigate('/')}
+          onClick={handleReturnToLogin}
           disabled={loading}
           className="w-full mt-6 flex items-center justify-center gap-2 text-[#00A86B] hover:text-[#006B47] font-medium text-sm transition-colors disabled:opacity-50"
         >

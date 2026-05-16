@@ -74,16 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[AUTH] State change:', event);
 
-      if (event === 'PASSWORD_RECOVERY') {
-        // Stocker les tokens et rediriger vers reset-password
-        if (session?.access_token && session?.refresh_token) {
-          localStorage.setItem('recovery_access_token', session.access_token);
-          localStorage.setItem('recovery_refresh_token', session.refresh_token);
-          localStorage.setItem('recovery_timestamp', Date.now().toString());
-        }
-        window.location.replace('/reset-password');
-        return;
-      }
+      // Sprint #3.0.4 — PASSWORD_RECOVERY est géré directement par ResetPasswordPage,
+      // qui écoute l'event et consomme la session créée par le hash. Aucune action ici.
 
       (async () => {
         if (event === 'SIGNED_IN' && session) {
