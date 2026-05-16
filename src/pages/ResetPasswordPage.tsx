@@ -212,10 +212,10 @@ export function ResetPasswordPage() {
   // Show loading state while verifying session
   if (sessionLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7] p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
           <div className="flex justify-center mb-6">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#00A86B] border-t-transparent"></div>
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Vérification en cours...</h2>
           <p className="text-gray-600 text-sm">Veuillez patienter pendant que nous vérifions votre lien de réinitialisation.</p>
@@ -226,7 +226,7 @@ export function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7] p-4">
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
           <div className="flex justify-center mb-6">
             <div className="p-4 bg-success-50 rounded-full">
@@ -237,7 +237,7 @@ export function ResetPasswordPage() {
           <p className="text-gray-600 mb-4">Votre mot de passe a été mis à jour avec succès.</p>
           <p className="text-sm text-gray-500">Redirection vers la page de connexion dans 2 secondes...</p>
           <div className="mt-6 flex justify-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary-500 border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-[#00A86B] border-t-transparent"></div>
           </div>
         </div>
       </div>
@@ -245,12 +245,12 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7] p-4">
       <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-primary-100 rounded-xl">
-            <Lock className="w-6 h-6 text-primary-600" />
+          <div className="p-3 bg-[#E6F4EE] rounded-xl">
+            <Lock className="w-6 h-6 text-[#00A86B]" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Réinitialiser le mot de passe</h1>
         </div>
@@ -286,7 +286,7 @@ export function ResetPasswordPage() {
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-offset-0 focus:outline-none transition-all ${
                     passwordError
                       ? 'border-red-300 focus:ring-red-200 bg-red-50'
-                      : 'border-gray-300 focus:ring-primary-500 bg-white'
+                      : 'border-gray-300 focus:ring-[#00A86B] bg-white'
                   }`}
                   disabled={loading}
                 />
@@ -323,7 +323,7 @@ export function ResetPasswordPage() {
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-offset-0 focus:outline-none transition-all ${
                     confirmError
                       ? 'border-red-300 focus:ring-red-200 bg-red-50'
-                      : 'border-gray-300 focus:ring-primary-500 bg-white'
+                      : 'border-gray-300 focus:ring-[#00A86B] bg-white'
                   }`}
                   disabled={loading}
                 />
@@ -345,7 +345,7 @@ export function ResetPasswordPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600"
+              className="w-full mt-6 bg-[#00A86B] hover:bg-[#006B47] text-white"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -362,7 +362,7 @@ export function ResetPasswordPage() {
             <p className="text-gray-600 mb-4">Le lien de réinitialisation n'est pas valide ou a expiré.</p>
             <Button
               onClick={() => navigate('/')}
-              className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600"
+              className="bg-[#00A86B] hover:bg-[#006B47] text-white"
             >
               Retour à la connexion
             </Button>
@@ -373,7 +373,7 @@ export function ResetPasswordPage() {
         <button
           onClick={() => navigate('/')}
           disabled={loading}
-          className="w-full mt-6 flex items-center justify-center gap-2 text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors disabled:opacity-50"
+          className="w-full mt-6 flex items-center justify-center gap-2 text-[#00A86B] hover:text-[#006B47] font-medium text-sm transition-colors disabled:opacity-50"
         >
           <ArrowLeft size={16} />
           Retour à la connexion

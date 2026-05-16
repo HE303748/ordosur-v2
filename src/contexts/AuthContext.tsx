@@ -2,6 +2,12 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { supabase } from '../lib/supabase';
 import type { Organization, Doctor } from '../lib/supabase';
 
+// Sprint #3.0.3 — URL publique pour les redirects email Supabase.
+// Hardcodée sur ordosur.com pour ne pas hériter du domaine Vercel preview
+// quand l'utilisateur arrive sur ordosur-v2.vercel.app (window.location.origin
+// renvoyait l'URL preview → lien email cassé). Override possible via VITE_PUBLIC_URL.
+const PUBLIC_URL = import.meta.env.VITE_PUBLIC_URL || 'https://ordosur.com';
+
 // ─── TYPES EXPORTÉS ──────────────────────────────────────────────────────────
 
 export interface AuthUser {
@@ -183,7 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${PUBLIC_URL}/auth/callback`,
         data: {
           role,
           prenom: profileData.prenom,
@@ -275,7 +281,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const requestPasswordReset = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${PUBLIC_URL}/reset-password`,
     });
     if (error) throw error;
   };
