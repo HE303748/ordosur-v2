@@ -116,8 +116,9 @@ export function DoctorRegistrationPage() {
       return;
     }
 
-    if (!validateINPENumber(formData.inpe)) {
-      setError('Numéro INPE invalide (9 chiffres requis)');
+    // INPE optionnel : on ne valide que si quelque chose a été saisi.
+    if (formData.inpe.trim() && !validateINPENumber(formData.inpe.trim())) {
+      setError('Le numéro INPE doit contenir 9 chiffres');
       return;
     }
 
@@ -146,6 +147,9 @@ export function DoctorRegistrationPage() {
     try {
       const prenom = sanitizeInputFinal(formData.prenom);
       const nom    = sanitizeInputFinal(formData.nom);
+      // INPE vide → null pour éviter la contrainte UNIQUE doctors_rpps_key
+      // (Postgres autorise plusieurs NULL dans un index UNIQUE standard).
+      const inpeValue = formData.inpe.trim() || null;
       await signUp(formData.email, formData.password, 'doctor', {
         prenom,
         nom,
@@ -153,7 +157,7 @@ export function DoctorRegistrationPage() {
         org_type: 'cabinet',
         adresse: sanitizeInputFinal(formData.adresse),
         telephone: formData.telephone,
-        rpps: formData.inpe,
+        rpps: inpeValue,
         specialite: formData.specialite,
       });
 
@@ -326,19 +330,18 @@ export function DoctorRegistrationPage() {
               {/* Infos professionnelles */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <RequiredLabel>Numéro INPE</RequiredLabel>
+                  Numéro INPE <span className="text-[#94A3B8] font-normal">(optionnel)</span>
                 </label>
                 <input
                   name="inpe"
                   type="text"
                   value={formData.inpe}
                   onChange={handleChange}
-                  required
                   placeholder="123456789"
                   maxLength={9}
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
                 />
-                <p className="text-xs text-gray-400 mt-1">Identifiant National du Praticien dans l'Établissement — 9 chiffres</p>
+                <p className="text-xs text-gray-400 mt-1">Identifiant National du Praticien dans l'Établissement — 9 chiffres si renseigné</p>
               </div>
 
               <div>

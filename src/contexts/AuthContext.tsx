@@ -29,7 +29,7 @@ interface SignUpProfileData {
   org_type: 'cabinet' | 'clinique';
   adresse?: string;
   telephone?: string;
-  rpps?: string;
+  rpps?: string | null;
   specialite?: string;
   ordre_number?: string;
 }
