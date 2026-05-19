@@ -116,9 +116,9 @@ export function ClinicRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex">
+    <div className="min-h-screen bg-[#FAFAF7] flex">
       {/* Panneau gauche */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-500 to-primary-600 p-12 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0A1628] p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30"></div>
 
         <div className="relative z-10">
@@ -187,7 +187,7 @@ export function ClinicRegistrationPage() {
                     onChange={handleChange}
                     required
                     placeholder="Fatima"
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -201,7 +201,7 @@ export function ClinicRegistrationPage() {
                     onChange={handleChange}
                     required
                     placeholder="Alaoui"
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                   />
                 </div>
               </div>
@@ -217,7 +217,7 @@ export function ClinicRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="contact@clinique.ma"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -233,7 +233,7 @@ export function ClinicRegistrationPage() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                   />
                   <button
                     type="button"
@@ -257,7 +257,7 @@ export function ClinicRegistrationPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                   />
                   <button
                     type="button"
@@ -281,7 +281,7 @@ export function ClinicRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="Clinique Al Amal"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -296,7 +296,7 @@ export function ClinicRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="45 Avenue Hassan II, Rabat"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -311,7 +311,7 @@ export function ClinicRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="+212 6XX XXX XXX"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -321,7 +321,7 @@ export function ClinicRegistrationPage() {
                   name="acceptTerms"
                   checked={formData.acceptTerms}
                   onChange={handleChange}
-                  className="mt-1 w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                  className="mt-1 w-4 h-4 text-[#00A86B] border-gray-300 rounded focus:ring-[#00A86B]"
                 />
                 <label className="text-sm text-gray-600">
                   J'accepte les conditions générales d'utilisation et la politique de confidentialité{' '}
@@ -332,7 +332,7 @@ export function ClinicRegistrationPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+                className="w-full bg-[#00A86B] hover:bg-[#006B47] text-white"
               >
                 {loading ? (
                   <span className="flex items-center justify-center space-x-2">

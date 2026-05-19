@@ -174,9 +174,9 @@ export function DoctorRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex">
+    <div className="min-h-screen bg-[#FAFAF7] flex">
       {/* Panneau gauche */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-secondary-500 to-secondary-600 p-12 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0A1628] p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30"></div>
 
         <div className="relative z-10">
@@ -245,7 +245,7 @@ export function DoctorRegistrationPage() {
                     onChange={handleChange}
                     required
                     placeholder="Mohammed"
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                   />
                 </div>
                 <div>
@@ -259,7 +259,7 @@ export function DoctorRegistrationPage() {
                     onChange={handleChange}
                     required
                     placeholder="Benali"
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                   />
                 </div>
               </div>
@@ -275,7 +275,7 @@ export function DoctorRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="m.benali@cabinet.ma"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -291,7 +291,7 @@ export function DoctorRegistrationPage() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                   />
                   <button
                     type="button"
@@ -315,7 +315,7 @@ export function DoctorRegistrationPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                   />
                   <button
                     type="button"
@@ -339,7 +339,7 @@ export function DoctorRegistrationPage() {
                   onChange={handleChange}
                   placeholder="123456789"
                   maxLength={9}
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
                 <p className="text-xs text-gray-400 mt-1">Identifiant National du Praticien dans l'Établissement — 9 chiffres si renseigné</p>
               </div>
@@ -353,7 +353,7 @@ export function DoctorRegistrationPage() {
                   value={formData.specialite}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 >
                   <option value="">Sélectionner une spécialité</option>
                   {SPECIALITES.map(s => (
@@ -374,7 +374,7 @@ export function DoctorRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="123 Boulevard Mohammed V, Casablanca"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -389,7 +389,7 @@ export function DoctorRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="+212 6XX XXX XXX"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
               </div>
 
@@ -399,7 +399,7 @@ export function DoctorRegistrationPage() {
                   name="acceptTerms"
                   checked={formData.acceptTerms}
                   onChange={handleChange}
-                  className="mt-1 w-4 h-4 text-secondary-600 border-gray-300 rounded focus:ring-secondary-500"
+                  className="mt-1 w-4 h-4 text-[#00A86B] border-gray-300 rounded focus:ring-[#00A86B]"
                 />
                 <label className="text-sm text-gray-600">
                   J'accepte les conditions générales d'utilisation et la politique de confidentialité{' '}
@@ -410,7 +410,7 @@ export function DoctorRegistrationPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700"
+                className="w-full bg-[#00A86B] hover:bg-[#006B47] text-white"
               >
                 {loading ? (
                   <span className="flex items-center justify-center space-x-2">

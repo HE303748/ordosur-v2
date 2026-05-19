@@ -14,8 +14,8 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00A86B]"></div>
       </div>
     );
   }
@@ -26,7 +26,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   if (requiredRole && user.role !== requiredRole) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
         <div className="glass-effect rounded-2xl p-8 w-full max-w-md text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
@@ -49,7 +49,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
           </p>
           <button
             onClick={() => window.history.back()}
-            className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+            className="w-full px-6 py-3 bg-[#00A86B] text-white rounded-lg hover:bg-[#006B47] transition-colors font-medium"
           >
             Retour
           </button>

@@ -56,12 +56,12 @@ export function RegistrationSuccessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-[#FAFAF7] flex items-center justify-center p-8">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center space-x-3 mb-4">
-            <div className="p-3 bg-primary-100 rounded-xl">
-              <Heart className="w-8 h-8 text-primary-600" />
+            <div className="p-3 bg-[#E6F4EE] rounded-xl">
+              <Heart className="w-8 h-8 text-[#00A86B]" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900">OrdoSur</h1>
           </div>
@@ -142,7 +142,7 @@ export function RegistrationSuccessPage() {
 
             <Button
               onClick={() => navigate('/')}
-              className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+              className="w-full bg-[#00A86B] hover:bg-[#006B47] text-white"
             >
               Retour à la connexion
             </Button>

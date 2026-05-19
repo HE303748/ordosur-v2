@@ -32,8 +32,8 @@ export default function OnboardingPage() {
   }, [user, loading, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#00A86B] border-t-transparent"></div>
     </div>
   );
 }
