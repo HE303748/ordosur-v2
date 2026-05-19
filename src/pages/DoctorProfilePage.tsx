@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Stethoscope, CreditCard, Save, X, Lock, LogOut as LogOutIcon } from 'lucide-react';
+import { User, Mail, Stethoscope, CreditCard, Save, X, LogOut as LogOutIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Button } from '../components/Button';
@@ -15,11 +15,6 @@ interface FormData {
   specialite: string;
   rpps: string;
   ordre_number: string;
-}
-
-interface PasswordFormData {
-  newPassword: string;
-  confirmPassword: string;
 }
 
 const SPECIALIZATIONS = [
@@ -42,8 +37,6 @@ export default function DoctorProfilePage() {
   const [mode, setMode] = useState<ViewMode>('VIEW');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
   const [doctorId, setDoctorId] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     prenom: '',
@@ -58,10 +51,6 @@ export default function DoctorProfilePage() {
     specialite: '',
     rpps: '',
     ordre_number: '',
-  });
-  const [passwordData, setPasswordData] = useState<PasswordFormData>({
-    newPassword: '',
-    confirmPassword: '',
   });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -150,39 +139,16 @@ export default function DoctorProfilePage() {
     setMode('VIEW');
   };
 
-  const handlePasswordChange = async () => {
-    if (!passwordData.newPassword || passwordData.newPassword.length < 8) {
-      setToast({ message: 'Le mot de passe doit contenir au moins 8 caractères', type: 'error' });
-      return;
-    }
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setToast({ message: 'Les mots de passe ne correspondent pas', type: 'error' });
-      return;
-    }
-    try {
-      setChangingPassword(true);
-      const { error } = await supabase.auth.updateUser({ password: passwordData.newPassword });
-      if (error) throw error;
-      setPasswordData({ newPassword: '', confirmPassword: '' });
-      setShowPasswordForm(false);
-      setToast({ message: 'Mot de passe modifié avec succès', type: 'success' });
-    } catch (error) {
-      setToast({ message: 'Erreur lors du changement de mot de passe', type: 'error' });
-    } finally {
-      setChangingPassword(false);
-    }
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-[#FAFAF7] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00A86B]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4">
+    <div className="min-h-screen bg-[#FAFAF7] py-8 px-4">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       <div className="max-w-2xl mx-auto">
@@ -191,7 +157,7 @@ export default function DoctorProfilePage() {
             <Button variant="secondary" onClick={() => navigate('/doctor')} className="mb-4">
               ← Retour au tableau de bord
             </Button>
-            <h1 className="text-3xl font-bold text-gray-900">Mon Profil</h1>
+            <h1 className="text-3xl font-bold text-[#0A1628]">Mon Profil</h1>
           </div>
           <Button
             variant="ghost"
@@ -203,19 +169,20 @@ export default function DoctorProfilePage() {
         </div>
 
         {/* Profile card */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-8">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6 border border-[#E5E5E0]">
+          {/* Hero — ink-navy, accents medical-green */}
+          <div className="bg-[#0A1628] px-8 py-8">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center">
-                <span className="text-2xl font-bold text-blue-600">
+              <div className="w-16 h-16 rounded-full bg-[#E6F4EE] flex items-center justify-center flex-shrink-0">
+                <span className="text-2xl font-bold text-[#00A86B]">
                   {(formData.prenom.charAt(0) + formData.nom.charAt(0)).toUpperCase()}
                 </span>
               </div>
-              <div className="text-white">
+              <div className="text-white min-w-0">
                 <h2 className="text-2xl font-bold">Dr. {formData.prenom} {formData.nom}</h2>
-                <p className="text-blue-100 mt-1">{user?.email}</p>
+                <p className="text-white/80 mt-1">{user?.email}</p>
                 {formData.specialite && (
-                  <p className="text-blue-100 mt-1">{formData.specialite}</p>
+                  <p className="text-white/80 mt-1">{formData.specialite}</p>
                 )}
               </div>
             </div>
@@ -226,61 +193,57 @@ export default function DoctorProfilePage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex items-start space-x-3">
-                    <User className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+                    <User className="w-5 h-5 text-[#94A3B8] mt-1 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-gray-500">Prénom</p>
-                      <p className="text-gray-900 font-medium">{formData.prenom || 'Non renseigné'}</p>
+                      <p className="text-sm text-[#94A3B8]">Prénom</p>
+                      <p className="text-[#0A1628] font-medium">{formData.prenom || 'Non renseigné'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <User className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+                    <User className="w-5 h-5 text-[#94A3B8] mt-1 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-gray-500">Nom</p>
-                      <p className="text-gray-900 font-medium">{formData.nom || 'Non renseigné'}</p>
+                      <p className="text-sm text-[#94A3B8]">Nom</p>
+                      <p className="text-[#0A1628] font-medium">{formData.nom || 'Non renseigné'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <Mail className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+                    <Mail className="w-5 h-5 text-[#94A3B8] mt-1 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="text-gray-900 font-medium">{user?.email}</p>
+                      <p className="text-sm text-[#94A3B8]">Email</p>
+                      <p className="text-[#0A1628] font-medium">{user?.email}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <Stethoscope className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+                    <Stethoscope className="w-5 h-5 text-[#94A3B8] mt-1 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-gray-500">Spécialité</p>
-                      <p className="text-gray-900 font-medium">{formData.specialite || 'Non renseigné'}</p>
+                      <p className="text-sm text-[#94A3B8]">Spécialité</p>
+                      <p className="text-[#0A1628] font-medium">{formData.specialite || 'Non renseigné'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <CreditCard className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+                    <CreditCard className="w-5 h-5 text-[#94A3B8] mt-1 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-gray-500">Numéro RPPS</p>
-                      <p className="text-gray-900 font-medium">{formData.rpps || 'Non renseigné'}</p>
+                      <p className="text-sm text-[#94A3B8]">Numéro RPPS</p>
+                      <p className="text-[#0A1628] font-medium">{formData.rpps || 'Non renseigné'}</p>
                     </div>
                   </div>
 
                   <div className="flex items-start space-x-3">
-                    <CreditCard className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
+                    <CreditCard className="w-5 h-5 text-[#94A3B8] mt-1 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-gray-500">N° Ordre</p>
-                      <p className="text-gray-900 font-medium">{formData.ordre_number || 'Non renseigné'}</p>
+                      <p className="text-sm text-[#94A3B8]">N° Ordre</p>
+                      <p className="text-[#0A1628] font-medium">{formData.ordre_number || 'Non renseigné'}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-6 border-t flex gap-3">
+                <div className="pt-6 border-t border-[#E5E5E0]">
                   <Button onClick={() => setMode('EDIT')} variant="primary">
                     Modifier le profil
-                  </Button>
-                  <Button onClick={() => setShowPasswordForm(!showPasswordForm)} variant="secondary">
-                    <Lock className="w-4 h-4 mr-2" />
-                    Changer le mot de passe
                   </Button>
                 </div>
               </div>
@@ -302,11 +265,11 @@ export default function DoctorProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Spécialité</label>
+                  <label className="block text-sm font-medium text-[#475569] mb-1">Spécialité</label>
                   <select
                     value={formData.specialite}
                     onChange={(e) => setFormData({ ...formData, specialite: e.target.value })}
-                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
+                    className="w-full px-3 py-2 bg-white border border-[#E5E5E0] rounded-lg focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none text-sm"
                   >
                     <option value="">Sélectionner une spécialité</option>
                     {SPECIALIZATIONS.map(s => (
@@ -336,33 +299,6 @@ export default function DoctorProfilePage() {
                   <Button onClick={handleSave} loading={saving}>
                     <Save className="w-4 h-4 mr-2" />
                     Enregistrer
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {showPasswordForm && mode === 'VIEW' && (
-              <div className="mt-6 pt-6 border-t space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Changer le mot de passe</h3>
-                <Input
-                  label="Nouveau mot de passe"
-                  type="password"
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                  placeholder="Minimum 8 caractères"
-                />
-                <Input
-                  label="Confirmer le mot de passe"
-                  type="password"
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                />
-                <div className="flex gap-3">
-                  <Button onClick={() => setShowPasswordForm(false)} variant="secondary">
-                    Annuler
-                  </Button>
-                  <Button onClick={handlePasswordChange} loading={changingPassword}>
-                    Changer le mot de passe
                   </Button>
                 </div>
               </div>

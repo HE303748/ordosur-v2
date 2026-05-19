@@ -1212,7 +1212,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
 // ─── SettingsView ─────────────────────────────────────────────────────────────
 
 function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: string) => void; user: any; doctorProfile: any }) {
-  const [activeSection, setActiveSection] = useState<'profil' | 'cabinet' | 'securite' | 'ia' | 'secretaire'>('profil');
+  const [activeSection, setActiveSection] = useState<'profil' | 'cabinet' | 'securite' | 'secretaire'>('profil');
 
   // Secrétaire state
   const [secEmail, setSecEmail]       = useState('');
@@ -1268,48 +1268,6 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
       setSecInviting(false);
     }
   };
-  const [apiKey, setApiKey]         = useState(() => {
-    try { return localStorage.getItem('ordosur_anthropic_key') || ''; } catch { return ''; }
-  });
-  const [apiKeyMsg, setApiKeyMsg]   = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [apiTesting, setApiTesting] = useState(false);
-
-  // OpenFDA sync state
-  const [syncRunning, setSyncRunning] = useState(false);
-  const [syncResult, setSyncResult]   = useState<{ success: boolean; inserted?: number; skipped?: number; errors?: number; message?: string; error?: string } | null>(null);
-  const [lastSync, setLastSync]       = useState<{ finished_at: string; inserted: number; skipped: number; status: string } | null>(null);
-  const [medCount, setMedCount]       = useState<number | null>(null);
-
-  const loadSyncInfo = async () => {
-    const [logRes, countRes] = await Promise.all([
-      supabase.from('openfda_sync_log').select('finished_at, inserted, skipped, status').eq('status', 'success').order('finished_at', { ascending: false }).limit(1).maybeSingle(),
-      supabase.from('medicaments').select('id', { count: 'exact', head: true }),
-    ]);
-    if (logRes.data) setLastSync(logRes.data as any);
-    if (countRes.count != null) setMedCount(countRes.count);
-  };
-
-  const handleOpenFDASync = async () => {
-    setSyncRunning(true);
-    setSyncResult(null);
-    try {
-      const res = await fetch('https://yxzvukryngvlzjgaydqj.supabase.co/functions/v1/update-medicaments-openfda', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const json = await res.json();
-      setSyncResult(json);
-      if (json.success) {
-        setMedCount(prev => prev != null ? prev + (json.inserted || 0) : null);
-        loadSyncInfo();
-      }
-    } catch (err: unknown) {
-      setSyncResult({ success: false, error: err instanceof Error ? err.message : 'Erreur réseau' });
-    } finally {
-      setSyncRunning(false);
-    }
-  };
-
   // Logo upload state
   const [logoUrl, setLogoUrl]           = useState<string | null>(doctorProfile?.logo_url ?? null);
   const [logoPreview, setLogoPreview]   = useState<string | null>(null);
@@ -1387,15 +1345,8 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
     { id: 'profil',     label: '👤 Profil'     },
     { id: 'cabinet',    label: '🏥 Cabinet'    },
     { id: 'securite',   label: '🔒 Sécurité'  },
-    { id: 'ia',         label: '🤖 IA'         },
     { id: 'secretaire', label: '🗂 Secrétaire' },
   ] as const;
-
-  // Load sync info when cabinet section becomes active
-  useEffect(() => {
-    if (activeSection === 'cabinet') loadSyncInfo();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSection]);
 
   // Load secretaires when section becomes active
   useEffect(() => {
@@ -1537,56 +1488,6 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
               </div>
             )}
 
-            {/* OpenFDA sync card — separate from the logo block */}
-            {activeSection === 'cabinet' && (
-              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Synchronisation médicaments</h3>
-                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">Importe les nouveaux médicaments depuis la base OpenFDA (FDA américaine)</p>
-                  </div>
-                  {medCount != null && (
-                    <div className="text-right flex-shrink-0">
-                      <p className="text-2xl font-bold text-[#00A86B]">{medCount.toLocaleString('fr-FR')}</p>
-                      <p className="text-[10px] text-slate-400 uppercase tracking-wide">médicaments</p>
-                    </div>
-                  )}
-                </div>
-
-                {lastSync && (
-                  <div className="p-3 bg-slate-50 dark:bg-white/[0.04] rounded-xl border border-slate-200 dark:border-white/[0.06] text-xs text-slate-500 dark:text-slate-400">
-                    ✅ Dernière sync réussie : {new Date(lastSync.finished_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    {' · '}{lastSync.inserted} ajoutés, {lastSync.skipped} ignorés
-                  </div>
-                )}
-
-                {syncResult && (
-                  <div className={`p-3 rounded-xl border text-xs font-medium ${
-                    syncResult.success
-                      ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300'
-                      : 'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20 text-red-800 dark:text-red-300'
-                  }`}>
-                    {syncResult.success
-                      ? `✅ Sync réussie : ${syncResult.inserted} médicaments ajoutés, ${syncResult.skipped} ignorés, ${syncResult.errors} erreurs`
-                      : `❌ Erreur : ${syncResult.error}`}
-                    {syncResult.message && <p className="mt-1 opacity-70">{syncResult.message}</p>}
-                  </div>
-                )}
-
-                <button
-                  onClick={handleOpenFDASync}
-                  disabled={syncRunning}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors"
-                >
-                  {syncRunning && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
-                  {syncRunning ? 'Synchronisation en cours…' : '🔄 Synchroniser avec OpenFDA'}
-                </button>
-                <p className="text-[10px] text-slate-400 dark:text-slate-600">
-                  Ajoute jusqu'à 100 médicaments de la base FDA par exécution. La rotation hebdomadaire couvre 13 classes thérapeutiques différentes.
-                </p>
-              </div>
-            )}
-
             {activeSection === 'securite' && (
               <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
                 <h3 className="font-bold text-slate-900 mb-4">Sécurité du compte</h3>
@@ -1602,96 +1503,6 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                   <button className="px-5 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900 transition-colors">
                     Changer le mot de passe
                   </button>
-                </div>
-              </div>
-            )}
-
-            {activeSection === 'ia' && (
-              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
-                <div>
-                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-1">Assistant IA (Claude)</h3>
-                  <p className="text-sm text-slate-500 dark:text-[#94A3B8]">
-                    L'Assistant IA utilise Claude d'Anthropic. Obtenez votre clé sur{' '}
-                    <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer"
-                      className="text-[#00A86B] underline">console.anthropic.com</a>
-                  </p>
-                </div>
-
-                {apiKeyMsg && (
-                  <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium ${
-                    apiKeyMsg.type === 'success'
-                      ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
-                      : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
-                  }`}>
-                    {apiKeyMsg.text}
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">
-                    Clé API Anthropic
-                  </label>
-                  <input
-                    type="password"
-                    value={apiKey}
-                    onChange={e => setApiKey(e.target.value)}
-                    placeholder="sk-ant-api03-..."
-                    className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 font-mono"
-                  />
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => {
-                      try {
-                        if (apiKey.trim()) localStorage.setItem('ordosur_anthropic_key', apiKey.trim());
-                        else localStorage.removeItem('ordosur_anthropic_key');
-                        setApiKeyMsg({ type: 'success', text: '✓ Clé API sauvegardée dans le navigateur.' });
-                        setTimeout(() => setApiKeyMsg(null), 3000);
-                      } catch {
-                        setApiKeyMsg({ type: 'error', text: 'Erreur lors de la sauvegarde.' });
-                      }
-                    }}
-                    className="px-5 py-2.5 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors"
-                  >
-                    Sauvegarder
-                  </button>
-                  <button
-                    disabled={!apiKey.trim() || apiTesting}
-                    onClick={async () => {
-                      setApiTesting(true); setApiKeyMsg(null);
-                      try {
-                        const res = await fetch('https://api.anthropic.com/v1/messages', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'x-api-key': apiKey.trim(),
-                            'anthropic-version': '2023-06-01',
-                            'anthropic-dangerous-allow-browser': 'true',
-                          },
-                          body: JSON.stringify({
-                            model: 'claude-opus-4-5',
-                            max_tokens: 10,
-                            messages: [{ role: 'user', content: 'Test' }],
-                          }),
-                        });
-                        if (res.ok) setApiKeyMsg({ type: 'success', text: '✅ Connexion réussie ! Clé API valide.' });
-                        else { const d = await res.json().catch(() => ({})); throw new Error(d?.error?.message || `HTTP ${res.status}`); }
-                      } catch (e: unknown) {
-                        setApiKeyMsg({ type: 'error', text: `❌ Erreur : ${e instanceof Error ? e.message : String(e)}` });
-                      } finally {
-                        setApiTesting(false);
-                      }
-                    }}
-                    className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-[#94A3B8] rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors disabled:opacity-50"
-                  >
-                    {apiTesting && <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />}
-                    Tester la connexion
-                  </button>
-                </div>
-
-                <div className="p-3 bg-[#E6F4EE] dark:bg-[#00A86B]/[0.08] rounded-xl border border-[#E5E5E0] dark:border-[#00A86B]/20 text-xs text-[#006B47] dark:text-[#00A86B]">
-                  🤖 Modèle : <strong>claude-opus-4-5</strong> — Questions médicales, interactions, posologies, diagnostics différentiels
                 </div>
               </div>
             )}
