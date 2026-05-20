@@ -9,10 +9,10 @@ interface MedicationLine {
 }
 
 export interface PdfInteractionAlert {
-  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure';
+  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure' | 'non_classee' | 'info';
   description: string;
   involved: string[];
-  type: 'drug_drug' | 'contraindication';
+  type: 'drug_drug' | 'contraindication' | 'info';
 }
 
 export interface PdfOrdonnanceData {

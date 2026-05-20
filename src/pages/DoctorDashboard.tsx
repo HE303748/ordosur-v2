@@ -49,7 +49,8 @@ interface DbInteraction {
   id: string;
   dci_1_pattern: string;
   dci_2_pattern: string;
-  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure';
+  // 'non_classee' = interaction connue mais sévérité clinique non documentée à la source.
+  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure' | 'non_classee';
   description: string;
 }
 
@@ -63,8 +64,11 @@ interface DbContraindication {
 }
 
 interface InteractionAlert {
-  type: 'drug_drug' | 'contraindication';
-  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure';
+  type: 'drug_drug' | 'contraindication' | 'info';
+  // Sprint #3.0.7 — Distinctions sémantiques :
+  //   non_classee → interaction connue, sévérité non documentée (gris, non-anxiogène)
+  //   info        → avertissement qualité de données (DCI manquante) — pas une interaction clinique
+  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure' | 'non_classee' | 'info';
   description: string;
   involved: string[];
 }
@@ -93,9 +97,11 @@ function getPatientAge(dateNaissance: string | null | undefined): number | null 
 
 function getSeveriteLabel(s: InteractionAlert['severite']) {
   if (s === 'contre_indication') return '🔴 CONTRE-INDICATION';
-  if (s === 'majeure') return '🟠 INTERACTION MAJEURE';
-  if (s === 'moderee') return '🔵 INTERACTION MODÉRÉE';
-  return '🟡 INTERACTION MINEURE';
+  if (s === 'majeure')           return '🟠 INTERACTION MAJEURE';
+  if (s === 'moderee')           return '🔵 INTERACTION MODÉRÉE';
+  if (s === 'mineure')           return '🟡 INTERACTION MINEURE';
+  if (s === 'non_classee')       return 'ℹ️ SÉVÉRITÉ NON DOCUMENTÉE';
+  return 'ℹ️ DONNÉES LIMITÉES'; // 'info'
 }
 
 // ─── Sub-views ──────────────────────────────────────────────────────────────
@@ -780,23 +786,42 @@ function CheckerView({
                     <div className="space-y-2">
                       {interactionAlerts
                         .sort((a, b) => {
-                          const order = { contre_indication: 0, majeure: 1, moderee: 2, mineure: 3 };
+                          const order = { contre_indication: 0, majeure: 1, moderee: 2, mineure: 3, non_classee: 4, info: 5 };
                           return order[a.severite] - order[b.severite];
                         })
                         .map((alert, idx) => {
                           const cls = {
                             contre_indication: 'bg-red-50 border-red-200 text-red-900',
-                            majeure: 'bg-orange-50 border-orange-200 text-orange-900',
-                            moderee: 'bg-blue-50 border-blue-200 text-blue-900',
-                            mineure: 'bg-yellow-50 border-yellow-200 text-yellow-900',
+                            majeure:           'bg-orange-50 border-orange-200 text-orange-900',
+                            moderee:           'bg-blue-50 border-blue-200 text-blue-900',
+                            mineure:           'bg-yellow-50 border-yellow-200 text-yellow-900',
+                            non_classee:       'bg-slate-50 border-slate-200 text-slate-700',
+                            info:              'bg-slate-50 border-slate-200 text-slate-700',
                           }[alert.severite];
                           const badge = {
                             contre_indication: 'bg-red-100 text-red-800',
-                            majeure: 'bg-orange-100 text-orange-800',
-                            moderee: 'bg-blue-100 text-blue-800',
-                            mineure: 'bg-yellow-100 text-yellow-800',
+                            majeure:           'bg-orange-100 text-orange-800',
+                            moderee:           'bg-blue-100 text-blue-800',
+                            mineure:           'bg-yellow-100 text-yellow-800',
+                            non_classee:       'bg-slate-200 text-slate-700',
+                            info:              'bg-slate-200 text-slate-700',
                           }[alert.severite];
-                          const icons = { contre_indication: '🔴', majeure: '🟠', moderee: '🔵', mineure: '🟡' };
+                          const icons = {
+                            contre_indication: '🔴',
+                            majeure:           '🟠',
+                            moderee:           '🔵',
+                            mineure:           '🟡',
+                            non_classee:       'ℹ️',
+                            info:              'ℹ️',
+                          };
+                          const sevLabel = {
+                            contre_indication: 'Contre-indication',
+                            majeure:           'Majeure',
+                            moderee:           'Modérée',
+                            mineure:           'Mineure',
+                            non_classee:       'Sévérité non documentée',
+                            info:              'Données limitées',
+                          }[alert.severite];
                           return (
                             <div key={idx} className={`px-4 py-3 border rounded-xl ${cls}`}>
                               <div className="flex items-start gap-2">
@@ -804,9 +829,7 @@ function CheckerView({
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap mb-1">
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${badge}`}>
-                                      {alert.severite === 'contre_indication' ? 'Contre-indication' :
-                                       alert.severite === 'majeure' ? 'Majeure' :
-                                       alert.severite === 'moderee' ? 'Modérée' : 'Mineure'}
+                                      {sevLabel}
                                     </span>
                                     <span className="text-xs font-semibold">{alert.involved.join(' + ')}</span>
                                   </div>
@@ -1794,16 +1817,20 @@ export function DoctorDashboard() {
         }
       }
 
-      // ── 3. DCI non identifiée — avertissement ─────────────────────────────
+      // ── 3. DCI non identifiée — avertissement qualité de données ──────────
+      // Sprint #3.0.7 — Ce n'est PAS une interaction clinique : c'est un signal
+      // que le médicament marocain n'a pas de DCI mappée → on ne peut pas
+      // chercher de contre-indications. Type 'info' + severite 'info' pour
+      // un badge neutre non-anxiogène, distinct des vraies interactions mineures.
       for (const m of selectedMeds) {
         if (!m.dci || m.dci.trim() === '') {
           const key = `nodci|${m.nom}`;
           if (!seen.has(key)) {
             seen.add(key);
             alerts.push({
-              type: 'contraindication',
-              severite: 'mineure',
-              description: `⚠ DCI non identifiée pour "${m.nom}" — vérification des contre-indications limitée.`,
+              type: 'info',
+              severite: 'info',
+              description: `Médicament marocain non rattaché à une DCI — vérification des contre-indications limitée pour "${m.nom}".`,
               involved: [m.nom],
             });
           }
@@ -2001,14 +2028,16 @@ export function DoctorDashboard() {
         }
       }
 
-      // ── Sprint #2.7 — Log detected interactions to interaction_logs ─────
-      // One row per non-"mineure" alert (mineure = "DCI non identifiée"
-      // is a data-quality warning, not a clinical interaction).
+      // ── Sprint #2.7 + #3.0.7 — Log detected interactions to interaction_logs
+      // Inclus : interactions cliniques documentées (contre_indication, majeure,
+      //          moderee, mineure réelle).
+      // Exclus : 'non_classee' (sévérité non documentée à la source) et 'info'
+      //          (avertissement qualité de données — DCI marocaine manquante).
       // Failure here MUST NOT invalidate the prescription, which is already
       // saved at this point — wrap in an isolated try/catch.
       try {
         const loggableAlerts = (interactionAlerts || []).filter(
-          a => a.severite !== 'mineure'
+          a => a.severite !== 'non_classee' && a.severite !== 'info'
         );
         if (loggableAlerts.length > 0) {
           const severityToRisk: Record<
@@ -2019,6 +2048,8 @@ export function DoctorDashboard() {
             majeure:           'dangerous',
             moderee:           'attention',
             mineure:           'attention',
+            non_classee:       'safe', // never logged (filtered above), but required for type completeness
+            info:              'safe', // never logged (filtered above), but required for type completeness
           };
           const interactionRows = loggableAlerts.map(alert => ({
             doctor_id:    doctorId,

@@ -79,6 +79,8 @@ function SeverityBadge({ severite }: { severite: string }) {
       ? { cls: 'bg-orange-100 text-orange-800 border-orange-200', label: s === 'moderee' || s === 'modéree' ? 'modérée' : s }
       : s === 'mineure' || s === 'précaution'
       ? { cls: 'bg-yellow-100 text-yellow-800 border-yellow-200', label: s }
+      : s === 'non_classee' || s === 'non classée'
+      ? { cls: 'bg-slate-100 text-slate-700 border-slate-200', label: 'non classée' }
       : { cls: 'bg-slate-100 text-slate-700 border-slate-200', label: s };
   return (
     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${cfg.cls}`}>
