@@ -104,6 +104,57 @@ function getSeveriteLabel(s: InteractionAlert['severite']) {
   return 'ℹ️ DONNÉES LIMITÉES'; // 'info'
 }
 
+/**
+ * Sprint #3.0.8 — Fusion intelligente de 2 descriptions pour la même paire+sévérité.
+ *
+ * Contexte : la table drug_interactions contient ~19 000 lignes dupliquées (sources FR + ANG
+ * importées en parallèle). Pour la même paire de molécules à la même sévérité, on peut avoir
+ * 2 descriptions distinctes (ex: l'une dit "surveiller INR", l'autre ne le dit pas).
+ *
+ * Algorithme :
+ *   1. Tokenize les 2 descriptions (lowercase, sans accents, mots ≥ 3 lettres).
+ *   2. Si ≥ 70% des mots de la plus courte sont dans la plus longue → variantes proches :
+ *      on garde la version FRANÇAISE (compteur d'accents), à défaut la plus longue.
+ *   3. Sinon → fusion : "{descA}. — {descB}" en évitant les ponctuations doublées.
+ *
+ * Seuil 70% choisi empiriquement : permet de regrouper les traductions paraphrasées
+ * (qui partagent les molécules + termes techniques) sans fusionner des notes cliniques
+ * vraiment distinctes.
+ */
+function mergeDescriptions(a: string, b: string): string {
+  if (!a) return b;
+  if (!b) return a;
+  if (a.trim() === b.trim()) return a;
+
+  const tokenize = (s: string) => new Set(
+    s.normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length >= 3)
+  );
+  const tokA = tokenize(a);
+  const tokB = tokenize(b);
+  const inter = [...tokA].filter(t => tokB.has(t)).length;
+  const minSize = Math.min(tokA.size, tokB.size);
+  const overlap = minSize > 0 ? inter / minSize : 0;
+
+  if (overlap >= 0.7) {
+    // Variantes proches : préférer la version française (plus d'accents),
+    // à égalité d'accents, prendre la plus longue.
+    const countAccents = (s: string) => (s.match(/[éèêëàâäîïôùûüçœ]/gi) || []).length;
+    const aFr = countAccents(a);
+    const bFr = countAccents(b);
+    if (aFr !== bFr) return aFr > bFr ? a : b;
+    return a.length >= b.length ? a : b;
+  }
+
+  // Descriptions cliniquement distinctes : fusion en évitant la ponctuation doublée.
+  const cleanA = a.trim().replace(/[.\s]+$/, '');
+  return `${cleanA}. — ${b.trim()}`;
+}
+
 // ─── Sub-views ──────────────────────────────────────────────────────────────
 
 /* ── Skeleton helpers ────────────────────────────────────────────────────── */
@@ -1748,6 +1799,11 @@ export function DoctorDashboard() {
       const seen = new Set<string>();
 
       // ── 1. Drug-drug interactions (≥ 2 meds) ──────────────────────────────
+      // Sprint #3.0.8 — Dedup par (paire_de_molécules + sévérité), SANS la description.
+      // La DB contient ~19 000 doublons (sources FR + ANG) qui ont la même paire+sévérité
+      // mais des descriptions différentes. On les fusionne au lieu de les jeter, pour
+      // préserver les nuances cliniques (ex: mention "surveiller INR" présente dans une
+      // seule des deux versions).
       if (selectedMeds.length >= 2) {
         const normalizedStrings = medDCIs.map(m => `${m.normalizedDCI} ${m.normalizedName}`);
         const { data: interactions } = await supabase.rpc(
@@ -1755,6 +1811,7 @@ export function DoctorDashboard() {
           { p_med_strings: normalizedStrings }
         );
         if (interactions) {
+          const ddDedup = new Map<string, InteractionAlert>();
           for (const interaction of interactions as DbInteraction[]) {
             const p1 = norm(interaction.dci_1_pattern);
             const p2 = norm(interaction.dci_2_pattern);
@@ -1762,17 +1819,21 @@ export function DoctorDashboard() {
             const idx2 = normalizedStrings.findIndex(s => s.includes(p2) && s !== normalizedStrings[idx1]);
             const i1 = idx1 !== -1 ? idx1 : 0;
             const i2 = idx2 !== -1 ? idx2 : (idx1 === 0 ? 1 : 0);
-            const key = `dd|${[selectedMeds[i1].nom, selectedMeds[i2].nom].sort().join('+')}|${interaction.description.substring(0, 40)}`;
-            if (!seen.has(key)) {
-              seen.add(key);
-              alerts.push({
+            const pair = [selectedMeds[i1].nom, selectedMeds[i2].nom].sort().join('+');
+            const key = `dd|${pair}|${interaction.severite}`;
+            const existing = ddDedup.get(key);
+            if (!existing) {
+              ddDedup.set(key, {
                 type: 'drug_drug',
                 severite: interaction.severite,
                 description: interaction.description,
                 involved: [selectedMeds[i1].nom, selectedMeds[i2].nom],
               });
+            } else {
+              existing.description = mergeDescriptions(existing.description, interaction.description);
             }
           }
+          for (const alert of ddDedup.values()) alerts.push(alert);
         }
       }
 
@@ -2176,13 +2237,16 @@ export function DoctorDashboard() {
       reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
 
-    const nbCI  = interactionAlerts.filter(a => a.severite === 'contre_indication').length;
-    const nbMaj = interactionAlerts.filter(a => a.severite === 'majeure').length;
+    const nbCI = interactionAlerts.filter(a => a.severite === 'contre_indication').length;
+    // Sprint #3.0.8 — Compte TOUTES les vraies interactions cliniques (exclut non_classee + info)
+    // pour que "X interaction(s) signalée(s)" corresponde exactement au nombre de cards affichées.
+    const clinicalSeverities: InteractionAlert['severite'][] = ['contre_indication', 'majeure', 'moderee', 'mineure'];
+    const nbSignaled = interactionAlerts.filter(a => clinicalSeverities.includes(a.severite)).length;
     const description =
       overallSeverity === 'dangerous'
         ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé`
         : overallSeverity === 'attention'
-          ? `${nbMaj} interaction(s) signalée(s) — Précautions requises`
+          ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
           : reasons.length > 0
             ? reasons[0]
             : selectedMeds.length === 1
