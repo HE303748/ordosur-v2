@@ -834,62 +834,87 @@ function CheckerView({
                       </span>
                     </div>
                   ) : (
-                    <div className="space-y-2">
-                      {interactionAlerts
-                        .sort((a, b) => {
-                          const order = { contre_indication: 0, majeure: 1, moderee: 2, mineure: 3, non_classee: 4, info: 5 };
-                          return order[a.severite] - order[b.severite];
-                        })
-                        .map((alert, idx) => {
-                          const cls = {
-                            contre_indication: 'bg-red-50 border-red-200 text-red-900',
-                            majeure:           'bg-orange-50 border-orange-200 text-orange-900',
-                            moderee:           'bg-blue-50 border-blue-200 text-blue-900',
-                            mineure:           'bg-yellow-50 border-yellow-200 text-yellow-900',
-                            non_classee:       'bg-slate-50 border-slate-200 text-slate-700',
-                            info:              'bg-slate-50 border-slate-200 text-slate-700',
-                          }[alert.severite];
-                          const badge = {
-                            contre_indication: 'bg-red-100 text-red-800',
-                            majeure:           'bg-orange-100 text-orange-800',
-                            moderee:           'bg-blue-100 text-blue-800',
-                            mineure:           'bg-yellow-100 text-yellow-800',
-                            non_classee:       'bg-slate-200 text-slate-700',
-                            info:              'bg-slate-200 text-slate-700',
-                          }[alert.severite];
-                          const icons = {
-                            contre_indication: '🔴',
-                            majeure:           '🟠',
-                            moderee:           '🔵',
-                            mineure:           '🟡',
-                            non_classee:       'ℹ️',
-                            info:              'ℹ️',
-                          };
-                          const sevLabel = {
-                            contre_indication: 'Contre-indication',
-                            majeure:           'Majeure',
-                            moderee:           'Modérée',
-                            mineure:           'Mineure',
-                            non_classee:       'Sévérité non documentée',
-                            info:              'Données limitées',
-                          }[alert.severite];
-                          return (
-                            <div key={idx} className={`px-4 py-3 border rounded-xl ${cls}`}>
-                              <div className="flex items-start gap-2">
-                                <span className="text-base flex-shrink-0">{icons[alert.severite]}</span>
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${badge}`}>
-                                      {sevLabel}
-                                    </span>
-                                    <span className="text-xs font-semibold">{alert.involved.join(' + ')}</span>
-                                  </div>
-                                  <p className="text-xs leading-relaxed opacity-90">{alert.description}</p>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
+                    <div className="space-y-3">
+                      {/* ── Sprint #3.0.9 — Aperçu compact ──────────────────
+                          Ligne résumé + pastilles courtes (avec tooltip).
+                          Analyse détaillée complète reste dans le bandeau du bas
+                          déclenché par "Analyser" (bloc {result && ...} plus bas). */}
+
+                      {/* Partie 1 — Ligne résumé */}
+                      {(() => {
+                        const cnt = { contre_indication: 0, majeure: 0, moderee: 0, mineure: 0, non_classee: 0, info: 0 };
+                        for (const a of interactionAlerts) cnt[a.severite]++;
+                        const totalInter = cnt.contre_indication + cnt.majeure + cnt.moderee + cnt.mineure + cnt.non_classee;
+                        if (totalInter === 0) return null;
+                        const parts: string[] = [];
+                        if (cnt.contre_indication) parts.push(`${cnt.contre_indication} contre-indication${cnt.contre_indication > 1 ? 's' : ''}`);
+                        if (cnt.majeure)           parts.push(`${cnt.majeure} majeure${cnt.majeure > 1 ? 's' : ''}`);
+                        if (cnt.moderee)           parts.push(`${cnt.moderee} modérée${cnt.moderee > 1 ? 's' : ''}`);
+                        if (cnt.mineure)           parts.push(`${cnt.mineure} mineure${cnt.mineure > 1 ? 's' : ''}`);
+                        if (cnt.non_classee)       parts.push(`${cnt.non_classee} non documentée${cnt.non_classee > 1 ? 's' : ''}`);
+                        const hasCI = cnt.contre_indication > 0;
+                        return (
+                          <div className={`flex items-center gap-2 text-sm font-semibold ${hasCI ? 'text-red-700 dark:text-red-400' : 'text-orange-700 dark:text-orange-400'}`}>
+                            <span className="text-base flex-shrink-0">{hasCI ? '🔴' : '⚠️'}</span>
+                            <span>
+                              {totalInter} interaction{totalInter > 1 ? 's' : ''} détectée{totalInter > 1 ? 's' : ''} — {parts.join(', ')}
+                            </span>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Partie 2 — Pastilles compactes (tooltip natif sur survol) */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {interactionAlerts
+                          .filter(a => a.severite !== 'info')
+                          .sort((a, b) => {
+                            const order = { contre_indication: 0, majeure: 1, moderee: 2, mineure: 3, non_classee: 4, info: 5 };
+                            return order[a.severite] - order[b.severite];
+                          })
+                          .map((alert, idx) => {
+                            const pillCls = {
+                              contre_indication: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30',
+                              majeure:           'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-500/20 dark:text-orange-300 dark:border-orange-500/30',
+                              moderee:           'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30',
+                              mineure:           'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-300 dark:border-yellow-500/30',
+                              non_classee:       'bg-slate-100 text-slate-700 border-slate-200 dark:bg-white/[0.06] dark:text-[#94A3B8] dark:border-white/[0.08]',
+                              info:              'bg-slate-100 text-slate-700 border-slate-200 dark:bg-white/[0.06] dark:text-[#94A3B8] dark:border-white/[0.08]',
+                            }[alert.severite];
+                            const dotCls = {
+                              contre_indication: 'bg-red-500',
+                              majeure:           'bg-orange-500',
+                              moderee:           'bg-blue-500',
+                              mineure:           'bg-yellow-500',
+                              non_classee:       'bg-slate-400',
+                              info:              'bg-slate-400',
+                            }[alert.severite];
+                            return (
+                              <span
+                                key={idx}
+                                title={alert.description}
+                                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold border cursor-help ${pillCls}`}
+                              >
+                                <span className={`w-1.5 h-1.5 rounded-full ${dotCls} flex-shrink-0`} />
+                                {alert.involved.join(' + ')}
+                              </span>
+                            );
+                          })}
+                      </div>
+
+                      {/* Partie 3 — Ligne info DCI manquante (séparée du décompte d'interactions) */}
+                      {(() => {
+                        const infoAlerts = interactionAlerts.filter(a => a.severite === 'info');
+                        if (infoAlerts.length === 0) return null;
+                        const names = infoAlerts.map(a => a.involved[0]).join(', ');
+                        return (
+                          <div className="flex items-start gap-2 text-xs text-slate-500 dark:text-[#94A3B8] pt-1">
+                            <span className="flex-shrink-0">ℹ️</span>
+                            <span>
+                              {infoAlerts.length} médicament{infoAlerts.length > 1 ? 's' : ''} sans DCI mappée&nbsp;: <span className="font-medium text-slate-600 dark:text-[#E2E8F0]">{names}</span>
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
