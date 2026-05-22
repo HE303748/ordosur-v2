@@ -1365,30 +1365,45 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
       const link = `${PUBLIC_URL}/accept-invitation?type=secretaire&token=${token}`;
       setSecInviteLink(link);
 
-      // ── Sprint #3.0.11 — Envoi automatique de l'email via Resend ──────────
+      // ── Sprint #3.0.11b — Envoi automatique via Resend (fetch manuel) ─────
+      // Pattern identique à AIChat.tsx (getSession + Authorization Bearer).
+      // supabase.functions.invoke() envoyait la anon key par défaut → la fonction
+      // rejetait "Utilisateur non autorisé". Avec fetch + Bearer token, on passe
+      // explicitement le JWT du médecin → l'auth fonctionne.
       // Échec d'envoi NON bloquant : le lien reste affiché en fallback manuel.
       const medecinFullName = (user?.full_name || `${user?.prenom ?? ''} ${user?.nom ?? ''}`.trim()) || 'votre médecin';
       let emailSent = false;
       let emailError: string | null = null;
       try {
-        const { error: fnError } = await supabase.functions.invoke('send-secretaire-invitation', {
-          body: {
-            email:        emailValue,
-            prenom:       prenomValue,
-            nom:          nomValue,
-            lien:         link,
-            medecin_nom:  medecinFullName,
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error('Session expirée');
+
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-secretaire-invitation`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type':  'application/json',
+              'Authorization': `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              email:       emailValue,
+              prenom:      prenomValue,
+              nom:         nomValue,
+              lien:        link,
+              medecin_nom: medecinFullName,
+            }),
           },
-        });
-        if (fnError) {
-          emailError = fnError.message ?? 'Edge function error';
-          console.warn('[OrdoSur] send-secretaire-invitation failed (non-blocking):', fnError);
-        } else {
-          emailSent = true;
+        );
+
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(result?.error || `Erreur HTTP ${response.status}`);
         }
+        emailSent = true;
       } catch (e: unknown) {
         emailError = e instanceof Error ? e.message : String(e);
-        console.warn('[OrdoSur] send-secretaire-invitation threw (non-blocking):', e);
+        console.warn('[OrdoSur] send-secretaire-invitation failed (non-blocking):', emailError);
       }
 
       setSecMsg({
