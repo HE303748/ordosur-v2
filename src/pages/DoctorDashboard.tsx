@@ -1350,16 +1350,54 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
     setSecMsg(null);
     setSecInviteLink(null);
     try {
+      // Capture des valeurs AVANT le reset des inputs (utilisées pour l'email Resend ci-dessous)
+      const emailValue  = secEmail.trim();
+      const prenomValue = secPrenom.trim() || null;
+      const nomValue    = secNom.trim() || null;
+
       const { data: token, error } = await supabase.rpc('invite_secretaire', {
         p_org_id: user.org_id,
-        p_email: secEmail.trim(),
-        p_prenom: secPrenom.trim() || null,
-        p_nom: secNom.trim() || null,
+        p_email:  emailValue,
+        p_prenom: prenomValue,
+        p_nom:    nomValue,
       });
       if (error) throw error;
       const link = `${PUBLIC_URL}/accept-invitation?type=secretaire&token=${token}`;
       setSecInviteLink(link);
-      setSecMsg({ type: 'success', text: '✓ Invitation créée. Partagez le lien avec votre secrétaire.' });
+
+      // ── Sprint #3.0.11 — Envoi automatique de l'email via Resend ──────────
+      // Échec d'envoi NON bloquant : le lien reste affiché en fallback manuel.
+      const medecinFullName = (user?.full_name || `${user?.prenom ?? ''} ${user?.nom ?? ''}`.trim()) || 'votre médecin';
+      let emailSent = false;
+      let emailError: string | null = null;
+      try {
+        const { error: fnError } = await supabase.functions.invoke('send-secretaire-invitation', {
+          body: {
+            email:        emailValue,
+            prenom:       prenomValue,
+            nom:          nomValue,
+            lien:         link,
+            medecin_nom:  medecinFullName,
+          },
+        });
+        if (fnError) {
+          emailError = fnError.message ?? 'Edge function error';
+          console.warn('[OrdoSur] send-secretaire-invitation failed (non-blocking):', fnError);
+        } else {
+          emailSent = true;
+        }
+      } catch (e: unknown) {
+        emailError = e instanceof Error ? e.message : String(e);
+        console.warn('[OrdoSur] send-secretaire-invitation threw (non-blocking):', e);
+      }
+
+      setSecMsg({
+        type: 'success',
+        text: emailSent
+          ? `✓ Invitation envoyée à ${emailValue}. Si elle ne le reçoit pas, partagez le lien ci-dessous.`
+          : `✓ Invitation créée. Email non envoyé${emailError ? ` (${emailError})` : ''} — partagez le lien ci-dessous manuellement.`,
+      });
+
       setSecEmail(''); setSecPrenom(''); setSecNom('');
       loadSecretaires();
     } catch (err: unknown) {
