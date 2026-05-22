@@ -1,12 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
+import { PUBLIC_URL } from '../lib/config';
 import type { Organization, Doctor } from '../lib/supabase';
-
-// Sprint #3.0.3 — URL publique pour les redirects email Supabase.
-// Hardcodée sur ordosur.com pour ne pas hériter du domaine Vercel preview
-// quand l'utilisateur arrive sur ordosur-v2.vercel.app (window.location.origin
-// renvoyait l'URL preview → lien email cassé). Override possible via VITE_PUBLIC_URL.
-const PUBLIC_URL = import.meta.env.VITE_PUBLIC_URL || 'https://ordosur.com';
 
 // ─── TYPES EXPORTÉS ──────────────────────────────────────────────────────────
 

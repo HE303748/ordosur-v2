@@ -10,6 +10,7 @@ import {
 import { generateOrdonnancePdf } from '../lib/pdfService';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
+import { PUBLIC_URL } from '../lib/config';
 import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { PatientForm } from '../components/PatientForm';
@@ -1356,7 +1357,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
         p_nom: secNom.trim() || null,
       });
       if (error) throw error;
-      const link = `${window.location.origin}/accept-invitation?type=secretaire&token=${token}`;
+      const link = `${PUBLIC_URL}/accept-invitation?type=secretaire&token=${token}`;
       setSecInviteLink(link);
       setSecMsg({ type: 'success', text: '✓ Invitation créée. Partagez le lien avec votre secrétaire.' });
       setSecEmail(''); setSecPrenom(''); setSecNom('');

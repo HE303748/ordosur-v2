@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { PageTransition } from '../../../components/ui/PageTransition';
 import { supabase } from '../../../lib/supabase';
+import { PUBLIC_URL } from '../../../lib/config';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -117,8 +118,8 @@ function InviteModal({ orgId, onClose }: { orgId: string; onClose: () => void })
       const token = data?.token as string | undefined;
       setInviteLink(
         token
-          ? `${window.location.origin}/accept-invitation?token=${token}`
-          : `${window.location.origin}/accept-invitation`
+          ? `${PUBLIC_URL}/accept-invitation?token=${token}`
+          : `${PUBLIC_URL}/accept-invitation`
       );
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Erreur lors de l'invitation");

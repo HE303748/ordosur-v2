@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
+import { PUBLIC_URL } from '../lib/config';
 import {
   Activity, Lock, Eye, EyeOff, CheckCircle,
   AlertCircle, ArrowRight, Loader2,
@@ -224,7 +225,7 @@ export function AcceptInvitationPage() {
         email:    invitation.email,
         password: pwd,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${PUBLIC_URL}/auth/callback`,
           // Sprint #3.0.1 — prenom/nom in user_metadata so {{ .Data.prenom }} renders in email templates.
           data: {
             role:   isSecretaire ? 'secretaire' : 'doctor',
