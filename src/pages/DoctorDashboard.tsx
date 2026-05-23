@@ -17,6 +17,7 @@ import { PatientForm } from '../components/PatientForm';
 import { PrescriptionFormModal } from '../components/PrescriptionFormModal';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
+import { PatientImportModal } from '../components/PatientImportModal';
 import {
   MonthlyInteractionsChart, RiskDistributionChart,
   TopMedicationsSection, RecentActivityTimeline, AllMedicationsHistory,
@@ -418,6 +419,7 @@ interface PatientsViewProps {
   selectedPatient: Patient | null;
   setSelectedPatient: (p: Patient | null) => void;
   onAddPatient: () => void;
+  onImportPatients: () => void;
   onEditPatient: (p: Patient) => void;
   onDeletePatient: (id: string) => void;
   onNavigateToChecker: () => void;
@@ -430,7 +432,7 @@ interface PatientsViewProps {
 
 function PatientsView({
   patients, selectedPatient, setSelectedPatient,
-  onAddPatient, onEditPatient, onDeletePatient, onNavigateToChecker,
+  onAddPatient, onImportPatients, onEditPatient, onDeletePatient, onNavigateToChecker,
   patientOrdonnances, loadPatientOrdonnances,
   showMedicationHistory, setShowMedicationHistory, resetAnalysis,
 }: PatientsViewProps) {
@@ -456,13 +458,23 @@ function PatientsView({
         <div className="px-4 pt-4 pb-3 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients</h2>
-            <button
-              onClick={onAddPatient}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00A86B] text-white rounded-xl text-xs font-semibold hover:bg-[#006B47] transition-colors"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Nouveau
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={onImportPatients}
+                title="Importer des patients depuis Excel"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white dark:bg-[#1E293B] border border-[#E5E5E0] dark:border-white/[0.1] text-[#475569] dark:text-[#94A3B8] rounded-xl text-xs font-semibold hover:border-[#00A86B] hover:text-[#00A86B] transition-colors"
+              >
+                <Download className="w-3.5 h-3.5 rotate-180" />
+                Importer
+              </button>
+              <button
+                onClick={onAddPatient}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00A86B] text-white rounded-xl text-xs font-semibold hover:bg-[#006B47] transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Nouveau
+              </button>
+            </div>
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -1800,6 +1812,7 @@ export function DoctorDashboard() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showPatientModal, setShowPatientModal] = useState(false);
+  const [showImportPatientsModal, setShowImportPatientsModal] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
   const [patientSearchTerm, setPatientSearchTerm] = useState('');
   const [showPatientDropdown, setShowPatientDropdown] = useState(false);
@@ -2414,6 +2427,7 @@ export function DoctorDashboard() {
                 selectedPatient={selectedPatient}
                 setSelectedPatient={setSelectedPatient}
                 onAddPatient={openAddPatient}
+                onImportPatients={() => setShowImportPatientsModal(true)}
                 onEditPatient={p => { setEditingPatient(p); setShowPatientModal(true); }}
                 onDeletePatient={handleDeletePatient}
                 onNavigateToChecker={navigateToChecker}
@@ -2533,6 +2547,20 @@ export function DoctorDashboard() {
           onCancel={() => { setShowPatientModal(false); setEditingPatient(null); }}
         />
       </Modal>
+
+      {/* Sprint #3.1.0 — Import patients depuis Excel */}
+      {user?.org_id && (
+        <PatientImportModal
+          isOpen={showImportPatientsModal}
+          onClose={() => setShowImportPatientsModal(false)}
+          orgId={user.org_id}
+          existingPatients={patients}
+          onImported={(count) => {
+            showToast(`${count} patient(s) importé(s) avec succès`, 'success');
+            loadPatients();
+          }}
+        />
+      )}
 
       {selectedPatient && (
         <PrescriptionFormModal

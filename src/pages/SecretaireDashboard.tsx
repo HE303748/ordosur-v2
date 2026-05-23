@@ -4,13 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Calendar, FileText, LogOut, Activity,
   Search, ChevronLeft, ChevronRight,
-  Phone, Mail, User, Clock,
+  Phone, Mail, User, Clock, Upload,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient } from '../lib/supabase';
 import { AgendaView } from '../components/ui/AgendaView';
 import { PageTransition } from '../components/ui/PageTransition';
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
+import { PatientImportModal } from '../components/PatientImportModal';
 
 /* ── Types ──────────────────────────────────────────────────────────────────── */
 interface Ordonnance {
@@ -128,8 +129,14 @@ function SecretaireSidebar({
   );
 }
 
-/* ── Patients view (read-only) ──────────────────────────────────────────────── */
-function PatientsView({ patients, loading }: { patients: Patient[]; loading: boolean }) {
+/* ── Patients view (read-only + import) ──────────────────────────────────────── */
+function PatientsView({
+  patients, loading, onImportPatients,
+}: {
+  patients: Patient[];
+  loading: boolean;
+  onImportPatients: () => void;
+}) {
   const [search, setSearch] = useState('');
   const filtered = patients.filter(p =>
     `${p.prenom} ${p.nom}`.toLowerCase().includes(search.toLowerCase()) ||
@@ -139,9 +146,19 @@ function PatientsView({ patients, loading }: { patients: Patient[]; loading: boo
   return (
     <PageTransition>
       <div className="p-6 max-w-4xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Patients</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Liste des patients du cabinet</p>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Patients</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Liste des patients du cabinet</p>
+          </div>
+          <button
+            onClick={onImportPatients}
+            title="Importer des patients depuis Excel"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-[#1E293B] border border-[#E5E5E0] dark:border-white/[0.1] text-[#475569] dark:text-[#94A3B8] rounded-xl text-sm font-semibold hover:border-[#00A86B] hover:text-[#00A86B] transition-colors flex-shrink-0"
+          >
+            <Upload className="w-4 h-4" />
+            Importer
+          </button>
         </div>
 
         {/* Search */}
@@ -310,6 +327,8 @@ export function SecretaireDashboard() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [patientsLoading, setPatientsLoading] = useState(true);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  // Sprint #3.1.0 — Import patients depuis Excel
+  const [showImportPatientsModal, setShowImportPatientsModal] = useState(false);
 
   const showToast = (message: string, type: ToastItem['type'] = 'success') => {
     const id = Date.now().toString();
@@ -325,19 +344,21 @@ export function SecretaireDashboard() {
     });
   };
 
-  useEffect(() => {
+  const loadPatients = async () => {
     if (!user?.org_id) return;
-    const load = async () => {
-      setPatientsLoading(true);
-      const { data } = await supabase
-        .from('patients')
-        .select('*')
-        .eq('org_id', user.org_id)
-        .order('nom');
-      setPatients((data as Patient[]) || []);
-      setPatientsLoading(false);
-    };
-    load();
+    setPatientsLoading(true);
+    const { data } = await supabase
+      .from('patients')
+      .select('*')
+      .eq('org_id', user.org_id)
+      .order('nom');
+    setPatients((data as Patient[]) || []);
+    setPatientsLoading(false);
+  };
+
+  useEffect(() => {
+    loadPatients();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.org_id]);
 
   const handleLogout = async () => {
@@ -363,7 +384,12 @@ export function SecretaireDashboard() {
       <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A]">
         <AnimatePresence mode="wait">
           {activeView === 'patients' && (
-            <PatientsView key="patients" patients={patients} loading={patientsLoading} />
+            <PatientsView
+              key="patients"
+              patients={patients}
+              loading={patientsLoading}
+              onImportPatients={() => setShowImportPatientsModal(true)}
+            />
           )}
           {activeView === 'agenda' && (
             <AgendaView key="agenda" patients={patients} showToast={showToast} />
@@ -375,6 +401,20 @@ export function SecretaireDashboard() {
       </main>
 
       <ToastManager toasts={toasts} onRemove={id => setToasts(prev => prev.filter(t => t.id !== id))} />
+
+      {/* Sprint #3.1.0 — Import patients depuis Excel */}
+      {user?.org_id && (
+        <PatientImportModal
+          isOpen={showImportPatientsModal}
+          onClose={() => setShowImportPatientsModal(false)}
+          orgId={user.org_id}
+          existingPatients={patients}
+          onImported={(count) => {
+            showToast(`${count} patient(s) importé(s) avec succès`, 'success');
+            loadPatients();
+          }}
+        />
+      )}
     </div>
   );
 }
