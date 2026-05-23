@@ -225,10 +225,21 @@ export function PatientImportModal({ isOpen, onClose, orgId, existingPatients, o
 
       // Détection souple des colonnes : on cherche par mot-clé (le médecin peut renommer
       // légèrement les en-têtes en gardant l'idée — ex: "Téléphone" sans astérisque)
-      const findCol = (sample: Record<string, unknown>, keywords: string[]): string | null => {
+      // Sprint #3.1.0b — Le paramètre excludeKeywords évite les faux positifs
+      // sur les sous-chaînes ambiguës (ex: la sous-chaîne "nom" est présente dans
+      // "Prénom" → sans exclusion, col.nom matchait "Prénom *" en premier).
+      const findCol = (
+        sample: Record<string, unknown>,
+        keywords: string[],
+        excludeKeywords: string[] = [],
+      ): string | null => {
         const keys = Object.keys(sample);
         for (const kw of keywords) {
-          const found = keys.find(k => k.toLowerCase().includes(kw.toLowerCase()));
+          const found = keys.find(k => {
+            const lk = k.toLowerCase();
+            if (!lk.includes(kw.toLowerCase())) return false;
+            return !excludeKeywords.some(ex => lk.includes(ex.toLowerCase()));
+          });
           if (found) return found;
         }
         return null;
@@ -237,7 +248,7 @@ export function PatientImportModal({ isOpen, onClose, orgId, existingPatients, o
       const sample = rows[0] ?? {};
       const col = {
         prenom:        findCol(sample, ['prénom', 'prenom']),
-        nom:           findCol(sample, ['nom']),
+        nom:           findCol(sample, ['nom'], ['prénom', 'prenom']),
         dn:            findCol(sample, ['naissance']),
         sexe:          findCol(sample, ['sexe']),
         tel:           findCol(sample, ['téléphone', 'telephone', 'tel']),
