@@ -268,32 +268,37 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
 
   return (
     <PageTransition>
-      <div className="p-6 max-w-[1400px]">
+      <div className="p-4 lg:p-6 max-w-[1400px]">
         {/* Welcome */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">
+        <div className="mb-6 lg:mb-8">
+          <h1 className="text-xl lg:text-2xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">
             Tableau de bord 👋
           </h1>
-          <p className="text-slate-500 dark:text-[#94A3B8] mt-0.5 text-sm capitalize">{today}</p>
+          <p className="text-slate-500 dark:text-[#94A3B8] mt-0.5 text-xs lg:text-sm capitalize">{today}</p>
         </div>
 
-        {/* KPI Grid */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+        {/* KPI Grid — Sprint M1 : KPI[0] Patients totaux + KPI[3] Évolution en col-span-2
+            sur mobile pour donner pleine largeur. Sur lg+, tout repasse à col-span-1
+            (comportement desktop préservé : 2 cols à lg, 4 cols à xl). */}
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 lg:gap-5 mb-6 lg:mb-8">
           {dataLoading
             ? Array.from({ length: 4 }).map((_, i) => <SkeletonKPI key={i} />)
-            : kpis.map((kpi) => {
+            : kpis.map((kpi, i) => {
               const Icon = kpi.icon;
+              const heroOnMobile = i === 0 || i === 3;
               return (
                 <div
                   key={kpi.label}
-                  className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                  className={`bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${
+                    heroOnMobile ? 'col-span-2 lg:col-span-1' : ''
+                  }`}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`w-11 h-11 ${kpi.light} rounded-xl flex items-center justify-center`}>
+                  <div className="flex items-start justify-between mb-3 lg:mb-4">
+                    <div className={`w-10 h-10 lg:w-11 lg:h-11 ${kpi.light} rounded-xl flex items-center justify-center`}>
                       <Icon className={`w-5 h-5 ${kpi.text}`} />
                     </div>
                   </div>
-                  <p className="text-3xl font-bold text-slate-900 mb-1 tabular-nums">{kpi.value}</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-slate-900 mb-1 tabular-nums">{kpi.value}</p>
                   <p className="text-sm font-semibold text-slate-700">{kpi.label}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{kpi.sub}</p>
                 </div>
@@ -303,10 +308,10 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
         </div>
 
         {/* Content grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
           {/* Recent patients — 2/3 */}
           <div className="xl:col-span-2 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.1)]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-white/[0.06]">
+            <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4 border-b border-slate-100 dark:border-white/[0.06]">
               <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients récents</h2>
               <button
                 onClick={() => onNavigate('patients')}
@@ -323,7 +328,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
                 <div
                   key={p.id}
                   onClick={() => onNavigate('patients')}
-                  className="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.04] cursor-pointer transition-colors group"
+                  className="flex items-center gap-3 lg:gap-4 px-4 lg:px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.04] active:bg-slate-100 cursor-pointer transition-colors group"
                 >
                   <PatientAvatar name={`${p.prenom} ${p.nom}`} size="sm" />
                   <div className="flex-1 min-w-0">
