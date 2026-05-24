@@ -25,6 +25,7 @@ import {
 import { EmailVerificationBanner } from '../components/EmailVerificationBanner';
 
 import { Sidebar, type ViewType } from '../components/ui/Sidebar';
+import { MobileBottomNav } from '../components/ui/MobileBottomNav';
 import { TopBar } from '../components/ui/TopBar';
 import { AIChat } from '../components/ui/AIChat';
 import { PatientAvatar } from '../components/ui/PatientAvatar';
@@ -2406,7 +2407,7 @@ export function DoctorDashboard() {
         />
         <EmailVerificationBanner />
 
-        <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A]">
+        <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0">
           <AnimatePresence mode="wait">
             {activeView === 'home' && (
               <HomeView
@@ -2518,6 +2519,13 @@ export function DoctorDashboard() {
           </AnimatePresence>
         </main>
       </div>
+
+      {/* Sprint M0 — Mobile bottom navigation (masquée sur desktop) */}
+      <MobileBottomNav
+        activeView={activeView}
+        onNavigate={setActiveView}
+        onAIChat={() => setShowAIChat(true)}
+      />
 
       {/* AI Chat panel */}
       <AnimatePresence>

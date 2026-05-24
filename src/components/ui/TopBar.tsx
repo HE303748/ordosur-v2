@@ -194,7 +194,7 @@ export function TopBar({ activeView, userInitials, patients = [], onNavigate }: 
 
   return (
     <header
-      className="h-16 flex items-center px-6 gap-4 flex-shrink-0 z-20 relative
+      className="h-14 lg:h-16 flex items-center px-3 lg:px-6 gap-2 lg:gap-4 flex-shrink-0 z-20 relative
         bg-white/95 dark:bg-[#0D1424]/95
         border-b border-slate-200/80 dark:border-white/[0.06]
         backdrop-blur-md"

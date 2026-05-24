@@ -166,7 +166,7 @@ export function Sidebar({
       animate={{ width: w }}
       transition={{ duration: 0.25, ease: 'easeInOut' }}
       style={{ backgroundColor: '#0A1628' }}
-      className="h-screen flex flex-col border-r border-white/[0.06] overflow-hidden select-none flex-shrink-0"
+      className="h-screen hidden lg:flex flex-col border-r border-white/[0.06] overflow-hidden select-none flex-shrink-0"
     >
       {/* ── Logo row ── */}
       <div className={`flex items-center border-b border-white/[0.08] flex-shrink-0 ${
