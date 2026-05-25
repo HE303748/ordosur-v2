@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
   Search, Plus, X, AlertTriangle, ShieldCheck,
   CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
   BarChart3, Heart, Users, Calendar, Trash2, CreditCard as Edit,
-  Download,
+  Download, ArrowLeft, ChevronRight,
 } from 'lucide-react';
 import { generateOrdonnancePdf } from '../lib/pdfService';
 import { useAuth } from '../contexts/AuthContext';
@@ -443,12 +443,36 @@ function PatientsView({
   showMedicationHistory, setShowMedicationHistory, resetAnalysis,
 }: PatientsViewProps) {
   const [search, setSearch] = useState('');
+  // Sprint M2 — Filtres chips (cumulables avec la recherche texte)
+  // 'all' = tous · 'recent' = ajoutés <30j · sinon = nom de pathologie
+  const [activeChip, setActiveChip] = useState<string>('all');
 
-  const filtered = search.trim().length > 0
-    ? patients.filter(p =>
-        `${p.prenom} ${p.nom}`.toLowerCase().includes(search.toLowerCase())
-      )
-    : patients;
+  // Top 5 pathologies les plus fréquentes (calculées une seule fois par changement de patients)
+  const topPathologies = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of patients) {
+      for (const path of p.pathologies ?? []) {
+        const key = path.trim();
+        if (!key || key === 'Aucune pathologie renseignée') continue;
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [patients]);
+
+  // Filtrage cumulatif : recherche texte ET chip actif
+  const RECENT_CUTOFF = useMemo(() => Date.now() - 30 * 86_400_000, []);
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return patients.filter(p => {
+      if (q.length > 0 && !`${p.prenom} ${p.nom}`.toLowerCase().includes(q)) return false;
+      if (activeChip === 'all') return true;
+      if (activeChip === 'recent') {
+        return Boolean(p.created_at && new Date(p.created_at).getTime() > RECENT_CUTOFF);
+      }
+      return (p.pathologies ?? []).some(path => path.trim() === activeChip);
+    });
+  }, [patients, search, activeChip, RECENT_CUTOFF]);
 
   const selectPatient = (p: Patient) => {
     setSelectedPatient(p);
@@ -458,13 +482,24 @@ function PatientsView({
 
   return (
     <PageTransition className="flex h-full">
-      {/* ── Left: patient list ─────────────────────────────────────────── */}
-      <div className="w-[320px] min-w-[320px] border-r border-slate-200 dark:border-white/[0.06] flex flex-col bg-white dark:bg-[#111827] h-full">
+      {/* ── LEFT pane : liste — pleine largeur mobile, 320px desktop. ──────
+          Sur mobile, masquée quand un patient est sélectionné (la fiche
+          détail prend tout l'écran via l'overlay du RIGHT pane). */}
+      <div
+        className={`w-full lg:w-[320px] lg:min-w-[320px] border-r border-slate-200 dark:border-white/[0.06] flex-col bg-white dark:bg-[#111827] h-full ${
+          selectedPatient ? 'hidden lg:flex' : 'flex'
+        }`}
+      >
         {/* Header */}
         <div className="px-4 pt-4 pb-3 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients</h2>
-            <div className="flex items-center gap-1.5">
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="min-w-0">
+              <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients</h2>
+              <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
+                {patients.length} fiche{patients.length > 1 ? 's' : ''} au total · {filtered.length} affichée{filtered.length > 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
               <button
                 onClick={onImportPatients}
                 title="Importer des patients depuis Excel"
@@ -473,9 +508,10 @@ function PatientsView({
                 <Download className="w-3.5 h-3.5 rotate-180" />
                 Importer
               </button>
+              {/* "Nouveau" → caché sur mobile, remplacé par le bouton "+" flottant */}
               <button
                 onClick={onAddPatient}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00A86B] text-white rounded-xl text-xs font-semibold hover:bg-[#006B47] transition-colors"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-[#00A86B] text-white rounded-xl text-xs font-semibold hover:bg-[#006B47] transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Nouveau
@@ -487,9 +523,33 @@ function PatientsView({
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher un patient..."
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 focus:border-[#00A86B] dark:focus:border-[#00A86B]/40"
+              placeholder="Rechercher un patient…"
+              className="w-full pl-9 pr-3 py-2.5 lg:py-2 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 focus:border-[#00A86B] dark:focus:border-[#00A86B]/40"
             />
+          </div>
+
+          {/* Sprint M2 — Filtres chips scrollables horizontalement (mobile + desktop) */}
+          <div className="-mx-4 mt-3 px-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+            <div className="flex items-center gap-1.5 pb-0.5">
+              <FilterChip
+                active={activeChip === 'all'}
+                onClick={() => setActiveChip('all')}
+                label={`Tous · ${patients.length}`}
+              />
+              <FilterChip
+                active={activeChip === 'recent'}
+                onClick={() => setActiveChip('recent')}
+                label="Récents"
+              />
+              {topPathologies.map(([name, count]) => (
+                <FilterChip
+                  key={name}
+                  active={activeChip === name}
+                  onClick={() => setActiveChip(name)}
+                  label={`${name} · ${count}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
@@ -497,7 +557,7 @@ function PatientsView({
         <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 && (
             <EmptyState
-              title="Aucun patient trouvé"
+              title={search || activeChip !== 'all' ? 'Aucun patient ne correspond' : 'Aucun patient'}
               icon={Users}
               action={
                 <button onClick={onAddPatient} className="px-4 py-2 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors">
@@ -509,11 +569,16 @@ function PatientsView({
 
           {filtered.map(p => {
             const isSelected = selectedPatient?.id === p.id;
+            const age = getPatientAge(p.date_naissance);
+            const sexeLabel = p.sexe === 'M' ? 'H' : p.sexe === 'F' ? 'F' : null;
+            const meta = [age != null ? `${age} ans` : null, sexeLabel].filter(Boolean).join(' · ');
+            const pathosToShow = (p.pathologies ?? []).filter(x => x && x !== 'Aucune pathologie renseignée').slice(0, 2);
+            const extraPathos = Math.max(0, (p.pathologies?.length ?? 0) - pathosToShow.length);
             return (
               <div
                 key={p.id}
                 onClick={() => selectPatient(p)}
-                className={`flex items-center gap-3 px-4 py-3.5 cursor-pointer transition-all border-l-[3px] group ${
+                className={`flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-all border-l-[3px] group active:bg-slate-100 dark:active:bg-white/[0.06] ${
                   isSelected
                     ? 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border-l-[#00A86B]'
                     : 'border-l-transparent hover:bg-slate-50 dark:hover:bg-white/[0.04] hover:border-l-slate-200 dark:hover:border-l-white/[0.1]'
@@ -521,14 +586,34 @@ function PatientsView({
               >
                 <PatientAvatar name={`${p.prenom} ${p.nom}`} size="sm" />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold truncate ${isSelected ? 'text-[#006B47] dark:text-[#00A86B]' : 'text-slate-900 dark:text-[#E2E8F0]'}`}>
-                    {p.prenom} {p.nom}
-                  </p>
-                  <p className="text-xs text-slate-400 dark:text-[#475569] truncate">
-                    {p.pathologies?.[0] || (p.date_naissance ? `${getPatientAge(p.date_naissance)} ans` : 'Aucune info')}
-                  </p>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className={`text-sm font-semibold truncate ${isSelected ? 'text-[#006B47] dark:text-[#00A86B]' : 'text-slate-900 dark:text-[#E2E8F0]'}`}>
+                      {p.prenom} {p.nom}
+                    </p>
+                    {meta && (
+                      <span className="text-[11px] text-slate-400 dark:text-[#475569] flex-shrink-0">{meta}</span>
+                    )}
+                  </div>
+                  {pathosToShow.length > 0 ? (
+                    <div className="flex flex-wrap items-center gap-1 mt-1.5">
+                      {pathosToShow.map(path => (
+                        <span
+                          key={path}
+                          className="px-1.5 py-0.5 bg-slate-100 dark:bg-white/[0.05] text-slate-600 dark:text-[#94A3B8] text-[10px] font-medium rounded-md truncate max-w-[140px]"
+                        >
+                          {path}
+                        </span>
+                      ))}
+                      {extraPathos > 0 && (
+                        <span className="text-[10px] text-slate-400 dark:text-slate-600">+{extraPathos}</span>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-slate-400 dark:text-[#475569] italic mt-0.5">Aucune pathologie</p>
+                  )}
                 </div>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                {/* Actions desktop (Edit/Delete) — masquées sur mobile (au profit du chevron) */}
+                <div className="hidden lg:flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   <button
                     onClick={e => { e.stopPropagation(); onEditPatient(p); }}
                     className="p-1.5 text-slate-400 hover:text-[#00A86B] hover:bg-[#E6F4EE] rounded-lg transition-colors"
@@ -542,14 +627,25 @@ function PatientsView({
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
+                {/* Chevron — visible mobile uniquement */}
+                <ChevronRight className="lg:hidden w-4 h-4 text-slate-300 dark:text-slate-700 mt-1 flex-shrink-0" />
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* ── Right: patient detail with tabs ──────────────────────────── */}
-      <div className="flex-1 overflow-hidden bg-[#F8FAFC] dark:bg-[#0A0F1E] flex flex-col">
+      {/* ── RIGHT pane : détail patient ─────────────────────────────────
+          Mobile + patient sélectionné  → fullscreen overlay (fixed inset-0 z-40)
+                                          avec barre back en haut
+          Mobile + pas de sélection     → caché
+          Desktop                       → split flex-1 normal (inchangé) */}
+      <div
+        className={`bg-[#F8FAFC] dark:bg-[#0A0F1E] flex-col overflow-hidden
+          ${selectedPatient
+            ? 'fixed inset-0 z-40 flex lg:relative lg:z-auto lg:flex-1 animate-in slide-in-from-right duration-200 lg:animate-none'
+            : 'hidden lg:flex lg:flex-1'}`}
+      >
         {!selectedPatient ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-8">
             <div className="w-20 h-20 bg-slate-100 dark:bg-white/[0.05] rounded-3xl flex items-center justify-center mb-4">
@@ -561,15 +657,63 @@ function PatientsView({
             </p>
           </div>
         ) : (
-          <PatientTabs
-            patient={selectedPatient}
-            ordonnances={patientOrdonnances}
-            onEdit={() => onEditPatient(selectedPatient)}
-            onNavigateToChecker={onNavigateToChecker}
-          />
+          <>
+            {/* Barre back mobile — invisible sur desktop */}
+            <div className="lg:hidden flex items-center gap-3 px-3 py-2.5 bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-white/[0.06] flex-shrink-0">
+              <button
+                onClick={() => setSelectedPatient(null)}
+                className="p-2 -ml-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.06] active:bg-slate-200 transition-colors"
+                aria-label="Retour à la liste"
+              >
+                <ArrowLeft className="w-5 h-5 text-[#0A1628] dark:text-[#E2E8F0]" />
+              </button>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-[#0A1628] dark:text-[#E2E8F0] truncate">
+                  Dr. {selectedPatient.prenom} {selectedPatient.nom}
+                </p>
+                <p className="text-[11px] text-slate-500 dark:text-[#94A3B8] truncate">
+                  Fiche patient
+                </p>
+              </div>
+            </div>
+            <PatientTabs
+              patient={selectedPatient}
+              ordonnances={patientOrdonnances}
+              onEdit={() => onEditPatient(selectedPatient)}
+              onNavigateToChecker={onNavigateToChecker}
+            />
+          </>
         )}
       </div>
+
+      {/* Sprint M2 — Bouton "+" flottant (mobile uniquement), au-dessus de la bottom nav.
+          Caché quand la fiche détail est ouverte pour ne pas chevaucher la barre back. */}
+      {!selectedPatient && (
+        <button
+          onClick={onAddPatient}
+          aria-label="Nouveau patient"
+          className="fixed bottom-24 right-4 z-40 w-14 h-14 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-full shadow-lg shadow-[#00A86B]/30 flex lg:hidden items-center justify-center transition-transform active:scale-95"
+        >
+          <Plus className="w-6 h-6" />
+        </button>
+      )}
     </PageTransition>
+  );
+}
+
+// ─── M2 — Filter chip réutilisable ───────────────────────────────────────────
+function FilterChip({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex-shrink-0 active:scale-95 ${
+        active
+          ? 'bg-[#00A86B] text-white shadow-sm shadow-[#00A86B]/20'
+          : 'bg-slate-100 dark:bg-white/[0.05] text-[#475569] dark:text-[#94A3B8] hover:bg-slate-200 dark:hover:bg-white/[0.08]'
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 
