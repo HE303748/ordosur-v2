@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, BookOpen, Pill, Activity, AlertTriangle, Zap, ChevronRight,
   Info, Stethoscope, Tag, Globe, FlaskConical, X,
-  ChevronLeft, ChevronDown, Filter, Hash,
+  ChevronLeft, ChevronDown, Filter, Hash, ArrowLeft,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
@@ -231,12 +231,15 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
           )}
         </div>
         <button onClick={onClose}
-          className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-lg transition-colors">
-          <X className="w-4 h-4" />
+          aria-label="Fermer"
+          className="p-2 lg:p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.07] active:bg-slate-200 rounded-lg transition-colors flex-shrink-0">
+          {/* M7 — ArrowLeft mobile (geste back natif) / X desktop (close panneau) */}
+          <ArrowLeft className="w-5 h-5 lg:hidden" />
+          <X className="w-4 h-4 hidden lg:block" />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-5 lg:space-y-6">
 
         {/* ── 1. INFORMATIONS DU MÉDICAMENT ── */}
         <section>
@@ -473,12 +476,16 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
           <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">{path.nom_fr}</h2>
           {/* nom_en supprimé — affichage uniquement en français */}
         </div>
-        <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-lg transition-colors">
-          <X className="w-4 h-4" />
+        <button onClick={onClose}
+          aria-label="Fermer"
+          className="p-2 lg:p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.07] active:bg-slate-200 rounded-lg transition-colors flex-shrink-0">
+          {/* M7 — ArrowLeft mobile / X desktop (idem MedDetail) */}
+          <ArrowLeft className="w-5 h-5 lg:hidden" />
+          <X className="w-4 h-4 hidden lg:block" />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-5">
+      <div className="flex-1 overflow-y-auto p-4 lg:p-5 space-y-4 lg:space-y-5">
         <div className="flex flex-wrap gap-2">
           {path.icd10_code && (
             <span className="px-2.5 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300 rounded-full text-xs font-bold border border-blue-200 dark:border-blue-500/30">
@@ -743,8 +750,8 @@ export function EncyclopedieView() {
   return (
     <div className="flex flex-col h-full bg-white dark:bg-[#0A0F1E]">
       {/* ── Header ── */}
-      <div className="px-6 pt-6 pb-4 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
-        <div className="flex items-center gap-3 mb-4">
+      <div className="px-4 lg:px-6 pt-4 lg:pt-6 pb-3 lg:pb-4 border-b border-slate-100 dark:border-white/[0.06] flex-shrink-0">
+        <div className="flex items-center gap-3 mb-3 lg:mb-4">
           <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/25">
             <BookOpen className="w-5 h-5 text-white" />
           </div>
@@ -781,10 +788,14 @@ export function EncyclopedieView() {
         </div>
       </div>
 
-      {/* ── Body ── */}
+      {/* ── Body ── Sprint M7 (2/3) — master/detail mobile (pattern M2). */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left panel */}
-        <div className={`flex flex-col border-r border-slate-100 dark:border-white/[0.06] flex-shrink-0 transition-all ${hasDetail ? 'w-[340px]' : 'flex-1'}`}>
+        {/* Left panel : pleine largeur mobile (cachée si détail ouvert),
+            340px desktop quand détail / flex-1 sinon */}
+        <div className={`flex-col border-r border-slate-100 dark:border-white/[0.06] flex-shrink-0 transition-all
+          ${hasDetail
+            ? 'hidden lg:flex lg:w-[340px]'
+            : 'flex w-full lg:flex-1'}`}>
 
           {/* Search + filters */}
           <div className="p-3 border-b border-slate-100 dark:border-white/[0.06] space-y-2 flex-shrink-0">
@@ -892,16 +903,20 @@ export function EncyclopedieView() {
           }
         </div>
 
-        {/* Right: detail panel */}
+        {/* Right: detail panel.
+            Mobile + détail        → fixed inset-0 z-40 fullscreen overlay + slide-in
+            Mobile sans détail     → caché (la liste prend tout l'écran)
+            Desktop + détail       → flex-1 normal (inchangé)
+            Desktop sans détail    → placeholder centré (inchangé) */}
         <AnimatePresence mode="wait">
           {hasDetail ? (
-            <div className="flex-1 overflow-hidden">
+            <div className="fixed inset-0 z-40 flex flex-col bg-white dark:bg-[#0A0F1E] animate-in slide-in-from-right duration-200 lg:relative lg:z-auto lg:flex-1 lg:overflow-hidden lg:animate-none">
               {selectedMed  && <MedDetail  key={selectedMed.id}  med={selectedMed}   onClose={() => setSelectedMed(null)}  />}
               {selectedPath && <PathDetail key={selectedPath.id} path={selectedPath} onClose={() => setSelectedPath(null)} />}
             </div>
           ) : (
             <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="flex-1 flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
+              className="hidden lg:flex flex-1 flex-col items-center justify-center text-slate-300 dark:text-slate-700">
               <BookOpen className="w-16 h-16 mb-4 opacity-30" />
               <p className="text-sm font-medium">Sélectionnez un élément</p>
               <p className="text-xs mt-1 opacity-70">pour afficher les détails</p>

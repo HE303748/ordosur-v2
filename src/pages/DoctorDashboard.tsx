@@ -1189,18 +1189,21 @@ function CheckerView({
 function StatsView({ userId, doctorId }: { userId: string; doctorId: string }) {
   return (
     <PageTransition>
-      <div className="p-6 max-w-[1400px] space-y-6">
+      {/* Sprint M7 (1/3) — Stats : juste paddings/gaps responsive.
+          Les graphiques Recharts utilisent déjà <ResponsiveContainer width="100%"> donc
+          ils s'adaptent automatiquement à la largeur mobile. Rien d'autre à changer. */}
+      <div className="p-4 lg:p-6 max-w-[1400px] space-y-4 lg:space-y-6">
         <div>
           <h2 className="text-xl font-bold text-slate-900 tracking-tight">Statistiques</h2>
           <p className="text-slate-500 text-sm mt-0.5">Analyse de votre activité médicale</p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           <div className="lg:col-span-2">
             <MonthlyInteractionsChart doctorId={doctorId} />
           </div>
           <RiskDistributionChart doctorId={doctorId} />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
           <AllMedicationsHistory doctorId={doctorId} />
           <TopMedicationsSection doctorId={doctorId} />
           <RecentActivityTimeline doctorId={doctorId} />

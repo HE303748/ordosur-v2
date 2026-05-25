@@ -602,7 +602,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
 
     return (
       <PageTransition>
-        <div className="p-6 max-w-5xl mx-auto">
+        <div className="p-4 lg:p-6 max-w-5xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -708,7 +708,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
 
   return (
     <PageTransition>
-      <div className="p-6 max-w-5xl mx-auto">
+      <div className="p-4 lg:p-6 max-w-5xl mx-auto">
         {/* Back button */}
         <button
           onClick={() => setView('list')}
@@ -795,7 +795,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
 
               {(useManualPatient || !selectedPatient) && (
                 <div className="mt-3 space-y-2">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <input
                       value={manualPatient.prenom}
                       onChange={e => setManualPatient(p => ({ ...p, prenom: e.target.value }))}
@@ -906,7 +906,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="grid grid-cols-2 gap-2 pb-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pb-2">
                         {[
                           { key: 'prenom',     label: 'Prénom',      icon: User },
                           { key: 'nom',        label: 'Nom',         icon: User },
@@ -1009,17 +1009,17 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
               >
                 {/* Preview header */}
-                <div className="flex items-center justify-between p-5 border-b border-slate-100">
+                <div className="flex items-center justify-between p-4 lg:p-5 border-b border-slate-100">
                   <h3 className="font-bold text-slate-800">Aperçu du certificat</h3>
-                  <button onClick={() => setShowPreview(false)} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
+                  <button onClick={() => setShowPreview(false)} className="p-2 lg:p-1.5 text-slate-400 hover:text-slate-600 active:bg-slate-200 rounded-lg hover:bg-slate-100 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
                 {/* Preview content */}
-                <div className="p-6">
+                <div className="p-4 lg:p-6">
                   {/* Simulated A4 preview */}
-                  <div className="border border-slate-200 rounded-xl p-8 bg-white shadow-inner font-sans">
+                  <div className="border border-slate-200 rounded-xl p-4 lg:p-8 bg-white shadow-inner font-sans">
                     {/* Header */}
                     <div className="flex justify-between items-start mb-4">
                       <div>
