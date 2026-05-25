@@ -55,7 +55,7 @@ function ResumeTab({ patient }: { patient: Patient }) {
   return (
     <div className="space-y-4">
       {/* Identity card */}
-      <div className="bg-slate-50 dark:bg-white/[0.04] rounded-2xl p-5 border border-slate-100 dark:border-white/[0.06]">
+      <div className="bg-slate-50 dark:bg-white/[0.04] rounded-2xl p-4 lg:p-5 border border-slate-100 dark:border-white/[0.06]">
         <h4 className="text-xs font-bold text-slate-500 dark:text-[#475569] uppercase tracking-widest mb-3 flex items-center gap-2">
           <User className="w-3.5 h-3.5" /> Identité
         </h4>
@@ -111,7 +111,7 @@ function ResumeTab({ patient }: { patient: Patient }) {
 
       {/* Medical info */}
       {hasInfo && (
-        <div className="bg-slate-50 dark:bg-white/[0.04] rounded-2xl p-5 border border-slate-100 dark:border-white/[0.06]">
+        <div className="bg-slate-50 dark:bg-white/[0.04] rounded-2xl p-4 lg:p-5 border border-slate-100 dark:border-white/[0.06]">
           <h4 className="text-xs font-bold text-slate-500 dark:text-[#475569] uppercase tracking-widest mb-3 flex items-center gap-2">
             <Heart className="w-3.5 h-3.5 text-rose-500" /> Informations médicales
           </h4>
@@ -218,7 +218,7 @@ function OrdonnancesTab({ ordonnances }: { ordonnances: any[] }) {
         return (
           <div
             key={ord.id}
-            className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-4
+            className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-3 lg:p-4
               border border-slate-100 dark:border-white/[0.06]
               hover:border-[#00A86B]/30 dark:hover:border-[#00A86B]/30
               dark:hover:shadow-[0_0_0_1px_rgba(0,168,107,0.12)]
@@ -240,7 +240,7 @@ function OrdonnancesTab({ ordonnances }: { ordonnances: any[] }) {
                 {ord.statut || 'Créée'}
               </span>
             </div>
-            <div className="space-y-1.5 pl-10">
+            <div className="space-y-1.5 pl-8 lg:pl-10">
               {(ord.medications || []).map((med: any, idx: number) => (
                 <div key={idx} className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#00A86B] flex-shrink-0" />
@@ -286,59 +286,74 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
 
   return (
     <div className="flex flex-col h-full">
-      {/* Patient header */}
-      <div className="bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-white/[0.06] px-6 pt-5 pb-0 flex-shrink-0">
-        <div className="flex items-start gap-4 pb-4 border-b border-slate-100 dark:border-white/[0.06]">
-          <PatientAvatar name={`${patient.prenom} ${patient.nom}`} size="lg" />
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0]">{patient.prenom} {patient.nom}</h2>
-            <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-slate-500 dark:text-[#94A3B8]">
-              {patient.sexe && <span>{patient.sexe === 'M' ? '♂ Homme' : '♀ Femme'}</span>}
-              {patient.date_naissance && (
-                <>
-                  <span className="text-slate-300 dark:text-slate-700">•</span>
-                  <span>{getPatientAge(patient.date_naissance)} ans</span>
-                </>
-              )}
-              {patient.groupe_sanguin && (
-                <>
-                  <span className="text-slate-300 dark:text-slate-700">•</span>
-                  <span className="px-2 py-0.5 bg-rose-500 text-white text-xs font-bold rounded-full">
-                    {patient.groupe_sanguin}
-                  </span>
-                </>
-              )}
-            </div>
-            <div className="flex gap-3 mt-2">
-              <span className="text-xs text-slate-400 dark:text-[#475569]">
-                <span className="font-bold text-slate-700 dark:text-[#94A3B8]">{ordonnances.length}</span> ordonnances
-              </span>
-              {(patient.allergies_medicaments?.length ?? 0) > 0 && (
-                <span className="text-xs text-red-500 font-semibold">
-                  ⚠ {patient.allergies_medicaments!.length} allergie(s)
+      {/* Patient header — reflow vertical mobile / horizontal desktop */}
+      <div className="bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-white/[0.06] px-4 lg:px-6 pt-4 lg:pt-5 pb-0 flex-shrink-0">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-3 lg:gap-4 pb-4 border-b border-slate-100 dark:border-white/[0.06]">
+          {/* Avatar + nom + méta + counters — bloc unique qui prend toute la largeur en flex-col mobile */}
+          <div className="flex items-start gap-4 flex-1 min-w-0">
+            <PatientAvatar name={`${patient.prenom} ${patient.nom}`} size="lg" />
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg lg:text-xl font-bold text-slate-900 dark:text-[#E2E8F0] truncate">{patient.prenom} {patient.nom}</h2>
+              <div className="flex flex-wrap items-center gap-2 mt-1 text-sm text-slate-500 dark:text-[#94A3B8]">
+                {patient.sexe && <span>{patient.sexe === 'M' ? '♂ Homme' : '♀ Femme'}</span>}
+                {patient.date_naissance && (
+                  <>
+                    <span className="text-slate-300 dark:text-slate-700">•</span>
+                    <span>{getPatientAge(patient.date_naissance)} ans</span>
+                  </>
+                )}
+                {patient.groupe_sanguin && (
+                  <>
+                    <span className="text-slate-300 dark:text-slate-700">•</span>
+                    <span className="px-2 py-0.5 bg-rose-500 text-white text-xs font-bold rounded-full">
+                      {patient.groupe_sanguin}
+                    </span>
+                  </>
+                )}
+                {patient.telephone && (
+                  <>
+                    <span className="text-slate-300 dark:text-slate-700">•</span>
+                    <span className="inline-flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      <a href={`tel:${patient.telephone}`} className="hover:text-[#00A86B] transition-colors">{patient.telephone}</a>
+                    </span>
+                  </>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
+                <span className="text-xs text-slate-400 dark:text-[#475569]">
+                  <span className="font-bold text-slate-700 dark:text-[#94A3B8]">{ordonnances.length}</span> ordonnances
                 </span>
-              )}
+                {(patient.allergies_medicaments?.length ?? 0) > 0 && (
+                  <span className="text-xs text-red-500 font-semibold">
+                    ⚠ {patient.allergies_medicaments!.length} allergie(s)
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-          <div className="flex gap-2 flex-shrink-0">
+
+          {/* Boutons — full-width row mobile / compact à droite desktop */}
+          <div className="flex gap-2 w-full lg:w-auto flex-shrink-0">
             <button
               onClick={onEdit}
-              className="p-2 bg-slate-100 dark:bg-white/[0.07] hover:bg-slate-200 dark:hover:bg-white/[0.12] text-slate-600 dark:text-[#94A3B8] rounded-xl transition-colors"
+              className="p-2.5 lg:p-2 bg-slate-100 dark:bg-white/[0.07] hover:bg-slate-200 dark:hover:bg-white/[0.12] active:bg-slate-300 text-slate-600 dark:text-[#94A3B8] rounded-xl transition-colors flex-shrink-0"
               title="Modifier"
+              aria-label="Modifier"
             >
               <Edit className="w-4 h-4" />
             </button>
             <button
               onClick={onNavigateToChecker}
-              className="px-3 py-2 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5"
+              className="flex-1 lg:flex-none px-3 py-2.5 lg:py-2 bg-[#00A86B] hover:bg-[#006B47] active:bg-[#006B47] text-white rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
             >
               💊 Prescrire
             </button>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-0 -mb-px mt-1">
+        {/* Tabs — scrollables horizontalement sur mobile (5 tabs débordent < 400px) */}
+        <div className="flex gap-0 -mb-px mt-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
           {TABS.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -346,7 +361,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex items-center gap-1.5 px-4 py-3 text-xs font-semibold transition-colors ${
+                className={`relative flex items-center gap-1.5 px-3 lg:px-4 py-2.5 lg:py-3 text-xs font-semibold transition-colors flex-shrink-0 whitespace-nowrap active:bg-slate-50 dark:active:bg-white/[0.04] ${
                   isActive
                     ? 'text-[#00A86B] border-b-2 border-[#00A86B]'
                     : 'text-[#94A3B8] dark:text-[#475569] hover:text-[#475569] dark:hover:text-[#94A3B8] border-b-2 border-transparent'
@@ -370,7 +385,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker 
       </div>
 
       {/* Tab content */}
-      <div className="flex-1 overflow-y-auto p-6 bg-[#F8FAFC] dark:bg-[#0A0F1E]">
+      <div className="flex-1 overflow-y-auto p-4 lg:p-6 bg-[#F8FAFC] dark:bg-[#0A0F1E]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
