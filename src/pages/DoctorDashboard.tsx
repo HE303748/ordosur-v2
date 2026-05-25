@@ -1318,10 +1318,10 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
 
   return (
     <PageTransition>
-      <div className="p-6 max-w-5xl">
+      <div className="p-4 lg:p-6 max-w-5xl">
 
         {/* ── Header ── */}
-        <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
+        <div className="mb-4 lg:mb-6 flex items-center justify-between gap-4 flex-wrap">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">
               Historique des ordonnances
@@ -1330,9 +1330,10 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
               {loading ? '…' : `${ords.length} ordonnance${ords.length !== 1 ? 's' : ''} au total`}
             </p>
           </div>
+          {/* Sprint M5 — bouton header desktop ; sur mobile, remplacé par le "+" flottant en bas */}
           <button
             onClick={() => onNavigate('checker')}
-            className="px-4 py-2 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors flex-shrink-0"
+            className="hidden lg:flex items-center px-4 py-2 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors flex-shrink-0"
           >
             + Nouvelle ordonnance
           </button>
@@ -1375,7 +1376,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-12 text-center">
+          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-8 lg:p-12 text-center">
             <FileText className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
             <h3 className="text-lg font-bold text-slate-700 dark:text-[#94A3B8] mb-2">
               {searchTerm || timeFilter !== 'all' ? 'Aucun résultat' : 'Aucune ordonnance'}
@@ -1406,7 +1407,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
               return (
                 <div
                   key={ord.id}
-                  className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[#00A86B]/20 dark:hover:border-[#00A86B]/30 transition-all duration-200 p-5 flex flex-col gap-3"
+                  className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[#00A86B]/20 dark:hover:border-[#00A86B]/30 active:bg-slate-50 dark:active:bg-white/[0.04] transition-all duration-200 p-4 lg:p-5 flex flex-col gap-3"
                 >
                   {/* Patient + badge */}
                   <div className="flex items-start justify-between gap-3">
@@ -1455,12 +1456,16 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
                       <button
                         onClick={() => handleDownloadPdf(ord)}
                         disabled={isLoadingPdf}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#00A86B] bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border border-[#00A86B]/20 dark:border-[#00A86B]/20 rounded-lg hover:bg-[#d4eee0] dark:hover:bg-[#00A86B]/[0.18] transition-colors disabled:opacity-60"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#00A86B] bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border border-[#00A86B]/20 dark:border-[#00A86B]/20 rounded-lg hover:bg-[#d4eee0] dark:hover:bg-[#00A86B]/[0.18] active:bg-[#c6e6d6] transition-colors disabled:opacity-60"
                       >
                         {isLoadingPdf
                           ? <span className="w-3 h-3 border border-[#00A86B] border-t-[#006B47] rounded-full animate-spin" />
                           : <Download className="w-3 h-3" />}
-                        {isLoadingPdf ? 'Génération…' : 'Télécharger PDF'}
+                        {/* Sprint M5 — label compact mobile / full desktop */}
+                        {isLoadingPdf
+                          ? 'Génération…'
+                          : <><span className="lg:hidden">PDF</span><span className="hidden lg:inline">Télécharger PDF</span></>
+                        }
                       </button>
                     )}
                   </div>
@@ -1470,6 +1475,16 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
           </div>
         )}
       </div>
+
+      {/* Sprint M5 — bouton "+" flottant mobile (cohérent avec M2 Patients).
+          Au tap → navigue vers le Vérificateur où la création se fait. */}
+      <button
+        onClick={() => onNavigate('checker')}
+        aria-label="Nouvelle ordonnance"
+        className="fixed bottom-24 right-4 z-40 w-14 h-14 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-full shadow-lg shadow-[#00A86B]/30 flex lg:hidden items-center justify-center transition-transform active:scale-95"
+      >
+        <Plus className="w-6 h-6" />
+      </button>
     </PageTransition>
   );
 }
