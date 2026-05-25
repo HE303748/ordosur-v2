@@ -288,6 +288,23 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
   const [editingRdv, setEditingRdv] = useState<RendezVous | null>(null);
   const [clickedDate, setClickedDate] = useState<string | undefined>();
 
+  // Sprint M6 — Détection du breakpoint mobile (< lg = 1024px) pour forcer la vue Jour.
+  // Couvre aussi le cas resize : si l'utilisateur réduit la fenêtre depuis vue Semaine/Mois,
+  // on bascule proprement sur Jour (pas de grille cassée).
+  const [isMobile, setIsMobile] = useState<boolean>(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 1023.98px)').matches
+  );
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia('(max-width: 1023.98px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  useEffect(() => {
+    if (isMobile && view !== 'jour') setView('jour');
+  }, [isMobile, view]);
+
   const weekDays = getWeekDays(refDate);
   const today = new Date();
 
@@ -352,46 +369,58 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
     <PageTransition>
       <div className="flex flex-col h-full">
         {/* Toolbar */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[#111827] flex-shrink-0">
-          <div>
+        {/* Sprint M6 — Toolbar : reflow vertical mobile (titre / nav+switcher),
+            horizontal desktop. Switcher + "Nouveau RDV" cachés mobile (FAB en bas). */}
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3 px-4 lg:px-6 py-3 lg:py-4 border-b border-slate-200 dark:border-white/[0.06] bg-white dark:bg-[#111827] flex-shrink-0">
+          <div className="min-w-0">
             <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0]">Agenda</h2>
-            <p className="text-slate-500 dark:text-[#94A3B8] text-xs mt-0.5">{topLabel}</p>
+            <p className="text-slate-500 dark:text-[#94A3B8] text-xs mt-0.5 capitalize">{topLabel}</p>
           </div>
 
-          <div className="flex items-center gap-1 ml-4">
-            <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-xl transition-colors">
+          <div className="flex items-center gap-1 lg:ml-4 flex-shrink-0">
+            <button
+              onClick={() => navigate(-1)}
+              aria-label="Précédent"
+              className="p-2 hover:bg-slate-100 dark:hover:bg-white/[0.07] active:bg-slate-200 rounded-xl transition-colors"
+            >
               <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-[#94A3B8]" />
             </button>
             <button
               onClick={() => setRefDate(new Date())}
-              className="px-3 py-1.5 text-xs font-semibold text-[#00A86B] hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.1] rounded-xl transition-colors"
+              className="px-3 py-1.5 text-xs font-semibold text-[#00A86B] hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.1] active:bg-[#d4eee0] rounded-xl transition-colors"
             >
               Aujourd'hui
             </button>
-            <button onClick={() => navigate(1)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/[0.07] rounded-xl transition-colors">
+            <button
+              onClick={() => navigate(1)}
+              aria-label="Suivant"
+              className="p-2 hover:bg-slate-100 dark:hover:bg-white/[0.07] active:bg-slate-200 rounded-xl transition-colors"
+            >
               <ChevronRight className="w-4 h-4 text-slate-600 dark:text-[#94A3B8]" />
             </button>
+
+            {/* Switcher Semaine/Jour/Mois — desktop uniquement (mobile = Jour forcé) */}
+            <div className="hidden lg:flex items-center gap-1 ml-2 bg-slate-100 dark:bg-white/[0.05] rounded-xl p-1">
+              {(['semaine', 'jour', 'mois'] as CalView[]).map(v => (
+                <button
+                  key={v}
+                  onClick={() => setView(v)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors ${
+                    view === v
+                      ? 'bg-white dark:bg-white/[0.1] text-slate-900 dark:text-[#E2E8F0] shadow-sm'
+                      : 'text-slate-500 dark:text-[#94A3B8] hover:text-slate-700 dark:hover:text-[#E2E8F0]'
+                  }`}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="flex items-center gap-1 ml-2 bg-slate-100 dark:bg-white/[0.05] rounded-xl p-1">
-            {(['semaine', 'jour', 'mois'] as CalView[]).map(v => (
-              <button
-                key={v}
-                onClick={() => setView(v)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-colors ${
-                  view === v
-                    ? 'bg-white dark:bg-white/[0.1] text-slate-900 dark:text-[#E2E8F0] shadow-sm'
-                    : 'text-slate-500 dark:text-[#94A3B8] hover:text-slate-700 dark:hover:text-[#E2E8F0]'
-                }`}
-              >
-                {v}
-              </button>
-            ))}
-          </div>
-
+          {/* Bouton "+ Nouveau RDV" — desktop uniquement (mobile = FAB en bas à droite) */}
           <button
             onClick={() => openNew()}
-            className="ml-auto flex items-center gap-2 px-4 py-2 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
+            className="hidden lg:flex ml-auto items-center gap-2 px-4 py-2 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
             Nouveau RDV
@@ -426,6 +455,16 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
           />
         )}
       </AnimatePresence>
+
+      {/* Sprint M6 — FAB "+" flottant mobile (cohérent M2 Patients / M5 Ordonnances).
+          Au tap → ouvre RdvModal en mode création. */}
+      <button
+        onClick={() => openNew()}
+        aria-label="Nouveau rendez-vous"
+        className="fixed bottom-24 right-4 z-40 w-14 h-14 bg-[#00A86B] hover:bg-[#006B47] text-white rounded-full shadow-lg shadow-[#00A86B]/30 flex lg:hidden items-center justify-center transition-transform active:scale-95"
+      >
+        <Plus className="w-6 h-6" />
+      </button>
     </PageTransition>
   );
 }
