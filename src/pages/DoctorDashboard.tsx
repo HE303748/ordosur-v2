@@ -766,19 +766,20 @@ function CheckerView({
 }: CheckerViewProps) {
   return (
     <PageTransition>
-      <div className="p-6 max-w-[1400px]">
-        <div className="mb-6">
+      <div className="p-4 lg:p-6 max-w-[1400px]">
+        <div className="mb-4 lg:mb-6">
           <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">Vérificateur d'interactions</h2>
           <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Analysez les interactions médicamenteuses avant de prescrire</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           {/* ── Patient selector ── */}
           <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)]">
-            <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r [#00A86B]">
+            {/* Sprint M4 — fix classe Tailwind cassée : bg-gradient-to-r [#00A86B] → bg-[#00A86B] solide */}
+            <div className="px-4 lg:px-6 py-3 lg:py-4 border-b border-slate-100 bg-[#00A86B]">
               <h3 className="text-white font-bold text-base">Patient</h3>
             </div>
-            <div className="p-6">
+            <div className="p-4 lg:p-6">
               <div className="mb-5">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
@@ -874,10 +875,10 @@ function CheckerView({
 
           {/* ── Prescription builder ── */}
           <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)]">
-            <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-violet-500 to-violet-600">
+            <div className="px-4 lg:px-6 py-3 lg:py-4 border-b border-slate-100 bg-gradient-to-r from-violet-500 to-violet-600">
               <h3 className="text-white font-bold text-base">Médicaments</h3>
             </div>
-            <div className="p-6">
+            <div className="p-4 lg:p-6">
               {/* Med search */}
               <div className="mb-5">
                 <div className="relative">
@@ -969,7 +970,8 @@ function CheckerView({
                         )}
                         <button
                           onClick={() => removeMedication(med.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                          aria-label={`Retirer ${med.nom}`}
+                          className="p-2 lg:p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 rounded-lg transition-colors flex-shrink-0"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -1104,50 +1106,51 @@ function CheckerView({
           </div>
         </div>
 
-        {/* ── Result ── */}
+        {/* ── Result ── Sprint M4 : bannière de sévérité ultra-lisible sur mobile.
+            Code couleur EXISTANT préservé (emerald/amber/red) — aucun changement sémantique. */}
         {result && (
           <div
             ref={resultsRef}
-            className={`mt-6 bg-white dark:bg-[#111827] rounded-2xl shadow-sm overflow-hidden border-l-4 ${
+            className={`mt-4 lg:mt-6 bg-white dark:bg-[#111827] rounded-2xl shadow-sm overflow-hidden border-l-4 ${
               result.severity === 'safe' ? 'border-l-emerald-500' :
               result.severity === 'attention' ? 'border-l-amber-500' : 'border-l-red-500'
             }`}
           >
-            <div className={`px-6 py-5 ${
+            <div className={`px-4 lg:px-6 py-4 lg:py-5 ${
               result.severity === 'safe' ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
               result.severity === 'attention' ? 'bg-gradient-to-r from-amber-500 to-amber-600' :
               'bg-gradient-to-r from-red-500 to-red-600'
             }`}>
-              <div className="flex items-center gap-4">
-                {result.severity === 'safe' && <CheckCircle2 className="w-10 h-10 text-white flex-shrink-0" />}
-                {result.severity === 'attention' && <AlertTriangle className="w-10 h-10 text-white flex-shrink-0" />}
-                {result.severity === 'dangerous' && <X className="w-10 h-10 text-white flex-shrink-0" />}
-                <div>
-                  <h3 className="text-2xl font-black text-white uppercase tracking-tight">
+              <div className="flex items-center gap-3 lg:gap-4">
+                {result.severity === 'safe' && <CheckCircle2 className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                {result.severity === 'attention' && <AlertTriangle className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                {result.severity === 'dangerous' && <X className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tight">
                     {result.severity === 'safe' ? '✓ Sécuritaire' :
                      result.severity === 'attention' ? '⚠ Attention' : '⚠ Dangereux'}
                   </h3>
-                  <p className="text-white/90 mt-0.5 text-sm">{result.description}</p>
+                  <p className="text-white/90 mt-0.5 text-xs lg:text-sm break-words">{result.description}</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-4 lg:p-6 space-y-4 lg:space-y-5">
               {result.reasons.length > 0 && (
-                <div className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-5">
+                <div className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-4 lg:p-5">
                   <h4 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-3">Analyse détaillée</h4>
                   <ul className="space-y-2.5">
                     {result.reasons.map((r, i) => (
-                      <li key={i} className="flex items-start gap-3 text-slate-700 dark:text-[#94A3B8] text-sm">
-                        <span className="text-red-500 font-bold mt-0.5">•</span>
-                        <span>{r}</span>
+                      <li key={i} className="flex items-start gap-2.5 lg:gap-3 text-slate-700 dark:text-[#94A3B8] text-sm">
+                        <span className="text-red-500 font-bold mt-0.5 flex-shrink-0">•</span>
+                        <span className="min-w-0 break-words">{r}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
 
-              <div className="bg-slate-100 dark:bg-white/[0.04] rounded-xl p-4 border-l-4 border-slate-400 dark:border-slate-600">
+              <div className="bg-slate-100 dark:bg-white/[0.04] rounded-xl p-3 lg:p-4 border-l-4 border-slate-400 dark:border-slate-600">
                 <p className="text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
                   <strong>Avertissement :</strong> Cette analyse est indicative. Consultez le Vidal et les recommandations HAS.
                 </p>
@@ -1155,7 +1158,7 @@ function CheckerView({
 
               <div className="flex flex-col items-center gap-2 pt-2">
                 {!selectedPatient && (
-                  <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl px-4 py-2">
+                  <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl px-4 py-2 text-center">
                     ⚠️ Veuillez d'abord sélectionner un patient
                   </p>
                 )}
@@ -1166,7 +1169,7 @@ function CheckerView({
                   }}
                   variant="primary"
                   size="lg"
-                  className="px-8"
+                  className="w-full sm:w-auto px-8"
                   disabled={!selectedPatient}
                 >
                   <FileText className="w-4 h-4 mr-2" />
