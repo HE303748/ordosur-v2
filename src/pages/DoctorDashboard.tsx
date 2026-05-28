@@ -196,6 +196,8 @@ interface HomeViewProps {
     ordonnances: number;
     evolution: number;
     evolutionInsufficient: boolean;
+    // Sprint Quick Fixes A — Bug #3 : raison précise du masquage (pour libellé non-anxiogène)
+    evolutionReason: 'new_account' | 'low_volume' | null;
     interactions: number;
   };
   patients: Patient[];
@@ -260,8 +262,10 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       text:  stats.evolutionInsufficient || stats.evolution === 0
         ? 'text-slate-500'
         : stats.evolution > 0 ? 'text-emerald-600' : 'text-amber-600',
-      sub: stats.evolutionInsufficient
-        ? 'Données insuffisantes'
+      sub: stats.evolutionReason === 'new_account'
+        ? 'Cabinet en démarrage'
+        : stats.evolutionReason === 'low_volume'
+        ? 'Activité récente faible'
         : 'Nouveaux patients ce mois vs. mois précédent',
     },
   ];
@@ -904,13 +908,9 @@ function CheckerView({
                           onMouseDown={e => { e.preventDefault(); addMedication(med); }}
                           className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
-                          {/* Ligne 1 : badge pays + nom commercial */}
+                          {/* Ligne 1 : nom commercial. Sprint Quick Fixes A — Bug #2 :
+                              badge 🇲🇦 MAR retiré (polluait visuellement la recherche méd). */}
                           <div className="flex items-center gap-2 flex-wrap">
-                            {med.pays === 'MA' && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40 flex-shrink-0">
-                                🇲🇦 MAR
-                              </span>
-                            )}
                             <span className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm leading-tight">
                               {med.nom_commercial || med.nom}
                             </span>
@@ -2020,12 +2020,23 @@ export function DoctorDashboard() {
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
 
   // Stats
-  const [stats, setStats] = useState({ totalPatients: 0, ordonnances: 0, evolution: 0, evolutionInsufficient: false, interactions: 0 });
+  const [stats, setStats] = useState<{
+    totalPatients: number;
+    ordonnances: number;
+    evolution: number;
+    evolutionInsufficient: boolean;
+    evolutionReason: 'new_account' | 'low_volume' | null;
+    interactions: number;
+  }>({ totalPatients: 0, ordonnances: 0, evolution: 0, evolutionInsufficient: false, evolutionReason: null, interactions: 0 });
   const [dataLoading, setDataLoading] = useState(true);
   const [ordRefreshKey, setOrdRefreshKey] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // Auth guard
+  // Sprint Quick Fixes A — Bug #1 : on dépend de doctorProfile?.id pour que loadStats
+  // se ré-exécute quand le profil médecin finit de charger (chargement parallèle dans
+  // AuthContext). Sans ça, les KPI Ordonnances/Interactions utilisent user.id (auth UUID)
+  // au lieu de doctorProfile.id (doctors PK) → 0 lignes jusqu'à un F5 manuel.
   useEffect(() => {
     if (!user || user.role !== 'doctor') navigate('/');
     else {
@@ -2033,7 +2044,8 @@ export function DoctorDashboard() {
       loadStats();
       loadInteractionDb();
     }
-  }, [user, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, doctorProfile?.id, navigate]);
 
   // Scroll to result
   useEffect(() => {
@@ -2186,6 +2198,11 @@ export function DoctorDashboard() {
 
   const loadStats = async () => {
     if (!user) return;
+    // Sprint Quick Fixes A — Bug #1 : on attend doctorProfile pour éviter de filtrer
+    // les requêtes ordonnances/interaction_logs sur user.id (auth UUID) au lieu de
+    // doctorProfile.id (doctors PK) → résultats vides au premier render.
+    // Le useEffect re-déclenche loadStats quand doctorProfile?.id change.
+    if (!doctorProfile?.id) return;
     try {
       const now = new Date();
       const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
@@ -2230,13 +2247,19 @@ export function DoctorDashboard() {
         ? Math.min(999, Math.max(-100, Math.round(((thisMonth - lastMonth) / lastMonth) * 100)))
         : thisMonth > 0 ? 9999 : 0;
 
-      // "Données insuffisantes" si compte < 60 jours OU masse critique insuffisante
-      // (< 10 patients ajoutés sur les 2 derniers mois → un -100% n'a pas de sens).
+      // Masque l'évolution si compte < 60 jours OU masse critique insuffisante
+      // (< 10 patients sur les 2 derniers mois → un -100% n'a pas de sens).
+      // Sprint Quick Fixes A — Bug #3 : distinguer les 2 cas pour un libellé non-anxiogène
+      // (nouveau cabinet vs. activité récente faible) au lieu de "Données insuffisantes".
       const doctorCreatedAt = doctorProfile?.created_at ? new Date(doctorProfile.created_at).getTime() : null;
       const accountAgeDays = doctorCreatedAt ? (Date.now() - doctorCreatedAt) / 86_400_000 : Infinity;
-      const evolutionInsufficient = accountAgeDays < 60 || (thisMonth + lastMonth) < 10;
+      const evolutionReason: 'new_account' | 'low_volume' | null =
+        accountAgeDays < 60        ? 'new_account' :
+        (thisMonth + lastMonth) < 10 ? 'low_volume' :
+        null;
+      const evolutionInsufficient = evolutionReason !== null;
 
-      setStats({ totalPatients, ordonnances, evolution, evolutionInsufficient, interactions });
+      setStats({ totalPatients, ordonnances, evolution, evolutionInsufficient, evolutionReason, interactions });
     } catch (err) {
       console.error('[DoctorDashboard] loadStats error:', err);
     }
