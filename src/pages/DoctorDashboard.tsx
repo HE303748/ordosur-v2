@@ -74,7 +74,26 @@ interface InteractionAlert {
   severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure' | 'non_classee' | 'info';
   description: string;
   involved: string[];
+  // Volet 2 — condition_valeur exacte (libellé brut, non normalisé) pour les CI pathologie.
+  // Affichée à côté de l'alerte pour que le médecin contextualise (ex: "HTA sévère non
+  // contrôlée (PA > 180/110 mmHg)" plutôt que juste "Hypertension").
+  condition?: string;
 }
+
+// Volet 2 — Racines médicales génériques mono-mot, partagées entre maladies cliniquement
+// DISTINCTES (ex: "hypertension" ∈ artérielle ET pulmonaire ; "insuffisance" ∈ rénale,
+// cardiaque, hépatique…). Exclues du matching word-boundary des SYNONYMES pour éviter les
+// faux positifs inter-organes (un patient HTA artérielle ne doit pas déclencher une CI
+// d'hypertension pulmonaire néonatale). Valeurs déjà normalisées (sans accents, minuscules).
+// NE concerne PAS : les abréviations (hta, irc, avc…), les synonymes multi-mots
+// ("arterial hypertension"), ni le nom de la pathologie (qui garde sa logique substring).
+const GENERIC_SYNONYM_STOPLIST = new Set<string>([
+  'hypertension', 'hypotension', 'tension',
+  'insuffisance', 'deficit',
+  'cancer', 'carcinome', 'tumeur', 'neoplasie',
+  'infection', 'inflammation',
+  'syndrome', 'maladie', 'trouble', 'troubles',
+]);
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -1053,10 +1072,15 @@ function CheckerView({
                               non_classee:       'bg-slate-400',
                               info:              'bg-slate-400',
                             }[alert.severite];
+                            // Volet 2 — tooltip enrichi : préfixe la condition_valeur exacte
+                            // (CI pathologie) avant la description, pour le contexte médical.
+                            const tooltip = alert.condition
+                              ? `Condition : ${alert.condition}\n${alert.description}`
+                              : alert.description;
                             return (
                               <span
                                 key={idx}
-                                title={alert.description}
+                                title={tooltip}
                                 className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold border cursor-help ${pillCls}`}
                               >
                                 <span className={`w-1.5 h-1.5 rounded-full ${dotCls} flex-shrink-0`} />
@@ -2010,6 +2034,10 @@ export function DoctorDashboard() {
   const [loading, setLoading] = useState(false);
   const [allContraindications, setAllContraindications] = useState<DbContraindication[]>([]);
   const [interactionAlerts, setInteractionAlerts] = useState<InteractionAlert[]>([]);
+  // Volet 2 — synonymes des pathologies du patient sélectionné.
+  // Clé = nom_fr de la pathologie (tel que stocké dans patients.pathologies),
+  // valeur = liste de synonymes bruts. Chargé en 1 requête batch quand le patient change.
+  const [pathologySynonyms, setPathologySynonyms] = useState<Map<string, string[]>>(new Map());
 
   // Prescription
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
@@ -2053,6 +2081,41 @@ export function DoctorDashboard() {
       setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
   }, [result]);
+
+  // Volet 2 — Chargement batch des synonymes des pathologies du patient sélectionné.
+  // 1 seule requête .in('nom_fr', [...]) → pas de N+1. Si le patient n'a pas de pathologie
+  // ou que la requête échoue, on garde une Map vide → le moteur retombe sur le nom seul
+  // (fallback gracieux, aucun crash).
+  useEffect(() => {
+    let cancelled = false;
+    const loadSynonyms = async () => {
+      const pathos = selectedPatient?.pathologies?.filter(Boolean) ?? [];
+      if (pathos.length === 0) {
+        setPathologySynonyms(new Map());
+        return;
+      }
+      try {
+        const { data } = await supabase
+          .from('pathologies_curees')
+          .select('nom_fr, synonymes')
+          .in('nom_fr', pathos);
+        if (cancelled) return;
+        const map = new Map<string, string[]>();
+        for (const row of data ?? []) {
+          const syns = (row.synonymes ?? '')
+            .split(',')
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 0);
+          if (syns.length > 0) map.set(row.nom_fr, syns);
+        }
+        setPathologySynonyms(map);
+      } catch {
+        if (!cancelled) setPathologySynonyms(new Map());
+      }
+    };
+    loadSynonyms();
+    return () => { cancelled = true; };
+  }, [selectedPatient?.id]);
 
   // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
   useEffect(() => {
@@ -2114,11 +2177,33 @@ export function DoctorDashboard() {
 
       // ── 2. Contraindications (runs even with 1 med, requires patient) ──────
       if (selectedPatient && allContraindications.length > 0) {
-        const patientConditions = [
-          ...(selectedPatient.pathologies || []),
-          ...(selectedPatient.allergies_medicaments || []),
-          ...(selectedPatient.allergies_alimentaires || []),
-        ].map(c => norm(c));
+        // Volet 2 — Termes de test par condition patient.
+        //   • normName : nom normalisé → matching SUBSTRING bidirectionnel (logique d'origine,
+        //     inchangée → aucune régression sur les matchs existants).
+        //   • synRegexes : synonymes (pathologies uniquement) normalisés, longueur ≥ 3,
+        //     compilés en regex word-boundary \bsyn\b → matching ADDITIF strict.
+        //     Le word-boundary neutralise "tension" ≠ "hypertension" (faux positif évité).
+        //     Le synonyme étant déjà normalisé (alphanumérique + espaces), la regex est sûre.
+        const buildTerm = (raw: string, synonyms: string[]) => ({
+          normName: norm(raw),
+          synRegexes: synonyms
+            .map(s => norm(s))
+            // ≥ 3 chars (garde les abréviations HTA/IRC/AVC) ET hors stop-list
+            // (exclut les racines génériques mono-mot type "hypertension" / "insuffisance"
+            // → anti faux-positif inter-organes).
+            .filter(s => s.length >= 3 && !GENERIC_SYNONYM_STOPLIST.has(s))
+            .map(s => new RegExp(`\\b${s}\\b`)),
+        });
+
+        const conditionTerms = [
+          // Pathologies : nom + synonymes (via pathologySynonyms, fallback [] si absente)
+          ...(selectedPatient.pathologies || []).map(p =>
+            buildTerm(p, pathologySynonyms.get(p) ?? [])
+          ),
+          // Allergies : nom seul (pas de synonymes en base → comportement inchangé)
+          ...(selectedPatient.allergies_medicaments || []).map(a => buildTerm(a, [])),
+          ...(selectedPatient.allergies_alimentaires || []).map(a => buildTerm(a, [])),
+        ];
 
         for (const contra of allContraindications) {
           // dci_pattern may be pipe-separated (OR): "amoxicilline|ampicilline|..."
@@ -2133,11 +2218,17 @@ export function DoctorDashboard() {
           );
           if (matchedIdx === -1) continue;
 
-          // Check patient has the contraindicated condition
-          const condMatch = patientConditions.some(pc =>
-            pc.includes(cv) || cv.includes(pc) ||
-            (cv.length > 6 && pc.includes(cv.slice(0, Math.min(cv.length, 14))))
-          );
+          // Check patient has the contraindicated condition :
+          //   nom → substring bidirectionnel + préfixe slice-14 (inchangé)
+          //   synonymes → word-boundary uniquement (additif, anti faux-positif)
+          const condMatch = conditionTerms.some(term => {
+            const pc = term.normName;
+            if (
+              pc.includes(cv) || cv.includes(pc) ||
+              (cv.length > 6 && pc.includes(cv.slice(0, Math.min(cv.length, 14))))
+            ) return true;
+            return term.synRegexes.some(re => re.test(cv));
+          });
           if (!condMatch) continue;
 
           const key = `ci|${selectedMeds[matchedIdx].nom}|${contra.condition_valeur.slice(0, 30)}`;
@@ -2148,6 +2239,7 @@ export function DoctorDashboard() {
               severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
               description: contra.description,
               involved: [selectedMeds[matchedIdx].nom],
+              condition: contra.condition_valeur, // Volet 2 — libellé brut exact pour affichage
             });
           }
         }
@@ -2177,7 +2269,7 @@ export function DoctorDashboard() {
     };
 
     runCheck();
-  }, [selectedMeds, selectedPatient, allContraindications]);
+  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms]);
 
   // ── Data loaders ─────────────────────────────────────────────────────────
 
@@ -2519,7 +2611,11 @@ export function DoctorDashboard() {
       if (alert.severite === 'contre_indication') overallSeverity = 'dangerous';
       else if (alert.severite === 'majeure' && overallSeverity !== 'dangerous') overallSeverity = 'attention';
       else if (alert.severite === 'moderee' && overallSeverity === 'safe') overallSeverity = 'attention';
-      const prefix = alert.type === 'contraindication' ? `Contre-indication patient (${alert.involved[0]})` : alert.involved.join(' + ');
+      // Volet 2 — pour les CI, afficher la condition_valeur exacte entre le médicament
+      // et la description (contexte médical : "HTA sévère non contrôlée" vs juste "Hypertension").
+      const prefix = alert.type === 'contraindication'
+        ? `Contre-indication patient (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
+        : alert.involved.join(' + ');
       reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
 
