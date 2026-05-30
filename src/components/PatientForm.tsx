@@ -195,16 +195,18 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
     load();
   }, []);
 
-  // Recherche pathologies server-side : tolère les requêtes en anglais (nom_en), affiche
-  // strictement en français (nom_fr). Limit 30 pour ne pas surcharger le dropdown.
+  // Recherche pathologies server-side sur la table curée `pathologies_curees`
+  // (372 libellés FR propres). Tolère les requêtes en anglais / abréviations via la
+  // colonne `synonymes` (jamais affichée), mais affiche STRICTEMENT `nom_fr`.
+  // Limit 30 pour ne pas surcharger le dropdown.
   const searchPathologies = useCallback(async (q: string): Promise<string[]> => {
     // Sanitize : strip `%` et `,` pour éviter d'injecter dans le pattern ilike / la syntaxe .or()
     const sanitized = q.replace(/[%,]/g, '').trim();
     if (!sanitized) return [];
     const { data } = await supabase
-      .from('pathologies')
+      .from('pathologies_curees')
       .select('nom_fr')
-      .or(`nom_fr.ilike.%${sanitized}%,nom_en.ilike.%${sanitized}%`)
+      .or(`nom_fr.ilike.%${sanitized}%,synonymes.ilike.%${sanitized}%`)
       .order('nom_fr')
       .limit(30);
     return (data ?? []).map(r => r.nom_fr).filter((v): v is string => Boolean(v));
