@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { User, Phone, Mail, MapPin, Calendar, Heart, Plus, X, Pill, Leaf, Scissors, ClipboardList, CreditCard } from 'lucide-react';
 import { Button } from './Button';
 import { Input } from './Input';
@@ -12,11 +12,15 @@ interface PatientFormProps {
 
 const GROUPES_SANGUINS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
-// Fallbacks si le chargement DB échoue
+// Pathologies courantes en consultation au Maroc — affichées par défaut quand
+// le champ est vide. La recherche live serveur prend le relais dès 2 caractères.
 const PATHOLOGIES_FALLBACK = [
-  'Diabète type 2', 'Hypertension artérielle', 'Asthme', 'BPCO',
-  'Insuffisance cardiaque', 'Insuffisance rénale chronique', 'Épilepsie',
-  'Hypothyroïdie', 'Dépression', 'Anxiété', 'Maladie de Parkinson',
+  'Diabète type 2', 'Hypertension artérielle', 'Dyslipidémie',
+  'Asthme', 'BPCO',
+  'Insuffisance cardiaque', 'Insuffisance rénale chronique',
+  'Hypothyroïdie', 'Hyperthyroïdie',
+  'Migraine', 'Reflux gastro-œsophagien',
+  'Dépression', 'Anxiété', 'Épilepsie',
 ];
 const ALLERGIES_MED_FALLBACK = [
   'Allergie aux Pénicillines', 'Allergie aux Céphalosporines', 'Allergie aux AINS',
@@ -37,6 +41,7 @@ function BadgeSelector({
   values,
   onChange,
   placeholder,
+  asyncSearch,
 }: {
   label: string;
   icon: React.ElementType;
@@ -45,13 +50,45 @@ function BadgeSelector({
   values: string[];
   onChange: (vals: string[]) => void;
   placeholder: string;
+  // Sprint Quick Fix B — recherche server-side optionnelle (utilisée pour pathologies).
+  // Si absente, filtre client-side sur `suggestions` (comportement original — allergies).
+  asyncSearch?: (q: string) => Promise<string[]>;
 }) {
   const [input, setInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [asyncResults, setAsyncResults] = useState<string[]>([]);
 
-  const filteredSuggestions = input.length >= 1
-    ? suggestions.filter(s => s.toLowerCase().includes(input.toLowerCase()) && !values.includes(s))
-    : suggestions.filter(s => !values.includes(s)).slice(0, 8);
+  // Debounce 250ms pour ne pas spammer la DB à chaque caractère
+  useEffect(() => {
+    if (!asyncSearch) return;
+    const q = input.trim();
+    if (q.length < 2) {
+      setAsyncResults([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const results = await asyncSearch(q);
+        setAsyncResults(results);
+      } catch {
+        setAsyncResults([]);
+      }
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [input, asyncSearch]);
+
+  // Empty input → fallback suggestions. Sinon : async results si fournis, sinon filtre client.
+  const filteredSuggestions = (() => {
+    if (asyncSearch) {
+      if (input.trim().length < 2) {
+        return suggestions.filter(s => !values.includes(s)).slice(0, 8);
+      }
+      return asyncResults.filter(s => !values.includes(s));
+    }
+    return input.length >= 1
+      ? suggestions.filter(s => s.toLowerCase().includes(input.toLowerCase()) && !values.includes(s))
+      : suggestions.filter(s => !values.includes(s)).slice(0, 8);
+  })();
 
   const add = (val: string) => {
     const trimmed = val.trim();
@@ -137,22 +174,40 @@ function BadgeSelector({
 
 export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
   // ── DB suggestions ──────────────────────────────────────────────────────
-  const [dbPathologies, setDbPathologies]   = useState<string[]>(PATHOLOGIES_FALLBACK);
+  // Sprint Quick Fix B : les pathologies (48k lignes) ne sont PLUS chargées en bulk
+  // (la limite par défaut 1000 de Supabase tronquait la liste alphabétiquement).
+  // Recherche live serveur via searchPathologies ci-dessous. Le fallback hardcoded
+  // (PATHOLOGIES_FALLBACK) sert d'état vide / suggestions par défaut.
+  const dbPathologies = PATHOLOGIES_FALLBACK;
   const [dbAllergiesMed, setDbAllergiesMed] = useState<string[]>(ALLERGIES_MED_FALLBACK);
   const [dbAllergiesAlim, setDbAllergiesAlim] = useState<string[]>(ALLERGIES_ALIM_FALLBACK);
 
   useEffect(() => {
     const load = async () => {
-      const [pathRes, medRes, alimRes] = await Promise.all([
-        supabase.from('pathologies').select('nom_fr').order('nom_fr'),
+      // Allergies : tables petites, comportement inchangé (chargement initial + filtre client)
+      const [medRes, alimRes] = await Promise.all([
         supabase.from('allergies_reference').select('nom_fr').eq('type', 'medicamenteuse').order('nom_fr'),
         supabase.from('allergies_reference').select('nom_fr').eq('type', 'alimentaire').order('nom_fr'),
       ]);
-      if (pathRes.data?.length) setDbPathologies(pathRes.data.map(r => r.nom_fr));
       if (medRes.data?.length)  setDbAllergiesMed(medRes.data.map(r => r.nom_fr));
       if (alimRes.data?.length) setDbAllergiesAlim(alimRes.data.map(r => r.nom_fr));
     };
     load();
+  }, []);
+
+  // Recherche pathologies server-side : tolère les requêtes en anglais (nom_en), affiche
+  // strictement en français (nom_fr). Limit 30 pour ne pas surcharger le dropdown.
+  const searchPathologies = useCallback(async (q: string): Promise<string[]> => {
+    // Sanitize : strip `%` et `,` pour éviter d'injecter dans le pattern ilike / la syntaxe .or()
+    const sanitized = q.replace(/[%,]/g, '').trim();
+    if (!sanitized) return [];
+    const { data } = await supabase
+      .from('pathologies')
+      .select('nom_fr')
+      .or(`nom_fr.ilike.%${sanitized}%,nom_en.ilike.%${sanitized}%`)
+      .order('nom_fr')
+      .limit(30);
+    return (data ?? []).map(r => r.nom_fr).filter((v): v is string => Boolean(v));
   }, []);
 
   // ── Form state ──────────────────────────────────────────────────────────
@@ -334,9 +389,10 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
             icon={Heart}
             color="violet"
             suggestions={dbPathologies}
+            asyncSearch={searchPathologies}
             values={formData.pathologies}
             onChange={v => setFormData(prev => ({ ...prev, pathologies: v }))}
-            placeholder="Ajouter une pathologie manuellement..."
+            placeholder="Rechercher une pathologie..."
           />
 
           {/* Allergies médicaments */}
