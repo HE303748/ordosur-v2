@@ -11,6 +11,7 @@ import { generateOrdonnancePdf } from '../lib/pdfService';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
+import { fetchAllRows } from '../lib/fetchAllRows';
 import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { PatientForm } from '../components/PatientForm';
@@ -2284,36 +2285,32 @@ export function DoctorDashboard() {
   const loadPatients = async () => {
     if (!user) return;
     setDataLoading(true);
-    const { data } = await supabase
-      .from('patients').select('*').eq('org_id', user.org_id)
-      .order('created_at', { ascending: false });
-    if (data) setPatients(data);
+    // Filtré par org_id → borné par la taille de l'organisation. fetchAllRows blinde
+    // l'EXACTITUDE (plus de troncature silencieuse à 1000 pour une grosse clinique).
+    //
+    // DETTE TECHNIQUE PERF : charger tous les patients en mémoire reste acceptable jusqu'à
+    // ~2000-3000. Au-delà, il faudra une vraie pagination/recherche côté UI (lazy-load,
+    // recherche server-side) pour la performance d'affichage. On blinde l'exactitude
+    // maintenant ; le refactor UI viendra quand une clinique réelle approchera ce volume.
+    const data = await fetchAllRows<Patient>(
+      (from, to) => supabase
+        .from('patients').select('*').eq('org_id', user.org_id)
+        .order('created_at', { ascending: false })
+        .range(from, to),
+      { label: 'loadPatients' },
+    );
+    setPatients(data);
     setDataLoading(false);
   };
 
   const loadInteractionDb = async () => {
     // Bug critique — la limite 1000 par défaut de Supabase tronquait le chargement
-    // (1421 CI en base → seules 1000 chargées → ~30% des contre-indications muettes,
-    // dont la CI "Asthme aggravé par l'aspirine / AINS"). On pagine par .range() pour
-    // charger l'intégralité, robuste même si la table grossit.
-    const PAGE = 1000;
-    let allCI: DbContraindication[] = [];
-    let from = 0;
-    // Garde-fou anti boucle infinie : borne sur le nombre de pages (sécurité).
-    const MAX_PAGES = 50;
-    for (let page = 0; page < MAX_PAGES; page++) {
-      const { data, error } = await supabase
-        .from('contraindications')
-        .select('*')
-        .range(from, from + PAGE - 1);
-      if (error) {
-        console.error('[DoctorDashboard] loadInteractionDb pagination error:', error);
-        break; // fallback gracieux : on garde ce qui est déjà chargé
-      }
-      allCI = allCI.concat((data as DbContraindication[]) || []);
-      if (!data || data.length < PAGE) break; // dernière page atteinte
-      from += PAGE;
-    }
+    // (1421 CI en base → seules 1000 chargées → ~30% des contre-indications muettes).
+    // fetchAllRows pagine par .range() pour charger l'intégralité, robuste à la croissance.
+    const allCI = await fetchAllRows<DbContraindication>(
+      (from, to) => supabase.from('contraindications').select('*').range(from, to),
+      { label: 'loadInteractionDb' },
+    );
     setAllContraindications(allCI);
   };
 

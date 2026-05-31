@@ -11,6 +11,7 @@ import {
 import { jsPDF } from 'jspdf';
 import { PageTransition } from '../../../components/ui/PageTransition';
 import { supabase } from '../../../lib/supabase';
+import { fetchAllRows } from '../../../lib/fetchAllRows';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -438,15 +439,22 @@ export function ClinicStatsView({ orgId, doctors }: Props) {
       // ── Top medications table ──────────────────────────────────────────────
       if (ords.length > 0) {
         const ordIds = ords.map(o => o.id);
-        // Batch to avoid URL too long
+        // Batch par 100 pour borner la longueur d'URL du .in(). fetchAllRows pagine
+        // CHAQUE chunk → plus de troncature à 1000 lignes (100 ordonnances pouvaient
+        // dépasser 1000 lignes combinées → Top Médicaments sous-compté).
         const CHUNK = 100;
         const allLignes: Array<{ medicament_nom: string; ordonnance_id: string }> = [];
         for (let i = 0; i < ordIds.length; i += CHUNK) {
-          const { data: lignes } = await supabase
-            .from('ordonnance_lignes')
-            .select('medicament_nom, ordonnance_id')
-            .in('ordonnance_id', ordIds.slice(i, i + CHUNK));
-          if (lignes) allLignes.push(...lignes);
+          const chunkIds = ordIds.slice(i, i + CHUNK);
+          const lignes = await fetchAllRows<{ medicament_nom: string; ordonnance_id: string }>(
+            (from, to) => supabase
+              .from('ordonnance_lignes')
+              .select('medicament_nom, ordonnance_id')
+              .in('ordonnance_id', chunkIds)
+              .range(from, to),
+            { label: 'ClinicStatsView.topMeds' },
+          );
+          allLignes.push(...lignes);
         }
         const medMap = new Map<string, { count: number; ordIds: Set<string> }>();
         for (const l of allLignes) {
