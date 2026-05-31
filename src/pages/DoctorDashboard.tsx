@@ -2292,8 +2292,29 @@ export function DoctorDashboard() {
   };
 
   const loadInteractionDb = async () => {
-    const { data: contras } = await supabase.from('contraindications').select('*');
-    if (contras) setAllContraindications(contras);
+    // Bug critique — la limite 1000 par défaut de Supabase tronquait le chargement
+    // (1421 CI en base → seules 1000 chargées → ~30% des contre-indications muettes,
+    // dont la CI "Asthme aggravé par l'aspirine / AINS"). On pagine par .range() pour
+    // charger l'intégralité, robuste même si la table grossit.
+    const PAGE = 1000;
+    let allCI: DbContraindication[] = [];
+    let from = 0;
+    // Garde-fou anti boucle infinie : borne sur le nombre de pages (sécurité).
+    const MAX_PAGES = 50;
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const { data, error } = await supabase
+        .from('contraindications')
+        .select('*')
+        .range(from, from + PAGE - 1);
+      if (error) {
+        console.error('[DoctorDashboard] loadInteractionDb pagination error:', error);
+        break; // fallback gracieux : on garde ce qui est déjà chargé
+      }
+      allCI = allCI.concat((data as DbContraindication[]) || []);
+      if (!data || data.length < PAGE) break; // dernière page atteinte
+      from += PAGE;
+    }
+    setAllContraindications(allCI);
   };
 
   const loadStats = async () => {
