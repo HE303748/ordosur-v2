@@ -99,6 +99,11 @@ export interface Medicament {
   nom: string;
   nom_commercial?: string | null;
   dci?: string | null;
+  // Phase 2b — DCI canonique (INN + formes sel) pour les molécules dont le `dci` ne
+  // contient pas le nom INN matchable (ex: Aspégic dci="acétylsalicylate de lysine"
+  // → dci_canonique="aspirine acide acetylsalicylique acetylsalicylate"). NULL pour la
+  // plupart des médicaments. Retourné par la RPC search_medicaments.
+  dci_canonique?: string | null;
   forme?: string | null;
   dosage?: string | null;
   laboratoire?: string | null;

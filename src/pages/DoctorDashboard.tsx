@@ -752,7 +752,7 @@ interface CheckerViewProps {
   setShowPatientDropdown: (v: boolean) => void;
   filteredPatientsForDropdown: Patient[];
   medSearchResults: Medicament[];
-  selectedMeds: Array<{ id: string; nom: string; dci?: string | null; manual?: boolean }>;
+  selectedMeds: Array<{ id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean }>;
   medSearchTerm: string;
   setMedSearchTerm: (v: string) => void;
   showMedDropdown: boolean;
@@ -2024,7 +2024,7 @@ export function DoctorDashboard() {
 
   // Medications
   const [medSearchResults, setMedSearchResults] = useState<Medicament[]>([]);
-  const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string; dci?: string | null; manual?: boolean }>>([]);
+  const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean }>>([]);
   const [medSearchTerm, setMedSearchTerm] = useState('');
   const [showMedDropdown, setShowMedDropdown] = useState(false);
   const [medSearchLoading, setMedSearchLoading] = useState(false);
@@ -2130,6 +2130,8 @@ export function DoctorDashboard() {
       ...m,
       normalizedDCI:  norm(m.dci || ''),
       normalizedName: norm(m.nom),
+      // Phase 2b — 3e source de matching (forme sel → INN canonique). '' si absent.
+      normalizedCanonique: norm(m.dci_canonique || ''),
     }));
 
     const runCheck = async () => {
@@ -2143,7 +2145,9 @@ export function DoctorDashboard() {
       // préserver les nuances cliniques (ex: mention "surveiller INR" présente dans une
       // seule des deux versions).
       if (selectedMeds.length >= 2) {
-        const normalizedStrings = medDCIs.map(m => `${m.normalizedDCI} ${m.normalizedName}`);
+        // Phase 2b — ajoute normalizedCanonique à la chaîne (la RPC fait pattern ⊆ chaîne,
+        // donc c'est purement additif). .trim() pour éviter un espace traînant si canonique vide.
+        const normalizedStrings = medDCIs.map(m => `${m.normalizedDCI} ${m.normalizedName} ${m.normalizedCanonique}`.trim());
         const { data: interactions } = await supabase.rpc(
           'check_drug_interactions_for_meds',
           { p_med_strings: normalizedStrings }
@@ -2210,10 +2214,14 @@ export function DoctorDashboard() {
           const dciParts = contra.dci_pattern.split('|').map(p => norm(p.trim())).filter(p => p.length > 2);
           const cv = norm(contra.condition_valeur);
 
-          // Find which selected med matches this dci pattern
+          // Find which selected med matches this dci pattern.
+          // Phase 2b — normalizedCanonique en 3e source (résout les formes sel : Aspégic
+          // "acétylsalicylate de lysine" → canonique "aspirine ..."). Additif, '' si absent.
           const matchedIdx = medDCIs.findIndex(m =>
             dciParts.some(dp =>
-              m.normalizedDCI.includes(dp) || m.normalizedName.includes(dp)
+              m.normalizedDCI.includes(dp) ||
+              m.normalizedName.includes(dp) ||
+              (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp))
             )
           );
           if (matchedIdx === -1) continue;
@@ -2572,7 +2580,9 @@ export function DoctorDashboard() {
 
   const addMedication = (med: Medicament) => {
     if (!selectedMeds.some(m => m.id === med.id))
-      setSelectedMeds([...selectedMeds, { id: med.id, nom: med.nom_commercial || med.nom, dci: med.dci }]);
+      // Phase 2b — transporte dci_canonique (3e source de matching). NULL pour la
+      // plupart des médicaments → comportement inchangé.
+      setSelectedMeds([...selectedMeds, { id: med.id, nom: med.nom_commercial || med.nom, dci: med.dci, dci_canonique: med.dci_canonique ?? null }]);
     setMedSearchTerm(''); setMedSearchResults([]); setShowMedDropdown(false);
   };
 
