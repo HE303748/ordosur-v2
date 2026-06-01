@@ -458,6 +458,9 @@ interface PatientsViewProps {
   showMedicationHistory: boolean;
   setShowMedicationHistory: (v: boolean) => void;
   resetAnalysis: () => void;
+  // Passés pour l'onglet Consultations (RLS INSERT exige doctors.id, pas auth.uid)
+  doctorId?: string | null;
+  orgId?: string | null;
 }
 
 function PatientsView({
@@ -465,6 +468,7 @@ function PatientsView({
   onAddPatient, onImportPatients, onEditPatient, onDeletePatient, onNavigateToChecker,
   patientOrdonnances, loadPatientOrdonnances,
   showMedicationHistory, setShowMedicationHistory, resetAnalysis,
+  doctorId, orgId,
 }: PatientsViewProps) {
   const [search, setSearch] = useState('');
   // Sprint M2 — Filtres chips (cumulables avec la recherche texte)
@@ -2756,6 +2760,8 @@ export function DoctorDashboard() {
                 showMedicationHistory={showMedicationHistory}
                 setShowMedicationHistory={setShowMedicationHistory}
                 resetAnalysis={resetAnalysis}
+                doctorId={doctorProfile?.id ?? null}
+                orgId={user?.org_id ?? null}
               />
             )}
 
