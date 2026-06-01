@@ -705,6 +705,8 @@ function PatientsView({
               ordonnances={patientOrdonnances}
               onEdit={() => onEditPatient(selectedPatient)}
               onNavigateToChecker={onNavigateToChecker}
+              doctorId={doctorProfile?.id ?? null}
+              orgId={user?.org_id ?? null}
             />
           </>
         )}
