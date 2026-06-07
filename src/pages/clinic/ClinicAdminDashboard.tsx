@@ -16,6 +16,7 @@ import { ClinicOrdonnancesView } from './views/ClinicOrdonnancesView';
 import { ClinicStatsView } from './views/ClinicStatsView';
 import { ClinicSettingsView } from './views/ClinicSettingsView';
 import { ClinicNotificationsView } from './views/ClinicNotificationsView';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
 
 /* ── Types ──────────────────────────────────────────────────────── */
 export interface DoctorWithProfile {
@@ -168,6 +169,10 @@ export function ClinicAdminDashboard() {
         />
 
         <main className="flex-1 overflow-auto bg-slate-50 dark:bg-[#0A0F1E]">
+          <ErrorBoundary
+            fallbackTitle="Cette vue a rencontré un problème"
+            resetKey={activeView}
+          >
           <AnimatePresence mode="wait">
             {activeView === 'home' && (
               <ClinicHomeView key="home" doctors={doctors} orgId={user?.org_id} />
@@ -204,6 +209,7 @@ export function ClinicAdminDashboard() {
               <ClinicSettingsView key="settings" />
             )}
           </AnimatePresence>
+          </ErrorBoundary>
         </main>
       </div>
 

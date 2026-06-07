@@ -12,6 +12,7 @@ import { AgendaView } from '../components/ui/AgendaView';
 import { PageTransition } from '../components/ui/PageTransition';
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
 import { PatientImportModal } from '../components/PatientImportModal';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 /* ── Types ──────────────────────────────────────────────────────────────────── */
 interface Ordonnance {
@@ -382,6 +383,10 @@ export function SecretaireDashboard() {
       />
 
       <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A]">
+        <ErrorBoundary
+          fallbackTitle="Cette vue a rencontré un problème"
+          resetKey={activeView}
+        >
         <AnimatePresence mode="wait">
           {activeView === 'patients' && (
             <PatientsView
@@ -398,6 +403,7 @@ export function SecretaireDashboard() {
             <OrdonnancesView key="ordonnances" orgId={user?.org_id || ''} />
           )}
         </AnimatePresence>
+        </ErrorBoundary>
       </main>
 
       <ToastManager toasts={toasts} onRemove={id => setToasts(prev => prev.filter(t => t.id !== id))} />

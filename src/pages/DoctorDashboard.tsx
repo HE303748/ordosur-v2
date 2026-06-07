@@ -24,6 +24,7 @@ import {
   TopMedicationsSection, RecentActivityTimeline, AllMedicationsHistory,
 } from '../components/DoctorAnalytics';
 import { EmailVerificationBanner } from '../components/EmailVerificationBanner';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 import { Sidebar, type ViewType } from '../components/ui/Sidebar';
 import { MobileBottomNav } from '../components/ui/MobileBottomNav';
@@ -2731,6 +2732,10 @@ export function DoctorDashboard() {
         <EmailVerificationBanner />
 
         <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0">
+          <ErrorBoundary
+            fallbackTitle="Cette vue a rencontré un problème"
+            resetKey={activeView}
+          >
           <AnimatePresence mode="wait">
             {activeView === 'home' && (
               <HomeView
@@ -2842,6 +2847,7 @@ export function DoctorDashboard() {
               <SettingsView key="settings" navigate={navigate} user={user} doctorProfile={doctorProfile} />
             )}
           </AnimatePresence>
+          </ErrorBoundary>
         </main>
       </div>
 
