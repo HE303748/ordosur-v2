@@ -190,6 +190,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (signUpError) throw signUpError;
     if (!authData.user) throw new Error('Erreur lors de la création du compte');
 
+    // Détection "email déjà utilisé" via le SEUL retour natif de Supabase Auth
+    // (plus de dépendance à la RPC check_email_exists, révocable en anon côté DB).
+    // Deux cas couverts :
+    //   • confirmation d'email DÉSACTIVÉE → signUpError "User already registered" (déjà géré au-dessus)
+    //   • confirmation d'email ACTIVÉE  → anti-énumération : pas d'erreur, mais `identities` vide.
+    // Message volontairement compatible avec le check `.includes('already registered')`
+    // des pages d'inscription → affiche "Cette adresse email est déjà utilisée".
+    if (Array.isArray(authData.user.identities) && authData.user.identities.length === 0) {
+      throw new Error('User already registered');
+    }
+
     const userId = authData.user.id;
 
     // Utilise un RPC SECURITY DEFINER pour créer org + profil + médecin en un appel sécurisé.
