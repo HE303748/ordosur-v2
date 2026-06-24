@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, Users, UserCheck, Search, LogOut,
   X, AlertTriangle, CheckCircle2, RefreshCw, Eye,
   Stethoscope, TrendingUp, Download, CreditCard, Clock,
+  ChevronUp, ChevronDown,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,7 +22,6 @@ interface OrgRow {
   doctor_count: number;
   patient_count: number;
   last_activity: string | null;
-  // Sprint 2
   plan: 'starter' | 'pro' | 'clinique' | null;
   last_payment_at: string | null;
   next_due_date: string | null;
@@ -52,7 +52,13 @@ interface Toast {
   type: 'success' | 'error';
 }
 
+type SortKey = 'created_at' | 'patient_count' | 'doctor_count' | 'last_activity';
+type SortDir = 'asc' | 'desc';
+
 // ─── Config ──────────────────────────────────────────────────────────────────
+
+const DEFAULT_SORT_KEY: SortKey = 'created_at';
+const DEFAULT_SORT_DIR: SortDir = 'desc';
 
 const STATUS_LABEL: Record<string, string> = {
   active:    'Actif',
@@ -80,6 +86,19 @@ const PLAN_PRICE: Record<string, number> = {
   clinique: 990,
 };
 
+const TABLE_HEADERS: { label: string; sortKey?: SortKey }[] = [
+  { label: 'Organisation' },
+  { label: 'Type' },
+  { label: 'Statut' },
+  { label: 'Plan' },
+  { label: 'Médecins',      sortKey: 'doctor_count'  },
+  { label: 'Patients',      sortKey: 'patient_count' },
+  { label: 'Paiement' },
+  { label: 'Créé le',       sortKey: 'created_at'    },
+  { label: 'Dernière act.', sortKey: 'last_activity' },
+  { label: '' },
+];
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function fmtDate(iso: string | null): string {
@@ -103,13 +122,22 @@ function csvCell(v: string | number | boolean | null | undefined): string {
 function SkeletonRow() {
   return (
     <tr className="border-b border-[#F0F0EC]">
-      {Array.from({ length: 9 }).map((_, i) => (
+      {Array.from({ length: 10 }).map((_, i) => (
         <td key={i} className="px-4 py-3">
-          <div className="h-4 bg-slate-100 rounded animate-pulse" style={{ width: `${55 + i * 6}%` }} />
+          <div className="h-4 bg-slate-100 rounded animate-pulse" style={{ width: `${50 + i * 5}%` }} />
         </td>
       ))}
     </tr>
   );
+}
+
+// ─── SortIcon ────────────────────────────────────────────────────────────────
+
+function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
+  if (!active) return <span className="text-[#C4C4BB] text-[10px] select-none">↕</span>;
+  return dir === 'asc'
+    ? <ChevronUp   className="w-3 h-3 text-[#00A86B]" />
+    : <ChevronDown className="w-3 h-3 text-[#00A86B]" />;
 }
 
 // ─── AdminDashboard ───────────────────────────────────────────────────────────
@@ -118,27 +146,39 @@ export function AdminDashboard() {
   const { user, signOut } = useAuth();
 
   // Data
-  const [orgs, setOrgs] = useState<OrgRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [billing, setBilling] = useState<BillingSummary | null>(null);
+  const [orgs, setOrgs]               = useState<OrgRow[]>([]);
+  const [loading, setLoading]         = useState(true);
+  const [billing, setBilling]         = useState<BillingSummary | null>(null);
   const [billingLoading, setBillingLoading] = useState(true);
+
+  // Search
   const [search, setSearch] = useState('');
+
+  // Filtres
+  const [filterType,      setFilterType]      = useState<'' | 'cabinet' | 'clinique'>('');
+  const [filterStatus,    setFilterStatus]    = useState<'' | 'active' | 'trial' | 'comp' | 'suspended'>('');
+  const [filterOverdue,   setFilterOverdue]   = useState(false);
+  const [filterHideEmpty, setFilterHideEmpty] = useState(false);
+
+  // Tri
+  const [sortKey, setSortKey] = useState<SortKey>(DEFAULT_SORT_KEY);
+  const [sortDir, setSortDir] = useState<SortDir>(DEFAULT_SORT_DIR);
 
   // Action loading per org
   const [changingOrg, setChangingOrg] = useState<string | null>(null);
-  const [payingOrg, setPayingOrg] = useState<string | null>(null);
-  const [payMonths, setPayMonths] = useState<Record<string, number>>({});
+  const [payingOrg,   setPayingOrg]   = useState<string | null>(null);
+  const [payMonths,   setPayMonths]   = useState<Record<string, number>>({});
 
   // Toasts
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   // Confirmation suspension
-  const [confirmOrg, setConfirmOrg] = useState<OrgRow | null>(null);
+  const [confirmOrg,    setConfirmOrg]    = useState<OrgRow | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
   // Drill-down médecins
-  const [detailOrg, setDetailOrg] = useState<OrgRow | null>(null);
-  const [orgDoctors, setOrgDoctors] = useState<OrgDoctor[]>([]);
+  const [detailOrg,      setDetailOrg]      = useState<OrgRow | null>(null);
+  const [orgDoctors,     setOrgDoctors]     = useState<OrgDoctor[]>([]);
   const [doctorsLoading, setDoctorsLoading] = useState(false);
 
   // ── Helpers toast ──────────────────────────────────────────────────────────
@@ -173,7 +213,63 @@ export function AdminDashboard() {
 
   useEffect(() => { refreshAll(); }, [refreshAll]);
 
-  // ── Changement de statut (dropdown) ───────────────────────────────────────
+  // ── Filtres & Tri ─────────────────────────────────────────────────────────
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('desc'); }
+  };
+
+  const resetFilters = () => {
+    setSearch('');
+    setFilterType('');
+    setFilterStatus('');
+    setFilterOverdue(false);
+    setFilterHideEmpty(false);
+    setSortKey(DEFAULT_SORT_KEY);
+    setSortDir(DEFAULT_SORT_DIR);
+  };
+
+  const hasFilters = !!filterType || !!filterStatus || filterOverdue || filterHideEmpty
+    || !!search || sortKey !== DEFAULT_SORT_KEY || sortDir !== DEFAULT_SORT_DIR;
+
+  // ── Computed : liste filtrée + triée ──────────────────────────────────────
+
+  const filtered = useMemo(() => {
+    let result = orgs;
+
+    if (search)            result = result.filter(o => o.name.toLowerCase().includes(search.toLowerCase()));
+    if (filterType)        result = result.filter(o => o.type === filterType);
+    if (filterStatus)      result = result.filter(o => o.status === filterStatus);
+    if (filterOverdue)     result = result.filter(o => o.is_overdue);
+    if (filterHideEmpty)   result = result.filter(o => o.doctor_count > 0 || o.patient_count > 0);
+
+    return [...result].sort((a, b) => {
+      let av: number | string | null;
+      let bv: number | string | null;
+
+      if (sortKey === 'doctor_count')  { av = a.doctor_count;  bv = b.doctor_count;  }
+      else if (sortKey === 'patient_count') { av = a.patient_count; bv = b.patient_count; }
+      else if (sortKey === 'last_activity') { av = a.last_activity; bv = b.last_activity; }
+      else                             { av = a.created_at;    bv = b.created_at;    }
+
+      if (av === null && bv === null) return 0;
+      if (av === null) return 1;
+      if (bv === null) return -1;
+
+      if (typeof av === 'number' && typeof bv === 'number') {
+        return sortDir === 'asc' ? av - bv : bv - av;
+      }
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [orgs, search, filterType, filterStatus, filterOverdue, filterHideEmpty, sortKey, sortDir]);
+
+  const totalDoctors  = orgs.reduce((s, o) => s + (o.doctor_count  ?? 0), 0);
+  const totalPatients = orgs.reduce((s, o) => s + (o.patient_count ?? 0), 0);
+
+  // ── Actions ───────────────────────────────────────────────────────────────
 
   const handleStatusDropdownChange = async (org: OrgRow, newStatus: string) => {
     if (newStatus === org.status) return;
@@ -191,8 +287,6 @@ export function AdminDashboard() {
     setChangingOrg(null);
   };
 
-  // ── Confirmation suspension ────────────────────────────────────────────────
-
   const handleConfirmSuspend = async () => {
     if (!confirmOrg) return;
     setActionLoading(true);
@@ -208,8 +302,6 @@ export function AdminDashboard() {
     setActionLoading(false);
     setConfirmOrg(null);
   };
-
-  // ── Changement de plan ─────────────────────────────────────────────────────
 
   const handlePlanChange = async (org: OrgRow, plan: string | null) => {
     if (plan === (org.plan ?? '')) return;
@@ -231,8 +323,6 @@ export function AdminDashboard() {
     setChangingOrg(null);
   };
 
-  // ── Marquer payé ──────────────────────────────────────────────────────────
-
   const handleMarkPaid = async (org: OrgRow) => {
     const months = payMonths[org.org_id] ?? 1;
     setPayingOrg(org.org_id);
@@ -248,8 +338,6 @@ export function AdminDashboard() {
     setPayingOrg(null);
   };
 
-  // ── Drill-down médecins ────────────────────────────────────────────────────
-
   const openDetails = async (org: OrgRow) => {
     setDetailOrg(org);
     setOrgDoctors([]);
@@ -260,15 +348,15 @@ export function AdminDashboard() {
     setDoctorsLoading(false);
   };
 
-  // ── Export CSV ────────────────────────────────────────────────────────────
+  // ── Export CSV (liste filtrée) ─────────────────────────────────────────────
 
   const exportCsv = () => {
     const headers = [
       'Organisation', 'Type', 'Statut', 'Plan', 'Prix mensuel (MAD)',
       'Médecins', 'Patients', 'Dernier paiement', 'Prochaine échéance',
-      'En retard', 'Créé le',
+      'En retard', 'Dernière activité', 'Créé le',
     ];
-    const rows = orgs.map(o => [
+    const rows = filtered.map(o => [
       csvCell(o.name),
       csvCell(o.type),
       csvCell(STATUS_LABEL[o.status] ?? o.status),
@@ -279,6 +367,7 @@ export function AdminDashboard() {
       csvCell(fmtDate(o.last_payment_at)),
       csvCell(fmtDate(o.next_due_date)),
       csvCell(o.is_overdue ? 'Oui' : 'Non'),
+      csvCell(fmtDate(o.last_activity)),
       csvCell(fmtDate(o.created_at)),
     ].join(','));
     const csv = [headers.map(csvCell).join(','), ...rows].join('\n');
@@ -293,14 +382,6 @@ export function AdminDashboard() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-
-  // ── Computed ───────────────────────────────────────────────────────────────
-
-  const filtered = orgs.filter(o =>
-    o.name.toLowerCase().includes(search.toLowerCase()),
-  );
-  const totalDoctors  = orgs.reduce((s, o) => s + (o.doctor_count  ?? 0), 0);
-  const totalPatients = orgs.reduce((s, o) => s + (o.patient_count ?? 0), 0);
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -335,7 +416,7 @@ export function AdminDashboard() {
       {/* ── Main ── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-5">
 
-        {/* Totaux organisations */}
+        {/* Totaux */}
         <div className="grid grid-cols-3 gap-4">
           {[
             { label: 'Organisations', value: orgs.length,   icon: Building2, color: 'text-[#0A1628]' },
@@ -355,11 +436,9 @@ export function AdminDashboard() {
           ))}
         </div>
 
-        {/* Bandeau facturation MRR */}
+        {/* Bandeau MRR */}
         <div className="bg-white rounded-2xl border border-[#E5E5E0] shadow-sm overflow-hidden">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-0 divide-y sm:divide-y-0 sm:divide-x divide-[#F0F0EC]">
-
-            {/* MRR */}
+          <div className="flex flex-col sm:flex-row sm:items-center divide-y sm:divide-y-0 sm:divide-x divide-[#F0F0EC]">
             <div className="px-6 py-5 flex items-center gap-4 min-w-[220px]">
               <div className="w-10 h-10 rounded-xl bg-[#E6F4EE] flex items-center justify-center flex-shrink-0">
                 <TrendingUp className="w-5 h-5 text-[#00A86B]" />
@@ -377,14 +456,12 @@ export function AdminDashboard() {
                 }
               </div>
             </div>
-
-            {/* Compteurs statuts */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-0 divide-x divide-[#F0F0EC] flex-1">
+            <div className="flex flex-wrap sm:flex-nowrap items-center divide-x divide-[#F0F0EC] flex-1">
               {[
-                { key: 'active_count',    label: 'Actifs',     dot: 'bg-emerald-500' },
-                { key: 'trial_count',     label: 'Essai',      dot: 'bg-blue-500'    },
-                { key: 'comp_count',      label: 'Offerts',    dot: 'bg-indigo-500'  },
-                { key: 'suspended_count', label: 'Suspendus',  dot: 'bg-slate-400'   },
+                { key: 'active_count',    label: 'Actifs',    dot: 'bg-emerald-500' },
+                { key: 'trial_count',     label: 'Essai',     dot: 'bg-blue-500'    },
+                { key: 'comp_count',      label: 'Offerts',   dot: 'bg-indigo-500'  },
+                { key: 'suspended_count', label: 'Suspendus', dot: 'bg-slate-400'   },
               ].map(({ key, label, dot }) => (
                 <div key={key} className="px-5 py-5 flex flex-col items-center flex-1">
                   <div className="flex items-center gap-1.5 mb-1">
@@ -397,8 +474,6 @@ export function AdminDashboard() {
                   }
                 </div>
               ))}
-
-              {/* En retard — rouge si > 0 */}
               <div className="px-5 py-5 flex flex-col items-center flex-1">
                 <div className="flex items-center gap-1.5 mb-1">
                   <Clock className={`w-3 h-3 ${(billing?.overdue_count ?? 0) > 0 ? 'text-[#DC2626]' : 'text-[#94A3B8]'}`} />
@@ -408,11 +483,9 @@ export function AdminDashboard() {
                 </div>
                 {billingLoading
                   ? <div className="h-6 w-6 bg-slate-100 rounded animate-pulse" />
-                  : (
-                    <span className={`text-lg font-bold ${(billing?.overdue_count ?? 0) > 0 ? 'text-[#DC2626]' : 'text-[#0A1628]'}`}>
+                  : <span className={`text-lg font-bold ${(billing?.overdue_count ?? 0) > 0 ? 'text-[#DC2626]' : 'text-[#0A1628]'}`}>
                       {billing?.overdue_count ?? 0}
                     </span>
-                  )
                 }
               </div>
             </div>
@@ -420,8 +493,8 @@ export function AdminDashboard() {
         </div>
 
         {/* Barre recherche + actions */}
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="relative flex-1 min-w-[200px] max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
             <input
               type="text"
@@ -433,7 +506,7 @@ export function AdminDashboard() {
           </div>
           <button
             onClick={exportCsv}
-            disabled={loading || orgs.length === 0}
+            disabled={loading || filtered.length === 0}
             className="flex items-center gap-2 px-4 py-2.5 bg-white border border-[#E5E5E0] rounded-xl text-sm font-medium text-[#475569] hover:border-[#0A1628] transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
@@ -449,64 +522,175 @@ export function AdminDashboard() {
           </button>
         </div>
 
-        {/* Tableau */}
-        <div className="bg-white rounded-2xl border border-[#E5E5E0] shadow-sm overflow-hidden">
-          {!loading && filtered.length === 0 ? (
-            <div className="p-14 text-center">
-              <Building2 className="w-10 h-10 text-[#94A3B8] mx-auto mb-3" />
-              <p className="text-[#475569] text-sm">
-                {search
-                  ? 'Aucune organisation ne correspond à votre recherche.'
-                  : 'Aucune organisation cliente trouvée.'}
+        {/* ── Barre de filtres ── */}
+        <div className="flex flex-wrap items-center gap-2">
+
+          {/* Filtre type — segmenté */}
+          <div className="flex rounded-xl border border-[#E5E5E0] overflow-hidden bg-white text-xs">
+            {([
+              { value: '',        label: 'Tous'      },
+              { value: 'cabinet', label: 'Cabinets'  },
+              { value: 'clinique',label: 'Cliniques' },
+            ] as const).map(({ value, label }) => (
+              <button
+                key={value}
+                onClick={() => setFilterType(value)}
+                className={`px-3.5 py-2 font-medium transition-colors border-r last:border-r-0 border-[#E5E5E0] whitespace-nowrap ${
+                  filterType === value
+                    ? 'bg-[#0A1628] text-white'
+                    : 'text-[#475569] hover:bg-[#FAFAF7]'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Filtre statut — dropdown */}
+          <select
+            value={filterStatus}
+            onChange={e => setFilterStatus(e.target.value as typeof filterStatus)}
+            className="text-xs border border-[#E5E5E0] rounded-xl px-3 py-2 text-[#475569] bg-white focus:outline-none focus:ring-1 focus:ring-[#00A86B]/30 cursor-pointer"
+          >
+            <option value="">Tous les statuts</option>
+            <option value="active">Actif</option>
+            <option value="trial">Essai</option>
+            <option value="comp">Offert</option>
+            <option value="suspended">Suspendu</option>
+          </select>
+
+          {/* Toggle En retard */}
+          <button
+            onClick={() => setFilterOverdue(v => !v)}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium border transition-colors whitespace-nowrap ${
+              filterOverdue
+                ? 'bg-red-50 text-[#DC2626] border-red-200'
+                : 'bg-white text-[#475569] border-[#E5E5E0] hover:border-[#94A3B8]'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            En retard
+          </button>
+
+          {/* Toggle Masquer vides */}
+          <button
+            onClick={() => setFilterHideEmpty(v => !v)}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium border transition-colors whitespace-nowrap ${
+              filterHideEmpty
+                ? 'bg-[#E6F4EE] text-[#006B47] border-emerald-200'
+                : 'bg-white text-[#475569] border-[#E5E5E0] hover:border-[#94A3B8]'
+            }`}
+          >
+            <Eye className="w-3.5 h-3.5" />
+            Masquer vides
+          </button>
+
+          {/* Réinitialiser */}
+          <AnimatePresence>
+            {hasFilters && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.15 }}
+                onClick={resetFilters}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium text-[#475569] border border-[#E5E5E0] hover:text-[#DC2626] hover:border-red-200 hover:bg-red-50 transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+                Réinitialiser
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Compteur + tableau */}
+        <div className="space-y-2">
+
+          {/* Compteur */}
+          {!loading && (
+            <div className="flex items-center justify-between px-1">
+              <p className="text-xs text-[#475569]">
+                <span className="font-semibold text-[#0A1628]">{filtered.length}</span>
+                {' '}organisation{filtered.length !== 1 ? 's' : ''} affichée{filtered.length !== 1 ? 's' : ''}
+                {filtered.length < orgs.length && (
+                  <span className="text-[#94A3B8]"> sur {orgs.length}</span>
+                )}
               </p>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-[#FAFAF7] border-b border-[#E5E5E0]">
-                    {[
-                      'Organisation', 'Type', 'Statut', 'Plan',
-                      'Médecins', 'Patients', 'Paiement', 'Créé le', '',
-                    ].map(h => (
-                      <th
-                        key={h}
-                        className="text-left text-[11px] font-semibold text-[#475569] tracking-wider uppercase px-4 py-3 whitespace-nowrap"
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading
-                    ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
-                    : filtered.map((org, i) => {
-                        const isChanging = changingOrg === org.org_id;
-                        const isPaying  = payingOrg  === org.org_id;
-                        const months    = payMonths[org.org_id] ?? 1;
+          )}
 
-                        return (
-                          <motion.tr
-                            key={org.org_id}
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.03, duration: 0.2 }}
-                            className="border-b border-[#F0F0EC] last:border-0 hover:bg-[#FAFAF7] transition-colors"
-                          >
-                            {/* Organisation */}
-                            <td className="px-4 py-3 font-semibold text-[#0A1628] whitespace-nowrap max-w-[180px] truncate">
-                              {org.name}
-                            </td>
+          {/* Tableau */}
+          <div className="bg-white rounded-2xl border border-[#E5E5E0] shadow-sm overflow-hidden">
+            {!loading && filtered.length === 0 ? (
+              <div className="p-14 text-center">
+                <Building2 className="w-10 h-10 text-[#94A3B8] mx-auto mb-3" />
+                <p className="text-[#475569] text-sm mb-3">
+                  {hasFilters
+                    ? 'Aucune organisation ne correspond aux filtres actifs.'
+                    : 'Aucune organisation cliente trouvée.'}
+                </p>
+                {hasFilters && (
+                  <button
+                    onClick={resetFilters}
+                    className="text-xs font-medium text-[#00A86B] hover:text-[#006B47] transition-colors"
+                  >
+                    Réinitialiser les filtres
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-[#FAFAF7] border-b border-[#E5E5E0]">
+                      {TABLE_HEADERS.map(h => (
+                        <th
+                          key={h.label}
+                          onClick={() => h.sortKey && handleSort(h.sortKey)}
+                          className={`text-left text-[11px] font-semibold tracking-wider uppercase px-4 py-3 whitespace-nowrap select-none ${
+                            h.sortKey
+                              ? 'cursor-pointer hover:bg-[#F0F0EC] transition-colors'
+                              : ''
+                          } ${sortKey === h.sortKey ? 'text-[#0A1628]' : 'text-[#475569]'}`}
+                        >
+                          {h.sortKey ? (
+                            <div className="flex items-center gap-1">
+                              {h.label}
+                              <SortIcon active={sortKey === h.sortKey} dir={sortDir} />
+                            </div>
+                          ) : h.label}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading
+                      ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                      : filtered.map((org, i) => {
+                          const isChanging = changingOrg === org.org_id;
+                          const isPaying   = payingOrg   === org.org_id;
+                          const months     = payMonths[org.org_id] ?? 1;
 
-                            {/* Type */}
-                            <td className="px-4 py-3 text-[#475569] capitalize whitespace-nowrap">
-                              {org.type}
-                            </td>
+                          return (
+                            <motion.tr
+                              key={org.org_id}
+                              initial={{ opacity: 0, y: 4 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: i * 0.025, duration: 0.18 }}
+                              className="border-b border-[#F0F0EC] last:border-0 hover:bg-[#FAFAF7] transition-colors"
+                            >
+                              {/* Organisation */}
+                              <td className="px-4 py-3 font-semibold text-[#0A1628] whitespace-nowrap max-w-[180px] truncate">
+                                {org.name}
+                              </td>
 
-                            {/* Statut — dropdown */}
-                            <td className="px-4 py-3">
-                              <div className="relative">
+                              {/* Type */}
+                              <td className="px-4 py-3 text-[#475569] capitalize whitespace-nowrap">
+                                {org.type}
+                              </td>
+
+                              {/* Statut */}
+                              <td className="px-4 py-3">
                                 <select
                                   value={org.status}
                                   onChange={e => handleStatusDropdownChange(org, e.target.value)}
@@ -524,113 +708,113 @@ export function AdminDashboard() {
                                   <option value="comp">Offert</option>
                                   <option value="suspended">Suspendu</option>
                                 </select>
-                              </div>
-                            </td>
+                              </td>
 
-                            {/* Plan — dropdown */}
-                            <td className="px-4 py-3">
-                              <select
-                                value={org.plan ?? ''}
-                                onChange={e => handlePlanChange(org, e.target.value || null)}
-                                disabled={isChanging}
-                                className={`
-                                  text-xs border border-[#E5E5E0] rounded-lg px-2.5 py-1 cursor-pointer
-                                  text-[#0A1628] bg-white
-                                  focus:outline-none focus:ring-1 focus:ring-[#00A86B]/30
-                                  transition-opacity whitespace-nowrap
-                                  ${isChanging ? 'opacity-50 cursor-not-allowed' : ''}
-                                `}
-                              >
-                                <option value="">— Aucun</option>
-                                <option value="starter">Starter — 190 MAD</option>
-                                <option value="pro">Pro — 390 MAD</option>
-                                <option value="clinique">Clinique — 990 MAD</option>
-                              </select>
-                            </td>
+                              {/* Plan */}
+                              <td className="px-4 py-3">
+                                <select
+                                  value={org.plan ?? ''}
+                                  onChange={e => handlePlanChange(org, e.target.value || null)}
+                                  disabled={isChanging}
+                                  className={`
+                                    text-xs border border-[#E5E5E0] rounded-lg px-2.5 py-1 cursor-pointer
+                                    text-[#0A1628] bg-white
+                                    focus:outline-none focus:ring-1 focus:ring-[#00A86B]/30
+                                    transition-opacity whitespace-nowrap
+                                    ${isChanging ? 'opacity-50 cursor-not-allowed' : ''}
+                                  `}
+                                >
+                                  <option value="">— Aucun</option>
+                                  <option value="starter">Starter — 190 MAD</option>
+                                  <option value="pro">Pro — 390 MAD</option>
+                                  <option value="clinique">Clinique — 990 MAD</option>
+                                </select>
+                              </td>
 
-                            {/* Médecins */}
-                            <td className="px-4 py-3 text-[#475569]">{org.doctor_count}</td>
+                              {/* Médecins */}
+                              <td className="px-4 py-3 text-[#475569]">{org.doctor_count}</td>
 
-                            {/* Patients */}
-                            <td className="px-4 py-3 text-[#475569]">{org.patient_count}</td>
+                              {/* Patients */}
+                              <td className="px-4 py-3 text-[#475569]">{org.patient_count}</td>
 
-                            {/* Paiement */}
-                            <td className="px-4 py-3">
-                              <div className="space-y-0.5">
-                                <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                  <span className="text-xs text-[#0A1628] font-medium">
-                                    {fmtDate(org.next_due_date)}
-                                  </span>
-                                  {org.is_overdue && (
-                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-[#DC2626] border border-red-200">
-                                      <Clock className="w-2.5 h-2.5" />
-                                      En retard
+                              {/* Paiement */}
+                              <td className="px-4 py-3">
+                                <div className="space-y-0.5">
+                                  <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                    <span className="text-xs text-[#0A1628] font-medium">
+                                      {fmtDate(org.next_due_date)}
                                     </span>
+                                    {org.is_overdue && (
+                                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-[#DC2626] border border-red-200">
+                                        <Clock className="w-2.5 h-2.5" />
+                                        En retard
+                                      </span>
+                                    )}
+                                  </div>
+                                  {org.last_payment_at && (
+                                    <p className="text-[11px] text-[#94A3B8] whitespace-nowrap">
+                                      Payé le {fmtDate(org.last_payment_at)}
+                                    </p>
                                   )}
                                 </div>
-                                {org.last_payment_at && (
-                                  <p className="text-[11px] text-[#94A3B8] whitespace-nowrap">
-                                    Payé le {fmtDate(org.last_payment_at)}
-                                  </p>
-                                )}
-                              </div>
-                            </td>
+                              </td>
 
-                            {/* Créé le */}
-                            <td className="px-4 py-3 text-[#475569] whitespace-nowrap text-xs">
-                              {fmtDate(org.created_at)}
-                            </td>
+                              {/* Créé le */}
+                              <td className="px-4 py-3 text-[#475569] whitespace-nowrap text-xs">
+                                {fmtDate(org.created_at)}
+                              </td>
 
-                            {/* Actions */}
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-2 justify-end">
+                              {/* Dernière activité */}
+                              <td className="px-4 py-3 text-[#475569] whitespace-nowrap text-xs">
+                                {fmtDate(org.last_activity)}
+                              </td>
 
-                                {/* Détails */}
-                                <button
-                                  onClick={() => openDetails(org)}
-                                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#475569] border border-[#E5E5E0] hover:border-[#0A1628] hover:text-[#0A1628] transition-colors whitespace-nowrap"
-                                >
-                                  <Eye className="w-3.5 h-3.5" />
-                                  Détails
-                                </button>
-
-                                {/* Marquer payé */}
-                                <div className="flex items-center gap-1">
-                                  <select
-                                    value={months}
-                                    onChange={e => setPayMonths(prev => ({
-                                      ...prev, [org.org_id]: parseInt(e.target.value),
-                                    }))}
-                                    disabled={isPaying}
-                                    className="text-xs border border-[#E5E5E0] rounded-lg px-1.5 py-1 text-[#475569] bg-white focus:outline-none focus:ring-1 focus:ring-[#00A86B]/30 cursor-pointer"
-                                  >
-                                    {[1, 3, 6, 12].map(m => (
-                                      <option key={m} value={m}>{m} mois</option>
-                                    ))}
-                                  </select>
+                              {/* Actions */}
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2 justify-end">
                                   <button
-                                    onClick={() => handleMarkPaid(org)}
-                                    disabled={isPaying}
-                                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#00A86B] border border-emerald-200 hover:bg-emerald-50 transition-colors disabled:opacity-50 whitespace-nowrap"
+                                    onClick={() => openDetails(org)}
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#475569] border border-[#E5E5E0] hover:border-[#0A1628] hover:text-[#0A1628] transition-colors whitespace-nowrap"
                                   >
-                                    {isPaying
-                                      ? <span className="w-3 h-3 border-2 border-[#00A86B]/30 border-t-[#00A86B] rounded-full animate-spin" />
-                                      : <CreditCard className="w-3.5 h-3.5" />
-                                    }
-                                    Payé
+                                    <Eye className="w-3.5 h-3.5" />
+                                    Détails
                                   </button>
+                                  <div className="flex items-center gap-1">
+                                    <select
+                                      value={months}
+                                      onChange={e => setPayMonths(prev => ({
+                                        ...prev, [org.org_id]: parseInt(e.target.value),
+                                      }))}
+                                      disabled={isPaying}
+                                      className="text-xs border border-[#E5E5E0] rounded-lg px-1.5 py-1 text-[#475569] bg-white focus:outline-none focus:ring-1 focus:ring-[#00A86B]/30 cursor-pointer"
+                                    >
+                                      {[1, 3, 6, 12].map(m => (
+                                        <option key={m} value={m}>{m} mois</option>
+                                      ))}
+                                    </select>
+                                    <button
+                                      onClick={() => handleMarkPaid(org)}
+                                      disabled={isPaying}
+                                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#00A86B] border border-emerald-200 hover:bg-emerald-50 transition-colors disabled:opacity-50 whitespace-nowrap"
+                                    >
+                                      {isPaying
+                                        ? <span className="w-3 h-3 border-2 border-[#00A86B]/30 border-t-[#00A86B] rounded-full animate-spin" />
+                                        : <CreditCard className="w-3.5 h-3.5" />
+                                      }
+                                      Payé
+                                    </button>
+                                  </div>
                                 </div>
-
-                              </div>
-                            </td>
-                          </motion.tr>
-                        );
-                      })
-                  }
-                </tbody>
-              </table>
-            </div>
-          )}
+                              </td>
+                            </motion.tr>
+                          );
+                        })
+                    }
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
