@@ -1,61 +1,77 @@
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
+import { AlertTriangle, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 type AppRole = 'super_admin' | 'clinic_admin' | 'doctor' | 'secretaire';
+
+const ROLE_HOME: Record<string, string> = {
+  super_admin: '/admin',
+  clinic_admin: '/clinic/admin',
+  doctor: '/doctor',
+  secretaire: '/secretaire',
+};
 
 interface ProtectedRouteProps {
   children: ReactNode;
   requiredRole?: AppRole;
 }
 
+function SuspendedScreen({ onLogout }: { onLogout: () => void }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7] p-4 font-sans">
+      <div className="w-full max-w-md text-center bg-white border border-[#E5E5E0] rounded-2xl shadow-sm p-8">
+        <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-[#FEF2F2] flex items-center justify-center">
+          <AlertTriangle className="w-7 h-7 text-[#DC2626]" strokeWidth={1.75} />
+        </div>
+        <h1 className="text-xl font-bold text-[#0A1628] mb-2 tracking-tight">Compte suspendu</h1>
+        <p className="text-sm leading-relaxed text-[#475569] mb-5">
+          L'accès à votre cabinet a été suspendu. Contactez le support Ordosur pour demander une réactivation.
+        </p>
+        <a
+          href="mailto:support@ordosur.com"
+          className="block mb-5 text-sm font-medium text-[#00A86B] hover:text-[#006B47] transition-colors"
+        >
+          support@ordosur.com
+        </a>
+        <button
+          onClick={onLogout}
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border border-[#E5E5E0] text-[#0A1628] hover:border-[#0A1628] active:bg-[#FAFAF7] transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          Se déconnecter
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, orgStatus, signOut } = useAuth();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00A86B]"></div>
+        <div className="w-6 h-6 border-2 border-[#00A86B] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  if (!user) {
-    return <Navigate to="/" replace />;
+  if (!user) return <Navigate to="/" replace />;
+
+  // super_admin redirigé vers /admin s'il tente d'accéder à une route non-admin
+  if (user.role === 'super_admin' && requiredRole !== 'super_admin') {
+    return <Navigate to="/admin" replace />;
   }
 
+  // Mauvais rôle → redirige vers le bon dashboard (pas de page "accès refusé")
   if (requiredRole && user.role !== requiredRole) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
-        <div className="glass-effect rounded-2xl p-8 w-full max-w-md text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg
-              className="w-8 h-8 text-red-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Accès non autorisé</h2>
-          <p className="text-gray-600 mb-6">
-            Vous n'avez pas les permissions nécessaires pour accéder à cette page.
-          </p>
-          <button
-            onClick={() => window.history.back()}
-            className="w-full px-6 py-3 bg-[#00A86B] text-white rounded-lg hover:bg-[#006B47] transition-colors font-medium"
-          >
-            Retour
-          </button>
-        </div>
-      </div>
-    );
+    return <Navigate to={ROLE_HOME[user.role] ?? '/'} replace />;
+  }
+
+  // Org suspendue — jamais applicable au super_admin
+  if (orgStatus === 'suspended' && user.role !== 'super_admin') {
+    return <SuspendedScreen onLogout={signOut} />;
   }
 
   return <>{children}</>;

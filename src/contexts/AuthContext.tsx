@@ -41,6 +41,7 @@ interface AuthContextType {
   clinicProfile: ClinicProfileContext | null;
   loading: boolean;
   requiresPasswordReset: boolean; // toujours false en v2 (compat ProtectedRoute)
+  orgStatus: string | null;
   signUp: (
     email: string,
     password: string,
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [doctorProfile, setDoctorProfile] = useState<DoctorProfileContext | null>(null);
   const [clinicProfile, setClinicProfile] = useState<ClinicProfileContext | null>(null);
   const [loading, setLoading] = useState(true);
+  const [orgStatus, setOrgStatus] = useState<string | null>(null);
 
   useEffect(() => {
     checkUser();
@@ -79,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(null);
           setDoctorProfile(null);
           setClinicProfile(null);
+          setOrgStatus(null);
         }
       })();
     });
@@ -129,6 +132,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         org_id: profile.org_id,
       };
       setUser(authUser);
+
+      // Statut de suspension de l'org (non pertinent pour super_admin)
+      if (profile.role !== 'super_admin') {
+        const { data: statusData } = await supabase.rpc('my_org_status');
+        setOrgStatus(typeof statusData === 'string' ? statusData : null);
+      }
 
       // Charger le profil médecin si rôle doctor
       if (profile.role === 'doctor') {
@@ -262,6 +271,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setDoctorProfile(null);
     setClinicProfile(null);
+    setOrgStatus(null);
   };
 
   // ─── UTILITAIRES AUTH ──────────────────────────────────────────────────────
@@ -292,6 +302,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clinicProfile,
         loading,
         requiresPasswordReset: false,
+        orgStatus,
         signUp,
         signIn,
         signOut,

@@ -18,6 +18,7 @@ import { DoctorManagementPage } from './pages/clinic/DoctorManagementPage';
 import { ClinicStatsPage } from './pages/clinic/ClinicStatsPage';
 import { ClinicSettingsPage } from './pages/clinic/ClinicSettingsPage';
 import { SecretaireDashboard } from './pages/SecretaireDashboard';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -94,6 +95,16 @@ function App() {
             element={
               <ProtectedRoute requiredRole="secretaire">
                 <SecretaireDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Dashboard super_admin */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="super_admin">
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />
