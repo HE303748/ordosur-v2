@@ -472,34 +472,29 @@ function PatientsView({
   doctorId, orgId,
 }: PatientsViewProps) {
   const [search, setSearch] = useState('');
-  // Sprint M2 — Filtres chips (cumulables avec la recherche texte)
-  // 'all' = tous · 'recent' = ajoutés <30j · sinon = nom de pathologie
+  // 'all' = tous · 'recent' = ajoutés <30j
   const [activeChip, setActiveChip] = useState<string>('all');
+  // Modale de confirmation de suppression
+  const [confirmDelete, setConfirmDelete] = useState<Patient | null>(null);
 
-  // Top 5 pathologies les plus fréquentes (calculées une seule fois par changement de patients)
-  const topPathologies = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const p of patients) {
-      for (const path of p.pathologies ?? []) {
-        const key = path.trim();
-        if (!key || key === 'Aucune pathologie renseignée') continue;
-        counts.set(key, (counts.get(key) ?? 0) + 1);
-      }
-    }
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
-  }, [patients]);
-
-  // Filtrage cumulatif : recherche texte ET chip actif
+  // Filtrage cumulatif : recherche texte (nom ET date de naissance JJ/MM/AAAA) ET chip actif
   const RECENT_CUTOFF = useMemo(() => Date.now() - 30 * 86_400_000, []);
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return patients.filter(p => {
-      if (q.length > 0 && !`${p.prenom} ${p.nom}`.toLowerCase().includes(q)) return false;
+      if (q.length > 0) {
+        const nameMatch = `${p.prenom} ${p.nom}`.toLowerCase().includes(q);
+        const dobFormatted = p.date_naissance
+          ? new Date(p.date_naissance).toLocaleDateString('fr-FR')
+          : '';
+        const dobMatch = dobFormatted.includes(q);
+        if (!nameMatch && !dobMatch) return false;
+      }
       if (activeChip === 'all') return true;
       if (activeChip === 'recent') {
         return Boolean(p.created_at && new Date(p.created_at).getTime() > RECENT_CUTOFF);
       }
-      return (p.pathologies ?? []).some(path => path.trim() === activeChip);
+      return true;
     });
   }, [patients, search, activeChip, RECENT_CUTOFF]);
 
@@ -552,12 +547,12 @@ function PatientsView({
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher un patient…"
+              placeholder="Nom, prénom ou date de naissance (JJ/MM/AAAA)…"
               className="w-full pl-9 pr-3 py-2.5 lg:py-2 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 focus:border-[#00A86B] dark:focus:border-[#00A86B]/40"
             />
           </div>
 
-          {/* Sprint M2 — Filtres chips scrollables horizontalement (mobile + desktop) */}
+          {/* Filtres chips : Tous / Récents */}
           <div className="-mx-4 mt-3 px-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
             <div className="flex items-center gap-1.5 pb-0.5">
               <FilterChip
@@ -570,14 +565,6 @@ function PatientsView({
                 onClick={() => setActiveChip('recent')}
                 label="Récents"
               />
-              {topPathologies.map(([name, count]) => (
-                <FilterChip
-                  key={name}
-                  active={activeChip === name}
-                  onClick={() => setActiveChip(name)}
-                  label={`${name} · ${count}`}
-                />
-              ))}
             </div>
           </div>
         </div>
@@ -650,7 +637,7 @@ function PatientsView({
                     <Edit className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={e => { e.stopPropagation(); onDeletePatient(p.id); }}
+                    onClick={e => { e.stopPropagation(); setConfirmDelete(p); }}
                     className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -728,6 +715,37 @@ function PatientsView({
           <Plus className="w-6 h-6" />
         </button>
       )}
+
+      {/* Modale confirmation suppression patient */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>
+          <div className="bg-white dark:bg-[#111827] rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200 dark:border-white/[0.08]">
+            <div className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+              <Trash2 className="w-6 h-6 text-[#DC2626]" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-[#E2E8F0] text-center mb-2">
+              Supprimer {confirmDelete.prenom} {confirmDelete.nom} ?
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-[#94A3B8] text-center mb-6">
+              Toutes ses données — ordonnances, consultations, rendez-vous — seront définitivement supprimées. Cette action est irréversible.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-[#94A3B8] rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => { onDeletePatient(confirmDelete.id); setConfirmDelete(null); }}
+                className="flex-1 px-4 py-2.5 bg-[#DC2626] hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition-colors"
+              >
+                Supprimer définitivement
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageTransition>
   );
 }
@@ -771,6 +789,7 @@ interface CheckerViewProps {
   addManualMedication: (nom: string) => void;
   removeMedication: (id: string) => void;
   interactionAlerts: InteractionAlert[];
+  nonVerifiables: string[];
   result: InteractionResult | null;
   loading: boolean;
   checkInteractions: () => void;
@@ -790,7 +809,7 @@ function CheckerView({
   medSearchResults, selectedMeds, medSearchTerm, setMedSearchTerm,
   showMedDropdown, setShowMedDropdown, medSearchLoading, searchMedications,
   addMedication, addManualMedication, removeMedication,
-  interactionAlerts, result, loading,
+  interactionAlerts, nonVerifiables, result, loading,
   checkInteractions, resetAnalysis, resultsRef,
   loadPatientOrdonnances, patientOrdonnances,
   onAddPatient, setShowPrescriptionForm,
@@ -1012,14 +1031,31 @@ function CheckerView({
 
               {/* Real-time alerts */}
               {selectedMeds.length >= 1 && (
-                <div className="mb-5">
+                <div className="mb-5 space-y-3">
+                  {/* ── Bandeau ambre "médicaments non vérifiables" (V2) ─────────────────
+                      Distinct des alertes cliniques : signal de limite de couverture, pas
+                      une interaction. Border-2 + fond ambre pour qu'il soit IMPOSSIBLE
+                      à confondre avec un résultat rassurant. */}
+                  {nonVerifiables.length > 0 && (
+                    <div className="flex items-start gap-2.5 px-4 py-3 bg-amber-50 border-2 border-amber-400 rounded-xl">
+                      <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-bold text-amber-800">
+                          ⚠ Vérification impossible pour : {nonVerifiables.join(', ')}
+                        </p>
+                        <p className="text-xs text-amber-700 mt-0.5">
+                          Les données de ce médicament ne permettent pas la vérification automatique des interactions. Vérifiez manuellement.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   {interactionAlerts.length === 0 ? (
                     <div className="flex items-center gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                       <span className="text-sm text-emerald-800 font-medium">
                         {selectedMeds.length === 1
                           ? 'Aucune contre-indication connue'
-                          : 'Aucune interaction connue'}
+                          : 'Aucune interaction connue entre les médicaments vérifiés'}
                         {!selectedPatient && (
                           <span className="text-emerald-600 font-normal"> — sélectionnez un patient pour les contre-indications</span>
                         )}
@@ -1184,7 +1220,7 @@ function CheckerView({
 
               <div className="bg-slate-100 dark:bg-white/[0.04] rounded-xl p-3 lg:p-4 border-l-4 border-slate-400 dark:border-slate-600">
                 <p className="text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
-                  <strong>Avertissement :</strong> Cette analyse est indicative. Consultez le Vidal et les recommandations HAS.
+                  <strong>Avertissement :</strong> Cette analyse est indicative. Consultez le Vidal ou un référentiel pharmaceutique marocain.
                 </p>
               </div>
 
@@ -2096,6 +2132,9 @@ export function DoctorDashboard() {
   const [loading, setLoading] = useState(false);
   const [allContraindications, setAllContraindications] = useState<DbContraindication[]>([]);
   const [interactionAlerts, setInteractionAlerts] = useState<InteractionAlert[]>([]);
+  const [nonVerifiables, setNonVerifiables] = useState<string[]>([]);
+  const [confirmDeletePatient, setConfirmDeletePatient] = useState<Patient | null>(null);
+  const [deletePatientLoading, setDeletePatientLoading] = useState(false);
   // Volet 2 — synonymes des pathologies du patient sélectionné.
   // Clé = nom_fr de la pathologie (tel que stocké dans patients.pathologies),
   // valeur = liste de synonymes bruts. Chargé en 1 requête batch quand le patient change.
@@ -2199,45 +2238,59 @@ export function DoctorDashboard() {
     const runCheck = async () => {
       const alerts: InteractionAlert[] = [];
       const seen = new Set<string>();
+      setNonVerifiables([]);
 
-      // ── 1. Drug-drug interactions (≥ 2 meds) ──────────────────────────────
-      // Sprint #3.0.8 — Dedup par (paire_de_molécules + sévérité), SANS la description.
-      // La DB contient ~19 000 doublons (sources FR + ANG) qui ont la même paire+sévérité
-      // mais des descriptions différentes. On les fusionne au lieu de les jeter, pour
-      // préserver les nuances cliniques (ex: mention "surveiller INR" présente dans une
-      // seule des deux versions).
-      if (selectedMeds.length >= 2) {
-        // Phase 2b — ajoute normalizedCanonique à la chaîne (la RPC fait pattern ⊆ chaîne,
-        // donc c'est purement additif). .trim() pour éviter un espace traînant si canonique vide.
-        const normalizedStrings = medDCIs.map(m => `${m.normalizedDCI} ${m.normalizedName} ${m.normalizedCanonique}`.trim());
-        const { data: interactions } = await supabase.rpc(
-          'check_drug_interactions_for_meds',
-          { p_med_strings: normalizedStrings }
-        );
-        if (interactions) {
-          const ddDedup = new Map<string, InteractionAlert>();
-          for (const interaction of interactions as DbInteraction[]) {
-            const p1 = norm(interaction.dci_1_pattern);
-            const p2 = norm(interaction.dci_2_pattern);
-            const idx1 = normalizedStrings.findIndex(s => s.includes(p1));
-            const idx2 = normalizedStrings.findIndex(s => s.includes(p2) && s !== normalizedStrings[idx1]);
-            const i1 = idx1 !== -1 ? idx1 : 0;
-            const i2 = idx2 !== -1 ? idx2 : (idx1 === 0 ? 1 : 0);
-            const pair = [selectedMeds[i1].nom, selectedMeds[i2].nom].sort().join('+');
-            const key = `dd|${pair}|${interaction.severite}`;
-            const existing = ddDedup.get(key);
-            if (!existing) {
-              ddDedup.set(key, {
-                type: 'drug_drug',
-                severite: interaction.severite,
-                description: interaction.description,
-                involved: [selectedMeds[i1].nom, selectedMeds[i2].nom],
-              });
-            } else {
-              existing.description = mergeDescriptions(existing.description, interaction.description);
+      // ── 1. Drug-drug interactions V2 (par UUID, ≥ 2 méds non-manuels) ────────
+      // check_interactions_v2 reçoit les UUIDs des médicaments depuis search_medicaments.
+      // Les méds manuels (sans UUID DB) sont exclus : V2 ne peut pas les vérifier.
+      // Le bandeau ambre "non_verifiables" prend en charge les méds que V2 ne peut pas checker.
+      const dbMeds = selectedMeds.filter(m => !m.manual);
+      if (dbMeds.length >= 2) {
+        try {
+          const { data: v2Data } = await supabase.rpc(
+            'check_interactions_v2',
+            { p_med_ids: dbMeds.map(m => m.id) }
+          );
+          if (v2Data) {
+            const {
+              interactions = [],
+              medicaments_non_verifiables = [],
+            } = v2Data as {
+              interactions: Array<{
+                medicament_a: string; medicament_b: string;
+                ingredient_a: string | null; ingredient_b: string | null;
+                severite: string | null; description: string;
+              }>;
+              medicaments_verifies: string[];
+              medicaments_non_verifiables: string[];
+            };
+            if (medicaments_non_verifiables.length > 0) {
+              setNonVerifiables(medicaments_non_verifiables);
             }
+            const ddDedup = new Map<string, InteractionAlert>();
+            for (const inter of interactions) {
+              const sev = (inter.severite as InteractionAlert['severite']) || 'non_classee';
+              const pair = [inter.medicament_a, inter.medicament_b].sort().join('+');
+              const key = `dd|${pair}|${sev}`;
+              const molDesc = (inter.ingredient_a && inter.ingredient_b)
+                ? `${inter.ingredient_a} × ${inter.ingredient_b} — ${inter.description}`
+                : inter.description;
+              const existing = ddDedup.get(key);
+              if (!existing) {
+                ddDedup.set(key, {
+                  type: 'drug_drug',
+                  severite: sev,
+                  description: molDesc,
+                  involved: [inter.medicament_a, inter.medicament_b],
+                });
+              } else {
+                existing.description = mergeDescriptions(existing.description, molDesc);
+              }
+            }
+            for (const alert of ddDedup.values()) alerts.push(alert);
           }
-          for (const alert of ddDedup.values()) alerts.push(alert);
+        } catch (e) {
+          console.error('[check_interactions_v2] error:', e);
         }
       }
 
@@ -2642,16 +2695,19 @@ export function DoctorDashboard() {
   };
 
   const handleDeletePatient = async (patientId: string) => {
-    if (!confirm('Supprimer ce patient ?')) return;
+    setDeletePatientLoading(true);
     try {
-      const { error } = await supabase.from('patients').delete().eq('id', patientId);
+      const { error } = await supabase.rpc('delete_patient_complet', { p_patient_id: patientId });
       if (error) throw error;
       setPatients(prev => prev.filter(p => p.id !== patientId));
       if (selectedPatient?.id === patientId) setSelectedPatient(null);
       showToast('Patient supprimé', 'info');
       loadStats();
+      setConfirmDeletePatient(null);
     } catch (e: any) {
-      showToast(e?.message || 'Erreur', 'error');
+      showToast(e?.message || 'Erreur lors de la suppression', 'error');
+    } finally {
+      setDeletePatientLoading(false);
     }
   };
 
@@ -2722,14 +2778,14 @@ export function DoctorDashboard() {
             ? reasons[0]
             : selectedMeds.length === 1
               ? `✓ Aucune contre-indication connue pour ${selectedMeds[0].nom} avec le profil de ce patient`
-              : `✓ Aucune interaction connue entre les ${selectedMeds.length} médicaments sélectionnés`;
+              : `✓ Aucune interaction connue entre les médicaments vérifiés`;
 
     setResult({ severity: overallSeverity, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);
   };
 
   const resetAnalysis = () => {
-    setSelectedMeds([]); setMedSearchTerm(''); setInteractionAlerts([]); setResult(null);
+    setSelectedMeds([]); setMedSearchTerm(''); setInteractionAlerts([]); setResult(null); setNonVerifiables([]);
   };
 
   const filteredPatientsForDropdown = patientSearchTerm.length >= 1
@@ -2812,7 +2868,10 @@ export function DoctorDashboard() {
                 onAddPatient={openAddPatient}
                 onImportPatients={() => setShowImportPatientsModal(true)}
                 onEditPatient={p => { setEditingPatient(p); setShowPatientModal(true); }}
-                onDeletePatient={handleDeletePatient}
+                onDeletePatient={(id) => {
+                  const p = patients.find(x => x.id === id);
+                  if (p) setConfirmDeletePatient(p);
+                }}
                 onNavigateToChecker={navigateToChecker}
                 patientOrdonnances={patientOrdonnances}
                 loadPatientOrdonnances={loadPatientOrdonnances}
@@ -2847,6 +2906,7 @@ export function DoctorDashboard() {
                 addManualMedication={addManualMedication}
                 removeMedication={removeMedication}
                 interactionAlerts={interactionAlerts}
+                nonVerifiables={nonVerifiables}
                 result={result}
                 loading={loading}
                 checkInteractions={checkInteractions}
@@ -2953,6 +3013,40 @@ export function DoctorDashboard() {
             loadPatients();
           }}
         />
+      )}
+
+      {/* Modale de confirmation suppression patient */}
+      {confirmDeletePatient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}>
+          <div className="bg-white dark:bg-[#111827] rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200 dark:border-white/[0.08]">
+            <div className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center">
+              <Trash2 className="w-6 h-6 text-[#DC2626]" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-[#E2E8F0] text-center mb-2">
+              Supprimer {confirmDeletePatient.prenom} {confirmDeletePatient.nom} ?
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-[#94A3B8] text-center mb-6">
+              Toutes ses données — ordonnances, consultations, rendez-vous — seront définitivement supprimées. Cette action est irréversible.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmDeletePatient(null)}
+                disabled={deletePatientLoading}
+                className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-[#94A3B8] rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => handleDeletePatient(confirmDeletePatient.id)}
+                disabled={deletePatientLoading}
+                className="flex-1 px-4 py-2.5 bg-[#DC2626] hover:bg-red-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                {deletePatientLoading && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+                Supprimer définitivement
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {selectedPatient && (

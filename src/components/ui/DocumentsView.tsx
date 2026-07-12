@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText, Plus, X, Download, Search, Calendar,
-  Clock, AlertTriangle, CheckCircle2, Shield, Heart,
-  Activity, Star, Loader2, ChevronDown, Edit2,
-  Eye, Save, ChevronLeft, User, Phone, MapPin, Stethoscope,
+  Loader2, Edit2,
+  Eye, Save, ChevronLeft, User, Phone, MapPin, Stethoscope, Printer,
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode';
@@ -69,7 +68,7 @@ interface DocumentsViewProps {
   } | null;
 }
 
-/* ── Certificate configs ────────────────────────────────────────────────────── */
+/* ── Certificate config (Certificat médical uniquement) ─────────────────────── */
 interface CertConfig {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -80,14 +79,14 @@ interface CertConfig {
 }
 
 const CERT_CONFIGS: Record<CertType, CertConfig> = {
-  arret_travail:   { label: 'Arrêt de travail',        icon: Clock,          color: 'text-orange-600',  bgColor: 'bg-orange-50',  borderColor: 'border-orange-200', description: 'Congé maladie / arrêt de travail' },
-  accident_travail:{ label: 'Accident de travail',     icon: AlertTriangle,  color: 'text-red-600',     bgColor: 'bg-red-50',     borderColor: 'border-red-200',    description: 'Constatation médicale suite à accident' },
-  general:         { label: 'Certificat médical',      icon: FileText,       color: 'text-blue-600',    bgColor: 'bg-blue-50',    borderColor: 'border-blue-200',   description: 'Certificat médical général' },
-  aptitude:        { label: "Certificat d'aptitude",   icon: CheckCircle2,   color: 'text-emerald-600', bgColor: 'bg-emerald-50', borderColor: 'border-emerald-200',description: 'Aptitude à une activité / emploi' },
-  inaptitude:      { label: "Certificat d'inaptitude", icon: Shield,         color: 'text-slate-600',   bgColor: 'bg-slate-50',   borderColor: 'border-slate-200',  description: 'Inaptitude médicale constatée' },
-  vaccination:     { label: 'Certificat de vaccination', icon: Heart,        color: 'text-pink-600',    bgColor: 'bg-pink-50',    borderColor: 'border-pink-200',   description: 'Attestation de vaccination' },
-  transport:       { label: 'Bon de transport médical',icon: Activity,       color: 'text-violet-600',  bgColor: 'bg-violet-50',  borderColor: 'border-violet-200', description: 'Prescription de transport sanitaire' },
-  autre:           { label: 'Autre certificat',        icon: Star,           color: 'text-amber-600',   bgColor: 'bg-amber-50',   borderColor: 'border-amber-200',  description: 'Document médical personnalisé' },
+  arret_travail:   { label: 'Arrêt de travail',        icon: FileText, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', description: 'Certificat médical général' },
+  accident_travail:{ label: 'Accident de travail',     icon: FileText, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', description: 'Certificat médical général' },
+  general:         { label: 'Certificat médical',      icon: FileText, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', description: 'Certificat médical général' },
+  aptitude:        { label: "Certificat d'aptitude",   icon: FileText, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', description: 'Certificat médical général' },
+  inaptitude:      { label: "Certificat d'inaptitude", icon: FileText, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', description: 'Certificat médical général' },
+  vaccination:     { label: 'Certificat de vaccination',icon: FileText,color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', description: 'Certificat médical général' },
+  transport:       { label: 'Bon de transport médical',icon: FileText, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', description: 'Certificat médical général' },
+  autre:           { label: 'Autre certificat',        icon: FileText, color: 'text-blue-600', bgColor: 'bg-blue-50', borderColor: 'border-blue-200', description: 'Certificat médical général' },
 };
 
 /* ── Templates ──────────────────────────────────────────────────────────────── */
@@ -619,21 +618,6 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
             </motion.button>
           </div>
 
-          {/* Type filters */}
-          <div className="flex gap-2 flex-wrap mb-4">
-            <button
-              onClick={() => setFilterType('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filterType === 'all' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
-            >Tous</button>
-            {(Object.entries(CERT_CONFIGS) as [CertType, CertConfig][]).map(([t, c]) => (
-              <button
-                key={t}
-                onClick={() => setFilterType(t)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filterType === t ? `${c.bgColor} ${c.color} border ${c.borderColor}` : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}
-              >{c.label}</button>
-            ))}
-          </div>
-
           {/* Search */}
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -721,30 +705,6 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* ── Left column ─────────────────────────────────────────────────── */}
           <div className="lg:col-span-1 space-y-4">
-
-            {/* Type selector */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-4">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Type de certificat</p>
-              <div className="space-y-1.5">
-                {(Object.entries(CERT_CONFIGS) as [CertType, CertConfig][]).map(([t, c]) => {
-                  const Icon = c.icon;
-                  return (
-                    <button
-                      key={t}
-                      onClick={() => handleTypeChange(t)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm font-medium transition-colors ${
-                        certType === t
-                          ? `${c.bgColor} ${c.color} border ${c.borderColor}`
-                          : 'text-slate-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="truncate">{c.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
 
             {/* Patient */}
             <div className="bg-white rounded-2xl border border-slate-100 p-4">
@@ -1075,13 +1035,21 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-3 p-5 border-t border-slate-100 justify-end">
+                <div className="flex items-center gap-3 p-5 border-t border-slate-100 justify-end flex-wrap">
                   <button
                     onClick={() => setShowPreview(false)}
                     className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium transition-colors"
                   >
                     Modifier
                   </button>
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => window.print()}
+                    className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                  >
+                    <Printer className="w-4 h-4" />
+                    Imprimer
+                  </motion.button>
                   {selectedPatient && (
                     <motion.button
                       whileTap={{ scale: 0.97 }}

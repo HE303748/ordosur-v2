@@ -736,7 +736,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker,
                 </span>
                 {(patient.allergies_medicaments?.length ?? 0) > 0 && (
                   <span className="text-xs text-red-500 font-semibold">
-                    ⚠ {patient.allergies_medicaments!.length} allergie(s)
+                    ⚠ {patient.allergies_medicaments!.length} allergie(s) médicamenteuse(s)
                   </span>
                 )}
               </div>
