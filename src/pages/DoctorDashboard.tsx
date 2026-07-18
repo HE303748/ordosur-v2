@@ -2239,12 +2239,14 @@ export function DoctorDashboard() {
       const alerts: InteractionAlert[] = [];
       const seen = new Set<string>();
       setNonVerifiables([]);
-
       // ── 1. Drug-drug interactions V2 (par UUID, ≥ 2 méds non-manuels) ────────
-      // check_interactions_v2 reçoit les UUIDs des médicaments depuis search_medicaments.
-      // Les méds manuels (sans UUID DB) sont exclus : V2 ne peut pas les vérifier.
-      // Le bandeau ambre "non_verifiables" prend en charge les méds que V2 ne peut pas checker.
+      // Les méds manuels sont exclus de l'appel V2 (pas d'UUID DB).
+      // Ils sont explicitement listés dans le bandeau ambre, fusionnés avec les
+      // medicaments_non_verifiables retournés par la RPC — jamais d'échec silencieux.
+      const manualMeds = selectedMeds.filter(m => m.manual);
       const dbMeds = selectedMeds.filter(m => !m.manual);
+      let rpcNonVerifiables: string[] = [];
+
       if (dbMeds.length >= 2) {
         try {
           const { data: v2Data } = await supabase.rpc(
@@ -2264,9 +2266,7 @@ export function DoctorDashboard() {
               medicaments_verifies: string[];
               medicaments_non_verifiables: string[];
             };
-            if (medicaments_non_verifiables.length > 0) {
-              setNonVerifiables(medicaments_non_verifiables);
-            }
+            rpcNonVerifiables = medicaments_non_verifiables;
             const ddDedup = new Map<string, InteractionAlert>();
             for (const inter of interactions) {
               const sev = (inter.severite as InteractionAlert['severite']) || 'non_classee';
@@ -2293,6 +2293,9 @@ export function DoctorDashboard() {
           console.error('[check_interactions_v2] error:', e);
         }
       }
+
+      // Fusionner non-vérifiables RPC + méds manuels (toujours non vérifiables par construction)
+      setNonVerifiables([...rpcNonVerifiables, ...manualMeds.map(m => m.nom)]);
 
       // ── 2. Contraindications (runs even with 1 med, requires patient) ──────
       if (selectedPatient && allContraindications.length > 0) {
