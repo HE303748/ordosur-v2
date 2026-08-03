@@ -35,6 +35,7 @@ interface PrescriptionPreviewModalProps {
   patient: {
     prenom: string;
     nom: string;
+    date_naissance?: string | null;
   };
   motif?: string;
   medications: MedicationForm[];
@@ -126,6 +127,14 @@ export function PrescriptionPreviewModal({
           {/* Patient */}
           <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
             <p className="font-semibold">Patient : {patient.prenom} {patient.nom}</p>
+            {patient.date_naissance && (
+              <p className="text-sm text-gray-600 mt-0.5">
+                Né(e) le : {(() => {
+                  const [y, m, d] = patient.date_naissance!.split('T')[0].split('-');
+                  return `${d}/${m}/${y}`;
+                })()}
+              </p>
+            )}
           </div>
 
           {/* Titre */}
@@ -146,8 +155,15 @@ export function PrescriptionPreviewModal({
             ))}
           </div>
 
-          <div className="mt-6 pt-4 border-t flex justify-between items-center text-sm text-gray-500">
-            <span className="text-xs text-gray-400">Ordonnance générée par OrdoSur</span>
+          {/* Note du médecin */}
+          {remarks && (
+            <div className="mb-4 pt-3 border-t border-gray-100">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Note du médecin</p>
+              <p className="text-sm text-gray-700 italic whitespace-pre-wrap">{remarks}</p>
+            </div>
+          )}
+
+          <div className="mt-6 pt-4 border-t flex justify-end items-center text-sm text-gray-500">
             <p>Signature : Dr {doctor.prenom} {doctor.nom}</p>
           </div>
         </div>

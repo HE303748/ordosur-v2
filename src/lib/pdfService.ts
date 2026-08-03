@@ -116,11 +116,10 @@ const CONTENT_W = PAGE_W - MARGIN_L - MARGIN_R;
 export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-  // Load brand assets in parallel — non-fatal if missing
-  const [logoAsset, watermarkAsset, badgeAsset] = await Promise.all([
-    safeLoad('/pdf-assets/logo.png'),
+  // Load cabinet logo (non-fatal if missing) + optional watermark
+  const [logoAsset, watermarkAsset] = await Promise.all([
+    data.logo_url ? safeLoad(data.logo_url) : Promise.resolve(null),
     safeLoad('/pdf-assets/watermark.png'),
-    safeLoad('/pdf-assets/badge.png'),
   ]);
 
   // Helper: draw the per-page chrome (green bands + faint watermark)
@@ -151,34 +150,37 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   decoratePage();
   let y = 16;
 
-  // ── Header: Logo (left) + ORDONNANCE / N° / Date (right) ───────────────────
+  // ── Header: Cabinet letterhead (left) + ORDONNANCE / N° / Date (right) ─────
+  const headerTop = y;
+
   if (logoAsset) {
-    // Height 12mm, width auto
-    doc.addImage(logoAsset.data, logoAsset.format, MARGIN_L, y, 0, 12);
+    doc.addImage(logoAsset.data, logoAsset.format, MARGIN_L, headerTop, 0, 12);
   } else {
-    doc.setFontSize(14);
+    // Letterhead fallback — nom du cabinet + coordonnées
+    doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(C.INK_NAVY);
-    doc.text('Ordosur', MARGIN_L, y + 8);
+    doc.text(data.org.name, MARGIN_L, headerTop + 6);
+    let lhY = headerTop + 12;
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(C.INK_MUTED);
+    if (data.org.adresse)   { doc.text(data.org.adresse,              MARGIN_L, lhY); lhY += 4; }
+    if (data.org.telephone) { doc.text(`Tél : ${data.org.telephone}`, MARGIN_L, lhY); }
   }
-  // Tagline under logo
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_FAINT);
-  doc.text('Ordosur — La prescription, sécurisée.', MARGIN_L, y + 18);
 
   // Right block — ORDONNANCE title + numéro + date
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(C.INK_NAVY);
-  doc.text('ORDONNANCE', PAGE_W - MARGIN_R, y + 6, { align: 'right' });
+  doc.text('ORDONNANCE', PAGE_W - MARGIN_R, headerTop + 6, { align: 'right' });
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_MUTED);
-  doc.text(`N° ${data.ordreNumber}`, PAGE_W - MARGIN_R, y + 12, { align: 'right' });
+  doc.text(`N° ${data.ordreNumber}`, PAGE_W - MARGIN_R, headerTop + 12, { align: 'right' });
   doc.setFontSize(8);
   doc.setTextColor(C.INK_FAINT);
-  doc.text(formatDate(data.date), PAGE_W - MARGIN_R, y + 18, { align: 'right' });
+  doc.text(formatDate(data.date), PAGE_W - MARGIN_R, headerTop + 18, { align: 'right' });
 
   y += 26;
 
@@ -210,8 +212,6 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   if (data.doctor.rpps)         inpeBits.push(`INPE : ${data.doctor.rpps}`);
   if (data.doctor.ordre_number) inpeBits.push(`CNOM : ${data.doctor.ordre_number}`);
   if (inpeBits.length) { doc.text(inpeBits.join('   ·   '), MARGIN_L, y); y += 4.5; }
-  if (data.org.telephone) { doc.text(`Tél : ${data.org.telephone}`, MARGIN_L, y); y += 4.5; }
-  if (data.org.adresse)   { doc.text(`Cabinet : ${data.org.adresse}`, MARGIN_L, y); y += 4.5; }
 
   y += 4;
 
@@ -293,21 +293,23 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
       const lines = doc.splitTextToSize(`     Durée : ${med.duree}`, CONTENT_W);
       doc.text(lines, MARGIN_L, y); y += lines.length * 4.5;
     }
-    if (med.quantite) {
-      const lines = doc.splitTextToSize(`     Quantité : ${med.quantite}`, CONTENT_W);
-      doc.text(lines, MARGIN_L, y); y += lines.length * 4.5;
-    }
+    // Quantité intentionnellement omise de l'ordonnance imprimée
     y += 2.5;
   });
 
-  // Remarks
+  // Note du médecin
   if (data.remarks) {
     if (y > 235) { doc.addPage(); decoratePage(); y = 22; }
-    y += 2;
+    y += 4;
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(C.GREEN);
+    doc.text('NOTE DU MÉDECIN', MARGIN_L, y);
+    y += 4.5;
     doc.setFontSize(9);
     doc.setFont('helvetica', 'italic');
     doc.setTextColor(C.INK_MUTED);
-    const lines = doc.splitTextToSize(`Remarques : ${data.remarks}`, CONTENT_W);
+    const lines = doc.splitTextToSize(data.remarks, CONTENT_W);
     doc.text(lines, MARGIN_L, y);
     y += lines.length * 4.5;
   }
@@ -332,35 +334,12 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setLineWidth(0.4);
   doc.line(PAGE_W - MARGIN_R - 55, sigY + 14, PAGE_W - MARGIN_R, sigY + 14);
 
-  // ── Footer band: badge + tagline + verify URL ──────────────────────────────
-  const footerLineY = 268;
-  doc.setDrawColor(C.DIVIDER);
-  doc.line(MARGIN_L, footerLineY, PAGE_W - MARGIN_R, footerLineY);
-
-  if (badgeAsset) {
-    // Badge image, height ~10mm, left-aligned just below the divider
-    doc.addImage(badgeAsset.data, badgeAsset.format, MARGIN_L, footerLineY + 3, 0, 10);
-  } else {
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(C.GREEN);
-    doc.text('VÉRIFIÉ PAR ORDOSUR', MARGIN_L, footerLineY + 9);
-  }
-
-  doc.setFontSize(7.5);
+  // ── Pied de page neutre ────────────────────────────────────────────────────
+  doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
   doc.text(
-    'Interactions vérifiées · Ordonnance horodatée · ordosur.com',
-    PAGE_W - MARGIN_R, footerLineY + 9,
-    { align: 'right' }
-  );
-
-  // Bottom strip — generated by Ordosur + verify URL
-  doc.setFontSize(6.5);
-  doc.setTextColor(C.INK_FAINT);
-  doc.text(
-    `Document généré par Ordosur, plateforme médicale.   Vérification : ordosur.com/verify/${data.ordreNumber}`,
+    `${data.org.name}  ·  N° ${data.ordreNumber}  ·  ${formatDate(data.date)}`,
     PAGE_W / 2, PAGE_H - 6,
     { align: 'center' }
   );
