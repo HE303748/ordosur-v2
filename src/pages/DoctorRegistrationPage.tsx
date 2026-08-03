@@ -74,6 +74,7 @@ export function DoctorRegistrationPage() {
     password: '',
     confirmPassword: '',
     inpe: '',
+    ordre_number: '',
     specialite: '',
     adresse: '',
     telephone: '',
@@ -122,6 +123,11 @@ export function DoctorRegistrationPage() {
       return;
     }
 
+    if (!formData.ordre_number.trim()) {
+      setError("Le numéro d'Ordre est obligatoire");
+      return;
+    }
+
     if (!formData.specialite) {
       setError('Veuillez sélectionner une spécialité');
       return;
@@ -159,6 +165,7 @@ export function DoctorRegistrationPage() {
         telephone: formData.telephone,
         rpps: inpeValue,
         specialite: formData.specialite,
+        ordre_number: formData.ordre_number.trim(),
       });
 
       navigate('/registration-success', { state: { email: formData.email } });
@@ -342,6 +349,22 @@ export function DoctorRegistrationPage() {
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
                 />
                 <p className="text-xs text-gray-400 mt-1">Identifiant National du Praticien dans l'Établissement — 9 chiffres si renseigné</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <RequiredLabel>Numéro d'Ordre National des Médecins</RequiredLabel>
+                </label>
+                <input
+                  name="ordre_number"
+                  type="text"
+                  value={formData.ordre_number}
+                  onChange={handleChange}
+                  required
+                  placeholder="ex : 12345"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                />
+                <p className="text-xs text-gray-400 mt-1">Inscrit sur votre tableau de l'Ordre. Apparaît sur les ordonnances.</p>
               </div>
 
               <div>

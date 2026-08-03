@@ -8,6 +8,7 @@ import {
   Download, ArrowLeft, ChevronRight,
 } from 'lucide-react';
 import { generateOrdonnancePdf } from '../lib/pdfService';
+import { formatAge } from '../lib/ageUtils';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
@@ -109,15 +110,6 @@ function normalizeDrugName(s: string): string {
     .trim();
 }
 
-function getPatientAge(dateNaissance: string | null | undefined): number | null {
-  if (!dateNaissance) return null;
-  const today = new Date();
-  const birth = new Date(dateNaissance);
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
-  return age;
-}
 
 function getSeveriteLabel(s: InteractionAlert['severite']) {
   if (s === 'contre_indication') return '🔴 CONTRE-INDICATION';
@@ -366,7 +358,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
                           <span className="text-slate-400 dark:text-[#475569]">{p.pathologies[0]}</span>
                           {p.date_naissance && (
                             <span className="text-slate-400 dark:text-[#475569]">
-                              {' • '}{getPatientAge(p.date_naissance)} ans
+                              {' • '}{formatAge(p.date_naissance)}
                             </span>
                           )}
                         </>
@@ -377,7 +369,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
                           </span>
                           {p.date_naissance && (
                             <span className="not-italic text-[#475569] dark:text-[#475569]">
-                              {' • '}{getPatientAge(p.date_naissance)} ans
+                              {' • '}{formatAge(p.date_naissance)}
                             </span>
                           )}
                         </>
@@ -585,9 +577,9 @@ function PatientsView({
 
           {filtered.map(p => {
             const isSelected = selectedPatient?.id === p.id;
-            const age = getPatientAge(p.date_naissance);
+            const age = formatAge(p.date_naissance);
             const sexeLabel = p.sexe === 'M' ? 'H' : p.sexe === 'F' ? 'F' : null;
-            const meta = [age != null ? `${age} ans` : null, sexeLabel].filter(Boolean).join(' · ');
+            const meta = [age, sexeLabel].filter(Boolean).join(' · ');
             const pathosToShow = (p.pathologies ?? []).filter(x => x && x !== 'Aucune pathologie renseignée').slice(0, 2);
             const extraPathos = Math.max(0, (p.pathologies?.length ?? 0) - pathosToShow.length);
             return (
@@ -862,7 +854,7 @@ function CheckerView({
                           <div>
                             <p className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">{p.prenom} {p.nom}</p>
                             <p className="text-xs text-slate-400 dark:text-[#475569]">
-                              {p.date_naissance ? `${getPatientAge(p.date_naissance)} ans` : ''}
+                              {p.date_naissance ? (formatAge(p.date_naissance) ?? '') : ''}
                               {p.telephone ? ` • ${p.telephone}` : ''}
                             </p>
                           </div>
@@ -888,7 +880,7 @@ function CheckerView({
                     <div>
                       <p className="font-bold text-[#0A1628]">{selectedPatient.prenom} {selectedPatient.nom}</p>
                       <p className="text-xs text-[#00A86B]">
-                        {selectedPatient.date_naissance ? `${getPatientAge(selectedPatient.date_naissance)} ans` : 'Âge inconnu'}
+                        {selectedPatient.date_naissance ? (formatAge(selectedPatient.date_naissance) ?? 'Âge inconnu') : 'Âge inconnu'}
                         {selectedPatient.sexe ? ` • ${selectedPatient.sexe === 'M' ? 'Homme' : 'Femme'}` : ''}
                       </p>
                     </div>

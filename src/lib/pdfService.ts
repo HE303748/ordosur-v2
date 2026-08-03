@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import QRCode from 'qrcode'; // used only in generateDocumentPdf
+import { formatAge } from './ageUtils';
 
 interface MedicationLine {
   nom: string;
@@ -56,16 +57,6 @@ function formatDate(dateStr: string): string {
   return dateStr;
 }
 
-function getAge(dateStr: string | null | undefined): number | null {
-  if (!dateStr) return null;
-  const dob = new Date(dateStr);
-  if (isNaN(dob.getTime())) return null;
-  const now = new Date();
-  let age = now.getFullYear() - dob.getFullYear();
-  const m = now.getMonth() - dob.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--;
-  return age;
-}
 
 /** Fetches a public image URL and returns it as a base64 data-URL + detected format for jsPDF. */
 async function urlToBase64(url: string): Promise<{ data: string; format: 'PNG' | 'JPEG' }> {
@@ -208,10 +199,8 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setTextColor(C.INK_MUTED);
   if (data.doctor.specialite) { doc.text(data.doctor.specialite, MARGIN_L, y); y += 4.5; }
   // INPE / CNOM compact line
-  const inpeBits: string[] = [];
-  if (data.doctor.rpps)         inpeBits.push(`INPE : ${data.doctor.rpps}`);
-  if (data.doctor.ordre_number) inpeBits.push(`CNOM : ${data.doctor.ordre_number}`);
-  if (inpeBits.length) { doc.text(inpeBits.join('   ·   '), MARGIN_L, y); y += 4.5; }
+  if (data.doctor.rpps)         { doc.text(`INPE : ${data.doctor.rpps}`,         MARGIN_L, y); y += 4.5; }
+  if (data.doctor.ordre_number) { doc.text(`N° Ordre : ${data.doctor.ordre_number}`, MARGIN_L, y); y += 4.5; }
 
   y += 4;
 
@@ -228,8 +217,8 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   let patientHeader = `${data.patient.prenom} ${data.patient.nom}`;
   const patientMeta: string[] = [];
   if (data.patient.sexe) patientMeta.push(data.patient.sexe);
-  const age = getAge(data.patient.date_naissance);
-  if (age !== null) patientMeta.push(`${age} ans`);
+  const ageStr = formatAge(data.patient.date_naissance);
+  if (ageStr) patientMeta.push(ageStr);
   if (patientMeta.length) patientHeader += ` — ${patientMeta.join(', ')}`;
   doc.text(patientHeader, MARGIN_L, y);
   y += 5;

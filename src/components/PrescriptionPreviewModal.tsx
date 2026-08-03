@@ -3,6 +3,7 @@ import { ArrowLeft, Save, Printer, Download, AlertTriangle } from 'lucide-react'
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { generateOrdonnancePdf, PdfInteractionAlert } from '../lib/pdfService';
+import { formatAge } from '../lib/ageUtils';
 
 interface MedicationForm {
   id: string;
@@ -132,7 +133,7 @@ export function PrescriptionPreviewModal({
                 Né(e) le : {(() => {
                   const [y, m, d] = patient.date_naissance!.split('T')[0].split('-');
                   return `${d}/${m}/${y}`;
-                })()}
+                })()} {formatAge(patient.date_naissance) ? `(${formatAge(patient.date_naissance)})` : ''}
               </p>
             )}
           </div>
