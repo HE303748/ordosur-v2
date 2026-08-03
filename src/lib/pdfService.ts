@@ -237,7 +237,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
     y += pLines.length * 4.5;
   }
   if (data.motif) {
-    const motifLines = doc.splitTextToSize(`Motif : ${data.motif}`, CONTENT_W);
+    const motifLines = doc.splitTextToSize(`Motif : ${data.motif.trim()}`, CONTENT_W);
     doc.text(motifLines, MARGIN_L, y);
     y += motifLines.length * 4.5;
   }
@@ -275,11 +275,11 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(C.INK_MUTED);
     if (med.posologie) {
-      const lines = doc.splitTextToSize(`     Posologie : ${med.posologie}`, CONTENT_W);
+      const lines = doc.splitTextToSize(`     Posologie : ${med.posologie.trim()}`, CONTENT_W);
       doc.text(lines, MARGIN_L, y); y += lines.length * 4.5;
     }
     if (med.duree) {
-      const lines = doc.splitTextToSize(`     Durée : ${med.duree}`, CONTENT_W);
+      const lines = doc.splitTextToSize(`     Durée : ${med.duree.trim()}`, CONTENT_W);
       doc.text(lines, MARGIN_L, y); y += lines.length * 4.5;
     }
     // Quantité intentionnellement omise de l'ordonnance imprimée
@@ -298,7 +298,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
     doc.setFontSize(9);
     doc.setFont('helvetica', 'italic');
     doc.setTextColor(C.INK_MUTED);
-    const lines = doc.splitTextToSize(data.remarks, CONTENT_W);
+    const lines = doc.splitTextToSize(data.remarks.trim(), CONTENT_W);
     doc.text(lines, MARGIN_L, y);
     y += lines.length * 4.5;
   }
