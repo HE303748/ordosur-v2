@@ -180,7 +180,7 @@ function SkeletonBox({ className }: { className?: string }) {
 
 function SkeletonKPI() {
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-white/[0.06] p-5 shadow-sm">
+    <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] p-5 shadow-sm">
       <div className="flex items-start justify-between mb-4">
         <SkeletonBox className="w-11 h-11" />
       </div>
@@ -231,7 +231,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       value: stats.totalPatients,
       icon: Users,
       color: 'bg-[#00A86B]',
-      light: 'bg-[#E6F4EE]',
+      light: 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.12]',
       text: 'text-[#00A86B]',
       sub: 'Patients enregistrés',
     },
@@ -239,9 +239,9 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       label: 'Ordonnances',
       value: stats.ordonnances,
       icon: FileText,
-      color: 'bg-violet-500',
-      light: 'bg-violet-50',
-      text: 'text-violet-600',
+      color: 'bg-[#00A86B]',
+      light: 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.12]',
+      text: 'text-[#00A86B]',
       sub: 'Créées au total',
     },
     {
@@ -250,8 +250,8 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
       // Compte = 0 → bouclier vert (sécurité). Compte > 0 → triangle rouge (alerte).
       icon: stats.interactions > 0 ? AlertTriangle : ShieldCheck,
       color: stats.interactions > 0 ? 'bg-red-500'  : 'bg-[#00A86B]',
-      light: stats.interactions > 0 ? 'bg-red-50'   : 'bg-[#E6F4EE]',
-      text:  stats.interactions > 0 ? 'text-red-600': 'text-[#00A86B]',
+      light: stats.interactions > 0 ? 'bg-red-50 dark:bg-[#DC2626]/[0.12]'    : 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.12]',
+      text:  stats.interactions > 0 ? 'text-red-600 dark:text-[#DC2626]'       : 'text-[#00A86B]',
       sub: 'Détectées au total',
     },
     {
@@ -266,15 +266,9 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
         ? `+${stats.evolution}%`
         : `${stats.evolution}%`,
       icon: BarChart3,
-      color: stats.evolutionInsufficient || stats.evolution === 0
-        ? 'bg-slate-400'
-        : stats.evolution > 0 ? 'bg-emerald-500' : 'bg-amber-500',
-      light: stats.evolutionInsufficient || stats.evolution === 0
-        ? 'bg-slate-50'
-        : stats.evolution > 0 ? 'bg-emerald-50'  : 'bg-amber-50',
-      text:  stats.evolutionInsufficient || stats.evolution === 0
-        ? 'text-slate-500'
-        : stats.evolution > 0 ? 'text-emerald-600' : 'text-amber-600',
+      color: 'bg-slate-400',
+      light: 'bg-slate-100 dark:bg-white/[0.06]',
+      text: 'text-slate-500 dark:text-[#94A3B8]',
       sub: stats.evolutionReason === 'new_account'
         ? 'Cabinet en démarrage'
         : stats.evolutionReason === 'low_volume'
@@ -306,7 +300,7 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
               return (
                 <div
                   key={kpi.label}
-                  className={`bg-white rounded-2xl p-4 lg:p-5 border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${
+                  className={`bg-white dark:bg-[#111827] rounded-2xl p-4 lg:p-5 border border-slate-200/80 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${
                     heroOnMobile ? 'col-span-2 lg:col-span-1' : ''
                   }`}
                 >
@@ -315,9 +309,9 @@ function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient
                       <Icon className={`w-5 h-5 ${kpi.text}`} />
                     </div>
                   </div>
-                  <p className="text-2xl lg:text-3xl font-bold text-slate-900 mb-1 tabular-nums">{kpi.value}</p>
-                  <p className="text-sm font-semibold text-slate-700">{kpi.label}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{kpi.sub}</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-[#E2E8F0] mb-1 tabular-nums">{kpi.value}</p>
+                  <p className="text-sm font-semibold text-slate-700 dark:text-[#CBD5E1]">{kpi.label}</p>
+                  <p className="text-xs text-slate-400 dark:text-[#64748B] mt-0.5">{kpi.sub}</p>
                 </div>
               );
             })
