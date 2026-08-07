@@ -1,4 +1,21 @@
 /**
+ * Retourne l'âge en mois entiers à partir de la date de naissance.
+ * Retourne null si la date est absente, invalide ou dans le futur.
+ */
+export function getAgeEnMois(dateStr: string | null | undefined): number | null {
+  if (!dateStr) return null;
+  const dob = new Date(dateStr);
+  if (isNaN(dob.getTime())) return null;
+  const now = new Date();
+  if (now < dob) return null;
+  const months =
+    (now.getFullYear() - dob.getFullYear()) * 12 +
+    (now.getMonth() - dob.getMonth()) -
+    (now.getDate() < dob.getDate() ? 1 : 0);
+  return Math.max(0, months);
+}
+
+/**
  * Formate l'âge d'un patient à partir de sa date de naissance.
  * < 31 jours → "X jours" | < 24 mois → "X mois" | sinon → "X ans"
  * Retourne null si la date est absente ou invalide.

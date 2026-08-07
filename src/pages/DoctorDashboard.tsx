@@ -8,7 +8,7 @@ import {
   Download, ArrowLeft, ChevronRight,
 } from 'lucide-react';
 import { generateOrdonnancePdf } from '../lib/pdfService';
-import { formatAge } from '../lib/ageUtils';
+import { formatAge, getAgeEnMois } from '../lib/ageUtils';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
@@ -67,6 +67,8 @@ interface DbContraindication {
   condition_valeur: string;
   severite: 'absolue' | 'relative';
   description: string;
+  age_max_mois?: number | null;
+  age_min_mois?: number | null;
 }
 
 interface InteractionAlert {
@@ -775,6 +777,7 @@ interface CheckerViewProps {
   addManualMedication: (nom: string) => void;
   removeMedication: (id: string) => void;
   interactionAlerts: InteractionAlert[];
+  ageUnknownWarning: boolean;
   nonVerifiables: string[];
   result: InteractionResult | null;
   loading: boolean;
@@ -795,7 +798,7 @@ function CheckerView({
   medSearchResults, selectedMeds, medSearchTerm, setMedSearchTerm,
   showMedDropdown, setShowMedDropdown, medSearchLoading, searchMedications,
   addMedication, addManualMedication, removeMedication,
-  interactionAlerts, nonVerifiables, result, loading,
+  interactionAlerts, ageUnknownWarning, nonVerifiables, result, loading,
   checkInteractions, resetAnalysis, resultsRef,
   loadPatientOrdonnances, patientOrdonnances,
   onAddPatient, setShowPrescriptionForm,
@@ -1134,6 +1137,14 @@ function CheckerView({
                           </div>
                         );
                       })()}
+
+                      {/* Partie 4 — Avertissement âge inconnu (CI pédiatriques non vérifiées) */}
+                      {ageUnknownWarning && (
+                        <div className="flex items-start gap-2 text-xs text-amber-600 dark:text-amber-400 pt-1">
+                          <span className="flex-shrink-0">⚠️</span>
+                          <span>Âge inconnu — contre-indications pédiatriques non vérifiées. Saisir la date de naissance pour une vérification complète.</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -2118,6 +2129,7 @@ export function DoctorDashboard() {
   const [loading, setLoading] = useState(false);
   const [allContraindications, setAllContraindications] = useState<DbContraindication[]>([]);
   const [interactionAlerts, setInteractionAlerts] = useState<InteractionAlert[]>([]);
+  const [ageUnknownWarning, setAgeUnknownWarning] = useState(false);
   const [nonVerifiables, setNonVerifiables] = useState<string[]>([]);
   const [confirmDeletePatient, setConfirmDeletePatient] = useState<Patient | null>(null);
   const [deletePatientLoading, setDeletePatientLoading] = useState(false);
@@ -2206,7 +2218,7 @@ export function DoctorDashboard() {
 
   // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
   useEffect(() => {
-    if (selectedMeds.length === 0) { setInteractionAlerts([]); return; }
+    if (selectedMeds.length === 0) { setInteractionAlerts([]); setAgeUnknownWarning(false); return; }
 
     // Normalize: strip accents, lowercase, remove non-alphanumeric
     const norm = (s: string) =>
@@ -2375,6 +2387,67 @@ export function DoctorDashboard() {
             });
           }
         }
+      }
+
+      // ── 2b. Contre-indications liées à l'âge ─────────────────────────────
+      // Évaluées séparément du bloc condition/pathologie :
+      // age_max_mois → CI si ageEnMois < seuil (ex. codéine < 144 mois = 12 ans)
+      // age_min_mois → CI si ageEnMois > seuil (ex. AINS > 960 mois = 80 ans)
+      // Si date_naissance absente : aucune alerte, mais avertissement discret.
+      if (selectedPatient && allContraindications.length > 0) {
+        const ageEnMois = getAgeEnMois(selectedPatient.date_naissance);
+        let hasAgeCICandidate = false;
+
+        for (const contra of allContraindications) {
+          if (contra.age_max_mois == null && contra.age_min_mois == null) continue;
+
+          const dciParts = contra.dci_pattern.split('|').map(p => norm(p.trim())).filter(p => p.length > 2);
+          const matchedIdx = medDCIs.findIndex(m =>
+            dciParts.some(dp =>
+              m.normalizedDCI.includes(dp) ||
+              m.normalizedName.includes(dp) ||
+              (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp))
+            )
+          );
+          if (matchedIdx === -1) continue;
+
+          hasAgeCICandidate = true;
+          if (ageEnMois === null) continue; // pas d'alerte si âge inconnu
+
+          const triggered =
+            (contra.age_max_mois != null && ageEnMois < contra.age_max_mois) ||
+            (contra.age_min_mois != null && ageEnMois > contra.age_min_mois);
+          if (!triggered) continue;
+
+          const conditionLabel = (() => {
+            const parts: string[] = [];
+            if (contra.age_max_mois != null) {
+              const ans = Math.round(contra.age_max_mois / 12);
+              parts.push(`Moins de ${ans} an${ans > 1 ? 's' : ''}`);
+            }
+            if (contra.age_min_mois != null) {
+              const ans = Math.round(contra.age_min_mois / 12);
+              parts.push(`Plus de ${ans} ans`);
+            }
+            return parts.join(' / ');
+          })();
+
+          const key = `age-ci|${selectedMeds[matchedIdx].nom}|${contra.dci_pattern}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            alerts.push({
+              type: 'contraindication',
+              severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
+              description: contra.description,
+              involved: [selectedMeds[matchedIdx].nom],
+              condition: conditionLabel,
+            });
+          }
+        }
+
+        setAgeUnknownWarning(hasAgeCICandidate && ageEnMois === null);
+      } else {
+        setAgeUnknownWarning(false);
       }
 
       setInteractionAlerts(alerts);
@@ -2895,6 +2968,7 @@ export function DoctorDashboard() {
                 addManualMedication={addManualMedication}
                 removeMedication={removeMedication}
                 interactionAlerts={interactionAlerts}
+                ageUnknownWarning={ageUnknownWarning}
                 nonVerifiables={nonVerifiables}
                 result={result}
                 loading={loading}
