@@ -441,7 +441,7 @@ export function RecentActivityTimeline({ doctorId }: RecentActivityTimelineProps
   };
 
   const getRiskLabel = (level: string | null) => {
-    if (level === 'safe')      return 'SÉCURITAIRE';
+    if (level === 'safe')      return 'Aucune interaction détectée';
     if (level === 'attention') return 'ATTENTION';
     if (level === 'dangerous') return 'DANGEREUX';
     return '';

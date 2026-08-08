@@ -1192,7 +1192,7 @@ function CheckerView({
                 {result.severity === 'dangerous' && <X className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
                 <div className="min-w-0 flex-1">
                   <h3 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tight">
-                    {result.severity === 'safe' ? '✓ Sécuritaire' :
+                    {result.severity === 'safe' ? 'Aucune interaction médicamenteuse détectée' :
                      result.severity === 'attention' ? '⚠ Attention' : '⚠ Dangereux'}
                   </h3>
                   <p className="text-white/90 mt-0.5 text-xs lg:text-sm break-words">{result.description}</p>
@@ -2295,6 +2295,41 @@ export function DoctorDashboard() {
       // Fusionner non-vérifiables RPC + méds manuels (toujours non vérifiables par construction)
       setNonVerifiables([...rpcNonVerifiables, ...manualMeds.map(m => m.nom)]);
 
+      // ── 2-pre. Fallback ingrédients pour méds sans DCI ───────────────────
+      // Les médicaments marocains dont dci = null (bridge SQL non encore appliqué)
+      // ne peuvent pas être matchés par le texte dci. On charge leurs ingrédients
+      // depuis medicament_ingredients → ingredients.name_en pour couvrir les CI.
+      // Si aucune ligne n'existe (bridge pas encore appliqué non plus), le fallback
+      // retourne [] et le comportement reste inchangé (l'alerte info reste affichée).
+      const ingNamesByMedId = new Map<string, string[]>();
+      const medsNoDci = medDCIs.filter(m => !m.manual && (!m.dci || m.dci.trim() === ''));
+      if (medsNoDci.length > 0) {
+        const noIds = medsNoDci.map(m => m.id);
+        const { data: miRows } = await supabase
+          .from('medicament_ingredients')
+          .select('medicament_id, ingredient_id')
+          .in('medicament_id', noIds);
+        if (miRows && (miRows as Array<{ medicament_id: string; ingredient_id: string }>).length > 0) {
+          const ingIds = [...new Set((miRows as Array<{ ingredient_id: string }>).map(r => r.ingredient_id))];
+          const { data: ingRows } = await supabase
+            .from('ingredients')
+            .select('id, name_en')
+            .in('id', ingIds);
+          if (ingRows) {
+            const ingMap = new Map(
+              (ingRows as Array<{ id: string; name_en: string | null }>).map(i => [i.id, norm(i.name_en || '')])
+            );
+            for (const mi of miRows as Array<{ medicament_id: string; ingredient_id: string }>) {
+              const ingName = ingMap.get(mi.ingredient_id);
+              if (!ingName || ingName.length < 3) continue;
+              const list = ingNamesByMedId.get(mi.medicament_id) ?? [];
+              list.push(ingName);
+              ingNamesByMedId.set(mi.medicament_id, list);
+            }
+          }
+        }
+      }
+
       // ── 2. Contraindications (runs even with 1 med, requires patient) ──────
       if (selectedPatient && allContraindications.length > 0) {
         // Volet 2 — Termes de test par condition patient.
@@ -2333,11 +2368,14 @@ export function DoctorDashboard() {
           // Find which selected med matches this dci pattern.
           // Phase 2b — normalizedCanonique en 3e source (résout les formes sel : Aspégic
           // "acétylsalicylate de lysine" → canonique "aspirine ..."). Additif, '' si absent.
+          // Fallback ingrédients (4e source) — méds marocains avec dci null : on cherche
+          // via medicament_ingredients → ingredients.name_en (chargé avant ce bloc).
           const matchedIdx = medDCIs.findIndex(m =>
             dciParts.some(dp =>
               m.normalizedDCI.includes(dp) ||
               m.normalizedName.includes(dp) ||
-              (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp))
+              (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp)) ||
+              (ingNamesByMedId.get(m.id)?.some(ing => ing.includes(dp)) ?? false)
             )
           );
           if (matchedIdx === -1) continue;
@@ -2406,7 +2444,8 @@ export function DoctorDashboard() {
             dciParts.some(dp =>
               m.normalizedDCI.includes(dp) ||
               m.normalizedName.includes(dp) ||
-              (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp))
+              (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp)) ||
+              (ingNamesByMedId.get(m.id)?.some(ing => ing.includes(dp)) ?? false)
             )
           );
           if (matchedIdx === -1) continue;
