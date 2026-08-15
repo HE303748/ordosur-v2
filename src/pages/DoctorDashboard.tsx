@@ -1003,6 +1003,14 @@ function CheckerView({
                         {med.manual && (
                           <span title="Saisie manuelle — pas de vérification d'interaction" className="text-xs text-slate-400 dark:text-slate-500 flex-shrink-0">✏️</span>
                         )}
+                        {!med.manual && medVerifInfo.get(med.id)?.hasSID && (
+                          <span
+                            title={medVerifInfo.get(med.id)?.source ? `Source consultée : ${medVerifInfo.get(med.id)?.source}` : 'Aucune interaction documentée dans les sources consultées'}
+                            className="text-[10px] font-medium text-emerald-600 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5 flex-shrink-0 cursor-help dark:bg-emerald-500/10 dark:border-emerald-500/30 dark:text-emerald-400"
+                          >
+                            Vérifié
+                          </span>
+                        )}
                         <button
                           onClick={() => removeMedication(med.id)}
                           aria-label={`Retirer ${med.nom}`}
@@ -1021,10 +1029,17 @@ function CheckerView({
               {/* Real-time alerts */}
               {selectedMeds.length >= 1 && (
                 <div className="mb-5 space-y-3">
-                  {/* ── Bandeau ambre "médicaments non vérifiables" (V2) ─────────────────
-                      Distinct des alertes cliniques : signal de limite de couverture, pas
-                      une interaction. Border-2 + fond ambre pour qu'il soit IMPOSSIBLE
-                      à confondre avec un résultat rassurant. */}
+                  {/* Compteur d'état (≥ 2 méds ou ≥ 1 non vérifiable) */}
+                  {(selectedMeds.length >= 2 || nonVerifiables.length > 0) && (() => {
+                    const nv = nonVerifiables.length;
+                    const ve = selectedMeds.length - nv;
+                    return (
+                      <div className={`text-xs font-medium px-3 py-1.5 rounded-lg ${nv > 0 ? 'bg-amber-50 text-amber-700' : 'bg-slate-50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400'}`}>
+                        {selectedMeds.length} médicament{selectedMeds.length > 1 ? 's' : ''} · {ve} vérifié{ve > 1 ? 's' : ''} · {nv} non vérifiable{nv > 1 ? 's' : ''}
+                      </div>
+                    );
+                  })()}
+                  {/* ── Bandeau ambre "médicaments non vérifiables" ─────────────────── */}
                   {nonVerifiables.length > 0 && (
                     <div className="flex items-start gap-2.5 px-4 py-3 bg-amber-50 border-2 border-amber-400 rounded-xl">
                       <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -1039,17 +1054,26 @@ function CheckerView({
                     </div>
                   )}
                   {interactionAlerts.length === 0 ? (
-                    <div className="flex items-center gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                      <span className="text-sm text-emerald-800 font-medium">
-                        {selectedMeds.length === 1
-                          ? 'Aucune contre-indication connue'
-                          : 'Aucune interaction connue entre les médicaments vérifiés'}
-                        {!selectedPatient && (
-                          <span className="text-emerald-600 font-normal"> — sélectionnez un patient pour les contre-indications</span>
-                        )}
-                      </span>
-                    </div>
+                    nonVerifiables.length < selectedMeds.length ? (
+                      <div className="flex items-start gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm text-emerald-800 font-medium">
+                            {selectedMeds.length === 1
+                              ? 'Aucune contre-indication connue'
+                              : 'Aucune interaction documentée entre les médicaments vérifiés'}
+                            {!selectedPatient && selectedMeds.length === 1 && (
+                              <span className="text-emerald-600 font-normal"> — sélectionnez un patient pour les contre-indications</span>
+                            )}
+                          </span>
+                          {selectedMeds.length === 1 && !selectedMeds[0].manual && medVerifInfo.get(selectedMeds[0].id)?.source && (
+                            <p className="text-xs text-emerald-600 mt-0.5">
+                              Source : {medVerifInfo.get(selectedMeds[0].id)?.source}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ) : null
                   ) : (
                     <div className="space-y-3">
                       {/* ── Sprint #3.0.9 — Aperçu compact ──────────────────
@@ -2131,6 +2155,9 @@ export function DoctorDashboard() {
   const [interactionAlerts, setInteractionAlerts] = useState<InteractionAlert[]>([]);
   const [ageUnknownWarning, setAgeUnknownWarning] = useState(false);
   const [nonVerifiables, setNonVerifiables] = useState<string[]>([]);
+  // Ingrédients vérifiés sans interaction documentée : hasSID = true si au moins
+  // un ingrédient du méd porte sans_interaction_documentee = true.
+  const [medVerifInfo, setMedVerifInfo] = useState<Map<string, { hasSID: boolean; source: string | null }>>(() => new Map());
   const [confirmDeletePatient, setConfirmDeletePatient] = useState<Patient | null>(null);
   const [deletePatientLoading, setDeletePatientLoading] = useState(false);
   // Volet 2 — synonymes des pathologies du patient sélectionné.
@@ -2218,7 +2245,7 @@ export function DoctorDashboard() {
 
   // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
   useEffect(() => {
-    if (selectedMeds.length === 0) { setInteractionAlerts([]); setAgeUnknownWarning(false); return; }
+    if (selectedMeds.length === 0) { setInteractionAlerts([]); setAgeUnknownWarning(false); setMedVerifInfo(new Map()); return; }
 
     // Normalize: strip accents, lowercase, remove non-alphanumeric
     const norm = (s: string) =>
@@ -2244,6 +2271,8 @@ export function DoctorDashboard() {
       const manualMeds = selectedMeds.filter(m => m.manual);
       const dbMeds = selectedMeds.filter(m => !m.manual);
       let rpcNonVerifiables: string[] = [];
+      let medicamentsVerifiesNoms = new Set<string>();
+      let interactionsForGuard: Array<{ medicament_a: string; medicament_b: string }> = [];
 
       if (dbMeds.length >= 2) {
         try {
@@ -2255,6 +2284,7 @@ export function DoctorDashboard() {
             const {
               interactions = [],
               medicaments_non_verifiables = [],
+              medicaments_verifies = [],
             } = v2Data as {
               interactions: Array<{
                 medicament_a: string; medicament_b: string;
@@ -2265,6 +2295,8 @@ export function DoctorDashboard() {
               medicaments_non_verifiables: string[];
             };
             rpcNonVerifiables = medicaments_non_verifiables;
+            medicamentsVerifiesNoms = new Set<string>(medicaments_verifies);
+            interactionsForGuard = interactions;
             const ddDedup = new Map<string, InteractionAlert>();
             for (const inter of interactions) {
               const sev = (inter.severite as InteractionAlert['severite']) || 'non_classee';
@@ -2292,43 +2324,106 @@ export function DoctorDashboard() {
         }
       }
 
-      // Fusionner non-vérifiables RPC + méds manuels (toujours non vérifiables par construction)
-      setNonVerifiables([...rpcNonVerifiables, ...manualMeds.map(m => m.nom)]);
-
-      // ── 2-pre. Fallback ingrédients pour méds sans DCI ───────────────────
-      // Les médicaments marocains dont dci = null (bridge SQL non encore appliqué)
-      // ne peuvent pas être matchés par le texte dci. On charge leurs ingrédients
-      // depuis medicament_ingredients → ingredients.name_en pour couvrir les CI.
-      // Si aucune ligne n'existe (bridge pas encore appliqué non plus), le fallback
-      // retourne [] et le comportement reste inchangé (l'alerte info reste affichée).
+      // ── 2-pre. Chargement ingrédients (tous méds DB) ─────────────────────
+      // Une seule paire de requêtes filtrées par UUID — jamais de chargement de table complète.
+      // Trois usages :
+      //   • ingNamesByMedId   : fallback CI matching pour les méds sans DCI
+      //   • medVerifInfoLocal : sans_interaction_documentee + source_verification (affichage + garde)
+      //   • medIdsWithIngredients : détection non-vérifiable mono-méd (RPC non appelée)
       const ingNamesByMedId = new Map<string, string[]>();
-      const medsNoDci = medDCIs.filter(m => !m.manual && (!m.dci || m.dci.trim() === ''));
-      if (medsNoDci.length > 0) {
-        const noIds = medsNoDci.map(m => m.id);
+      const medVerifInfoLocal = new Map<string, { hasSID: boolean; source: string | null }>();
+      const medIdsWithIngredients = new Set<string>();
+      const allDbMedIds = dbMeds.map(m => m.id);
+
+      if (allDbMedIds.length > 0) {
         const { data: miRows } = await supabase
           .from('medicament_ingredients')
           .select('medicament_id, ingredient_id')
-          .in('medicament_id', noIds);
+          .in('medicament_id', allDbMedIds);
+
         if (miRows && (miRows as Array<{ medicament_id: string; ingredient_id: string }>).length > 0) {
+          for (const mi of miRows as Array<{ medicament_id: string; ingredient_id: string }>) {
+            medIdsWithIngredients.add(mi.medicament_id);
+          }
           const ingIds = [...new Set((miRows as Array<{ ingredient_id: string }>).map(r => r.ingredient_id))];
           const { data: ingRows } = await supabase
             .from('ingredients')
-            .select('id, name_en')
+            .select('id, name_en, sans_interaction_documentee, source_verification')
             .in('id', ingIds);
+
           if (ingRows) {
-            const ingMap = new Map(
-              (ingRows as Array<{ id: string; name_en: string | null }>).map(i => [i.id, norm(i.name_en || '')])
-            );
+            type IngRow = { id: string; name_en: string | null; sans_interaction_documentee: boolean | null; source_verification: string | null };
+            const ingMap = new Map((ingRows as IngRow[]).map(i => [i.id, i]));
+
             for (const mi of miRows as Array<{ medicament_id: string; ingredient_id: string }>) {
-              const ingName = ingMap.get(mi.ingredient_id);
-              if (!ingName || ingName.length < 3) continue;
-              const list = ingNamesByMedId.get(mi.medicament_id) ?? [];
-              list.push(ingName);
-              ingNamesByMedId.set(mi.medicament_id, list);
+              const ing = ingMap.get(mi.ingredient_id);
+              if (!ing) continue;
+
+              // Fallback CI matching — uniquement méds sans DCI
+              const medEntry = medDCIs.find(m => m.id === mi.medicament_id);
+              if (medEntry && !medEntry.manual && (!medEntry.dci || medEntry.dci.trim() === '')) {
+                const nameNorm = norm(ing.name_en || '');
+                if (nameNorm.length >= 3) {
+                  const list = ingNamesByMedId.get(mi.medicament_id) ?? [];
+                  list.push(nameNorm);
+                  ingNamesByMedId.set(mi.medicament_id, list);
+                }
+              }
+
+              // Verif info — sans_interaction_documentee prend priorité sur false/null
+              if (ing.sans_interaction_documentee === true) {
+                medVerifInfoLocal.set(mi.medicament_id, {
+                  hasSID: true,
+                  source: ing.source_verification ?? null,
+                });
+              } else if (!medVerifInfoLocal.has(mi.medicament_id)) {
+                medVerifInfoLocal.set(mi.medicament_id, { hasSID: false, source: null });
+              }
             }
           }
         }
       }
+      setMedVerifInfo(medVerifInfoLocal);
+
+      // ── Calcul des non-vérifiables ─────────────────────────────────────────
+      // Sources cumulées sans doublon :
+      //  1. RPC (multi-méd, ≥ 2)
+      //  2. Mono-méd sans ingrédients (RPC non appelée)
+      //  3. Garde anti-faux-vert (méd vérifié par RPC, ingrédients sans données)
+      //  4. Médicaments manuels
+      const nonVerifiablesList: string[] = [...rpcNonVerifiables];
+
+      if (dbMeds.length < 2) {
+        for (const med of dbMeds) {
+          if (!medIdsWithIngredients.has(med.id) && !nonVerifiablesList.includes(med.nom)) {
+            nonVerifiablesList.push(med.nom);
+          }
+        }
+      }
+
+      if (medicamentsVerifiesNoms.size > 0) {
+        const medsInInteractionsNoms = new Set<string>();
+        for (const inter of interactionsForGuard) {
+          medsInInteractionsNoms.add(inter.medicament_a);
+          medsInInteractionsNoms.add(inter.medicament_b);
+        }
+        for (const med of dbMeds) {
+          if (!medicamentsVerifiesNoms.has(med.nom)) continue;
+          if (nonVerifiablesList.includes(med.nom)) continue;
+          const vi = medVerifInfoLocal.get(med.id);
+          if (!vi) continue;
+          if (vi.hasSID || medsInInteractionsNoms.has(med.nom)) continue;
+          console.warn(
+            `[guard-faux-vert] "${med.nom}" : ingrédient(s) mappé(s) sans règle ANSM/DDInter ni sans_interaction_documentee — potentiel faux vert, basculé en non vérifiable`
+          );
+          nonVerifiablesList.push(med.nom);
+        }
+      }
+
+      for (const m of manualMeds) {
+        if (!nonVerifiablesList.includes(m.nom)) nonVerifiablesList.push(m.nom);
+      }
+      setNonVerifiables(nonVerifiablesList);
 
       // ── 2. Contraindications (runs even with 1 med, requires patient) ──────
       if (selectedPatient && allContraindications.length > 0) {
@@ -2879,14 +2974,14 @@ export function DoctorDashboard() {
             ? reasons[0]
             : selectedMeds.length === 1
               ? `✓ Aucune contre-indication connue pour ${selectedMeds[0].nom} avec le profil de ce patient`
-              : `✓ Aucune interaction connue entre les médicaments vérifiés`;
+              : `✓ Aucune interaction documentée entre les médicaments vérifiés`;
 
     setResult({ severity: overallSeverity, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);
   };
 
   const resetAnalysis = () => {
-    setSelectedMeds([]); setMedSearchTerm(''); setInteractionAlerts([]); setResult(null); setNonVerifiables([]);
+    setSelectedMeds([]); setMedSearchTerm(''); setInteractionAlerts([]); setResult(null); setNonVerifiables([]); setMedVerifInfo(new Map());
   };
 
   const filteredPatientsForDropdown = patientSearchTerm.length >= 1
