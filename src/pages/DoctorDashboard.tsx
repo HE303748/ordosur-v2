@@ -44,6 +44,7 @@ import { DocumentsView } from '../components/ui/DocumentsView';
 
 interface InteractionResult {
   severity: 'safe' | 'attention' | 'dangerous';
+  title?: string;
   description: string;
   alternatives: string[];
   reasons: string[];
@@ -1061,7 +1062,7 @@ function CheckerView({
                         <div className="flex-1 min-w-0">
                           <span className="text-sm text-emerald-800 font-medium">
                             {selectedMeds.length === 1
-                              ? 'Aucune contre-indication connue'
+                              ? 'Aucune contre-indication documentée'
                               : 'Aucune interaction documentée entre les médicaments vérifiés'}
                             {!selectedPatient && selectedMeds.length === 1 && (
                               <span className="text-emerald-600 font-normal"> — sélectionnez un patient pour les contre-indications</span>
@@ -1217,8 +1218,10 @@ function CheckerView({
                 {result.severity === 'dangerous' && <X className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
                 <div className="min-w-0 flex-1">
                   <h3 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tight">
-                    {result.severity === 'safe' ? 'Aucune interaction médicamenteuse détectée' :
-                     result.severity === 'attention' ? '⚠ Attention' : '⚠ Dangereux'}
+                    {result.title ?? (
+                      result.severity === 'safe' ? 'Aucune interaction médicamenteuse détectée' :
+                      result.severity === 'attention' ? '⚠ Attention' : '⚠ Dangereux'
+                    )}
                   </h3>
                   <p className="text-white/90 mt-0.5 text-xs lg:text-sm break-words">{result.description}</p>
                 </div>
@@ -2966,18 +2969,36 @@ export function DoctorDashboard() {
     // pour que "X interaction(s) signalée(s)" corresponde exactement au nombre de cards affichées.
     const clinicalSeverities: InteractionAlert['severite'][] = ['contre_indication', 'majeure', 'moderee', 'mineure'];
     const nbSignaled = interactionAlerts.filter(a => clinicalSeverities.includes(a.severite)).length;
+
+    // Source unique de vérité : même nonVerifiables que le panneau temps réel.
+    // allNonVerifiable → pas de bandeau vert, severity forcée à 'attention'.
+    // someNonVerifiable → bandeau vert restreint avec avertissement explicite.
+    const allNonVerifiable = selectedMeds.length > 0 && selectedMeds.every(m => nonVerifiables.includes(m.nom));
+    const someNonVerifiable = !allNonVerifiable && nonVerifiables.length > 0;
+    if (allNonVerifiable) overallSeverity = 'attention';
+
+    const resultTitle: string | undefined = allNonVerifiable
+      ? '⚠ Vérification impossible'
+      : someNonVerifiable && overallSeverity === 'safe'
+        ? 'Résultat partiel — médicaments vérifiés uniquement'
+        : undefined;
+
     const description =
       overallSeverity === 'dangerous'
         ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé`
-        : overallSeverity === 'attention'
-          ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
-          : reasons.length > 0
-            ? reasons[0]
-            : selectedMeds.length === 1
-              ? `✓ Aucune contre-indication connue pour ${selectedMeds[0].nom} avec le profil de ce patient`
-              : `✓ Aucune interaction documentée entre les médicaments vérifiés`;
+        : allNonVerifiable
+          ? `Aucun des médicaments sélectionnés ne permet la vérification automatique des interactions — vérifiez manuellement`
+          : overallSeverity === 'attention'
+            ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
+            : reasons.length > 0
+              ? reasons[0]
+              : someNonVerifiable
+                ? `✓ Aucune interaction documentée entre les médicaments vérifiés · ${nonVerifiables.length} médicament${nonVerifiables.length > 1 ? 's' : ''} non vérifiable${nonVerifiables.length > 1 ? 's' : ''} non évalué${nonVerifiables.length > 1 ? 's' : ''}`
+                : selectedMeds.length === 1
+                  ? `✓ Aucune contre-indication documentée pour ${selectedMeds[0].nom} avec le profil de ce patient`
+                  : `✓ Aucune interaction documentée entre les médicaments vérifiés`;
 
-    setResult({ severity: overallSeverity, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
+    setResult({ severity: overallSeverity, title: resultTitle, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);
   };
 
