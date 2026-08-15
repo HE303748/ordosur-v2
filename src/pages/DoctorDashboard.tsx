@@ -779,6 +779,7 @@ interface CheckerViewProps {
   interactionAlerts: InteractionAlert[];
   ageUnknownWarning: boolean;
   nonVerifiables: string[];
+  medVerifInfo: Map<string, { hasSID: boolean; source: string | null }>;
   result: InteractionResult | null;
   loading: boolean;
   checkInteractions: () => void;
@@ -798,7 +799,7 @@ function CheckerView({
   medSearchResults, selectedMeds, medSearchTerm, setMedSearchTerm,
   showMedDropdown, setShowMedDropdown, medSearchLoading, searchMedications,
   addMedication, addManualMedication, removeMedication,
-  interactionAlerts, ageUnknownWarning, nonVerifiables, result, loading,
+  interactionAlerts, ageUnknownWarning, nonVerifiables, medVerifInfo, result, loading,
   checkInteractions, resetAnalysis, resultsRef,
   loadPatientOrdonnances, patientOrdonnances,
   onAddPatient, setShowPrescriptionForm,
@@ -3104,6 +3105,7 @@ export function DoctorDashboard() {
                 interactionAlerts={interactionAlerts}
                 ageUnknownWarning={ageUnknownWarning}
                 nonVerifiables={nonVerifiables}
+                medVerifInfo={medVerifInfo}
                 result={result}
                 loading={loading}
                 checkInteractions={checkInteractions}

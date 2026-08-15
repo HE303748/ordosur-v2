@@ -118,7 +118,7 @@ interface RiskDistributionChartProps {
 }
 
 const RISK_CONFIG = [
-  { key: 'safe',      name: 'Sécuritaire', color: '#10B981' },
+  { key: 'safe',      name: 'Aucune interaction', color: '#10B981' },
   { key: 'attention', name: 'Attention',    color: '#F59E0B' },
   { key: 'dangerous', name: 'Dangereux',    color: '#EF4444' },
 ];

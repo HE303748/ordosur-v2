@@ -435,7 +435,7 @@ export function ClinicDashboard() {
   ];
 
   const riskData = [
-    { name: 'Sécuritaire', value: stats.safetyRate, color: '#22c55e' },
+    { name: 'Sans interaction', value: stats.safetyRate, color: '#22c55e' },
     { name: 'Attention', value: Math.round((100 - stats.safetyRate) * 0.6), color: '#f97316' },
     { name: 'Dangereux', value: Math.round((100 - stats.safetyRate) * 0.4), color: '#ef4444' },
   ];
@@ -661,7 +661,7 @@ export function ClinicDashboard() {
                       activity.risk_level === 'attention' ? 'bg-caution-100 text-caution-700' :
                       'bg-danger-100 text-danger-700'
                     }`}>
-                      {activity.risk_level === 'safe' ? 'Sécuritaire' :
+                      {activity.risk_level === 'safe' ? 'Sans interaction' :
                        activity.risk_level === 'attention' ? 'Attention' : 'Dangereux'}
                     </span>
                   </div>

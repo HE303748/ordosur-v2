@@ -32,7 +32,7 @@ interface MedicationHistoryModalProps {
 const getStatusIcon = (status?: string) => {
   if (!status) return null;
 
-  if (status.toLowerCase().includes('sécuritaire') || status.toLowerCase().includes('safe')) {
+  if (status.toLowerCase().includes('safe') || status.toLowerCase().includes('aucune interaction')) {
     return <CheckCircle2 className="w-4 h-4 text-success-600" />;
   }
   if (status.toLowerCase().includes('attention')) {
@@ -47,7 +47,7 @@ const getStatusIcon = (status?: string) => {
 const getStatusColor = (status?: string) => {
   if (!status) return 'text-slate-600';
 
-  if (status.toLowerCase().includes('sécuritaire') || status.toLowerCase().includes('safe')) {
+  if (status.toLowerCase().includes('safe') || status.toLowerCase().includes('aucune interaction')) {
     return 'text-success-600';
   }
   if (status.toLowerCase().includes('attention')) {
