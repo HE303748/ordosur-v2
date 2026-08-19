@@ -4,53 +4,9 @@ import { Heart, Stethoscope, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-reac
 import { useAuth } from '../contexts/AuthContext';
 import { validatePassword, validateEmail, validatePhoneNumber, validateINPENumber, sanitizeInput, sanitizeInputFinal } from '../lib/validation';
 import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
-import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+import { SPECIALITES } from '../lib/specialites';
 
-const SPECIALITES = [
-  'Médecin généraliste',
-  'Allergologie',
-  'Anesthésiologie-Réanimation',
-  'Cardiologie',
-  'Chirurgie cardiovasculaire et thoracique',
-  'Chirurgie générale',
-  'Chirurgie maxillo-faciale et stomatologie',
-  'Chirurgie orthopédique et traumatologique',
-  'Chirurgie pédiatrique',
-  'Chirurgie plastique et reconstructrice',
-  'Chirurgie urologique',
-  'Dermatologie-Vénérologie',
-  'Endocrinologie-Diabétologie et maladies métaboliques',
-  'Gastro-entérologie et Hépatologie',
-  'Gériatrie',
-  'Gynécologie médicale',
-  'Gynécologie-Obstétrique',
-  'Hématologie',
-  'Infectiologie',
-  'Médecin biologiste',
-  'Médecine du travail',
-  'Médecine d\'urgence',
-  'Médecine interne',
-  'Médecine légale et expertises médicales',
-  'Médecine nucléaire',
-  'Médecine physique et Réadaptation',
-  'Médecine préventive et Santé publique',
-  'Néonatologie',
-  'Néphrologie',
-  'Neurochirurgie',
-  'Neurologie',
-  'Oncologie médicale',
-  'Oncologie radiothérapique',
-  'Ophtalmologie',
-  'ORL et Chirurgie cervico-faciale',
-  'Pédiatrie',
-  'Pneumo-Phtisiologie',
-  'Psychiatrie',
-  'Radiologie et Imagerie médicale',
-  'Rhumatologie',
-];
-
-// Champ requis avec astérisque rouge
 function RequiredLabel({ children }: { children: React.ReactNode }) {
   return (
     <span>
@@ -76,6 +32,7 @@ export function DoctorRegistrationPage() {
     inpe: '',
     ordre_number: '',
     specialite: '',
+    specialiteAutre: '',
     adresse: '',
     telephone: '',
     acceptTerms: false,
@@ -83,7 +40,7 @@ export function DoctorRegistrationPage() {
 
   const passwordStrength = validatePassword(formData.password);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     setFormData(prev => ({
@@ -117,14 +74,8 @@ export function DoctorRegistrationPage() {
       return;
     }
 
-    // INPE optionnel : on ne valide que si quelque chose a été saisi.
     if (formData.inpe.trim() && !validateINPENumber(formData.inpe.trim())) {
       setError('Le numéro INPE doit contenir 9 chiffres');
-      return;
-    }
-
-    if (!formData.ordre_number.trim()) {
-      setError("Le numéro d'Ordre est obligatoire");
       return;
     }
 
@@ -133,8 +84,8 @@ export function DoctorRegistrationPage() {
       return;
     }
 
-    if (!formData.adresse.trim()) {
-      setError("L'adresse du cabinet est obligatoire");
+    if (formData.specialite === 'Autre' && !formData.specialiteAutre.trim()) {
+      setError('Veuillez préciser votre spécialité');
       return;
     }
 
@@ -153,19 +104,21 @@ export function DoctorRegistrationPage() {
     try {
       const prenom = sanitizeInputFinal(formData.prenom);
       const nom    = sanitizeInputFinal(formData.nom);
-      // INPE vide → null pour éviter la contrainte UNIQUE doctors_rpps_key
-      // (Postgres autorise plusieurs NULL dans un index UNIQUE standard).
       const inpeValue = formData.inpe.trim() || null;
+      const specialiteFinal = formData.specialite === 'Autre'
+        ? sanitizeInputFinal(formData.specialiteAutre)
+        : formData.specialite;
+
       await signUp(formData.email, formData.password, 'doctor', {
         prenom,
         nom,
         org_name: `Cabinet Dr. ${nom} ${prenom}`,
         org_type: 'cabinet',
-        adresse: sanitizeInputFinal(formData.adresse),
+        adresse: formData.adresse.trim() ? sanitizeInputFinal(formData.adresse) : null,
         telephone: formData.telephone,
         rpps: inpeValue,
-        specialite: formData.specialite,
-        ordre_number: formData.ordre_number.trim(),
+        specialite: specialiteFinal,
+        ordre_number: formData.ordre_number.trim() || null,
       });
 
       navigate('/registration-success', { state: { email: formData.email } });
@@ -179,6 +132,8 @@ export function DoctorRegistrationPage() {
       setLoading(false);
     }
   };
+
+  const inputClass = "w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all";
 
   return (
     <div className="min-h-screen bg-[#FAFAF7] flex">
@@ -252,7 +207,7 @@ export function DoctorRegistrationPage() {
                     onChange={handleChange}
                     required
                     placeholder="Mohammed"
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                    className={inputClass}
                   />
                 </div>
                 <div>
@@ -266,7 +221,7 @@ export function DoctorRegistrationPage() {
                     onChange={handleChange}
                     required
                     placeholder="Benali"
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                    className={inputClass}
                   />
                 </div>
               </div>
@@ -282,7 +237,7 @@ export function DoctorRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="m.benali@cabinet.ma"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                  className={inputClass}
                 />
               </div>
 
@@ -298,7 +253,7 @@ export function DoctorRegistrationPage() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                    className={inputClass}
                   />
                   <button
                     type="button"
@@ -322,7 +277,7 @@ export function DoctorRegistrationPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                    className={inputClass}
                   />
                   <button
                     type="button"
@@ -346,25 +301,26 @@ export function DoctorRegistrationPage() {
                   onChange={handleChange}
                   placeholder="123456789"
                   maxLength={9}
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                  className={inputClass}
                 />
-                <p className="text-xs text-gray-400 mt-1">Identifiant National du Praticien dans l'Établissement — 9 chiffres si renseigné</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Identifiant National des Professionnels et Établissements de santé — utile pour les feuilles de soins AMO
+                </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <RequiredLabel>Numéro d'Ordre National des Médecins</RequiredLabel>
+                  Numéro d'Ordre National des Médecins <span className="text-[#94A3B8] font-normal">(optionnel)</span>
                 </label>
                 <input
                   name="ordre_number"
                   type="text"
                   value={formData.ordre_number}
                   onChange={handleChange}
-                  required
                   placeholder="ex : 12345"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                  className={inputClass}
                 />
-                <p className="text-xs text-gray-400 mt-1">Inscrit sur votre tableau de l'Ordre. Apparaît sur les ordonnances.</p>
+                <p className="text-xs text-gray-400 mt-1">Apparaît sur les ordonnances.</p>
               </div>
 
               <div>
@@ -376,28 +332,38 @@ export function DoctorRegistrationPage() {
                   value={formData.specialite}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                  className={inputClass}
                 >
                   <option value="">Sélectionner une spécialité</option>
                   {SPECIALITES.map(s => (
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
+                {formData.specialite === 'Autre' && (
+                  <input
+                    name="specialiteAutre"
+                    type="text"
+                    value={formData.specialiteAutre}
+                    onChange={handleChange}
+                    placeholder="Précisez votre spécialité"
+                    className={`${inputClass} mt-2`}
+                    autoFocus
+                  />
+                )}
               </div>
 
-              {/* Cabinet — adresse + téléphone uniquement */}
+              {/* Cabinet */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <RequiredLabel>Adresse du cabinet / clinique</RequiredLabel>
+                  Adresse du cabinet / clinique <span className="text-[#94A3B8] font-normal">(optionnel)</span>
                 </label>
                 <input
                   name="adresse"
                   type="text"
                   value={formData.adresse}
                   onChange={handleChange}
-                  required
                   placeholder="123 Boulevard Mohammed V, Casablanca"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                  className={inputClass}
                 />
               </div>
 
@@ -412,7 +378,7 @@ export function DoctorRegistrationPage() {
                   onChange={handleChange}
                   required
                   placeholder="+212 6XX XXX XXX"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#00A86B] focus:border-transparent outline-none transition-all"
+                  className={inputClass}
                 />
               </div>
 

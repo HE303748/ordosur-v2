@@ -2125,6 +2125,7 @@ export function DoctorDashboard() {
   // Navigation
   const [activeView, setActiveView] = useState<ViewType>('home');
   const [showAIChat, setShowAIChat] = useState(false);
+  const [profileBannerDismissed, setProfileBannerDismissed] = useState(false);
 
   // Patients
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -3058,6 +3059,30 @@ export function DoctorDashboard() {
           onNavigate={v => setActiveView(v as ViewType)}
         />
         <EmailVerificationBanner />
+
+        {!profileBannerDismissed && (
+          !doctorProfile?.ordre_number || !clinicProfile?.adresse
+        ) && (
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-blue-50 dark:bg-blue-500/[0.08] border-b border-blue-100 dark:border-blue-500/20 text-sm text-blue-800 dark:text-blue-300">
+            <span className="flex-1">
+              <span className="font-medium">Complétez votre profil prescripteur</span>
+              {' — '}votre numéro d'Ordre et l'adresse de votre cabinet apparaissent sur vos ordonnances.{' '}
+              <button
+                onClick={() => setActiveView('settings')}
+                className="underline font-medium hover:text-blue-600 dark:hover:text-blue-200 transition-colors"
+              >
+                Accéder aux Paramètres
+              </button>
+            </span>
+            <button
+              onClick={() => setProfileBannerDismissed(true)}
+              aria-label="Fermer"
+              className="flex-shrink-0 text-blue-400 hover:text-blue-600 dark:hover:text-blue-200 transition-colors text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0">
           <ErrorBoundary
