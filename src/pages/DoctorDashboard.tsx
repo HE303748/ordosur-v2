@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
   Search, Plus, X, AlertTriangle, ShieldCheck,
@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
 import { fetchAllRows } from '../lib/fetchAllRows';
+import { SPECIALITES } from '../lib/specialites';
 import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { PatientForm } from '../components/PatientForm';
@@ -1587,10 +1588,142 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
 
 // ─── SettingsView ─────────────────────────────────────────────────────────────
 
-function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: string) => void; user: any; doctorProfile: any }) {
-  const [activeSection, setActiveSection] = useState<'profil' | 'cabinet' | 'securite' | 'secretaire'>('profil');
+type SettingsSection = 'profil' | 'cabinet' | 'securite' | 'secretaire';
 
-  // Secrétaire state
+function SettingsView({
+  navigate, user, doctorProfile,
+  activeSection, setActiveSection,
+  onSaved,
+}: {
+  navigate: (path: string) => void;
+  user: any;
+  doctorProfile: any;
+  activeSection: SettingsSection;
+  setActiveSection: (s: SettingsSection) => void;
+  onSaved: () => void;
+}) {
+
+  // ── Profil prescripteur state ──────────────────────────────────────────────
+  type ProfilForm = { prenom: string; nom: string; specialite: string; rpps: string; ordre_number: string };
+  const EMPTY_PROFIL: ProfilForm = { prenom: user?.prenom || '', nom: user?.nom || '', specialite: doctorProfile?.specialite || '', rpps: '', ordre_number: '' };
+  const [profilForm, setProfilForm]     = useState<ProfilForm>(EMPTY_PROFIL);
+  const [savedProfil, setSavedProfil]   = useState<ProfilForm>(EMPTY_PROFIL);
+  const [doctorId, setDoctorId]         = useState<string | null>(null);
+  const [profilSaving, setProfilSaving] = useState(false);
+  const [profilMsg, setProfilMsg]       = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // ── Cabinet state ──────────────────────────────────────────────────────────
+  type CabinetForm = { org_name: string; org_adresse: string; org_telephone: string; org_email: string };
+  const EMPTY_CABINET: CabinetForm = { org_name: '', org_adresse: '', org_telephone: '', org_email: '' };
+  const [cabinetForm, setCabinetForm]     = useState<CabinetForm>(EMPTY_CABINET);
+  const [savedCabinet, setSavedCabinet]   = useState<CabinetForm>(EMPTY_CABINET);
+  const [orgId, setOrgId]                 = useState<string | null>(null);
+  const [cabinetSaving, setCabinetSaving] = useState(false);
+  const [cabinetMsg, setCabinetMsg]       = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data: doc } = await supabase
+        .from('doctors')
+        .select('id, rpps, specialite, ordre_number, org_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      let orgData: CabinetForm = EMPTY_CABINET;
+      if (doc?.org_id) {
+        const { data: org } = await supabase
+          .from('organizations')
+          .select('name, adresse, telephone, email')
+          .eq('id', doc.org_id)
+          .maybeSingle();
+        if (org) orgData = { org_name: org.name || '', org_adresse: org.adresse || '', org_telephone: org.telephone || '', org_email: org.email || '' };
+        setOrgId(doc.org_id);
+      }
+
+      const p: ProfilForm = {
+        prenom:       user?.prenom || '',
+        nom:          user?.nom || '',
+        specialite:   doc?.specialite || '',
+        rpps:         doc?.rpps || '',
+        ordre_number: doc?.ordre_number || '',
+      };
+      setProfilForm(p);
+      setSavedProfil(p);
+      setCabinetForm(orgData);
+      setSavedCabinet(orgData);
+      if (doc?.id) setDoctorId(doc.id);
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  const handleSaveProfil = async () => {
+    if (!user) return;
+    setProfilSaving(true);
+    setProfilMsg(null);
+    try {
+      const { error: upErr } = await supabase
+        .from('user_profiles')
+        .update({ prenom: profilForm.prenom, nom: profilForm.nom })
+        .eq('user_id', user.id);
+      if (upErr) throw upErr;
+
+      if (doctorId) {
+        const { error: docErr } = await supabase
+          .from('doctors')
+          .update({
+            specialite:   profilForm.specialite   || null,
+            rpps:         profilForm.rpps         || null,
+            ordre_number: profilForm.ordre_number || null,
+          })
+          .eq('id', doctorId);
+        if (docErr) throw docErr;
+      }
+
+      setSavedProfil(profilForm);
+      setProfilMsg({ type: 'success', text: '✓ Profil mis à jour.' });
+      onSaved();
+    } catch (err: unknown) {
+      setProfilMsg({ type: 'error', text: `Erreur : ${err instanceof Error ? err.message : String(err)}` });
+    } finally {
+      setProfilSaving(false);
+    }
+  };
+
+  const handleSaveCabinet = async () => {
+    if (!orgId) return;
+    setCabinetSaving(true);
+    setCabinetMsg(null);
+    try {
+      const { data: updated, error: orgErr } = await supabase
+        .from('organizations')
+        .update({
+          name:      cabinetForm.org_name      || savedCabinet.org_name,
+          adresse:   cabinetForm.org_adresse   || null,
+          telephone: cabinetForm.org_telephone || null,
+          email:     cabinetForm.org_email     || null,
+        })
+        .eq('id', orgId)
+        .select('id');
+
+      if (orgErr) throw orgErr;
+
+      if (!updated || updated.length === 0) {
+        setCabinetMsg({ type: 'error', text: "Vous n'êtes pas autorisé à modifier les informations de cette structure — contactez l'administrateur de la clinique." });
+        return;
+      }
+
+      setSavedCabinet(cabinetForm);
+      setCabinetMsg({ type: 'success', text: '✓ Informations du cabinet mises à jour.' });
+      onSaved();
+    } catch (err: unknown) {
+      setCabinetMsg({ type: 'error', text: `Erreur : ${err instanceof Error ? err.message : String(err)}` });
+    } finally {
+      setCabinetSaving(false);
+    }
+  };
+
+  // ── Secrétaire state ───────────────────────────────────────────────────────
   const [secEmail, setSecEmail]       = useState('');
   const [secPrenom, setSecPrenom]     = useState('');
   const [secNom, setSecNom]           = useState('');
@@ -1842,35 +1975,160 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
           {/* Content */}
           <div className="flex-1 space-y-4">
             {activeSection === 'profil' && (
-              <>
-                <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
-                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">Informations personnelles</h3>
+              <div className="space-y-4">
+                {/* Identité */}
+                <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
+                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Identité</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { label: 'Prénom', value: user?.prenom || '', type: 'text' },
-                      { label: 'Nom', value: user?.nom || '', type: 'text' },
-                      { label: 'Email', value: user?.email || '', type: 'email', colSpan: true },
-                      { label: 'Spécialité', value: doctorProfile?.specialite || '', type: 'text', colSpan: true },
-                    ].map(f => (
-                      <div key={f.label} className={f.colSpan ? 'col-span-2' : ''}>
+                    {([
+                      { label: 'Prénom', key: 'prenom' as const },
+                      { label: 'Nom',    key: 'nom'    as const },
+                    ] as { label: string; key: 'prenom' | 'nom' }[]).map(f => (
+                      <div key={f.key}>
                         <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">{f.label}</label>
-                        <input defaultValue={f.value} type={f.type}
-                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40"
+                        <input
+                          value={profilForm[f.key]}
+                          onChange={e => setProfilForm(p => ({ ...p, [f.key]: e.target.value }))}
+                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50"
                         />
                       </div>
                     ))}
                   </div>
-                  <button
-                    onClick={() => navigate('/profile')}
-                    className="mt-4 px-5 py-2.5 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors"
-                  >
-                    Modifier le profil complet →
-                  </button>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">Email</label>
+                    <input
+                      value={user?.email || ''}
+                      readOnly
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-slate-50 dark:bg-[#1E293B] text-slate-400 cursor-not-allowed"
+                    />
+                  </div>
                 </div>
-              </>
+
+                {/* Profil prescripteur */}
+                <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
+                  <div>
+                    <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Profil prescripteur</h3>
+                    <p className="text-xs text-slate-400 dark:text-[#94A3B8] mt-0.5">Ces informations apparaissent sur vos ordonnances.</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">Spécialité</label>
+                    <select
+                      value={profilForm.specialite}
+                      onChange={e => setProfilForm(p => ({ ...p, specialite: e.target.value }))}
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50"
+                    >
+                      <option value="">Sélectionner une spécialité</option>
+                      {SPECIALITES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">Numéro d'Ordre National des Médecins</label>
+                    <input
+                      value={profilForm.ordre_number}
+                      onChange={e => setProfilForm(p => ({ ...p, ordre_number: e.target.value }))}
+                      placeholder="Ex. : 12345"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">Numéro INPE</label>
+                    <input
+                      value={profilForm.rpps}
+                      onChange={e => setProfilForm(p => ({ ...p, rpps: e.target.value }))}
+                      placeholder="11 chiffres"
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50"
+                    />
+                    <p className="text-xs text-slate-400 dark:text-[#94A3B8] mt-1">Utile pour les feuilles de soins AMO.</p>
+                  </div>
+
+                  {profilMsg && (
+                    <div className={`px-4 py-3 rounded-xl text-sm font-medium ${
+                      profilMsg.type === 'success'
+                        ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+                        : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
+                    }`}>
+                      {profilMsg.text}
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={handleSaveProfil}
+                      disabled={profilSaving}
+                      className="px-5 py-2.5 bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
+                    >
+                      {profilSaving && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+                      Enregistrer
+                    </button>
+                    <button
+                      onClick={() => { setProfilForm(savedProfil); setProfilMsg(null); }}
+                      className="px-5 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-500 dark:text-[#94A3B8] rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
 
             {activeSection === 'cabinet' && (
+              <div className="space-y-4">
+              {/* Informations du cabinet */}
+              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-4">
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Informations du cabinet</h3>
+                  <p className="text-xs text-slate-400 dark:text-[#94A3B8] mt-0.5">Ces informations apparaissent sur vos ordonnances.</p>
+                </div>
+
+                {([
+                  { label: 'Nom du cabinet', key: 'org_name' as const, placeholder: '' },
+                  { label: 'Adresse',        key: 'org_adresse' as const,   placeholder: 'Rue, quartier, ville' },
+                  { label: 'Téléphone',      key: 'org_telephone' as const, placeholder: '' },
+                  { label: 'Email du cabinet', key: 'org_email' as const,   placeholder: '' },
+                ] as { label: string; key: keyof CabinetForm; placeholder: string }[]).map(f => (
+                  <div key={f.key}>
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-[#94A3B8] mb-1.5 uppercase tracking-wide">{f.label}</label>
+                    <input
+                      value={cabinetForm[f.key]}
+                      onChange={e => setCabinetForm(c => ({ ...c, [f.key]: e.target.value }))}
+                      placeholder={f.placeholder}
+                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm bg-white dark:bg-[#1E293B] text-slate-900 dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50"
+                    />
+                  </div>
+                ))}
+
+                {cabinetMsg && (
+                  <div className={`px-4 py-3 rounded-xl text-sm font-medium ${
+                    cabinetMsg.type === 'success'
+                      ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+                      : 'bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400'
+                  }`}>
+                    {cabinetMsg.text}
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleSaveCabinet}
+                    disabled={cabinetSaving}
+                    className="px-5 py-2.5 bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-2"
+                  >
+                    {cabinetSaving && <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />}
+                    Enregistrer
+                  </button>
+                  <button
+                    onClick={() => { setCabinetForm(savedCabinet); setCabinetMsg(null); }}
+                    className="px-5 py-2.5 border border-slate-200 dark:border-white/[0.1] text-slate-500 dark:text-[#94A3B8] rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+
+              {/* Logo */}
               <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-5">
                 <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Logo du cabinet</h3>
 
@@ -1942,6 +2200,7 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
                     </button>
                   )}
                 </div>
+              </div>
               </div>
             )}
 
@@ -2119,13 +2378,24 @@ function SettingsView({ navigate, user, doctorProfile }: { navigate: (path: stri
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export function DoctorDashboard() {
-  const { user, signOut, doctorProfile, clinicProfile } = useAuth();
+  const { user, signOut, doctorProfile, clinicProfile, refreshProfile } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Navigation
   const [activeView, setActiveView] = useState<ViewType>('home');
   const [showAIChat, setShowAIChat] = useState(false);
   const [profileBannerDismissed, setProfileBannerDismissed] = useState(false);
+  const [settingsSection, setSettingsSection] = useState<SettingsSection>('profil');
+
+  // Ouvre directement Paramètres > Profil si redirigé depuis /profile
+  useEffect(() => {
+    if ((location.state as any)?.openSettings) {
+      setActiveView('settings');
+      setSettingsSection('profil');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Patients
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -3068,7 +3338,7 @@ export function DoctorDashboard() {
               <span className="font-medium">Complétez votre profil prescripteur</span>
               {' — '}votre numéro d'Ordre et l'adresse de votre cabinet apparaissent sur vos ordonnances.{' '}
               <button
-                onClick={() => setActiveView('settings')}
+                onClick={() => { setActiveView('settings'); setSettingsSection('profil'); }}
                 className="underline font-medium hover:text-blue-600 dark:hover:text-blue-200 transition-colors"
               >
                 Accéder aux Paramètres
@@ -3203,7 +3473,15 @@ export function DoctorDashboard() {
             )}
 
             {activeView === 'settings' && (
-              <SettingsView key="settings" navigate={navigate} user={user} doctorProfile={doctorProfile} />
+              <SettingsView
+                key="settings"
+                navigate={navigate}
+                user={user}
+                doctorProfile={doctorProfile}
+                activeSection={settingsSection}
+                setActiveSection={setSettingsSection}
+                onSaved={refreshProfile}
+              />
             )}
           </AnimatePresence>
           </ErrorBoundary>

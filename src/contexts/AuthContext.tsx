@@ -52,6 +52,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   resendVerificationEmail: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 // ─── CONTEXTE ────────────────────────────────────────────────────────────────
@@ -308,6 +309,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signOut,
         resendVerificationEmail,
         requestPasswordReset,
+        refreshProfile: async () => {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) await loadUserProfile(session.user.id, session.user.email ?? '');
+        },
       }}
     >
       {children}
