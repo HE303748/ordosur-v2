@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useChartTheme } from '../../../hooks/useChartTheme';
 import { motion } from 'framer-motion';
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, AreaChart, Area,
@@ -67,16 +68,6 @@ const DOC_COLORS = [
   '#ef4444','#ec4899','#00A86B','#84cc16','#f97316','#6366f1',
 ];
 
-const CHART_STYLE = {
-  label:   { fill: '#94a3b8', fontSize: 11 },
-  tooltip: {
-    backgroundColor: '#1e293b',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: 8,
-    color: '#e2e8f0',
-    fontSize: 12,
-  },
-};
 
 const PERIOD_OPTIONS: { key: PeriodType; label: string }[] = [
   { key: 'month',   label: 'Ce mois'           },
@@ -252,6 +243,16 @@ interface Props { orgId?: string; doctors: DoctorWithProfile[]; }
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function ClinicStatsView({ orgId, doctors }: Props) {
+  const chart = useChartTheme();
+  const chartLabel  = { fill: chart.tickFill, fontSize: 11 };
+  const chartTooltip = {
+    backgroundColor: chart.tooltipBg,
+    border: `1px solid ${chart.tooltipBorder}`,
+    borderRadius: 8,
+    color: chart.tooltipText,
+    fontSize: 12,
+  };
+
   const [period,       setPeriod]       = useState<PeriodType>('month');
   const [loading,      setLoading]      = useState(true);
   const [pdfLoading,   setPdfLoading]   = useState(false);
@@ -824,10 +825,10 @@ export function ClinicStatsView({ orgId, doctors }: Props) {
             ) : (
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={consChart}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" />
-                  <XAxis dataKey="label" tick={CHART_STYLE.label} axisLine={false} tickLine={false} />
-                  <YAxis tick={CHART_STYLE.label} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={CHART_STYLE.tooltip} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                  <XAxis dataKey="label" tick={chartLabel} axisLine={false} tickLine={false} />
+                  <YAxis tick={chartLabel} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={chartTooltip} />
                   <Line type="monotone" dataKey="consultations" stroke="#00A86B" strokeWidth={2.5}
                     dot={{ fill: '#00A86B', r: 4 }} name="Consultations" />
                 </LineChart>
@@ -841,10 +842,10 @@ export function ClinicStatsView({ orgId, doctors }: Props) {
             ) : (
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={docChart} layout="vertical" margin={{ left: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" horizontal={false} />
-                  <XAxis type="number" tick={CHART_STYLE.label} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="name" tick={CHART_STYLE.label} axisLine={false} tickLine={false} width={110} />
-                  <Tooltip contentStyle={CHART_STYLE.tooltip} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} horizontal={false} />
+                  <XAxis type="number" tick={chartLabel} axisLine={false} tickLine={false} />
+                  <YAxis type="category" dataKey="name" tick={chartLabel} axisLine={false} tickLine={false} width={110} />
+                  <Tooltip contentStyle={chartTooltip} />
                   <Bar dataKey="ordonnances" radius={[0, 6, 6, 0]} name="Ordonnances">
                     {docChart.map((entry, i) => (
                       <Cell key={i} fill={entry.color} />
@@ -874,7 +875,7 @@ export function ClinicStatsView({ orgId, doctors }: Props) {
                       <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={CHART_STYLE.tooltip} />
+                  <Tooltip contentStyle={chartTooltip} />
                   <Legend
                     layout="vertical" align="right" verticalAlign="middle"
                     formatter={(value) => (
@@ -898,10 +899,10 @@ export function ClinicStatsView({ orgId, doctors }: Props) {
                       <stop offset="95%" stopColor="#00A86B" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.15)" />
-                  <XAxis dataKey="mois" tick={CHART_STYLE.label} axisLine={false} tickLine={false} />
-                  <YAxis tick={CHART_STYLE.label} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={CHART_STYLE.tooltip} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+                  <XAxis dataKey="mois" tick={chartLabel} axisLine={false} tickLine={false} />
+                  <YAxis tick={chartLabel} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={chartTooltip} />
                   <Area type="monotone" dataKey="patients" stroke="#00A86B" strokeWidth={2.5}
                     fill="url(#gradSky)" name="Nouveaux patients" />
                 </AreaChart>

@@ -605,8 +605,8 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Certificats médicaux</h1>
-              <p className="text-sm text-slate-500 mt-0.5">Rédigez et téléchargez vos certificats en PDF</p>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-[#E2E8F0]">Certificats médicaux</h1>
+              <p className="text-sm text-slate-500 dark:text-[#94A3B8] mt-0.5">Rédigez et téléchargez vos certificats en PDF</p>
             </div>
             <motion.button
               whileTap={{ scale: 0.97 }}
@@ -625,7 +625,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
               value={searchList}
               onChange={e => setSearchList(e.target.value)}
               placeholder="Rechercher par patient ou numéro…"
-              className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white"
+              className="w-full pl-9 pr-4 py-2.5 border border-slate-200 dark:border-white/[0.08] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white dark:bg-[#111827] text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-[#475569]"
             />
           </div>
 
@@ -635,10 +635,10 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
               <Loader2 className="w-6 h-6 text-[#00A86B] animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-slate-100">
-              <FileText className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-              <p className="text-slate-500 font-medium">Aucun certificat trouvé</p>
-              <p className="text-slate-400 text-sm mt-1">Créez votre premier certificat médical</p>
+            <div className="text-center py-16 bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06]">
+              <FileText className="w-12 h-12 text-slate-200 dark:text-white/[0.08] mx-auto mb-3" />
+              <p className="text-slate-500 dark:text-[#94A3B8] font-medium">Aucun certificat trouvé</p>
+              <p className="text-slate-400 dark:text-[#475569] text-sm mt-1">Créez votre premier certificat médical</p>
               <button onClick={handleNewCert} className="mt-4 px-4 py-2 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors">
                 + Nouveau certificat
               </button>
@@ -653,26 +653,26 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     key={cert.id}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`flex items-center gap-4 p-4 bg-white border ${cfg.borderColor} rounded-xl hover:shadow-sm transition-shadow`}
+                    className={`flex items-center gap-4 p-4 bg-white dark:bg-[#111827] border ${cfg.borderColor} dark:border-white/[0.06] rounded-xl hover:shadow-sm transition-shadow`}
                   >
-                    <div className={`w-10 h-10 rounded-xl ${cfg.bgColor} flex items-center justify-center flex-shrink-0`}>
-                      <Icon className={`w-5 h-5 ${cfg.color}`} />
+                    <div className={`w-10 h-10 rounded-xl ${cfg.bgColor} dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0`}>
+                      <Icon className={`w-5 h-5 ${cfg.color} dark:text-blue-400`} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cfg.bgColor} ${cfg.color}`}>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${cfg.bgColor} dark:bg-blue-500/10 ${cfg.color} dark:text-blue-400`}>
                           {cert.certName || cfg.label}
                         </span>
-                        <span className="text-xs text-slate-400 font-mono">{cert.numero}</span>
+                        <span className="text-xs text-slate-400 dark:text-[#475569] font-mono">{cert.numero}</span>
                       </div>
                       {(cert.patientNom || cert.patientPrenom) && (
-                        <p className="text-sm text-slate-600 mt-0.5 truncate">
+                        <p className="text-sm text-slate-600 dark:text-[#94A3B8] mt-0.5 truncate">
                           {cert.patientPrenom} {cert.patientNom}
                         </p>
                       )}
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-400 dark:text-[#475569]">
                         {new Date(cert.created_at).toLocaleDateString('fr-FR')}
                       </span>
                     </div>
@@ -707,8 +707,8 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
           <div className="lg:col-span-1 space-y-4">
 
             {/* Patient */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-4">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Patient</p>
+            <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] p-4">
+              <p className="text-xs font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wider mb-3">Patient</p>
 
               {!useManualPatient ? (
                 <div className="relative">
@@ -718,7 +718,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     onChange={e => { setPatientSearch(e.target.value); setShowPatientDropdown(true); setSelectedPatient(null); }}
                     onFocus={() => setShowPatientDropdown(true)}
                     placeholder="Rechercher un patient…"
-                    className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
+                    className="w-full pl-8 pr-3 py-2 border border-slate-200 dark:border-white/[0.08] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white dark:bg-[#0A1628] text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-[#475569]"
                   />
                   <AnimatePresence>
                     {showPatientDropdown && filteredPatients.length > 0 && (
@@ -726,13 +726,13 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                         initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -4 }}
-                        className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden"
+                        className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.08] rounded-xl shadow-xl overflow-hidden"
                       >
                         {filteredPatients.map(p => (
                           <button
                             key={p.id}
                             onMouseDown={() => handleSelectPatient(p)}
-                            className="w-full text-left px-3 py-2 text-sm hover:bg-[#E6F4EE] transition-colors"
+                            className="w-full text-left px-3 py-2 text-sm text-slate-800 dark:text-[#E2E8F0] hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/10 transition-colors"
                           >
                             <span className="font-medium">{p.prenom} {p.nom}</span>
                             {p.date_naissance && (
@@ -760,13 +760,13 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                       value={manualPatient.prenom}
                       onChange={e => setManualPatient(p => ({ ...p, prenom: e.target.value }))}
                       placeholder="Prénom"
-                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 dark:border-white/[0.08] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white dark:bg-[#0A1628] text-slate-800 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-[#475569]"
                     />
                     <input
                       value={manualPatient.nom}
                       onChange={e => setManualPatient(p => ({ ...p, nom: e.target.value }))}
                       placeholder="Nom"
-                      className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
+                      className="w-full px-2.5 py-1.5 border border-slate-200 dark:border-white/[0.08] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white dark:bg-[#0A1628] text-slate-800 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-[#475569]"
                     />
                   </div>
                   <input
@@ -774,12 +774,12 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     value={manualPatient.dateNaissance}
                     onChange={e => setManualPatient(p => ({ ...p, dateNaissance: e.target.value }))}
                     placeholder="Date de naissance"
-                    className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
+                    className="w-full px-2.5 py-1.5 border border-slate-200 dark:border-white/[0.08] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white dark:bg-[#0A1628] text-slate-800 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-[#475569]"
                   />
                   <select
                     value={manualPatient.sexe}
                     onChange={e => setManualPatient(p => ({ ...p, sexe: e.target.value }))}
-                    className="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white"
+                    className="w-full px-2.5 py-1.5 border border-slate-200 dark:border-white/[0.08] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white dark:bg-[#0A1628] text-slate-800 dark:text-[#E2E8F0]"
                   >
                     <option value="">Sexe (optionnel)</option>
                     <option value="Masculin">Masculin</option>
@@ -790,8 +790,8 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
             </div>
 
             {/* PDF options */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-4">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Options PDF</p>
+            <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] p-4">
+              <p className="text-xs font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wider mb-3">Options PDF</p>
               <label className="flex items-center gap-3 cursor-pointer mb-2">
                 <input
                   type="checkbox"
@@ -799,7 +799,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                   onChange={e => setInclureLogo(e.target.checked)}
                   className="w-4 h-4 rounded border-slate-300 accent-[#00A86B]"
                 />
-                <span className="text-sm text-slate-700">Inclure le logo du cabinet</span>
+                <span className="text-sm text-slate-700 dark:text-[#E2E8F0]">Inclure le logo du cabinet</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -808,7 +808,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                   onChange={e => setInclureQR(e.target.checked)}
                   className="w-4 h-4 rounded border-slate-300 accent-[#00A86B]"
                 />
-                <span className="text-sm text-slate-700">Inclure un QR code</span>
+                <span className="text-sm text-slate-700 dark:text-[#E2E8F0]">Inclure un QR code</span>
               </label>
             </div>
           </div>
@@ -817,10 +817,10 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
           <div className="lg:col-span-2 space-y-4">
 
             {/* Certificate header */}
-            <div className={`bg-white rounded-2xl border ${cfg.borderColor} p-5`}>
+            <div className={`bg-white dark:bg-[#111827] rounded-2xl border ${cfg.borderColor} dark:border-white/[0.06] p-5`}>
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-xl ${cfg.bgColor} flex items-center justify-center`}>
-                  <CertIcon className={`w-5 h-5 ${cfg.color}`} />
+                <div className={`w-10 h-10 rounded-xl ${cfg.bgColor} dark:bg-blue-500/10 flex items-center justify-center`}>
+                  <CertIcon className={`w-5 h-5 ${cfg.color} dark:text-blue-400`} />
                 </div>
                 <div className="flex-1">
                   {certType === 'autre' ? (
@@ -828,33 +828,33 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                       value={certName}
                       onChange={e => setCertName(e.target.value)}
                       placeholder="Nom du certificat (ex: Certificat de repos)"
-                      className="w-full text-lg font-bold bg-transparent border-b border-slate-300 focus:outline-none focus:border-[#00A86B] pb-1 text-slate-800"
+                      className="w-full text-lg font-bold bg-transparent border-b border-slate-300 dark:border-white/[0.08] focus:outline-none focus:border-[#00A86B] pb-1 text-slate-800 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-[#475569]"
                     />
                   ) : (
-                    <h2 className="text-lg font-bold text-slate-800">{cfg.label}</h2>
+                    <h2 className="text-lg font-bold text-slate-800 dark:text-[#E2E8F0]">{cfg.label}</h2>
                   )}
-                  <p className="text-xs text-slate-400 mt-0.5">{cfg.description}</p>
+                  <p className="text-xs text-slate-400 dark:text-[#475569] mt-0.5">{cfg.description}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                  <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-[#475569]" />
                   <input
                     type="date"
                     value={certDate}
                     onChange={e => setCertDate(e.target.value)}
-                    className="text-sm border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
+                    className="text-sm border border-slate-200 dark:border-white/[0.08] rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white dark:bg-[#0A1628] text-slate-800 dark:text-[#E2E8F0]"
                   />
                 </div>
               </div>
 
               {/* Doctor info (collapsible edit) */}
-              <div className="border-t border-slate-100 pt-3">
+              <div className="border-t border-slate-100 dark:border-white/[0.06] pt-3">
                 <button
                   onClick={() => setEditDoctorInfo(!editDoctorInfo)}
-                  className="flex items-center gap-2 text-xs text-slate-500 hover:text-slate-700 transition-colors mb-2"
+                  className="flex items-center gap-2 text-xs text-slate-500 dark:text-[#94A3B8] hover:text-slate-700 dark:hover:text-[#E2E8F0] transition-colors mb-2"
                 >
                   <Stethoscope className="w-3.5 h-3.5" />
                   <span>Dr. {doctorInfo.prenom} {doctorInfo.nom}</span>
-                  {doctorInfo.specialite && <span className="text-slate-400">· {doctorInfo.specialite}</span>}
+                  {doctorInfo.specialite && <span className="text-slate-400 dark:text-[#475569]">· {doctorInfo.specialite}</span>}
                   <Edit2 className="w-3 h-3 ml-1 opacity-50" />
                 </button>
 
@@ -882,7 +882,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                             value={(doctorInfo as any)[key]}
                             onChange={e => setDoctorInfo(d => ({ ...d, [key]: e.target.value }))}
                             placeholder={label}
-                            className="px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B]"
+                            className="px-2.5 py-1.5 border border-slate-200 dark:border-white/[0.08] rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] bg-white dark:bg-[#0A1628] text-slate-800 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-[#475569]"
                           />
                         ))}
                       </div>
@@ -893,9 +893,9 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
             </div>
 
             {/* Body textarea */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-5">
+            <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] p-5">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Contenu du certificat</p>
+                <p className="text-xs font-bold text-slate-400 dark:text-[#475569] uppercase tracking-wider">Contenu du certificat</p>
                 <button
                   onClick={() => {
                     const patNom = selectedPatient
@@ -913,10 +913,10 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 value={certBody}
                 onChange={e => setCertBody(e.target.value)}
                 rows={18}
-                className="w-full px-3 py-3 border border-slate-200 rounded-xl text-sm font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] resize-none"
+                className="w-full px-3 py-3 border border-slate-200 dark:border-white/[0.08] rounded-xl text-sm font-mono leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#00A86B]/30 focus:border-[#00A86B] resize-none bg-white dark:bg-[#0A1628] text-slate-800 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-[#475569]"
                 placeholder="Rédigez le contenu du certificat…"
               />
-              <p className="text-xs text-slate-400 mt-1.5">
+              <p className="text-xs text-slate-400 dark:text-[#475569] mt-1.5">
                 Le texte est pré-rempli avec un modèle — modifiez-le librement avant de générer le PDF.
               </p>
             </div>
@@ -925,7 +925,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
             <div className="flex items-center gap-3 justify-end">
               <button
                 onClick={() => setView('list')}
-                className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-[#94A3B8] hover:text-slate-800 dark:hover:text-[#E2E8F0] transition-colors"
               >
                 Annuler
               </button>
@@ -966,12 +966,12 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
                 onClick={e => e.stopPropagation()}
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                className="bg-white dark:bg-[#111827] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
               >
                 {/* Preview header */}
-                <div className="flex items-center justify-between p-4 lg:p-5 border-b border-slate-100">
-                  <h3 className="font-bold text-slate-800">Aperçu du certificat</h3>
-                  <button onClick={() => setShowPreview(false)} className="p-2 lg:p-1.5 text-slate-400 hover:text-slate-600 active:bg-slate-200 rounded-lg hover:bg-slate-100 transition-colors">
+                <div className="flex items-center justify-between p-4 lg:p-5 border-b border-slate-100 dark:border-white/[0.06]">
+                  <h3 className="font-bold text-slate-800 dark:text-[#E2E8F0]">Aperçu du certificat</h3>
+                  <button onClick={() => setShowPreview(false)} className="p-2 lg:p-1.5 text-slate-400 dark:text-[#475569] hover:text-slate-600 dark:hover:text-[#E2E8F0] active:bg-slate-200 dark:active:bg-white/[0.05] rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -1035,17 +1035,17 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-3 p-5 border-t border-slate-100 justify-end flex-wrap">
+                <div className="flex items-center gap-3 p-5 border-t border-slate-100 dark:border-white/[0.06] justify-end flex-wrap">
                   <button
                     onClick={() => setShowPreview(false)}
-                    className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium transition-colors"
+                    className="px-4 py-2 text-sm text-slate-600 dark:text-[#94A3B8] hover:text-slate-800 dark:hover:text-[#E2E8F0] font-medium transition-colors"
                   >
                     Modifier
                   </button>
                   <motion.button
                     whileTap={{ scale: 0.97 }}
                     onClick={() => window.print()}
-                    className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-[#E2E8F0] rounded-xl text-sm font-semibold hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-colors"
                   >
                     <Printer className="w-4 h-4" />
                     Imprimer

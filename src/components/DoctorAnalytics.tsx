@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { BarChart3, AlertTriangle, Pill, Clock, History, FileText } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useChartTheme } from '../hooks/useChartTheme';
 
 // ─── MonthlyInteractionsChart (real data: ordonnances by month) ───────────────
 
@@ -10,6 +11,7 @@ interface MonthlyInteractionsChartProps {
 }
 
 export function MonthlyInteractionsChart({ doctorId }: MonthlyInteractionsChartProps) {
+  const chart = useChartTheme();
   const [chartData, setChartData] = useState<Array<{ mois: string; ordonnances: number }>>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,8 +63,8 @@ export function MonthlyInteractionsChart({ doctorId }: MonthlyInteractionsChartP
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px] flex items-center justify-center">
-        <p className="text-sm text-slate-400">Chargement…</p>
+      <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm border border-slate-200 dark:border-white/[0.06] p-5 h-[300px] flex items-center justify-center">
+        <p className="text-sm text-slate-400 dark:text-[#475569]">Chargement…</p>
       </div>
     );
   }
@@ -70,32 +72,32 @@ export function MonthlyInteractionsChart({ doctorId }: MonthlyInteractionsChartP
   const hasData = chartData.some(d => d.ordonnances > 0);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px]">
-      <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center">
-        <BarChart3 className="w-5 h-5 mr-2 text-primary-600" />
+    <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm border border-slate-200 dark:border-white/[0.06] p-5 h-[300px]">
+      <h3 className="text-base font-semibold text-slate-900 dark:text-[#E2E8F0] mb-4 flex items-center">
+        <BarChart3 className="w-5 h-5 mr-2 text-[#00A86B]" />
         Mes Ordonnances par Mois
       </h3>
       {hasData ? (
         <ResponsiveContainer width="100%" height={230}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-            <XAxis dataKey="mois" stroke="#6B7280" style={{ fontSize: '12px' }} />
-            <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} allowDecimals={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} />
+            <XAxis dataKey="mois" axisLine={false} tickLine={false} tick={{ fill: chart.tickFill, fontSize: 12 }} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fill: chart.tickFill, fontSize: 12 }} allowDecimals={false} />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'white',
+                backgroundColor: chart.tooltipBg,
                 borderRadius: '8px',
-                border: '1px solid #E5E7EB',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                border: `1px solid ${chart.tooltipBorder}`,
+                color: chart.tooltipText,
               }}
               formatter={(value: number) => [value, 'Ordonnances']}
             />
             <Line
               type="monotone"
               dataKey="ordonnances"
-              stroke="#0066CC"
+              stroke="#00A86B"
               strokeWidth={3}
-              dot={{ fill: '#0066CC', r: 5 }}
+              dot={{ fill: '#00A86B', r: 5 }}
               activeDot={{ r: 7 }}
             />
           </LineChart>
@@ -124,6 +126,7 @@ const RISK_CONFIG = [
 ];
 
 export function RiskDistributionChart({ doctorId }: RiskDistributionChartProps) {
+  const chart = useChartTheme();
   const [pieData, setPieData] = useState<Array<{ name: string; value: number; color: string }>>([]);
   const [loading, setLoading] = useState(true);
 
@@ -166,16 +169,16 @@ export function RiskDistributionChart({ doctorId }: RiskDistributionChartProps) 
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px] flex items-center justify-center">
-        <p className="text-sm text-slate-400">Chargement…</p>
+      <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm border border-slate-200 dark:border-white/[0.06] p-5 h-[300px] flex items-center justify-center">
+        <p className="text-sm text-slate-400 dark:text-[#475569]">Chargement…</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px]">
-      <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center">
-        <AlertTriangle className="w-5 h-5 mr-2 text-yellow-600" />
+    <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm border border-slate-200 dark:border-white/[0.06] p-5 h-[300px]">
+      <h3 className="text-base font-semibold text-slate-900 dark:text-[#E2E8F0] mb-4 flex items-center">
+        <AlertTriangle className="w-5 h-5 mr-2 text-yellow-600 dark:text-yellow-400" />
         Répartition des Risques
       </h3>
       {pieData.length > 0 ? (
@@ -197,9 +200,10 @@ export function RiskDistributionChart({ doctorId }: RiskDistributionChartProps) 
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'white',
+                  backgroundColor: chart.tooltipBg,
                   borderRadius: '8px',
-                  border: '1px solid #E5E7EB'
+                  border: `1px solid ${chart.tooltipBorder}`,
+                  color: chart.tooltipText,
                 }}
                 formatter={(value: number) => [`${value}%`, '']}
               />
@@ -209,14 +213,14 @@ export function RiskDistributionChart({ doctorId }: RiskDistributionChartProps) 
             {pieData.map((item, idx) => (
               <div key={idx} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-                <span className="text-xs text-slate-700 font-medium">{item.name}: {item.value}%</span>
+                <span className="text-xs text-slate-700 dark:text-[#E2E8F0] font-medium">{item.name}: {item.value}%</span>
               </div>
             ))}
           </div>
         </>
       ) : (
         <div className="flex items-center justify-center h-[220px]">
-          <p className="text-sm text-slate-400 text-center">
+          <p className="text-sm text-slate-400 dark:text-[#475569] text-center">
             Aucune vérification d'interaction enregistrée
           </p>
         </div>
@@ -262,27 +266,27 @@ export function AllMedicationsHistory({ doctorId }: AllMedicationsHistoryProps) 
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px] md:h-[300px] flex flex-col">
-      <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center flex-shrink-0">
-        <History className="w-5 h-5 mr-2 text-primary-600" />
+    <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm border border-slate-200 dark:border-white/[0.06] p-5 h-[300px] md:h-[300px] flex flex-col">
+      <h3 className="text-base font-semibold text-slate-900 dark:text-[#E2E8F0] mb-4 flex items-center flex-shrink-0">
+        <History className="w-5 h-5 mr-2 text-[#00A86B]" />
         Historique Complet des Médicaments
       </h3>
       <div className="space-y-2 overflow-y-auto flex-1 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
         {loading ? (
-          <p className="text-sm text-slate-500 text-center py-8">Chargement...</p>
+          <p className="text-sm text-slate-500 dark:text-[#94A3B8] text-center py-8">Chargement...</p>
         ) : allMeds.length > 0 ? (
           allMeds.map((med, idx) => (
-            <div key={idx} className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-              <span className="text-sm font-medium text-slate-900">
+            <div key={idx} className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-white/[0.04] rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.07] transition-colors">
+              <span className="text-sm font-medium text-slate-900 dark:text-[#E2E8F0]">
                 {idx + 1}. {med.nom}
               </span>
-              <span className="text-xs font-bold text-primary-600 bg-primary-50 px-2 py-1 rounded">
+              <span className="text-xs font-bold text-[#00A86B] bg-[#E6F4EE] dark:bg-[#00A86B]/10 px-2 py-1 rounded">
                 {med.count} fois
               </span>
             </div>
           ))
         ) : (
-          <p className="text-sm text-slate-500 text-center py-8">Aucune donnée disponible</p>
+          <p className="text-sm text-slate-500 dark:text-[#94A3B8] text-center py-8">Aucune donnée disponible</p>
         )}
       </div>
     </div>
@@ -335,34 +339,34 @@ export function TopMedicationsSection({ doctorId }: TopMedicationsSectionProps) 
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px] md:h-[300px] flex flex-col">
-      <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center flex-shrink-0">
-        <Pill className="w-5 h-5 mr-2 text-primary-600" />
+    <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm border border-slate-200 dark:border-white/[0.06] p-5 h-[300px] md:h-[300px] flex flex-col">
+      <h3 className="text-base font-semibold text-slate-900 dark:text-[#E2E8F0] mb-4 flex items-center flex-shrink-0">
+        <Pill className="w-5 h-5 mr-2 text-[#00A86B]" />
         Top 10 Médicaments Prescrits
       </h3>
       <div className="space-y-3 overflow-y-auto flex-1 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
         {loading ? (
-          <p className="text-sm text-slate-500 text-center py-8">Chargement...</p>
+          <p className="text-sm text-slate-500 dark:text-[#94A3B8] text-center py-8">Chargement...</p>
         ) : topMeds.length > 0 ? (
           topMeds.map((med, idx) => (
             <div key={idx} className="space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-900">
+                <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
                   {idx + 1}. {med.nom}
                 </span>
-                <span className="text-xs font-bold text-slate-600">{med.count} fois</span>
+                <span className="text-xs font-bold text-slate-600 dark:text-[#94A3B8]">{med.count} fois</span>
               </div>
-              <div className="relative w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div className="relative w-full h-2 bg-slate-100 dark:bg-white/[0.07] rounded-full overflow-hidden">
                 <div
-                  className="absolute top-0 left-0 h-full bg-primary-600 rounded-full transition-all duration-500"
+                  className="absolute top-0 left-0 h-full bg-[#00A86B] rounded-full transition-all duration-500"
                   style={{ width: `${med.percentage}%` }}
                 ></div>
               </div>
-              <div className="text-xs text-slate-500 text-right">{med.percentage}%</div>
+              <div className="text-xs text-slate-500 dark:text-[#475569] text-right">{med.percentage}%</div>
             </div>
           ))
         ) : (
-          <p className="text-sm text-slate-500 text-center py-8">Aucune donnée disponible</p>
+          <p className="text-sm text-slate-500 dark:text-[#94A3B8] text-center py-8">Aucune donnée disponible</p>
         )}
       </div>
     </div>
@@ -463,39 +467,37 @@ export function RecentActivityTimeline({ doctorId }: RecentActivityTimelineProps
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-[300px] md:h-[300px] flex flex-col">
-      <h3 className="text-base font-semibold text-slate-900 mb-4 flex items-center flex-shrink-0">
-        <Clock className="w-5 h-5 mr-2 text-primary-600" />
+    <div className="bg-white dark:bg-[#111827] rounded-xl shadow-sm border border-slate-200 dark:border-white/[0.06] p-5 h-[300px] md:h-[300px] flex flex-col">
+      <h3 className="text-base font-semibold text-slate-900 dark:text-[#E2E8F0] mb-4 flex items-center flex-shrink-0">
+        <Clock className="w-5 h-5 mr-2 text-[#00A86B]" />
         Activité Récente
       </h3>
       <div className="space-y-3 overflow-y-auto flex-1 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
         {loading ? (
-          <p className="text-sm text-slate-500 text-center py-8">Chargement...</p>
+          <p className="text-sm text-slate-500 dark:text-[#94A3B8] text-center py-8">Chargement...</p>
         ) : activities.length > 0 ? (
           activities.map((activity, idx) => (
-            <div key={idx} className="flex items-start space-x-3 pb-3 border-b border-slate-100 last:border-b-0">
-              {/* Icon */}
+            <div key={idx} className="flex items-start space-x-3 pb-3 border-b border-slate-100 dark:border-white/[0.04] last:border-b-0">
               {activity.type === 'ordonnance' ? (
-                <div className="w-7 h-7 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <FileText className="w-3.5 h-3.5 text-primary-600" />
+                <div className="w-7 h-7 rounded-full bg-[#E6F4EE] dark:bg-[#00A86B]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <FileText className="w-3.5 h-3.5 text-[#00A86B]" />
                 </div>
               ) : (
                 <span className="text-lg mt-0.5 flex-shrink-0">{getRiskIcon(activity.riskLevel)}</span>
               )}
 
-              {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-sm font-semibold text-slate-900 truncate">
+                  <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0] truncate">
                     {activity.type === 'ordonnance'
                       ? (activity.patientName || 'Patient')
                       : 'Vérification'}
                   </span>
-                  <span className="text-xs text-slate-400 ml-2 flex-shrink-0">
+                  <span className="text-xs text-slate-400 dark:text-[#475569] ml-2 flex-shrink-0">
                     {formatTime(activity.date)}
                   </span>
                 </div>
-                <div className="text-xs text-slate-600 mb-1 truncate">
+                <div className="text-xs text-slate-600 dark:text-[#94A3B8] mb-1 truncate">
                   {activity.details}
                 </div>
                 {activity.type === 'interaction' && activity.riskLevel && (
@@ -504,7 +506,7 @@ export function RecentActivityTimeline({ doctorId }: RecentActivityTimelineProps
                   </span>
                 )}
                 {activity.type === 'ordonnance' && (
-                  <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-primary-50 text-primary-700 border border-primary-200">
+                  <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-[#E6F4EE] dark:bg-[#00A86B]/10 text-[#00A86B] border border-[#00A86B]/20">
                     ORDONNANCE
                   </span>
                 )}
@@ -512,7 +514,7 @@ export function RecentActivityTimeline({ doctorId }: RecentActivityTimelineProps
             </div>
           ))
         ) : (
-          <p className="text-sm text-slate-500 text-center py-8">Aucune activité récente</p>
+          <p className="text-sm text-slate-500 dark:text-[#94A3B8] text-center py-8">Aucune activité récente</p>
         )}
       </div>
     </div>
