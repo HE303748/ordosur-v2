@@ -5,7 +5,7 @@ import {
   Search, Plus, X, AlertTriangle, ShieldCheck,
   CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
   BarChart3, Heart, Users, Calendar, Trash2, CreditCard as Edit,
-  Download, ArrowLeft, ChevronRight,
+  Download, ArrowLeft, ChevronRight, ChevronDown, Info,
 } from 'lucide-react';
 import { generateOrdonnancePdf } from '../lib/pdfService';
 import { formatAge, getAgeEnMois } from '../lib/ageUtils';
@@ -757,6 +757,92 @@ function FilterChip({ active, onClick, label }: { active: boolean; onClick: () =
   );
 }
 
+// ─── Vérificateur : composants d'affichage des alertes (Sprint 3) ────────────
+
+const SEVER_ORDER = {
+  contre_indication: 0, majeure: 1, moderee: 2, mineure: 3, non_classee: 4, info: 5,
+} as const;
+type SeveriteKey = InteractionAlert['severite'];
+
+function SeverityBadge({ s }: { s: SeveriteKey }) {
+  const cfg: Record<SeveriteKey, { label: string; cls: string }> = {
+    contre_indication: { label: 'Contre-indication',  cls: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30' },
+    majeure:           { label: 'Interaction majeure', cls: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-500/20 dark:text-orange-300 dark:border-orange-500/30' },
+    moderee:           { label: 'Interaction modérée', cls: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30' },
+    mineure:           { label: 'Interaction mineure', cls: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-300 dark:border-yellow-500/30' },
+    non_classee:       { label: 'Non documentée',      cls: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-white/[0.06] dark:text-[#94A3B8] dark:border-white/[0.08]' },
+    info:              { label: 'Données limitées',    cls: 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-white/[0.06] dark:text-[#94A3B8] dark:border-white/[0.08]' },
+  };
+  const { label, cls } = cfg[s];
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide border whitespace-nowrap ${cls}`}>
+      {label}
+    </span>
+  );
+}
+
+function AlertCard({ alert }: { alert: InteractionAlert }) {
+  const [open, setOpen] = useState(false);
+  const desc = alert.description ?? '';
+
+  // Extraction "Conduite à tenir" si présente dans la description
+  const catMatch = desc.match(/conduite\s+à\s+tenir\s*[:\-]\s*/i);
+  const catIdx = catMatch ? desc.indexOf(catMatch[0]) : -1;
+  const shortDesc = catIdx > 0 ? desc.slice(0, catIdx).trim() : desc;
+  const conduct   = catIdx > 0 ? desc.slice(catIdx + (catMatch?.[0].length ?? 0)).trim() : null;
+
+  const borderCls: Record<SeveriteKey, string> = {
+    contre_indication: 'border-l-[#DC2626]',
+    majeure:           'border-l-orange-500',
+    moderee:           'border-l-amber-400',
+    mineure:           'border-l-yellow-400',
+    non_classee:       'border-l-slate-300 dark:border-l-slate-600',
+    info:              'border-l-slate-200 dark:border-l-slate-700',
+  };
+
+  const pairLabel = alert.type === 'contraindication'
+    ? `${alert.involved[0]}${alert.condition ? ` — ${alert.condition}` : ''}`
+    : alert.involved.join(' × ');
+
+  return (
+    <div className={`bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] border-l-4 ${borderCls[alert.severite]} rounded-xl overflow-hidden`}>
+      <div className="px-4 py-3">
+        {/* Ligne 1 : badge + paire */}
+        <div className="flex items-start gap-2 mb-1.5 flex-wrap">
+          <SeverityBadge s={alert.severite} />
+          <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0] leading-tight">{pairLabel}</span>
+        </div>
+        {/* Ligne 2 : risque (description courte) */}
+        <p className="text-sm text-slate-600 dark:text-[#94A3B8] leading-snug line-clamp-2">{shortDesc}</p>
+        {/* Ligne 3 : conduite à tenir (si extractible depuis la description) */}
+        {conduct && (
+          <p className="mt-1 text-sm text-slate-700 dark:text-[#CBD5E1]">
+            <span className="font-semibold text-[#0A1628] dark:text-slate-300">→ </span>{conduct}
+          </p>
+        )}
+        {/* Bouton Détails — accordéon */}
+        <button
+          onClick={() => setOpen(o => !o)}
+          className="mt-2 flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+          aria-expanded={open}
+        >
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+          {open ? 'Masquer' : 'Détails'}
+        </button>
+        {/* Volet détails */}
+        {open && (
+          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/[0.06] text-xs text-slate-600 dark:text-[#94A3B8] space-y-1.5">
+            {alert.type === 'contraindication' && alert.condition && (
+              <p><span className="font-semibold text-slate-700 dark:text-slate-300">Condition patient :</span> {alert.condition}</p>
+            )}
+            <p className="whitespace-pre-wrap leading-relaxed">{desc}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── CheckerView ─────────────────────────────────────────────────────────────
 
 interface CheckerViewProps {
@@ -1030,153 +1116,119 @@ function CheckerView({
                 )}
               </div>
 
-              {/* Real-time alerts */}
-              {selectedMeds.length >= 1 && (
-                <div className="mb-5 space-y-3">
-                  {/* Compteur d'état (≥ 2 méds ou ≥ 1 non vérifiable) */}
-                  {(selectedMeds.length >= 2 || nonVerifiables.length > 0) && (() => {
-                    const nv = nonVerifiables.length;
-                    const ve = selectedMeds.length - nv;
-                    return (
-                      <div className={`text-xs font-medium px-3 py-1.5 rounded-lg ${nv > 0 ? 'bg-amber-50 text-amber-700' : 'bg-slate-50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400'}`}>
-                        {selectedMeds.length} médicament{selectedMeds.length > 1 ? 's' : ''} · {ve} vérifié{ve > 1 ? 's' : ''} · {nv} non vérifiable{nv > 1 ? 's' : ''}
-                      </div>
-                    );
-                  })()}
-                  {/* ── Bandeau ambre "médicaments non vérifiables" ─────────────────── */}
-                  {nonVerifiables.length > 0 && (
-                    <div className="flex items-start gap-2.5 px-4 py-3 bg-amber-50 border-2 border-amber-400 rounded-xl">
-                      <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-bold text-amber-800">
-                          ⚠ Vérification impossible pour : {nonVerifiables.join(', ')}
-                        </p>
-                        <p className="text-xs text-amber-700 mt-0.5">
-                          Les données de ce médicament ne permettent pas la vérification automatique des interactions. Vérifiez manuellement.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  {interactionAlerts.length === 0 ? (
-                    nonVerifiables.length < selectedMeds.length ? (
-                      <div className="flex items-start gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+              {/* Real-time alerts — Sprint 3 : cartes structurées + déduplication */}
+              {selectedMeds.length >= 1 && (() => {
+                const clinicalAlerts = interactionAlerts.filter(a => a.severite !== 'info');
+                const infoAlerts     = interactionAlerts.filter(a => a.severite === 'info');
+
+                // Déduplication de sécurité : le moteur déduplique déjà — filet d'affichage.
+                // Clé : ci|{medNom}|{condition} ou dd|{pair triée}.
+                const dedupMap = new Map<string, InteractionAlert>();
+                for (const alert of clinicalAlerts) {
+                  const key = alert.type === 'contraindication'
+                    ? `ci|${alert.involved[0]}|${alert.condition ?? ''}`
+                    : `dd|${[...alert.involved].sort().join('|')}`;
+                  const prev = dedupMap.get(key);
+                  if (!prev || SEVER_ORDER[alert.severite] < SEVER_ORDER[prev.severite]) {
+                    dedupMap.set(key, alert);
+                  }
+                }
+                const dedupAlerts = [...dedupMap.values()].sort(
+                  (a, b) => SEVER_ORDER[a.severite] - SEVER_ORDER[b.severite],
+                );
+                if (dedupAlerts.length !== clinicalAlerts.length) {
+                  console.warn(`[OrdoSur] Déduplication écran : ${clinicalAlerts.length - dedupAlerts.length} alerte(s) dupliquée(s) absorbée(s)`);
+                }
+
+                const maxSev = dedupAlerts[0]?.severite;
+                const nDD = dedupAlerts.filter(a => a.type === 'drug_drug').length;
+                const nCI = dedupAlerts.filter(a => a.type === 'contraindication').length;
+                const summaryParts: string[] = [];
+                if (nDD > 0) summaryParts.push(`${nDD} interaction${nDD > 1 ? 's' : ''}`);
+                if (nCI > 0) summaryParts.push(`${nCI} contre-indication${nCI > 1 ? 's' : ''}`);
+                const headerBg = maxSev === 'contre_indication'
+                  ? 'bg-red-50 border-red-200 text-red-800 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-300'
+                  : (maxSev === 'majeure' || maxSev === 'moderee')
+                    ? 'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-300'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 dark:bg-white/[0.04] dark:border-white/[0.08] dark:text-[#94A3B8]';
+
+                return (
+                  <div className="mb-5 space-y-2.5">
+                    {/* Non vérifiables — une seule ligne compacte */}
+                    {nonVerifiables.length > 0 && (
+                      <p className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 dark:bg-amber-500/[0.08] dark:border-amber-500/20 dark:text-amber-300">
+                        <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                        Non vérifié&nbsp;: {nonVerifiables.join(', ')}
+                      </p>
+                    )}
+
+                    {/* Aucune alerte clinique ET au moins 1 méd vérifiable */}
+                    {dedupAlerts.length === 0 && nonVerifiables.length < selectedMeds.length && (
+                      <div className="flex items-start gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl dark:bg-emerald-500/[0.08] dark:border-emerald-500/20">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5 dark:text-emerald-400" />
                         <div className="flex-1 min-w-0">
-                          <span className="text-sm text-emerald-800 font-medium">
-                            {selectedMeds.length === 1
-                              ? 'Aucune contre-indication documentée'
-                              : 'Aucune interaction documentée entre les médicaments vérifiés'}
+                          <span className="text-sm text-emerald-800 font-medium dark:text-emerald-300">
+                            Aucune interaction ni contre-indication détectée
                             {!selectedPatient && selectedMeds.length === 1 && (
-                              <span className="text-emerald-600 font-normal"> — sélectionnez un patient pour les contre-indications</span>
+                              <span className="font-normal text-emerald-600 dark:text-emerald-400"> — sélectionnez un patient pour les contre-indications</span>
                             )}
                           </span>
                           {selectedMeds.length === 1 && !selectedMeds[0].manual && medVerifInfo.get(selectedMeds[0].id)?.source && (
-                            <p className="text-xs text-emerald-600 mt-0.5">
+                            <p className="text-xs text-emerald-600 mt-0.5 dark:text-emerald-500">
                               Source : {medVerifInfo.get(selectedMeds[0].id)?.source}
                             </p>
                           )}
                         </div>
                       </div>
-                    ) : null
-                  ) : (
-                    <div className="space-y-3">
-                      {/* ── Sprint #3.0.9 — Aperçu compact ──────────────────
-                          Ligne résumé + pastilles courtes (avec tooltip).
-                          Analyse détaillée complète reste dans le bandeau du bas
-                          déclenché par "Analyser" (bloc {result && ...} plus bas). */}
+                    )}
 
-                      {/* Partie 1 — Ligne résumé */}
-                      {(() => {
-                        const cnt = { contre_indication: 0, majeure: 0, moderee: 0, mineure: 0, non_classee: 0, info: 0 };
-                        for (const a of interactionAlerts) cnt[a.severite]++;
-                        const totalInter = cnt.contre_indication + cnt.majeure + cnt.moderee + cnt.mineure + cnt.non_classee;
-                        if (totalInter === 0) return null;
-                        const parts: string[] = [];
-                        if (cnt.contre_indication) parts.push(`${cnt.contre_indication} contre-indication${cnt.contre_indication > 1 ? 's' : ''}`);
-                        if (cnt.majeure)           parts.push(`${cnt.majeure} majeure${cnt.majeure > 1 ? 's' : ''}`);
-                        if (cnt.moderee)           parts.push(`${cnt.moderee} modérée${cnt.moderee > 1 ? 's' : ''}`);
-                        if (cnt.mineure)           parts.push(`${cnt.mineure} mineure${cnt.mineure > 1 ? 's' : ''}`);
-                        if (cnt.non_classee)       parts.push(`${cnt.non_classee} non documentée${cnt.non_classee > 1 ? 's' : ''}`);
-                        const hasCI = cnt.contre_indication > 0;
-                        return (
-                          <div className={`flex items-center gap-2 text-sm font-semibold ${hasCI ? 'text-red-700 dark:text-red-400' : 'text-orange-700 dark:text-orange-400'}`}>
-                            <span className="text-base flex-shrink-0">{hasCI ? '🔴' : '⚠️'}</span>
-                            <span>
-                              {totalInter} interaction{totalInter > 1 ? 's' : ''} détectée{totalInter > 1 ? 's' : ''} — {parts.join(', ')}
-                            </span>
+                    {/* Alertes présentes */}
+                    {dedupAlerts.length > 0 && (
+                      <>
+                        {/* En-tête synthèse une ligne */}
+                        <div className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border ${headerBg}`}>
+                          <div className="flex items-center gap-2">
+                            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                            <span className="text-sm font-semibold">{summaryParts.join(' · ')}</span>
                           </div>
-                        );
-                      })()}
-
-                      {/* Partie 2 — Pastilles compactes (tooltip natif sur survol) */}
-                      <div className="flex flex-wrap gap-1.5">
-                        {interactionAlerts
-                          .filter(a => a.severite !== 'info')
-                          .sort((a, b) => {
-                            const order = { contre_indication: 0, majeure: 1, moderee: 2, mineure: 3, non_classee: 4, info: 5 };
-                            return order[a.severite] - order[b.severite];
-                          })
-                          .map((alert, idx) => {
-                            const pillCls = {
-                              contre_indication: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30',
-                              majeure:           'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-500/20 dark:text-orange-300 dark:border-orange-500/30',
-                              moderee:           'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-500/30',
-                              mineure:           'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-300 dark:border-yellow-500/30',
-                              non_classee:       'bg-slate-100 text-slate-700 border-slate-200 dark:bg-white/[0.06] dark:text-[#94A3B8] dark:border-white/[0.08]',
-                              info:              'bg-slate-100 text-slate-700 border-slate-200 dark:bg-white/[0.06] dark:text-[#94A3B8] dark:border-white/[0.08]',
-                            }[alert.severite];
-                            const dotCls = {
-                              contre_indication: 'bg-red-500',
-                              majeure:           'bg-orange-500',
-                              moderee:           'bg-blue-500',
-                              mineure:           'bg-yellow-500',
-                              non_classee:       'bg-slate-400',
-                              info:              'bg-slate-400',
-                            }[alert.severite];
-                            // Volet 2 — tooltip enrichi : préfixe la condition_valeur exacte
-                            // (CI pathologie) avant la description, pour le contexte médical.
-                            const tooltip = alert.condition
-                              ? `Condition : ${alert.condition}\n${alert.description}`
-                              : alert.description;
-                            return (
-                              <span
-                                key={idx}
-                                title={tooltip}
-                                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold border cursor-help ${pillCls}`}
-                              >
-                                <span className={`w-1.5 h-1.5 rounded-full ${dotCls} flex-shrink-0`} />
-                                {alert.involved.join(' + ')}
-                              </span>
-                            );
-                          })}
-                      </div>
-
-                      {/* Partie 3 — Ligne info DCI manquante (séparée du décompte d'interactions) */}
-                      {(() => {
-                        const infoAlerts = interactionAlerts.filter(a => a.severite === 'info');
-                        if (infoAlerts.length === 0) return null;
-                        const names = infoAlerts.map(a => a.involved[0]).join(', ');
-                        return (
-                          <div className="flex items-start gap-2 text-xs text-slate-500 dark:text-[#94A3B8] pt-1">
-                            <span className="flex-shrink-0">ℹ️</span>
-                            <span>
-                              {infoAlerts.length} médicament{infoAlerts.length > 1 ? 's' : ''} sans DCI mappée&nbsp;: <span className="font-medium text-slate-600 dark:text-[#E2E8F0]">{names}</span>
-                            </span>
-                          </div>
-                        );
-                      })()}
-
-                      {/* Partie 4 — Avertissement âge inconnu (CI pédiatriques non vérifiées) */}
-                      {ageUnknownWarning && (
-                        <div className="flex items-start gap-2 text-xs text-amber-600 dark:text-amber-400 pt-1">
-                          <span className="flex-shrink-0">⚠️</span>
-                          <span>Âge inconnu — contre-indications pédiatriques non vérifiées. Saisir la date de naissance pour une vérification complète.</span>
+                          {maxSev && <SeverityBadge s={maxSev} />}
                         </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+
+                        {/* Cartes triées par gravité décroissante */}
+                        <div className="space-y-2">
+                          {dedupAlerts.map((alert, idx) => (
+                            <AlertCard key={idx} alert={alert} />
+                          ))}
+                        </div>
+
+                        {/* DCI manquante */}
+                        {infoAlerts.length > 0 && (
+                          <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94A3B8] pt-1">
+                            <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                            DCI non mappée&nbsp;: {infoAlerts.map(a => a.involved[0]).join(', ')}
+                          </p>
+                        )}
+
+                        {/* Âge inconnu */}
+                        {ageUnknownWarning && (
+                          <p className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 pt-1">
+                            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                            Âge inconnu — contre-indications pédiatriques non vérifiées.
+                          </p>
+                        )}
+                      </>
+                    )}
+
+                    {/* Âge inconnu sans alertes */}
+                    {ageUnknownWarning && dedupAlerts.length === 0 && (
+                      <p className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 pt-1">
+                        <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                        Âge inconnu — contre-indications pédiatriques non vérifiées.
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Action buttons */}
               <div className="flex gap-3">
@@ -1199,69 +1251,53 @@ function CheckerView({
           </div>
         </div>
 
-        {/* ── Result ── Sprint M4 : bannière de sévérité ultra-lisible sur mobile.
-            Code couleur EXISTANT préservé (emerald/amber/red) — aucun changement sémantique. */}
+        {/* ── Result (Zone B) — Sprint 3 : bandeau simplifié, "Analyse détaillée"
+            supprimée (les cartes Zone A au-dessus sont la source d'information). */}
         {result && (
           <div
             ref={resultsRef}
             className={`mt-4 lg:mt-6 bg-white dark:bg-[#111827] rounded-2xl shadow-sm overflow-hidden border-l-4 ${
-              result.severity === 'safe' ? 'border-l-emerald-500' :
-              result.severity === 'attention' ? 'border-l-amber-500' : 'border-l-red-500'
+              result.severity === 'safe'      ? 'border-l-emerald-500' :
+              result.severity === 'attention' ? 'border-l-amber-500'   : 'border-l-[#DC2626]'
             }`}
           >
             <div className={`px-4 lg:px-6 py-4 lg:py-5 ${
-              result.severity === 'safe' ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
-              result.severity === 'attention' ? 'bg-gradient-to-r from-amber-500 to-amber-600' :
-              'bg-gradient-to-r from-red-500 to-red-600'
+              result.severity === 'safe'      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+              result.severity === 'attention' ? 'bg-gradient-to-r from-amber-500 to-amber-600'     :
+                                                'bg-gradient-to-r from-[#DC2626] to-red-700'
             }`}>
               <div className="flex items-center gap-3 lg:gap-4">
-                {result.severity === 'safe' && <CheckCircle2 className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                {result.severity === 'safe'      && <CheckCircle2  className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
                 {result.severity === 'attention' && <AlertTriangle className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
-                {result.severity === 'dangerous' && <X className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                {result.severity === 'dangerous' && <X             className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
                 <div className="min-w-0 flex-1">
                   <h3 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tight">
-                    {result.title ?? (
-                      result.severity === 'safe' ? 'Aucune interaction médicamenteuse détectée' :
-                      result.severity === 'attention' ? '⚠ Attention' : '⚠ Dangereux'
-                    )}
+                    {(result.title ?? (
+                      result.severity === 'safe'      ? 'Aucune interaction détectée' :
+                      result.severity === 'attention' ? 'Attention'                   : 'Prescription à risque'
+                    )).replace(/^[⚠✓]\s+/, '')}
                   </h3>
                   <p className="text-white/90 mt-0.5 text-xs lg:text-sm break-words">{result.description}</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 lg:p-6 space-y-4 lg:space-y-5">
-              {result.reasons.length > 0 && (
-                <div className="bg-slate-50 dark:bg-white/[0.04] rounded-xl p-4 lg:p-5">
-                  <h4 className="font-bold text-slate-900 dark:text-[#E2E8F0] mb-3">Analyse détaillée</h4>
-                  <ul className="space-y-2.5">
-                    {result.reasons.map((r, i) => (
-                      <li key={i} className="flex items-start gap-2.5 lg:gap-3 text-slate-700 dark:text-[#94A3B8] text-sm">
-                        <span className="text-red-500 font-bold mt-0.5 flex-shrink-0">•</span>
-                        <span className="min-w-0 break-words">{r}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
+            <div className="p-4 lg:p-6 space-y-4">
               <div className="bg-slate-100 dark:bg-white/[0.04] rounded-xl p-3 lg:p-4 border-l-4 border-slate-400 dark:border-slate-600">
                 <p className="text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
                   <strong>Avertissement :</strong> Cette analyse est indicative. Consultez le Vidal ou un référentiel pharmaceutique marocain.
                 </p>
               </div>
 
-              <div className="flex flex-col items-center gap-2 pt-2">
+              <div className="flex flex-col items-center gap-2">
                 {!selectedPatient && (
                   <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl px-4 py-2 text-center">
-                    ⚠️ Veuillez d'abord sélectionner un patient
+                    <AlertTriangle className="w-4 h-4 inline mr-1.5 -mt-0.5" />
+                    Veuillez d'abord sélectionner un patient
                   </p>
                 )}
                 <Button
-                  onClick={() => {
-                    if (!selectedPatient) return;
-                    setShowPrescriptionForm(true);
-                  }}
+                  onClick={() => { if (!selectedPatient) return; setShowPrescriptionForm(true); }}
                   variant="primary"
                   size="lg"
                   className="w-full sm:w-auto px-8"
