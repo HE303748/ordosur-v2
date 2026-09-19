@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useViewState } from '../hooks/useViewState';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -33,7 +34,7 @@ const NAV: { id: ViewType; label: string; icon: React.ElementType }[] = [
 ];
 
 function SecretaireSidebar({
-  active, onNavigate, onLogout, collapsed, onToggle, userName, orgName,
+  active, onNavigate, onLogout, collapsed, onToggle, userName, orgName, onHomeClick,
 }: {
   active: ViewType;
   onNavigate: (v: ViewType) => void;
@@ -42,6 +43,7 @@ function SecretaireSidebar({
   onToggle: () => void;
   userName: string;
   orgName: string;
+  onHomeClick?: () => void;
 }) {
   const w = collapsed ? 64 : 240;
   return (
@@ -54,7 +56,7 @@ function SecretaireSidebar({
       {/* Logo */}
       <div className={`flex items-center border-b border-white/[0.08] flex-shrink-0 ${collapsed ? 'flex-col px-2 py-4 gap-2' : 'px-4 pt-5 pb-4'}`}>
         {!collapsed && (
-          <div className="flex items-center gap-2.5 flex-1 min-w-0">
+          <button onClick={onHomeClick} className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer text-left" aria-label="Retour à l'accueil">
             <div className="w-8 h-8 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
               <Activity className="w-4 h-4 text-white" />
             </div>
@@ -62,12 +64,14 @@ function SecretaireSidebar({
               <h1 className="text-white font-bold text-[15px] leading-none">OrdoSur</h1>
               <p className="text-[#00A86B]/60 text-[10px] font-medium mt-0.5 truncate">{orgName}</p>
             </div>
-          </div>
+          </button>
         )}
         {collapsed && (
-          <div className="w-8 h-8 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center">
-            <Activity className="w-4 h-4 text-white" />
-          </div>
+          <button onClick={onHomeClick} className="cursor-pointer" aria-label="Retour à l'accueil">
+            <div className="w-8 h-8 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center">
+              <Activity className="w-4 h-4 text-white" />
+            </div>
+          </button>
         )}
         <button
           onClick={onToggle}
@@ -321,7 +325,8 @@ export function SecretaireDashboard() {
   const { user, clinicProfile, signOut } = useAuth();
   const navigate = useNavigate();
 
-  const [activeView, setActiveView] = useState<ViewType>('agenda');
+  const SEC_VIEWS = ['patients', 'agenda', 'ordonnances'] as const;
+  const [activeView, setActiveView] = useViewState(SEC_VIEWS, 'agenda');
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     try { return localStorage.getItem('sec-sidebar-collapsed') === 'true'; } catch { return false; }
   });
@@ -380,6 +385,7 @@ export function SecretaireDashboard() {
         onToggle={toggle}
         userName={userName}
         orgName={orgName}
+        onHomeClick={() => window.location.assign(window.location.pathname)}
       />
 
       <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A]">

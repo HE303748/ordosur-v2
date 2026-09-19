@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useViewState } from '../../hooks/useViewState';
 import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -35,7 +36,8 @@ export function ClinicAdminDashboard() {
   const { user, clinicProfile, signOut } = useAuth();
   const { unreadCount } = useNotifications();
 
-  const [activeView, setActiveView] = useState<ClinicViewType>('home');
+  const CLINIC_VIEWS = ['home', 'medecins', 'patients', 'agenda', 'ordonnances', 'notifications', 'stats', 'settings'] as const;
+  const [activeView, setActiveView] = useViewState(CLINIC_VIEWS, 'home');
   const [showAIChat, setShowAIChat] = useState(false);
   const [doctors, setDoctors] = useState<DoctorWithProfile[]>([]);
   const [patientsCount, setPatientsCount] = useState(0);
@@ -153,6 +155,7 @@ export function ClinicAdminDashboard() {
         onNavigate={setActiveView}
         onAIChat={() => setShowAIChat(true)}
         onLogout={handleLogout}
+        onHomeClick={() => window.location.assign(window.location.pathname)}
         clinicName={clinicProfile?.name}
         adminInitials={initials}
         adminName={`${user?.prenom ?? ''} ${user?.nom ?? ''}`.trim()}

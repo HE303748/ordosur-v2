@@ -136,6 +136,7 @@ interface SidebarProps {
   onNavigate: (v: ViewType) => void;
   onAIChat: () => void;
   onLogout: () => void;
+  onHomeClick?: () => void;
   userName?: string;
   userInitials?: string;
   specialite?: string;
@@ -144,7 +145,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({
-  activeView, onNavigate, onAIChat, onLogout,
+  activeView, onNavigate, onAIChat, onLogout, onHomeClick,
   userName, userInitials, specialite, patientCount,
 }: SidebarProps) {
   const [collapsed, setCollapsed] = useState<boolean>(() => {
@@ -173,12 +174,22 @@ export function Sidebar({
         collapsed ? 'flex-col px-2 py-4 gap-2' : 'px-5 pt-5 pb-4'
       }`}>
         {!collapsed && (
-          <div className="flex items-center flex-1 min-w-0">
+          <button
+            onClick={onHomeClick}
+            className="flex items-center flex-1 min-w-0 cursor-pointer"
+            aria-label="Retour à l'accueil"
+          >
             <Logo variant="horizontal-dark" size="md" />
-          </div>
+          </button>
         )}
         {collapsed && (
-          <Logo variant="symbol-dark" size="sm" />
+          <button
+            onClick={onHomeClick}
+            className="cursor-pointer"
+            aria-label="Retour à l'accueil"
+          >
+            <Logo variant="symbol-dark" size="sm" />
+          </button>
         )}
         <button
           onClick={toggle}

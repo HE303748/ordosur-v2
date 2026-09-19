@@ -43,12 +43,21 @@ export function LoginPage() {
     if (user && !authLoading) {
       const currentPath = window.location.pathname;
       if (currentPath === '/auth/callback' || currentPath === '/reset-password') return;
-      if (user.role === 'super_admin') navigate('/admin', { replace: true });
-      else if (user.role === 'clinic_admin') navigate('/clinic/admin', { replace: true });
-      else if (user.role === 'doctor') navigate('/doctor', { replace: true });
-      else if (user.role === 'secretaire') navigate('/secretaire', { replace: true });
+      const roleHome =
+        user.role === 'super_admin' ? '/admin' :
+        user.role === 'clinic_admin' ? '/clinic/admin' :
+        user.role === 'doctor' ? '/doctor' :
+        user.role === 'secretaire' ? '/secretaire' : null;
+      if (!roleHome) return;
+      const nextRaw = searchParams.get('next');
+      const next = nextRaw ? decodeURIComponent(nextRaw) : null;
+      if (next && next.startsWith(roleHome)) {
+        navigate(next, { replace: true });
+      } else {
+        navigate(roleHome, { replace: true });
+      }
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, searchParams]);
 
   useEffect(() => {
     if (searchParams.get('reset') === 'success') {

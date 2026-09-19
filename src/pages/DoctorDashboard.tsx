@@ -29,6 +29,7 @@ import { EmailVerificationBanner } from '../components/EmailVerificationBanner';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 
 import { Sidebar, type ViewType } from '../components/ui/Sidebar';
+import { useViewState } from '../hooks/useViewState';
 import { MobileBottomNav } from '../components/ui/MobileBottomNav';
 import { TopBar } from '../components/ui/TopBar';
 import { AIChat } from '../components/ui/AIChat';
@@ -2382,11 +2383,19 @@ export function DoctorDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Navigation
-  const [activeView, setActiveView] = useState<ViewType>('home');
+  // Navigation — vue persistée dans ?vue= (F5 restaure la vue, boutons retour/avant fonctionnels)
+  const DOCTOR_VIEWS = ['home', 'patients', 'checker', 'ordonnances', 'stats', 'agenda', 'encyclopedie', 'documents', 'settings'] as const;
+  const [activeView, setActiveView] = useViewState(DOCTOR_VIEWS, 'home');
   const [showAIChat, setShowAIChat] = useState(false);
   const [profileBannerDismissed, setProfileBannerDismissed] = useState(false);
   const [settingsSection, setSettingsSection] = useState<SettingsSection>('profil');
+
+  const handleLogoClick = () => {
+    if (showPrescriptionForm) {
+      if (!window.confirm('Une ordonnance est en cours. Quitter sans enregistrer ?')) return;
+    }
+    window.location.assign(window.location.pathname);
+  };
 
   // Ouvre directement Paramètres > Profil si redirigé depuis /profile
   useEffect(() => {
@@ -3314,6 +3323,7 @@ export function DoctorDashboard() {
         onNavigate={setActiveView}
         onAIChat={() => setShowAIChat(true)}
         onLogout={handleLogout}
+        onHomeClick={handleLogoClick}
         userName={user?.full_name}
         userInitials={userInitials}
         specialite={specialite}

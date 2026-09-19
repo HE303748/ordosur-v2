@@ -134,6 +134,7 @@ export interface ClinicSidebarProps {
   onNavigate: (v: ClinicViewType) => void;
   onAIChat: () => void;
   onLogout: () => void;
+  onHomeClick?: () => void;
   clinicName?: string;
   adminInitials?: string;
   adminName?: string;
@@ -144,7 +145,7 @@ export interface ClinicSidebarProps {
 
 /* ── Main component ─────────────────────────────────────────────── */
 export function ClinicSidebar({
-  activeView, onNavigate, onAIChat, onLogout,
+  activeView, onNavigate, onAIChat, onLogout, onHomeClick,
   clinicName, adminInitials, adminName,
   medecinsCount, patientsCount,
 }: ClinicSidebarProps) {
@@ -174,7 +175,11 @@ export function ClinicSidebar({
         collapsed ? 'flex-col px-2 py-4 gap-2' : 'px-5 pt-6 pb-5'
       }`}>
         {!collapsed && (
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+          <button
+            onClick={onHomeClick}
+            className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer text-left"
+            aria-label="Retour à l'accueil"
+          >
             <div className="w-9 h-9 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center shadow-lg shadow-[#00A86B]/25 flex-shrink-0">
               <Activity className="w-5 h-5 text-white" />
             </div>
@@ -182,12 +187,18 @@ export function ClinicSidebar({
               <h1 className="text-white font-bold text-[17px] tracking-tight leading-none">OrdoSur</h1>
               <p className="text-[#00A86B]/60 text-[11px] font-medium mt-0.5">Plateforme médicale</p>
             </div>
-          </div>
+          </button>
         )}
         {collapsed && (
-          <div className="w-9 h-9 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center shadow-lg shadow-[#00A86B]/25">
-            <Activity className="w-5 h-5 text-white" />
-          </div>
+          <button
+            onClick={onHomeClick}
+            className="cursor-pointer"
+            aria-label="Retour à l'accueil"
+          >
+            <div className="w-9 h-9 bg-gradient-to-br bg-[#00A86B] rounded-xl flex items-center justify-center shadow-lg shadow-[#00A86B]/25">
+              <Activity className="w-5 h-5 text-white" />
+            </div>
+          </button>
         )}
         <button
           onClick={toggle}

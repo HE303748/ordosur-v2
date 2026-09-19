@@ -57,7 +57,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     );
   }
 
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <Navigate to={`/?next=${encodeURIComponent(window.location.pathname + window.location.search)}`} replace />;
 
   // super_admin redirigé vers /admin s'il tente d'accéder à une route non-admin
   if (user.role === 'super_admin' && requiredRole !== 'super_admin') {
