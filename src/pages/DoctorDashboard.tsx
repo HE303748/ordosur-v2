@@ -2378,7 +2378,7 @@ function SettingsView({
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export function DoctorDashboard() {
-  const { user, signOut, doctorProfile, clinicProfile, refreshProfile } = useAuth();
+  const { user, signOut, doctorProfile, clinicProfile, refreshProfile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -3330,8 +3330,8 @@ export function DoctorDashboard() {
         />
         <EmailVerificationBanner />
 
-        {!profileBannerDismissed && (
-          !doctorProfile?.ordre_number || !clinicProfile?.adresse
+        {!authLoading && !profileBannerDismissed && (
+          !doctorProfile?.ordre_number?.trim() || !clinicProfile?.adresse?.trim()
         ) && (
           <div className="flex items-center gap-3 px-4 py-2.5 bg-blue-50 dark:bg-blue-500/[0.08] border-b border-blue-100 dark:border-blue-500/20 text-sm text-blue-800 dark:text-blue-300">
             <span className="flex-1">

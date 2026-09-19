@@ -141,110 +141,71 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   decoratePage();
   let y = 16;
 
-  // ── Header: Cabinet letterhead (left) + ORDONNANCE / N° / Date (right) ─────
+  // ── En-tête : identité médicale (gauche) + ORDONNANCE / date (droite) ───────
   const headerTop = y;
+  let lhY = headerTop;
 
   if (logoAsset) {
-    doc.addImage(logoAsset.data, logoAsset.format, MARGIN_L, headerTop, 0, 12);
-  } else {
-    // Letterhead fallback — nom du cabinet + coordonnées
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(C.INK_NAVY);
-    doc.text(data.org.name, MARGIN_L, headerTop + 6);
-    let lhY = headerTop + 12;
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(C.INK_MUTED);
-    if (data.org.adresse)   { doc.text(data.org.adresse,              MARGIN_L, lhY); lhY += 4; }
-    if (data.org.telephone) { doc.text(`Tél : ${data.org.telephone}`, MARGIN_L, lhY); }
+    doc.addImage(logoAsset.data, logoAsset.format, MARGIN_L, lhY, 0, 12);
+    lhY += 14;
   }
 
-  // Right block — ORDONNANCE title + numéro + date
+  // Identité du médecin prescripteur
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(C.INK_NAVY);
+  lhY += 5;
+  doc.text(`Dr. ${data.doctor.prenom} ${data.doctor.nom}`, MARGIN_L, lhY);
+
+  doc.setFontSize(8.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(C.INK_MUTED);
+  if (data.doctor.specialite)   { lhY += 4.5; doc.text(data.doctor.specialite, MARGIN_L, lhY); }
+  if (data.doctor.ordre_number) { lhY += 4;   doc.text(`N° Ordre : ${data.doctor.ordre_number}`, MARGIN_L, lhY); }
+  if (data.doctor.rpps)         { lhY += 4;   doc.text(`INPE : ${data.doctor.rpps}`, MARGIN_L, lhY); }
+
+  // Coordonnées du cabinet (taille réduite, estompées)
+  lhY += 2.5;
+  doc.setFontSize(7.5);
+  doc.setTextColor(C.INK_FAINT);
+  lhY += 3.5; doc.text(data.org.name, MARGIN_L, lhY);
+  if (data.org.adresse)   { lhY += 3.5; doc.text(data.org.adresse, MARGIN_L, lhY); }
+  if (data.org.telephone) { lhY += 3.5; doc.text(`Tél : ${data.org.telephone}`, MARGIN_L, lhY); }
+  lhY += 2;
+
+  // Bloc droit — titre ORDONNANCE + date (sans N° d'ordonnance)
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(C.INK_NAVY);
   doc.text('ORDONNANCE', PAGE_W - MARGIN_R, headerTop + 6, { align: 'right' });
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_MUTED);
-  doc.text(`N° ${data.ordreNumber}`, PAGE_W - MARGIN_R, headerTop + 12, { align: 'right' });
   doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
-  doc.text(formatDate(data.date), PAGE_W - MARGIN_R, headerTop + 18, { align: 'right' });
+  doc.text(formatDate(data.date), PAGE_W - MARGIN_R, headerTop + 12, { align: 'right' });
 
-  y += 26;
+  y = Math.max(lhY, headerTop + 16);
 
-  // ── Separator ──────────────────────────────────────────────────────────────
+  // ── Séparateur ─────────────────────────────────────────────────────────────
   doc.setDrawColor(C.DIVIDER);
   doc.setLineWidth(0.4);
   doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y);
   y += 7;
 
-  // ── PRESCRIPTEUR ───────────────────────────────────────────────────────────
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(C.GREEN);
-  doc.text('PRESCRIPTEUR', MARGIN_L, y);
-  y += 5.5;
-
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(C.INK_NAVY);
-  doc.text(`Dr. ${data.doctor.prenom} ${data.doctor.nom}`, MARGIN_L, y);
-  y += 5;
-
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_MUTED);
-  if (data.doctor.specialite) { doc.text(data.doctor.specialite, MARGIN_L, y); y += 4.5; }
-  // INPE / CNOM compact line
-  if (data.doctor.rpps)         { doc.text(`INPE : ${data.doctor.rpps}`,         MARGIN_L, y); y += 4.5; }
-  if (data.doctor.ordre_number) { doc.text(`N° Ordre : ${data.doctor.ordre_number}`, MARGIN_L, y); y += 4.5; }
-
-  y += 4;
-
-  // ── PATIENT ────────────────────────────────────────────────────────────────
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(C.GREEN);
-  doc.text('PATIENT', MARGIN_L, y);
-  y += 5.5;
-
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(C.INK_NAVY);
-  let patientHeader = `${data.patient.prenom} ${data.patient.nom}`;
-  const patientMeta: string[] = [];
-  if (data.patient.sexe) patientMeta.push(data.patient.sexe);
+  // ── Ligne patient discrète (sans données médicales sensibles) ───────────────
   const ageStr = formatAge(data.patient.date_naissance);
-  if (ageStr) patientMeta.push(ageStr);
-  if (patientMeta.length) patientHeader += ` — ${patientMeta.join(', ')}`;
-  doc.text(patientHeader, MARGIN_L, y);
-  y += 5;
+  const patientLine = `Nom du patient : ${data.patient.prenom} ${data.patient.nom}${ageStr ? ` — ${ageStr}` : ''}`;
+  const city = data.org.adresse?.split(',')[0]?.trim() || null;
+  const dateLine = city ? `${city}, le ${formatDate(data.date)}` : `Le ${formatDate(data.date)}`;
 
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_MUTED);
-  if (data.patient.date_naissance) {
-    doc.text(`Né(e) le : ${formatDate(data.patient.date_naissance)}`, MARGIN_L, y);
-    y += 4.5;
-  }
-  if (data.patient.pathologies && data.patient.pathologies.length > 0) {
-    const pathText = `Pathologies : ${data.patient.pathologies.join(', ')}`;
-    const pLines = doc.splitTextToSize(pathText, CONTENT_W);
-    doc.text(pLines, MARGIN_L, y);
-    y += pLines.length * 4.5;
-  }
-  if (data.motif) {
-    const motifLines = doc.splitTextToSize(`Motif : ${data.motif.trim()}`, CONTENT_W);
-    doc.text(motifLines, MARGIN_L, y);
-    y += motifLines.length * 4.5;
-  }
+  const patientLineWrapped = doc.splitTextToSize(patientLine, CONTENT_W * 0.62);
+  doc.text(patientLineWrapped, MARGIN_L, y);
+  doc.text(dateLine, PAGE_W - MARGIN_R, y, { align: 'right' });
+  y += patientLineWrapped.length > 1 ? patientLineWrapped.length * 4 + 2 : 6;
 
-  y += 5;
-
-  // ── Separator ──────────────────────────────────────────────────────────────
+  // ── Séparateur ─────────────────────────────────────────────────────────────
   doc.setDrawColor(C.DIVIDER);
   doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y);
   y += 8;
@@ -328,7 +289,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
   doc.text(
-    `${data.org.name}  ·  N° ${data.ordreNumber}  ·  ${formatDate(data.date)}`,
+    `${data.org.name}  ·  ${formatDate(data.date)}`,
     PAGE_W / 2, PAGE_H - 6,
     { align: 'center' }
   );
