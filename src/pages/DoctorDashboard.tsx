@@ -893,6 +893,26 @@ function CheckerView({
   loadPatientOrdonnances, patientOrdonnances,
   onAddPatient, setShowPrescriptionForm,
 }: CheckerViewProps) {
+  // Déduplication calculée une fois pour toute la vue
+  const clinicalAlerts = interactionAlerts.filter(a => a.severite !== 'info');
+  const infoAlerts     = interactionAlerts.filter(a => a.severite === 'info');
+  const dedupMap = new Map<string, InteractionAlert>();
+  for (const alert of clinicalAlerts) {
+    const key = alert.type === 'contraindication'
+      ? `ci|${alert.involved[0]}|${alert.condition ?? ''}`
+      : `dd|${[...alert.involved].sort().join('|')}`;
+    const prev = dedupMap.get(key);
+    if (!prev || SEVER_ORDER[alert.severite] < SEVER_ORDER[prev.severite]) {
+      dedupMap.set(key, alert);
+    }
+  }
+  const dedupAlerts = [...dedupMap.values()].sort(
+    (a, b) => SEVER_ORDER[a.severite] - SEVER_ORDER[b.severite],
+  );
+  if (dedupAlerts.length !== clinicalAlerts.length) {
+    console.warn(`[OrdoSur] Déduplication écran : ${clinicalAlerts.length - dedupAlerts.length} alerte(s) dupliquée(s) absorbée(s)`);
+  }
+
   return (
     <PageTransition>
       <div className="p-4 lg:p-6 max-w-[1400px]">
@@ -1116,120 +1136,6 @@ function CheckerView({
                 )}
               </div>
 
-              {/* Real-time alerts — Sprint 3 : cartes structurées + déduplication */}
-              {selectedMeds.length >= 1 && (() => {
-                const clinicalAlerts = interactionAlerts.filter(a => a.severite !== 'info');
-                const infoAlerts     = interactionAlerts.filter(a => a.severite === 'info');
-
-                // Déduplication de sécurité : le moteur déduplique déjà — filet d'affichage.
-                // Clé : ci|{medNom}|{condition} ou dd|{pair triée}.
-                const dedupMap = new Map<string, InteractionAlert>();
-                for (const alert of clinicalAlerts) {
-                  const key = alert.type === 'contraindication'
-                    ? `ci|${alert.involved[0]}|${alert.condition ?? ''}`
-                    : `dd|${[...alert.involved].sort().join('|')}`;
-                  const prev = dedupMap.get(key);
-                  if (!prev || SEVER_ORDER[alert.severite] < SEVER_ORDER[prev.severite]) {
-                    dedupMap.set(key, alert);
-                  }
-                }
-                const dedupAlerts = [...dedupMap.values()].sort(
-                  (a, b) => SEVER_ORDER[a.severite] - SEVER_ORDER[b.severite],
-                );
-                if (dedupAlerts.length !== clinicalAlerts.length) {
-                  console.warn(`[OrdoSur] Déduplication écran : ${clinicalAlerts.length - dedupAlerts.length} alerte(s) dupliquée(s) absorbée(s)`);
-                }
-
-                const maxSev = dedupAlerts[0]?.severite;
-                const nDD = dedupAlerts.filter(a => a.type === 'drug_drug').length;
-                const nCI = dedupAlerts.filter(a => a.type === 'contraindication').length;
-                const summaryParts: string[] = [];
-                if (nDD > 0) summaryParts.push(`${nDD} interaction${nDD > 1 ? 's' : ''}`);
-                if (nCI > 0) summaryParts.push(`${nCI} contre-indication${nCI > 1 ? 's' : ''}`);
-                const headerBg = maxSev === 'contre_indication'
-                  ? 'bg-red-50 border-red-200 text-red-800 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-300'
-                  : (maxSev === 'majeure' || maxSev === 'moderee')
-                    ? 'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-500/10 dark:border-amber-500/20 dark:text-amber-300'
-                    : 'bg-slate-50 border-slate-200 text-slate-700 dark:bg-white/[0.04] dark:border-white/[0.08] dark:text-[#94A3B8]';
-
-                return (
-                  <div className="mb-5 space-y-2.5">
-                    {/* Non vérifiables — une seule ligne compacte */}
-                    {nonVerifiables.length > 0 && (
-                      <p className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 dark:bg-amber-500/[0.08] dark:border-amber-500/20 dark:text-amber-300">
-                        <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-                        Non vérifié&nbsp;: {nonVerifiables.join(', ')}
-                      </p>
-                    )}
-
-                    {/* Aucune alerte clinique ET au moins 1 méd vérifiable */}
-                    {dedupAlerts.length === 0 && nonVerifiables.length < selectedMeds.length && (
-                      <div className="flex items-start gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl dark:bg-emerald-500/[0.08] dark:border-emerald-500/20">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5 dark:text-emerald-400" />
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm text-emerald-800 font-medium dark:text-emerald-300">
-                            Aucune interaction ni contre-indication détectée
-                            {!selectedPatient && selectedMeds.length === 1 && (
-                              <span className="font-normal text-emerald-600 dark:text-emerald-400"> — sélectionnez un patient pour les contre-indications</span>
-                            )}
-                          </span>
-                          {selectedMeds.length === 1 && !selectedMeds[0].manual && medVerifInfo.get(selectedMeds[0].id)?.source && (
-                            <p className="text-xs text-emerald-600 mt-0.5 dark:text-emerald-500">
-                              Source : {medVerifInfo.get(selectedMeds[0].id)?.source}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Alertes présentes */}
-                    {dedupAlerts.length > 0 && (
-                      <>
-                        {/* En-tête synthèse une ligne */}
-                        <div className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border ${headerBg}`}>
-                          <div className="flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-sm font-semibold">{summaryParts.join(' · ')}</span>
-                          </div>
-                          {maxSev && <SeverityBadge s={maxSev} />}
-                        </div>
-
-                        {/* Cartes triées par gravité décroissante */}
-                        <div className="space-y-2">
-                          {dedupAlerts.map((alert, idx) => (
-                            <AlertCard key={idx} alert={alert} />
-                          ))}
-                        </div>
-
-                        {/* DCI manquante */}
-                        {infoAlerts.length > 0 && (
-                          <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94A3B8] pt-1">
-                            <Info className="w-3.5 h-3.5 flex-shrink-0" />
-                            DCI non mappée&nbsp;: {infoAlerts.map(a => a.involved[0]).join(', ')}
-                          </p>
-                        )}
-
-                        {/* Âge inconnu */}
-                        {ageUnknownWarning && (
-                          <p className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 pt-1">
-                            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-                            Âge inconnu — contre-indications pédiatriques non vérifiées.
-                          </p>
-                        )}
-                      </>
-                    )}
-
-                    {/* Âge inconnu sans alertes */}
-                    {ageUnknownWarning && dedupAlerts.length === 0 && (
-                      <p className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400 pt-1">
-                        <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-                        Âge inconnu — contre-indications pédiatriques non vérifiées.
-                      </p>
-                    )}
-                  </div>
-                );
-              })()}
-
               {/* Action buttons */}
               <div className="flex gap-3">
                 <Button
@@ -1251,45 +1157,87 @@ function CheckerView({
           </div>
         </div>
 
-        {/* ── Result (Zone B) — Sprint 3 : bandeau simplifié, "Analyse détaillée"
-            supprimée (les cartes Zone A au-dessus sont la source d'information). */}
-        {result && (
-          <div
-            ref={resultsRef}
-            className={`mt-4 lg:mt-6 bg-white dark:bg-[#111827] rounded-2xl shadow-sm overflow-hidden border-l-4 ${
-              result.severity === 'safe'      ? 'border-l-emerald-500' :
-              result.severity === 'attention' ? 'border-l-amber-500'   : 'border-l-[#DC2626]'
-            }`}
-          >
-            <div className={`px-4 lg:px-6 py-4 lg:py-5 ${
-              result.severity === 'safe'      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
-              result.severity === 'attention' ? 'bg-gradient-to-r from-amber-500 to-amber-600'     :
-                                                'bg-gradient-to-r from-[#DC2626] to-red-700'
-            }`}>
-              <div className="flex items-center gap-3 lg:gap-4">
-                {result.severity === 'safe'      && <CheckCircle2  className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
-                {result.severity === 'attention' && <AlertTriangle className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
-                {result.severity === 'dangerous' && <X             className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tight">
-                    {(result.title ?? (
-                      result.severity === 'safe'      ? 'Aucune interaction détectée' :
-                      result.severity === 'attention' ? 'Attention'                   : 'Prescription à risque'
-                    )).replace(/^[⚠✓]\s+/, '')}
-                  </h3>
-                  <p className="text-white/90 mt-0.5 text-xs lg:text-sm break-words">{result.description}</p>
+        {/* ── Panneau résultats — Sprint 4 : pleine largeur, tout ici */}
+        {selectedMeds.length >= 1 && (
+          <div ref={resultsRef} className="mt-4 lg:mt-6 space-y-3">
+            {/* 1. Bandeau verdict */}
+            {result && (
+              <div className={`bg-white dark:bg-[#111827] rounded-2xl shadow-sm overflow-hidden border-l-4 ${
+                result.severity === 'safe'      ? 'border-l-emerald-500' :
+                result.severity === 'attention' ? 'border-l-amber-500'   : 'border-l-[#DC2626]'
+              }`}>
+                <div className={`px-4 lg:px-6 py-4 lg:py-5 ${
+                  result.severity === 'safe'      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+                  result.severity === 'attention' ? 'bg-gradient-to-r from-amber-500 to-amber-600'     :
+                                                    'bg-gradient-to-r from-[#DC2626] to-red-700'
+                }`}>
+                  <div className="flex items-center gap-3 lg:gap-4">
+                    {result.severity === 'safe'      && <CheckCircle2  className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                    {result.severity === 'attention' && <AlertTriangle className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                    {result.severity === 'dangerous' && <X             className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tight">
+                        {(result.title ?? (
+                          result.severity === 'safe'      ? 'Aucune interaction détectée' :
+                          result.severity === 'attention' ? 'Attention'                   : 'Prescription à risque'
+                        )).replace(/^[⚠✓]\s+/, '')}
+                      </h3>
+                      <p className="text-white/90 mt-0.5 text-xs lg:text-sm break-words">{result.description}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div className="p-4 lg:p-6 space-y-4">
-              <div className="bg-slate-100 dark:bg-white/[0.04] rounded-xl p-3 lg:p-4 border-l-4 border-slate-400 dark:border-slate-600">
-                <p className="text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
-                  <strong>Avertissement :</strong> Cette analyse est indicative. Consultez le Vidal ou un référentiel pharmaceutique marocain.
-                </p>
+            {/* 2. Non vérifiables pour interactions méd×méd */}
+            {nonVerifiables.length > 0 && (
+              <p className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 dark:bg-amber-500/[0.08] dark:border-amber-500/20 dark:text-amber-300">
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                Non vérifié pour les interactions méd×méd&nbsp;: {nonVerifiables.join(', ')}
+              </p>
+            )}
+
+            {/* 3. Grille de cartes (1 col mobile, 2 col desktop) */}
+            {dedupAlerts.length > 0 && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                {dedupAlerts.map((alert, idx) => (
+                  <AlertCard key={idx} alert={alert} />
+                ))}
               </div>
+            )}
 
-              <div className="flex flex-col items-center gap-2">
+            {/* Aucune alerte après analyse */}
+            {result && dedupAlerts.length === 0 && nonVerifiables.length < selectedMeds.length && (
+              <div className="flex items-start gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl dark:bg-emerald-500/[0.08] dark:border-emerald-500/20">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5 dark:text-emerald-400" />
+                <span className="text-sm text-emerald-800 font-medium dark:text-emerald-300">
+                  Aucune interaction ni contre-indication détectée
+                  {!selectedPatient && selectedMeds.length === 1 && (
+                    <span className="font-normal text-emerald-600 dark:text-emerald-400"> — sélectionnez un patient pour les contre-indications</span>
+                  )}
+                </span>
+              </div>
+            )}
+
+            {/* Âge inconnu */}
+            {ageUnknownWarning && (
+              <p className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                Âge inconnu — contre-indications pédiatriques non vérifiées.
+              </p>
+            )}
+
+            {/* DCI non mappée */}
+            {infoAlerts.length > 0 && (
+              <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94A3B8]">
+                <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                DCI non mappée&nbsp;: {infoAlerts.map(a => a.involved[0]).join(', ')}
+              </p>
+            )}
+
+            {/* 4. Bouton ordonnance */}
+            {result && (
+              <div className="flex flex-col items-center gap-2 pt-2">
                 {!selectedPatient && (
                   <p className="text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl px-4 py-2 text-center">
                     <AlertTriangle className="w-4 h-4 inline mr-1.5 -mt-0.5" />
@@ -1307,7 +1255,7 @@ function CheckerView({
                   Créer une ordonnance
                 </Button>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
