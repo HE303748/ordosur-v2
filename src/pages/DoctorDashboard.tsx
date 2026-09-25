@@ -2,9 +2,9 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
-  Search, Plus, X, AlertTriangle, ShieldCheck,
-  CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
-  BarChart3, Heart, Users, Calendar, Trash2, CreditCard as Edit,
+  Search, Plus, X, AlertTriangle,
+  CheckCircle2, Pill, UserPlus, FileText, Shield,
+  Users, Trash2, CreditCard as Edit,
   Download, ArrowLeft, ChevronRight, ChevronDown, Info,
 } from 'lucide-react';
 import { generateOrdonnancePdf } from '../lib/pdfService';
@@ -36,6 +36,7 @@ import { AIChat } from '../components/ui/AIChat';
 import { PatientAvatar } from '../components/ui/PatientAvatar';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PageTransition } from '../components/ui/PageTransition';
+import { DoctorHomeView, type HomeStats, type HomeAlert, type HomeRdv } from '../components/ui/DoctorHomeView';
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
 import { PatientTabs } from '../components/ui/PatientTabs';
 import { AgendaView } from '../components/ui/AgendaView';
@@ -178,262 +179,6 @@ function mergeDescriptions(a: string, b: string): string {
 
 // ─── Sub-views ──────────────────────────────────────────────────────────────
 
-/* ── Skeleton helpers ────────────────────────────────────────────────────── */
-function SkeletonBox({ className }: { className?: string }) {
-  return <div className={`animate-pulse bg-slate-200 dark:bg-slate-700 rounded-xl ${className || ''}`} />;
-}
-
-function SkeletonKPI() {
-  return (
-    <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] p-5 shadow-sm">
-      <div className="flex items-start justify-between mb-4">
-        <SkeletonBox className="w-11 h-11" />
-      </div>
-      <SkeletonBox className="w-16 h-8 mb-2" />
-      <SkeletonBox className="w-24 h-4 mb-1.5" />
-      <SkeletonBox className="w-32 h-3" />
-    </div>
-  );
-}
-
-function SkeletonPatientRow() {
-  return (
-    <div className="flex items-center gap-4 px-6 py-3.5">
-      <SkeletonBox className="w-9 h-9 rounded-xl flex-shrink-0" />
-      <div className="flex-1 space-y-2">
-        <SkeletonBox className="w-40 h-4" />
-        <SkeletonBox className="w-28 h-3" />
-      </div>
-    </div>
-  );
-}
-
-interface HomeViewProps {
-  stats: {
-    totalPatients: number;
-    ordonnances: number;
-    evolution: number;
-    evolutionInsufficient: boolean;
-    // Sprint Quick Fixes A — Bug #3 : raison précise du masquage (pour libellé non-anxiogène)
-    evolutionReason: 'new_account' | 'low_volume' | null;
-    interactions: number;
-  };
-  patients: Patient[];
-  interactionAlerts: InteractionAlert[];
-  onNavigate: (v: ViewType) => void;
-  onAddPatient: () => void;
-  dataLoading?: boolean;
-}
-
-function HomeView({ stats, patients, interactionAlerts, onNavigate, onAddPatient, dataLoading }: HomeViewProps) {
-  const today = new Date().toLocaleDateString('fr-FR', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-  });
-
-  const kpis = [
-    {
-      label: 'Patients totaux',
-      value: stats.totalPatients,
-      icon: Users,
-      color: 'bg-[#00A86B]',
-      light: 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.12]',
-      text: 'text-[#00A86B]',
-      sub: 'Patients enregistrés',
-    },
-    {
-      label: 'Ordonnances',
-      value: stats.ordonnances,
-      icon: FileText,
-      color: 'bg-[#00A86B]',
-      light: 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.12]',
-      text: 'text-[#00A86B]',
-      sub: 'Créées au total',
-    },
-    {
-      label: 'Interactions',
-      value: stats.interactions,
-      // Compte = 0 → bouclier vert (sécurité). Compte > 0 → triangle rouge (alerte).
-      icon: stats.interactions > 0 ? AlertTriangle : ShieldCheck,
-      color: stats.interactions > 0 ? 'bg-red-500'  : 'bg-[#00A86B]',
-      light: stats.interactions > 0 ? 'bg-red-50 dark:bg-[#DC2626]/[0.12]'    : 'bg-[#E6F4EE] dark:bg-[#00A86B]/[0.12]',
-      text:  stats.interactions > 0 ? 'text-red-600 dark:text-[#DC2626]'       : 'text-[#00A86B]',
-      sub: 'Détectées au total',
-    },
-    {
-      label: 'Évolution patients',
-      value: stats.evolutionInsufficient
-        ? '—'
-        : stats.evolution === 0
-        ? '—'
-        : stats.evolution >= 9999
-        ? 'Forte crois.'
-        : stats.evolution > 0
-        ? `+${stats.evolution}%`
-        : `${stats.evolution}%`,
-      icon: BarChart3,
-      color: 'bg-slate-400',
-      light: 'bg-slate-100 dark:bg-white/[0.06]',
-      text: 'text-slate-500 dark:text-[#94A3B8]',
-      sub: stats.evolutionReason === 'new_account'
-        ? 'Cabinet en démarrage'
-        : stats.evolutionReason === 'low_volume'
-        ? 'Activité récente faible'
-        : 'Nouveaux patients ce mois vs. mois précédent',
-    },
-  ];
-
-  return (
-    <PageTransition>
-      <div className="p-4 lg:p-6 max-w-[1400px]">
-        {/* Welcome */}
-        <div className="mb-6 lg:mb-8">
-          <h1 className="text-xl lg:text-2xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">
-            Tableau de bord 👋
-          </h1>
-          <p className="text-slate-500 dark:text-[#94A3B8] mt-0.5 text-xs lg:text-sm capitalize">{today}</p>
-        </div>
-
-        {/* KPI Grid — Sprint M1 : KPI[0] Patients totaux + KPI[3] Évolution en col-span-2
-            sur mobile pour donner pleine largeur. Sur lg+, tout repasse à col-span-1
-            (comportement desktop préservé : 2 cols à lg, 4 cols à xl). */}
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 lg:gap-5 mb-6 lg:mb-8">
-          {dataLoading
-            ? Array.from({ length: 4 }).map((_, i) => <SkeletonKPI key={i} />)
-            : kpis.map((kpi, i) => {
-              const Icon = kpi.icon;
-              const heroOnMobile = i === 0 || i === 3;
-              return (
-                <div
-                  key={kpi.label}
-                  className={`bg-white dark:bg-[#111827] rounded-2xl p-4 lg:p-5 border border-slate-200/80 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${
-                    heroOnMobile ? 'col-span-2 lg:col-span-1' : ''
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-3 lg:mb-4">
-                    <div className={`w-10 h-10 lg:w-11 lg:h-11 ${kpi.light} rounded-xl flex items-center justify-center`}>
-                      <Icon className={`w-5 h-5 ${kpi.text}`} />
-                    </div>
-                  </div>
-                  <p className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-[#E2E8F0] mb-1 tabular-nums">{kpi.value}</p>
-                  <p className="text-sm font-semibold text-slate-700 dark:text-[#CBD5E1]">{kpi.label}</p>
-                  <p className="text-xs text-slate-400 dark:text-[#64748B] mt-0.5">{kpi.sub}</p>
-                </div>
-              );
-            })
-          }
-        </div>
-
-        {/* Content grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
-          {/* Recent patients — 2/3 */}
-          <div className="xl:col-span-2 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.1)]">
-            <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4 border-b border-slate-100 dark:border-white/[0.06]">
-              <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0]">Patients récents</h2>
-              <button
-                onClick={() => onNavigate('patients')}
-                className="text-sm text-[#00A86B] hover:text-[#006B47] font-semibold transition-colors"
-              >
-                Voir tous →
-              </button>
-            </div>
-
-            <div className="divide-y divide-slate-50 dark:divide-white/[0.04]">
-              {dataLoading
-                ? Array.from({ length: 5 }).map((_, i) => <SkeletonPatientRow key={i} />)
-                : patients.slice(0, 7).map((p) => (
-                <div
-                  key={p.id}
-                  onClick={() => onNavigate('patients')}
-                  className="flex items-center gap-3 lg:gap-4 px-4 lg:px-6 py-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.04] active:bg-slate-100 cursor-pointer transition-colors group"
-                >
-                  <PatientAvatar name={`${p.prenom} ${p.nom}`} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm group-hover:text-[#006B47] dark:group-hover:text-[#00A86B] transition-colors">
-                      {p.prenom} {p.nom}
-                    </p>
-                    <p className="text-xs truncate">
-                      {p.pathologies?.[0] && p.pathologies[0] !== 'Aucune pathologie renseignée' ? (
-                        <>
-                          <span className="text-slate-400 dark:text-[#475569]">{p.pathologies[0]}</span>
-                          {p.date_naissance && (
-                            <span className="text-slate-400 dark:text-[#475569]">
-                              {' • '}{formatAge(p.date_naissance)}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <span className="italic text-[#94A3B8] dark:text-[#94A3B8]">
-                            Aucune pathologie renseignée
-                          </span>
-                          {p.date_naissance && (
-                            <span className="not-italic text-[#475569] dark:text-[#475569]">
-                              {' • '}{formatAge(p.date_naissance)}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </p>
-                  </div>
-                  <span className="text-xs text-slate-300 dark:text-slate-700 group-hover:text-[#00A86B] dark:group-hover:text-[#00A86B] transition-colors flex-shrink-0">→</span>
-                </div>
-              ))
-              }
-
-              {!dataLoading && patients.length === 0 && (
-                <EmptyState
-                  title="Aucun patient"
-                  description="Ajoutez votre premier patient pour commencer"
-                  icon={Users}
-                  action={
-                    <button
-                      onClick={onAddPatient}
-                      className="mt-2 px-5 py-2.5 bg-[#00A86B] text-white rounded-xl text-sm font-semibold hover:bg-[#006B47] transition-colors"
-                    >
-                      + Ajouter un patient
-                    </button>
-                  }
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Quick actions — 1/3 */}
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
-              <h2 className="text-base font-bold text-slate-900 dark:text-[#E2E8F0] mb-4">Actions rapides</h2>
-              <div className="space-y-2">
-                {[
-                  { label: '+ Nouveau patient',     view: 'patients' as ViewType,    action: onAddPatient, color: 'bg-[#00A86B] hover:bg-[#006B47] text-white' },
-                  { label: '💊 Vérifier interactions', view: 'checker' as ViewType,  color: 'bg-violet-50 dark:bg-violet-500/[0.1] hover:bg-violet-100 dark:hover:bg-violet-500/[0.18] text-violet-700 dark:text-violet-400' },
-                  { label: '📋 Voir ordonnances',   view: 'ordonnances' as ViewType, color: 'bg-emerald-50 dark:bg-emerald-500/[0.1] hover:bg-emerald-100 dark:hover:bg-emerald-500/[0.18] text-emerald-700 dark:text-emerald-400' },
-                  { label: '📊 Statistiques',       view: 'stats' as ViewType,       color: 'bg-slate-50 dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/[0.07] text-slate-700 dark:text-[#94A3B8]' },
-                ].map(({ label, view, action, color }) => (
-                  <button
-                    key={label}
-                    onClick={action || (() => onNavigate(view))}
-                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${color}`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br bg-[#00A86B] rounded-2xl p-5 text-white">
-              <h3 className="font-bold text-base mb-1">🤖 Assistant IA</h3>
-              <p className="text-white/80 text-xs mb-4">Questions médicales, interactions, posologies...</p>
-              <p className="text-white/80 text-xs opacity-80">
-                Cliquez sur "Assistant IA" dans la barre latérale pour accéder à l'IA médicale.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </PageTransition>
-  );
-}
-
 // ─── PatientsView ────────────────────────────────────────────────────────────
 
 interface PatientsViewProps {
@@ -453,6 +198,9 @@ interface PatientsViewProps {
   // Passés pour l'onglet Consultations (RLS INSERT exige doctors.id, pas auth.uid)
   doctorId?: string | null;
   orgId?: string | null;
+  // Ouverture directe d'une fiche (depuis l'accueil). Introuvable → liste, sans erreur.
+  initialPatientId?: string | null;
+  onInitialPatientHandled?: () => void;
 }
 
 function PatientsView({
@@ -460,7 +208,7 @@ function PatientsView({
   onAddPatient, onImportPatients, onEditPatient, onDeletePatient, onNavigateToChecker,
   patientOrdonnances, loadPatientOrdonnances,
   showMedicationHistory, setShowMedicationHistory, resetAnalysis,
-  doctorId, orgId,
+  doctorId, orgId, initialPatientId, onInitialPatientHandled,
 }: PatientsViewProps) {
   const [search, setSearch] = useState('');
   // 'all' = tous · 'recent' = ajoutés <30j
@@ -494,6 +242,15 @@ function PatientsView({
     resetAnalysis();
     loadPatientOrdonnances(p.id);
   };
+
+  useEffect(() => {
+    if (!initialPatientId) return;
+    const p = patients.find(x => x.id === initialPatientId);
+    if (p) selectPatient(p);
+    else setSelectedPatient(null);
+    onInitialPatientHandled?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialPatientId]);
 
   return (
     <PageTransition className="flex h-full">
@@ -2445,14 +2202,20 @@ export function DoctorDashboard() {
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
 
   // Stats
-  const [stats, setStats] = useState<{
-    totalPatients: number;
-    ordonnances: number;
-    evolution: number;
-    evolutionInsufficient: boolean;
-    evolutionReason: 'new_account' | 'low_volume' | null;
-    interactions: number;
-  }>({ totalPatients: 0, ordonnances: 0, evolution: 0, evolutionInsufficient: false, evolutionReason: null, interactions: 0 });
+  const [stats, setStats] = useState<HomeStats>({
+    totalPatients: 0, ordonnances: 0, interactions: 0,
+    evolution: 0, evolutionInsufficient: false, evolutionReason: null,
+    patientsThisMonth: 0, patientsLastMonth: 0,
+    ordThisMonth: null, ordLastMonth: null, intThisMonth: null, intLastMonth: null,
+    graves: null, gravesScope: null,
+  });
+  const [statsLoaded, setStatsLoaded] = useState(false);
+  const [recentAlerts, setRecentAlerts] = useState<HomeAlert[]>([]);
+  const [todayRdvs, setTodayRdvs] = useState<HomeRdv[]>([]);
+  const [todayRdvsRemaining, setTodayRdvsRemaining] = useState(0);
+  // Navigation contextuelle depuis l'accueil
+  const [pendingPatientId, setPendingPatientId] = useState<string | null>(null);
+  const [agendaDate, setAgendaDate] = useState<string | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const patientsLoadedRef = useRef(false);
   const [ordRefreshKey, setOrdRefreshKey] = useState(0);
@@ -2474,6 +2237,11 @@ export function DoctorDashboard() {
     // ce qui relançait tous les chargements (flash au retour de focus).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, user?.role, user?.org_id, doctorProfile?.id, navigate]);
+
+  // La date d'agenda ciblée depuis l'accueil ne vaut que pour cette ouverture.
+  useEffect(() => {
+    if (activeView !== 'agenda') setAgendaDate(null);
+  }, [activeView]);
 
   // Scroll to result
   useEffect(() => {
@@ -2913,15 +2681,27 @@ export function DoctorDashboard() {
       const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
       const endOfLastMonth   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
 
-      const [patientsRes, ordRes, thisMonthPats, lastMonthPats, interactionsRes] = await Promise.all([
+      // Date locale (YYYY-MM-DD / HH:MM:SS) — toISOString() décalerait au fuseau UTC.
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const todayLocal = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+      const nowTime = `${pad(now.getHours())}:${pad(now.getMinutes())}:00`;
+
+      // Fenêtres de lignes bornées : le total reste exact (count), les lignes servent
+      // aux variations mensuelles et aux dernières alertes. Une seule requête ajoutée (RDV).
+      const ORD_WINDOW = 300;
+      const INT_WINDOW = 200;
+
+      const [patientsRes, ordRes, thisMonthPats, lastMonthPats, interactionsRes, rdvRes] = await Promise.all([
         // Total patients for this org
         supabase.from('patients')
           .select('id', { count: 'exact', head: true })
           .eq('org_id', user.org_id),
         // Ordonnances by this doctor — MUST use doctorProfile.id (doctors PK), NOT user.id (auth UUID)
         supabase.from('ordonnances')
-          .select('id', { count: 'exact', head: true })
-          .eq('doctor_id', doctorProfile?.id || user.id),
+          .select('created_at', { count: 'exact' })
+          .eq('doctor_id', doctorProfile?.id || user.id)
+          .order('created_at', { ascending: false })
+          .limit(ORD_WINDOW),
         // Patients added this month
         supabase.from('patients')
           .select('id', { count: 'exact', head: true })
@@ -2933,11 +2713,57 @@ export function DoctorDashboard() {
           .eq('org_id', user.org_id)
           .gte('created_at', startOfLastMonth)
           .lte('created_at', endOfLastMonth),
-        // Interactions détectées (historique)
+        // Interactions détectées (historique) + dernières lignes pour le bloc « Dernières alertes »
         supabase.from('interaction_logs')
-          .select('id', { count: 'exact', head: true })
-          .eq('doctor_id', doctorProfile?.id || user.id),
+          .select('id, patient_id, medicament_a, medicament_b, risk_level, timestamp', { count: 'exact' })
+          .eq('doctor_id', doctorProfile?.id || user.id)
+          .order('timestamp', { ascending: false })
+          .limit(INT_WINDOW),
+        // Requête ajoutée : rendez-vous du jour (même périmètre org que l'Agenda)
+        supabase.from('rendez_vous')
+          .select('id, date, heure_debut, heure_fin, patient_nom, motif, type, statut')
+          .eq('org_id', user.org_id)
+          .eq('date', todayLocal)
+          .order('heure_debut', { ascending: true })
+          .limit(40),
       ]);
+
+      // Comptes mensuels exacts uniquement si la fenêtre couvre tout le mois précédent.
+      const lastMonthStart = new Date(startOfLastMonth).getTime();
+      const thisMonthStart = new Date(startOfThisMonth).getTime();
+      const monthly = (dates: string[], total: number) => {
+        const times = dates.map(d => new Date(d).getTime());
+        const covered = times.length >= total || (times.length > 0 && times[times.length - 1] < lastMonthStart);
+        if (!covered) return { thisM: null, lastM: null, covered };
+        return {
+          thisM: times.filter(t => t >= thisMonthStart).length,
+          lastM: times.filter(t => t >= lastMonthStart && t < thisMonthStart).length,
+          covered,
+        };
+      };
+
+      const ordRows = (ordRes.data ?? []) as Array<{ created_at: string }>;
+      const ordM = monthly(ordRows.map(r => r.created_at), ordRes.count ?? 0);
+
+      const intRows = (interactionsRes.data ?? []) as HomeAlert[];
+      const intTotal = interactionsRes.count ?? 0;
+      const intM = monthly(intRows.map(r => r.timestamp), intTotal);
+      let graves: number | null = null;
+      let gravesScope: HomeStats['gravesScope'] = null;
+      if (intRows.length >= intTotal) {
+        graves = intRows.filter(r => r.risk_level === 'dangerous').length;
+        gravesScope = 'total';
+      } else if (intM.covered) {
+        graves = intRows.filter(r => r.risk_level === 'dangerous' && new Date(r.timestamp).getTime() >= thisMonthStart).length;
+        gravesScope = 'month';
+      }
+      setRecentAlerts(intRows.slice(0, 5));
+
+      const upcoming = ((rdvRes.data ?? []) as Array<HomeRdv & { statut: string | null }>)
+        .filter(r => r.statut !== 'annule' && r.statut !== 'termine')
+        .filter(r => (r.heure_fin ?? r.heure_debut) >= nowTime);
+      setTodayRdvs(upcoming.slice(0, 5));
+      setTodayRdvsRemaining(Math.max(0, upcoming.length - 5));
 
       const totalPatients  = patientsRes.count     ?? 0;
       const ordonnances    = ordRes.count           ?? 0;
@@ -2963,9 +2789,18 @@ export function DoctorDashboard() {
         null;
       const evolutionInsufficient = evolutionReason !== null;
 
-      setStats({ totalPatients, ordonnances, evolution, evolutionInsufficient, evolutionReason, interactions });
+      setStats({
+        totalPatients, ordonnances, interactions,
+        evolution, evolutionInsufficient, evolutionReason,
+        patientsThisMonth: thisMonth, patientsLastMonth: lastMonth,
+        ordThisMonth: ordM.thisM, ordLastMonth: ordM.lastM,
+        intThisMonth: intM.thisM, intLastMonth: intM.lastM,
+        graves, gravesScope,
+      });
     } catch (err) {
       console.error('[DoctorDashboard] loadStats error:', err);
+    } finally {
+      setStatsLoaded(true);
     }
   };
 
@@ -3363,14 +3198,21 @@ export function DoctorDashboard() {
           >
           <AnimatePresence mode="wait">
             {activeView === 'home' && (
-              <HomeView
+              <DoctorHomeView
                 key="home"
+                doctorNom={user?.nom ?? ''}
                 stats={stats}
+                statsLoading={!statsLoaded}
                 patients={patients}
-                interactionAlerts={interactionAlerts}
+                patientsLoading={dataLoading}
+                recentAlerts={recentAlerts}
+                todayRdvs={todayRdvs}
+                todayRdvsRemaining={todayRdvsRemaining}
                 onNavigate={setActiveView}
+                onOpenPatient={id => { setPendingPatientId(id); setActiveView('patients'); }}
+                onOpenAgenda={date => { setAgendaDate(date ?? null); setActiveView('agenda'); }}
                 onAddPatient={openAddPatient}
-                dataLoading={dataLoading}
+                onNewPrescription={() => { resetAnalysis(); setActiveView('checker'); }}
               />
             )}
 
@@ -3395,6 +3237,8 @@ export function DoctorDashboard() {
                 resetAnalysis={resetAnalysis}
                 doctorId={doctorProfile?.id ?? null}
                 orgId={user?.org_id ?? null}
+                initialPatientId={pendingPatientId}
+                onInitialPatientHandled={() => setPendingPatientId(null)}
               />
             )}
 
@@ -3463,7 +3307,7 @@ export function DoctorDashboard() {
             )}
 
             {activeView === 'agenda' && (
-              <AgendaView key="agenda" patients={patients} showToast={showToast} />
+              <AgendaView key="agenda" patients={patients} showToast={showToast} initialDate={agendaDate} />
             )}
 
             {activeView === 'encyclopedie' && (

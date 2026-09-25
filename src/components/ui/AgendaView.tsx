@@ -276,12 +276,19 @@ function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps
 interface AgendaViewProps {
   patients: Array<{ id: string; prenom: string; nom: string }>;
   showToast: (msg: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
+  // Ouverture sur un jour précis (YYYY-MM-DD), en vue Jour.
+  initialDate?: string | null;
 }
 
-export function AgendaView({ patients, showToast }: AgendaViewProps) {
+export function AgendaView({ patients, showToast, initialDate }: AgendaViewProps) {
   const { user } = useAuth();
-  const [view, setView] = useState<CalView>('semaine');
-  const [refDate, setRefDate] = useState(new Date());
+  const [view, setView] = useState<CalView>(initialDate ? 'jour' : 'semaine');
+  const [refDate, setRefDate] = useState(() => {
+    if (!initialDate) return new Date();
+    const [y, m, d] = initialDate.split('-').map(Number);
+    // Midi local : évite un décalage de jour via toISOString() (fmt) selon le fuseau.
+    return new Date(y, m - 1, d, 12);
+  });
   const [rdvs, setRdvs] = useState<RendezVous[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
