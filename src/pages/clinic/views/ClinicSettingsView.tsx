@@ -244,7 +244,9 @@ export function ClinicSettingsView() {
           } catch {}
         }
       });
-  }, [user]);
+  // Dépendance primitive : ne pas écraser les champs en cours d'édition au retour de focus.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   // ── Load session history when security tab becomes active ──────────────────
   useEffect(() => {

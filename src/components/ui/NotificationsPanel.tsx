@@ -198,7 +198,8 @@ export function useNotifications() {
       .order('created_at', { ascending: false })
       .limit(30);
     setNotifications(data || []);
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -212,7 +213,8 @@ export function useNotifications() {
       }, () => load())
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [user, load]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, load]);
 
   const markRead = async (id: string) => {
     await supabase.from('notifications').update({ lu: true }).eq('id', id);

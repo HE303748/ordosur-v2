@@ -1309,6 +1309,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
   const [searchTerm, setSearchTerm] = useState('');
   const [timeFilter, setTimeFilter] = useState<'all' | 'month' | 'quarter'>('all');
   const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
+  const ordsLoadedRef = useRef(false);
 
   useEffect(() => {
     if (!doctorId) return;
@@ -1316,7 +1317,8 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
   }, [doctorId, refreshKey]);
 
   const fetchOrdonnances = async () => {
-    setLoading(true);
+    // Skeleton uniquement au premier chargement (refreshKey → rafraîchissement silencieux).
+    if (!ordsLoadedRef.current) setLoading(true);
     const { data } = await supabase
       .from('ordonnances')
       .select('id, date, created_at, statut, patient_id, ordre_number, ordonnance_lignes(medicament_nom, posologie, duree, instructions)')
@@ -1340,6 +1342,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
     } else {
       setOrds([]);
     }
+    ordsLoadedRef.current = true;
     setLoading(false);
   };
 
@@ -2451,6 +2454,7 @@ export function DoctorDashboard() {
     interactions: number;
   }>({ totalPatients: 0, ordonnances: 0, evolution: 0, evolutionInsufficient: false, evolutionReason: null, interactions: 0 });
   const [dataLoading, setDataLoading] = useState(true);
+  const patientsLoadedRef = useRef(false);
   const [ordRefreshKey, setOrdRefreshKey] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -2466,8 +2470,10 @@ export function DoctorDashboard() {
       loadStats();
       loadInteractionDb();
     }
+    // Dépendances primitives : l'objet `user` est recréé à chaque rechargement de profil,
+    // ce qui relançait tous les chargements (flash au retour de focus).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, doctorProfile?.id, navigate]);
+  }, [user?.id, user?.role, user?.org_id, doctorProfile?.id, navigate]);
 
   // Scroll to result
   useEffect(() => {
@@ -2862,7 +2868,8 @@ export function DoctorDashboard() {
 
   const loadPatients = async () => {
     if (!user) return;
-    setDataLoading(true);
+    // Skeleton uniquement au premier chargement ; ensuite rafraîchissement silencieux.
+    if (!patientsLoadedRef.current) setDataLoading(true);
     // Filtré par org_id → borné par la taille de l'organisation. fetchAllRows blinde
     // l'EXACTITUDE (plus de troncature silencieuse à 1000 pour une grosse clinique).
     //
@@ -2878,6 +2885,7 @@ export function DoctorDashboard() {
       { label: 'loadPatients' },
     );
     setPatients(data);
+    patientsLoadedRef.current = true;
     setDataLoading(false);
   };
 

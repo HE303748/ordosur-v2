@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useChartTheme } from '../../../hooks/useChartTheme';
 import { motion } from 'framer-motion';
 import {
@@ -276,9 +276,11 @@ export function ClinicStatsView({ orgId, doctors }: Props) {
 
   // ── Load all data ──────────────────────────────────────────────────────────
 
+  const loadedRef = useRef(false);
   const load = useCallback(async () => {
     if (!orgId) return;
-    setLoading(true);
+    // Skeleton uniquement au premier chargement ; ensuite rafraîchissement silencieux.
+    if (!loadedRef.current) setLoading(true);
 
     try {
       const { start, end, prevStart, prevEnd } = getPeriodDates(period);
@@ -548,6 +550,7 @@ export function ClinicStatsView({ orgId, doctors }: Props) {
     } catch (err) {
       console.error('[ClinicStatsView] load error:', err);
     } finally {
+      loadedRef.current = true;
       setLoading(false);
     }
   }, [orgId, period, doctors]);

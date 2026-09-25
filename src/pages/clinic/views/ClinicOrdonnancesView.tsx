@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Search, FileText, ChevronLeft, ChevronRight, Filter,
@@ -74,9 +74,11 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
   const [loading, setLoading] = useState(true);
   const PAGE_SIZE = 20;
 
+  const loadedRef = useRef(false);
   const load = useCallback(async () => {
     if (!orgId) return;
-    setLoading(true);
+    // Skeleton uniquement au premier chargement ; ensuite rafraîchissement silencieux.
+    if (!loadedRef.current) setLoading(true);
     try {
       let query = supabase
         .from('ordonnances')
@@ -124,6 +126,7 @@ export function ClinicOrdonnancesView({ orgId }: Props) {
         }
       }
     } finally {
+      loadedRef.current = true;
       setLoading(false);
     }
   }, [orgId, filter, page]);

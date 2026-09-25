@@ -89,7 +89,8 @@ export function ClinicDashboard() {
       loadDoctors();
       loadAllPatients();
     }
-  }, [user, navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, user?.role, navigate]);
 
   const loadDashboardData = async () => {
     const { data: doctors } = await supabase

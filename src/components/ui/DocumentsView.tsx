@@ -443,7 +443,9 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
         orgName:   org?.name                 || `Cabinet Dr. ${user.prenom} ${user.nom}`,
       });
     }
-  }, [user, doctorProfile]);
+  // Dépendances primitives : ne pas écraser le formulaire quand le profil est rechargé.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, doctorProfile?.id]);
 
   // Load existing certificates
   useEffect(() => {

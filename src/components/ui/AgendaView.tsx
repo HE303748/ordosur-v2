@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, Plus, X, Search, UserPlus,
@@ -308,9 +308,11 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
   const weekDays = getWeekDays(refDate);
   const today = new Date();
 
+  const loadedRef = useRef(false);
   const load = useCallback(async () => {
     if (!user) return;
-    setLoading(true);
+    // Skeleton uniquement au premier chargement ; ensuite rafraîchissement silencieux.
+    if (!loadedRef.current) setLoading(true);
     const start = fmt(weekDays[0]);
     const end = fmt(weekDays[6]);
     const { data } = await supabase
@@ -319,8 +321,10 @@ export function AgendaView({ patients, showToast }: AgendaViewProps) {
       .gte('date', start).lte('date', end)
       .order('heure_debut');
     setRdvs(data || []);
+    loadedRef.current = true;
     setLoading(false);
-  }, [user, fmt(weekDays[0])]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, user?.org_id, fmt(weekDays[0])]);
 
   useEffect(() => { load(); }, [load]);
 

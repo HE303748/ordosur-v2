@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Download, Users, ChevronLeft, ChevronRight,
@@ -374,9 +374,11 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
 
   const doctorByUserId = new Map(doctors.map(d => [d.user_id, `Dr. ${d.prenom} ${d.nom}`]));
 
+  const loadedRef = useRef(false);
   const load = useCallback(async () => {
     if (!orgId) return;
-    setLoading(true);
+    // Skeleton uniquement au premier chargement ; ensuite rafraîchissement silencieux.
+    if (!loadedRef.current) setLoading(true);
     try {
       let q = supabase.from('patients').select('*', { count: 'exact' }).eq('org_id', orgId);
 
@@ -432,6 +434,7 @@ export function ClinicPatientsView({ orgId, doctors = [] }: ClinicPatientsViewPr
         setMetaMap(m);
       }
     } finally {
+      loadedRef.current = true;
       setLoading(false);
     }
   }, [orgId, search, filter, sortKey, sortDir, page]);

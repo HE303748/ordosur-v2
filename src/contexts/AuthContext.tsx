@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
 import type { Organization, Doctor } from '../lib/supabase';
@@ -65,26 +65,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [clinicProfile, setClinicProfile] = useState<ClinicProfileContext | null>(null);
   const [loading, setLoading] = useState(true);
   const [orgStatus, setOrgStatus] = useState<string | null>(null);
+  // Id de l'utilisateur dont le profil est chargé (ou en cours) — filtre les events redondants.
+  const loadedUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     checkUser();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[AUTH] State change:', event);
-
       // Sprint #3.0.4 — PASSWORD_RECOVERY est géré directement par ResetPasswordPage,
       // qui écoute l'event et consomme la session créée par le hash. Aucune action ici.
 
-      (async () => {
-        if (event === 'SIGNED_IN' && session) {
-          await loadUserProfile(session.user.id, session.user.email ?? '');
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setDoctorProfile(null);
-          setClinicProfile(null);
-          setOrgStatus(null);
-        }
-      })();
+      // Retour de focus : supabase-js ré-émet SIGNED_IN (visibilitychange) et TOKEN_REFRESHED
+      // pour le même utilisateur. Recharger le profil recréait user/doctorProfile → toutes les
+      // vues relançaient leurs requêtes (flash de skeletons). On ne recharge que si l'id change.
+      if (event === 'SIGNED_OUT') {
+        loadedUserIdRef.current = null;
+        setUser(null);
+        setDoctorProfile(null);
+        setClinicProfile(null);
+        setOrgStatus(null);
+        return;
+      }
+      if (event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') return;
+      if (event === 'SIGNED_IN' && session && session.user.id !== loadedUserIdRef.current) {
+        void loadUserProfile(session.user.id, session.user.email ?? '');
+      }
     });
 
     return () => {
@@ -106,6 +111,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function loadUserProfile(userId: string, email: string) {
+    loadedUserIdRef.current = userId;
     try {
       const { data: profile, error } = await supabase
         .from('user_profiles')
@@ -115,11 +121,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('[AUTH] loadUserProfile error:', error);
+        loadedUserIdRef.current = null; // autorise un nouvel essai au prochain event
         return;
       }
 
       if (!profile) {
         console.warn('[AUTH] Aucun profil trouvé pour userId:', userId);
+        loadedUserIdRef.current = null;
         return;
       }
 
@@ -269,6 +277,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    loadedUserIdRef.current = null;
     setUser(null);
     setDoctorProfile(null);
     setClinicProfile(null);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, X, Loader2, Users } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
@@ -456,9 +456,11 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
   }, [orgId]);
 
   // Load RDVs
+  const loadedRef = useRef(false);
   const load = useCallback(async () => {
     if (!orgId) return;
-    setLoading(true);
+    // Skeleton uniquement au premier chargement ; ensuite rafraîchissement silencieux.
+    if (!loadedRef.current) setLoading(true);
     let start: string, end: string;
     if (view === 'semaine') {
       start = fmt(weekDays[0]);
@@ -478,6 +480,7 @@ export function ClinicAgendaView({ orgId, doctors, showToast }: ClinicAgendaView
 
     const { data } = await q;
     setRdvs((data ?? []) as RendezVous[]);
+    loadedRef.current = true;
     setLoading(false);
   }, [orgId, view, fmt(weekDays[0]), fmt(weekDays[6]), refDate.getMonth(), refDate.getFullYear(), filterDocId]);
 
