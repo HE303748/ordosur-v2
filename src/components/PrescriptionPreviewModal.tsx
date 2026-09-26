@@ -43,6 +43,7 @@ interface PrescriptionPreviewModalProps {
   remarks: string;
   nextAppointment?: string;
   interactionAlerts?: PdfInteractionAlert[];
+  showPatientName?: boolean;
 }
 
 export function PrescriptionPreviewModal({
@@ -60,6 +61,7 @@ export function PrescriptionPreviewModal({
   remarks,
   nextAppointment,
   interactionAlerts = [],
+  showPatientName = false,
 }: PrescriptionPreviewModalProps) {
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -85,6 +87,7 @@ export function PrescriptionPreviewModal({
         nextAppointment,
         date: todayIso,
         interactionAlerts,
+        showPatientName,
       });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Erreur lors de la génération du PDF';
@@ -125,9 +128,12 @@ export function PrescriptionPreviewModal({
             {doctor.ordre_number && <p className="text-sm text-gray-600">N° Ordre : {doctor.ordre_number}</p>}
           </div>
 
-          {/* Patient */}
-          <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+          {/* Patient — repère à l'écran ; non imprimé si l'option PDF est désactivée */}
+          <div className={`mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200 ${showPatientName ? '' : 'print:hidden'}`}>
             <p className="font-semibold">Patient : {patient.prenom} {patient.nom}</p>
+            {!showPatientName && (
+              <p className="text-xs text-slate-500 mt-0.5">Non imprimé sur l'ordonnance (modifiable dans Paramètres › Cabinet)</p>
+            )}
             {patient.date_naissance && (
               <p className="text-sm text-gray-600 mt-0.5">
                 Né(e) le : {(() => {

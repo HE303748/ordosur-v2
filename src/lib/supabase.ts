@@ -40,6 +40,7 @@ export interface Doctor {
   specialite?: string | null;
   ordre_number?: string | null;
   logo_url?: string | null;
+  show_patient_name_on_pdf?: boolean; // préférence PDF — false par défaut
   created_at: string;
 }
 

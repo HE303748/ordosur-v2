@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Plus, Trash2, Calendar } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Plus, Trash2, Calendar, History } from 'lucide-react';
+import type { DraftForm } from '../lib/ordonnanceDraft';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
@@ -10,16 +11,25 @@ interface MedicationForm {
   posologie: string;
   duree: string;
   quantite: string;
+  addedInForm?: boolean;
 }
 
 interface PrescriptionFormModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Bouton « Annuler » explicite (abandon de l'ordonnance). Par défaut : onClose. */
+  onCancel?: () => void;
   patient: {
     prenom: string;
     nom: string;
   };
-  initialMedications: Array<{ nom: string }>;
+  initialMedications: Array<{ id: string; nom: string }>;
+  /** État du formulaire à reprendre à l'ouverture (brouillon ou saisie précédente). */
+  initialForm?: DraftForm | null;
+  onFormChange?: (form: DraftForm) => void;
+  /** Bandeau « Brouillon restauré » + action « Repartir de zéro ». */
+  restored?: boolean;
+  onDiscardDraft?: () => void;
   onPreview: (data: {
     motif: string;
     medications: MedicationForm[];
@@ -64,8 +74,13 @@ const calculateQuantity = (posologie: string, duree: string): string => {
 export function PrescriptionFormModal({
   isOpen,
   onClose,
+  onCancel,
   patient,
   initialMedications = [],
+  initialForm = null,
+  onFormChange,
+  restored = false,
+  onDiscardDraft,
   onPreview
 }: PrescriptionFormModalProps) {
   const [motif, setMotif] = useState('');
@@ -74,21 +89,47 @@ export function PrescriptionFormModal({
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
 
+  // Initialisation à l'OUVERTURE uniquement (auparavant à chaque rendu du parent, ce qui
+  // écrasait les posologies saisies). Les lignes suivent la sélection du Vérificateur ;
+  // les valeurs déjà saisies (initialForm) sont conservées pour ces mêmes médicaments.
+  const wasOpenRef = useRef(false);
+  const initializedRef = useRef(false);
   useEffect(() => {
-    if (isOpen && initialMedications?.length > 0) {
-      const meds = initialMedications.map((med, idx) => {
+    if (isOpen && !wasOpenRef.current) {
+      const previous = new Map((initialForm?.medications ?? []).map(m => [m.id, m]));
+      const fromChecker = initialMedications.map(med => {
+        const id = `chk-${med.id}`;
+        const kept = previous.get(id);
+        if (kept) return kept;
         const suggestion = getDosageSuggestion(med.nom);
         return {
-          id: `med-${idx}`,
+          id,
           nom: med.nom,
           posologie: suggestion.posologie,
           duree: suggestion.duree,
           quantite: calculateQuantity(suggestion.posologie, suggestion.duree)
         };
       });
-      setMedications(meds);
+      const addedInForm = (initialForm?.medications ?? []).filter(m => m.addedInForm);
+      setMedications([...fromChecker, ...addedInForm]);
+      if (initialForm) {
+        setMotif(initialForm.motif);
+        setRemarks(initialForm.remarks);
+        setAppointmentDate(initialForm.appointmentDate);
+        setAppointmentTime(initialForm.appointmentTime);
+      }
+      initializedRef.current = true;
     }
-  }, [isOpen, initialMedications]);
+    wasOpenRef.current = isOpen;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  // Remonte chaque modification au parent (sauvegarde du brouillon, debounce côté parent).
+  useEffect(() => {
+    if (!isOpen || !initializedRef.current) return;
+    onFormChange?.({ motif, medications, remarks, appointmentDate, appointmentTime });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [motif, medications, remarks, appointmentDate, appointmentTime]);
 
   const handleMedicationChange = (id: string, field: keyof MedicationForm, value: string) => {
     setMedications(prev => prev.map(med => {
@@ -109,7 +150,8 @@ export function PrescriptionFormModal({
       nom: '',
       posologie: '1 comprimé 2 fois par jour',
       duree: '7 jours',
-      quantite: '14 comprimés'
+      quantite: '14 comprimés',
+      addedInForm: true
     }]);
   };
 
@@ -139,6 +181,30 @@ export function PrescriptionFormModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Créer une Ordonnance" size="xl">
       <div className="space-y-6">
+        {restored && (
+          <div
+            role="status"
+            className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 px-4 py-3 rounded-xl bg-[#E6F4EE] border border-[#00A86B]/20"
+          >
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <History className="w-4 h-4 text-[#00A86B] flex-shrink-0" aria-hidden />
+              <p className="text-sm text-[#0A1628]">
+                <span className="font-semibold">Brouillon restauré.</span>{' '}
+                <span className="text-slate-600">L'analyse des interactions a été relancée.</span>
+              </p>
+            </div>
+            {onDiscardDraft && (
+              <button
+                type="button"
+                onClick={onDiscardDraft}
+                className="self-start sm:self-auto text-sm font-semibold text-[#006B47] hover:text-[#0A1628] underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] rounded"
+              >
+                Repartir de zéro
+              </button>
+            )}
+          </div>
+        )}
+
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -285,7 +351,7 @@ export function PrescriptionFormModal({
         </div>
 
         <div className="flex justify-end space-x-3 pt-4 border-t border-slate-200">
-          <Button onClick={onClose} variant="secondary">
+          <Button onClick={onCancel ?? onClose} variant="secondary">
             Annuler
           </Button>
           <Button

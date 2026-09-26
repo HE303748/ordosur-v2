@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
   Search, Plus, X, AlertTriangle,
-  CheckCircle2, Pill, UserPlus, FileText, Shield,
+  CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
   Users, Trash2, CreditCard as Edit,
   Download, ArrowLeft, ChevronRight, ChevronDown, Info,
 } from 'lucide-react';
@@ -13,6 +13,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient, Medicament } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
 import { fetchAllRows } from '../lib/fetchAllRows';
+import {
+  saveDraft, loadDraft, clearDraft, getActiveDraftPatientId, type DraftForm,
+} from '../lib/ordonnanceDraft';
 import { SPECIALITES } from '../lib/specialites';
 import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
@@ -1058,9 +1061,10 @@ interface OrdonnancesViewProps {
   doctorInfo?: { nom: string; prenom: string; specialite?: string | null; rpps?: string | null; ordre_number?: string | null } | null;
   orgInfo?: { name: string; adresse?: string | null; telephone?: string | null } | null;
   logoUrl?: string | null;
+  showPatientName?: boolean;
 }
 
-function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, orgInfo, logoUrl }: OrdonnancesViewProps) {
+function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, orgInfo, logoUrl, showPatientName = false }: OrdonnancesViewProps) {
   const [ords, setOrds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -1142,6 +1146,7 @@ function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, org
         patient: { prenom: ord.patient_prenom, nom: ord.patient_nom_only },
         medications: meds,
         date: (ord.date || ord.created_at || new Date().toISOString()).split('T')[0],
+        showPatientName,
       });
     } catch (e) {
       console.error('[OrdoSur] PDF reprint error:', e);
@@ -1365,6 +1370,33 @@ function SettingsView({
   const [orgId, setOrgId]                 = useState<string | null>(null);
   const [cabinetSaving, setCabinetSaving] = useState(false);
   const [cabinetMsg, setCabinetMsg]       = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // ── Préférence PDF : identité patient (doctors.show_patient_name_on_pdf) ────
+  const [showPatientOnPdf, setShowPatientOnPdf] = useState<boolean>(!!doctorProfile?.show_patient_name_on_pdf);
+  const [pdfPrefSaving, setPdfPrefSaving]       = useState(false);
+  const [pdfPrefError, setPdfPrefError]         = useState<string | null>(null);
+  useEffect(() => {
+    setShowPatientOnPdf(!!doctorProfile?.show_patient_name_on_pdf);
+  }, [doctorProfile?.show_patient_name_on_pdf]);
+
+  const togglePatientOnPdf = async () => {
+    if (!doctorProfile?.id || pdfPrefSaving) return;
+    const next = !showPatientOnPdf;
+    setShowPatientOnPdf(next); // optimiste
+    setPdfPrefSaving(true);
+    setPdfPrefError(null);
+    const { error } = await supabase
+      .from('doctors')
+      .update({ show_patient_name_on_pdf: next })
+      .eq('id', doctorProfile.id);
+    setPdfPrefSaving(false);
+    if (error) {
+      setShowPatientOnPdf(!next);
+      setPdfPrefError("La préférence n'a pas pu être enregistrée. Réessayez.");
+      return;
+    }
+    onSaved();
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -1873,6 +1905,37 @@ function SettingsView({
                 </div>
               </div>
 
+              {/* Ordonnance PDF */}
+              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
+                <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Ordonnance PDF</h3>
+                <div className="mt-4 flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p id="pdf-patient-label" className="text-sm font-semibold text-slate-800 dark:text-[#E2E8F0]">
+                      Afficher le nom du patient sur l'ordonnance
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
+                      Ajoute la ligne « Nom du patient : Prénom Nom — âge » sous l'en-tête. Désactivé par défaut.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={showPatientOnPdf}
+                    aria-labelledby="pdf-patient-label"
+                    onClick={togglePatientOnPdf}
+                    disabled={pdfPrefSaving || !doctorProfile?.id}
+                    className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2 disabled:opacity-60 ${
+                      showPatientOnPdf ? 'bg-[#00A86B]' : 'bg-slate-300 dark:bg-white/[0.15]'
+                    }`}
+                  >
+                    <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                      showPatientOnPdf ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
+                </div>
+                {pdfPrefError && <p className="mt-3 text-xs font-medium text-[#DC2626]">{pdfPrefError}</p>}
+              </div>
+
               {/* Logo */}
               <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-5">
                 <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Logo du cabinet</h3>
@@ -2138,6 +2201,9 @@ export function DoctorDashboard() {
     if (showPrescriptionForm) {
       if (!window.confirm('Une ordonnance est en cours. Quitter sans enregistrer ?')) return;
     }
+    // Retour volontaire à l'accueil : le brouillon est abandonné (pas de restauration).
+    draftRestoreDoneRef.current = false; // bloque l'écriture au pagehide
+    if (doctorProfile?.id && selectedPatient) clearDraft(doctorProfile.id, selectedPatient.id);
     window.location.assign(window.location.pathname);
   };
 
@@ -2961,6 +3027,7 @@ export function DoctorDashboard() {
       showToast('Ordonnance enregistrée avec succès', 'success');
       setShowPrescriptionPreview(false);
       setPrescriptionData(null);
+      discardOrdonnanceDraft();
       loadStats();
       setOrdRefreshKey(k => k + 1); // trigger OrdonnancesView reload
 
@@ -3113,6 +3180,110 @@ export function DoctorDashboard() {
     setSelectedMeds([]); setMedSearchTerm(''); setInteractionAlerts([]); setResult(null); setNonVerifiables([]); setMedVerifInfo(new Map());
   };
 
+  // ── Brouillon d'ordonnance (sessionStorage, 1 clé par médecin + patient) ────
+  // Persisté : patient, médicaments du Vérificateur, saisie du formulaire.
+  // JAMAIS persisté : le verdict d'analyse (result) ni les alertes — recalculés.
+  const formDraftRef = useRef<DraftForm | null>(null);
+  const draftRestoreDoneRef = useRef(false);
+  const draftTimerRef = useRef<number | null>(null);
+  const prevDraftPatientIdRef = useRef<string | null>(null);
+  const reopenFormAfterCheckRef = useRef(false);
+  const [draftRestored, setDraftRestored] = useState(false);
+  const [formResetKey, setFormResetKey] = useState(0);
+  const draftStateRef = useRef({ doctorId: null as string | null, patientId: null as string | null, selectedMeds, formOpen: false });
+  draftStateRef.current = {
+    doctorId: doctorProfile?.id ?? null,
+    patientId: selectedPatient?.id ?? null,
+    selectedMeds,
+    formOpen: showPrescriptionForm || showPrescriptionPreview,
+  };
+
+  const flushDraft = useCallback(() => {
+    if (draftTimerRef.current !== null) { window.clearTimeout(draftTimerRef.current); draftTimerRef.current = null; }
+    const st = draftStateRef.current;
+    if (!draftRestoreDoneRef.current || !st.doctorId || !st.patientId) return;
+    saveDraft({
+      doctorId: st.doctorId,
+      patientId: st.patientId,
+      selectedMeds: st.selectedMeds.map(m => ({ id: m.id, nom: m.nom, dci: m.dci ?? null, dci_canonique: m.dci_canonique ?? null, manual: m.manual })),
+      form: formDraftRef.current,
+      formOpen: st.formOpen,
+    });
+  }, []);
+
+  const scheduleDraftSave = useCallback(() => {
+    if (draftTimerRef.current !== null) window.clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = window.setTimeout(flushDraft, 500);
+  }, [flushDraft]);
+
+  useEffect(() => {
+    scheduleDraftSave();
+  }, [selectedPatient?.id, selectedMeds, showPrescriptionForm, showPrescriptionPreview, scheduleDraftSave]);
+
+  // F5 pendant le debounce : on écrit immédiatement. Démontage (déconnexion) : on annule.
+  useEffect(() => {
+    window.addEventListener('pagehide', flushDraft);
+    return () => {
+      window.removeEventListener('pagehide', flushDraft);
+      if (draftTimerRef.current !== null) window.clearTimeout(draftTimerRef.current);
+    };
+  }, [flushDraft]);
+
+  // Changement de patient : le brouillon de l'ancien patient est abandonné (resetAnalysis
+  // a déjà vidé la sélection) — aucune donnée ne passe d'un patient à l'autre.
+  useEffect(() => {
+    const next = selectedPatient?.id ?? null;
+    const prev = prevDraftPatientIdRef.current;
+    if (next === null || next === prev) return;
+    if (prev && doctorProfile?.id) clearDraft(doctorProfile.id, prev);
+    formDraftRef.current = null;
+    reopenFormAfterCheckRef.current = false;
+    setDraftRestored(false);
+    prevDraftPatientIdRef.current = next;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPatient?.id]);
+
+  // Restauration au chargement — uniquement le brouillon du patient exact.
+  useEffect(() => {
+    if (draftRestoreDoneRef.current) return;
+    const doctorId = doctorProfile?.id;
+    if (!doctorId || dataLoading) return;
+    draftRestoreDoneRef.current = true;
+    const pid = getActiveDraftPatientId(doctorId);
+    if (!pid) return;
+    const draft = loadDraft(doctorId, pid);
+    const patient = draft ? patients.find(p => p.id === pid) : undefined;
+    if (!draft || !patient || draft.patientId !== patient.id) { clearDraft(doctorId, pid); return; }
+    prevDraftPatientIdRef.current = patient.id;
+    formDraftRef.current = draft.form;
+    reopenFormAfterCheckRef.current = draft.formOpen;
+    setSelectedPatient(patient);
+    setSelectedMeds(draft.selectedMeds);
+    setResult(null);
+    setDraftRestored(true);
+    setActiveView('checker');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doctorProfile?.id, dataLoading, patients]);
+
+  // Formulaire ouvert au moment du F5 → rouvert seulement APRÈS une analyse relancée.
+  useEffect(() => {
+    if (result && reopenFormAfterCheckRef.current && selectedPatient) {
+      reopenFormAfterCheckRef.current = false;
+      setShowPrescriptionForm(true);
+    }
+  }, [result, selectedPatient]);
+
+  /** Purge du brouillon courant + remise à zéro (enregistrement, annulation, « Repartir de zéro »). */
+  const discardOrdonnanceDraft = () => {
+    if (doctorProfile?.id && selectedPatient) clearDraft(doctorProfile.id, selectedPatient.id);
+    formDraftRef.current = null;
+    reopenFormAfterCheckRef.current = false;
+    setDraftRestored(false);
+    setShowPrescriptionForm(false);
+    setFormResetKey(k => k + 1);
+    resetAnalysis();
+  };
+
   const filteredPatientsForDropdown = patientSearchTerm.length >= 1
     ? patients.filter(p => `${p.prenom} ${p.nom}`.toLowerCase().includes(patientSearchTerm.toLowerCase())).slice(0, 8)
     : [];
@@ -3192,6 +3363,39 @@ export function DoctorDashboard() {
         )}
 
         <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0">
+          {draftRestored && activeView === 'checker' && !result && (
+            <div
+              role="status"
+              className="mx-4 mt-4 lg:mx-6 lg:mt-6 flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 rounded-2xl bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border border-[#00A86B]/20"
+            >
+              <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                <Clock className="w-4 h-4 mt-0.5 text-[#00A86B] flex-shrink-0" aria-hidden />
+                <p className="text-sm text-[#0A1628] dark:text-[#E2E8F0]">
+                  <span className="font-semibold">Brouillon restauré.</span>{' '}
+                  <span className="text-slate-600 dark:text-[#94A3B8]">
+                    Relancez l'analyse des interactions pour reprendre votre ordonnance.
+                  </span>
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={checkInteractions}
+                  disabled={loading || selectedMeds.length === 0}
+                  className="px-4 py-2 rounded-xl bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-60 text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2"
+                >
+                  Relancer l'analyse
+                </button>
+                <button
+                  type="button"
+                  onClick={discardOrdonnanceDraft}
+                  className="px-3 py-2 rounded-xl text-sm font-semibold text-[#006B47] dark:text-[#00A86B] hover:bg-white/60 dark:hover:bg-white/[0.05] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B]"
+                >
+                  Repartir de zéro
+                </button>
+              </div>
+            </div>
+          )}
           <ErrorBoundary
             fallbackTitle="Cette vue a rencontré un problème"
             resetKey={activeView}
@@ -3299,6 +3503,7 @@ export function DoctorDashboard() {
                   telephone: clinicProfile.telephone ?? null,
                 } : null}
                 logoUrl={doctorProfile?.logo_url ?? null}
+                showPatientName={!!doctorProfile?.show_patient_name_on_pdf}
               />
             )}
 
@@ -3420,10 +3625,16 @@ export function DoctorDashboard() {
 
       {selectedPatient && (
         <PrescriptionFormModal
+          key={`${selectedPatient.id}:${formResetKey}`}
           isOpen={showPrescriptionForm}
           onClose={() => setShowPrescriptionForm(false)}
+          onCancel={discardOrdonnanceDraft}
           patient={selectedPatient}
-          initialMedications={selectedMeds.map(m => ({ nom: (m as any).nom_commercial || m.nom || '' }))}
+          initialMedications={selectedMeds.map(m => ({ id: m.id, nom: (m as any).nom_commercial || m.nom || '' }))}
+          initialForm={formDraftRef.current}
+          onFormChange={f => { formDraftRef.current = f; scheduleDraftSave(); }}
+          restored={draftRestored}
+          onDiscardDraft={discardOrdonnanceDraft}
           onPreview={(data) => {
             setPrescriptionData(data);
             const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -3465,6 +3676,7 @@ export function DoctorDashboard() {
           remarks={prescriptionData.remarks ?? ''}
           nextAppointment={prescriptionData.nextAppointment}
           interactionAlerts={interactionAlerts}
+          showPatientName={!!doctorProfile?.show_patient_name_on_pdf}
         />
       )}
 

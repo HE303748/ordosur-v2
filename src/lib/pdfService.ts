@@ -45,6 +45,8 @@ export interface PdfOrdonnanceData {
   nextAppointment?: string;
   date: string;
   interactionAlerts?: PdfInteractionAlert[];
+  // Préférence médecin (doctors.show_patient_name_on_pdf). Absent/false → identité masquée.
+  showPatientName?: boolean;
 }
 
 function formatDate(dateStr: string): string {
@@ -191,19 +193,23 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y);
   y += 7;
 
-  // ── Ligne patient discrète (sans données médicales sensibles) ───────────────
-  const ageStr = formatAge(data.patient.date_naissance);
-  const patientLine = `Nom du patient : ${data.patient.prenom} ${data.patient.nom}${ageStr ? ` — ${ageStr}` : ''}`;
+  // ── Ligne lieu/date (+ identité patient uniquement si le médecin l'a activée) ─
   const city = data.org.adresse?.split(',')[0]?.trim() || null;
   const dateLine = city ? `${city}, le ${formatDate(data.date)}` : `Le ${formatDate(data.date)}`;
 
   doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_MUTED);
-  const patientLineWrapped = doc.splitTextToSize(patientLine, CONTENT_W * 0.62);
-  doc.text(patientLineWrapped, MARGIN_L, y);
   doc.text(dateLine, PAGE_W - MARGIN_R, y, { align: 'right' });
-  y += patientLineWrapped.length > 1 ? patientLineWrapped.length * 4 + 2 : 6;
+  if (data.showPatientName) {
+    const ageStr = formatAge(data.patient.date_naissance);
+    const patientLine = `Nom du patient : ${data.patient.prenom} ${data.patient.nom}${ageStr ? ` — ${ageStr}` : ''}`;
+    const patientLineWrapped = doc.splitTextToSize(patientLine, CONTENT_W * 0.62);
+    doc.text(patientLineWrapped, MARGIN_L, y);
+    y += patientLineWrapped.length > 1 ? patientLineWrapped.length * 4 + 2 : 6;
+  } else {
+    y += 6;
+  }
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
   doc.setDrawColor(C.DIVIDER);
