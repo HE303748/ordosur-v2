@@ -237,6 +237,7 @@ interface PatientsViewProps {
   // Ouverture directe d'une fiche (depuis l'accueil). Introuvable → liste, sans erreur.
   initialPatientId?: string | null;
   onInitialPatientHandled?: () => void;
+  onTraitementsChanged?: (patientId: string) => void;
 }
 
 function PatientsView({
@@ -244,7 +245,7 @@ function PatientsView({
   onAddPatient, onImportPatients, onEditPatient, onDeletePatient, onNavigateToChecker,
   patientOrdonnances, loadPatientOrdonnances,
   showMedicationHistory, setShowMedicationHistory, resetAnalysis,
-  doctorId, orgId, initialPatientId, onInitialPatientHandled,
+  doctorId, orgId, initialPatientId, onInitialPatientHandled, onTraitementsChanged,
 }: PatientsViewProps) {
   const [search, setSearch] = useState('');
   // 'all' = tous · 'recent' = ajoutés <30j
@@ -483,6 +484,7 @@ function PatientsView({
               onNavigateToChecker={onNavigateToChecker}
               doctorId={doctorId ?? null}
               orgId={orgId ?? null}
+              onTraitementsChanged={onTraitementsChanged}
             />
           </>
         )}
@@ -748,22 +750,24 @@ function FondPanel({
     <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-[#FAFAF7] dark:bg-white/[0.02] p-3.5">
       <p className="text-xs font-bold text-[#0A1628] dark:text-[#E2E8F0] uppercase tracking-widest flex items-center gap-2 mb-2">
         <Pill className="w-3.5 h-3.5 text-[#00A86B]" aria-hidden />
-        Traitement de fond{!loading && !error ? ` (${traitements.length})` : ''}
+        Traitement de fond{!(loading && traitements.length === 0) && !(error && traitements.length === 0) ? ` (${traitements.length})` : ''}
       </p>
 
-      {loading ? (
-        <div className="space-y-2">
-          {[1, 2].map(i => <div key={i} className="h-11 rounded-lg bg-slate-100 dark:bg-white/[0.04] animate-pulse" />)}
-        </div>
-      ) : error ? (
-        <p className="flex items-start gap-1.5 text-xs text-amber-800 dark:text-amber-300">
+      {error && (
+        <p className="flex items-start gap-1.5 text-xs text-amber-800 dark:text-amber-300 mb-2">
           <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
           <span>
-            Traitement de fond non chargé — vérification croisée impossible.{' '}
+            Traitement de fond non chargé — analyse incomplète.{' '}
             <button onClick={onRetry} className="font-semibold underline underline-offset-2">Réessayer</button>
           </span>
         </p>
-      ) : traitements.length === 0 ? (
+      )}
+      {loading && traitements.length === 0 ? (
+        <div className="space-y-2">
+          {[1, 2].map(i => <div key={i} className="h-11 rounded-lg bg-slate-100 dark:bg-white/[0.04] animate-pulse" />)}
+        </div>
+      ) : error && traitements.length === 0 ? null
+      : traitements.length === 0 ? (
         <p className="text-xs text-slate-500 dark:text-[#94A3B8] italic">
           Aucun traitement de fond structuré. Ajoutez-le depuis le profil patient (onglet Résumé).
         </p>
@@ -1147,7 +1151,7 @@ function CheckerView({
               {/* Action buttons */}
               <div className="flex gap-3">
                 <Button
-                  onClick={checkInteractions}
+                  onClick={() => checkInteractions()}
                   variant="primary"
                   size="lg"
                   loading={loading || analysisPending}
@@ -2539,7 +2543,13 @@ export function DoctorDashboard() {
   const [fondLoading, setFondLoading] = useState(false);
   const [fondError, setFondError] = useState(false);
   const [fondExcluded, setFondExcluded] = useState<Set<string>>(() => new Set());
-  const [fondReloadKey, setFondReloadKey] = useState(0);
+  // Rechargement du fond : numéro de requête (dernière gagnante), signature de la liste
+  // affichée, patient courant (réponse d'un ancien patient ignorée).
+  const fondSeqRef = useRef(0);
+  const fondSigRef = useRef('');
+  const selectedPatientIdRef = useRef<string | null>(null);
+  // Analyse demandée pendant que le fond changeait : verdict calculé dès que runCheck a fini.
+  const autoVerdictRef = useRef(false);
   // runCheck en cours : le bouton « Analyser » attend la fin du calcul des alertes.
   const [analysisPending, setAnalysisPending] = useState(false);
   // Sprint 3b — ensemble analysé au dernier clic « Analyser » (médicaments + fond inclus)
@@ -2645,24 +2655,67 @@ export function DoctorDashboard() {
     return () => { cancelled = true; };
   }, [selectedPatient?.id]);
 
-  // Sprint 3 — Chargement du traitement de fond actif à la sélection du patient.
+  // Sprint 3 — Traitement de fond actif du patient sélectionné.
+  // Fix — la liste était chargée UNIQUEMENT au changement de patient : un traitement ajouté
+  // dans le profil puis « Prescrire » (même patient) n'était pas analysé. Désormais rechargée :
+  //   1. après chaque ajout / arrêt dans le profil (handleTraitementsChanged) ;
+  //   2. à chaque retour sur la vue Vérificateur ;
+  //   3. juste avant chaque verdict (checkInteractions).
+  // Les cases décochées sont conservées pour les traitements inchangés ; les nouveaux sont
+  // cochés par défaut. Liste identique → état inchangé (pas d'analyse relancée pour rien).
+  selectedPatientIdRef.current = selectedPatient?.id ?? null;
+  const refreshFond = useCallback(async (
+    pid: string, opts: { reset?: boolean } = {},
+  ): Promise<'unchanged' | 'changed' | 'error' | 'stale'> => {
+    const seq = ++fondSeqRef.current;
+    setFondLoading(true);
+    if (opts.reset) {
+      fondSigRef.current = '';
+      setFondTraitements([]);
+      setFondExcluded(new Set());
+      setFondError(false);
+    }
+    try {
+      const rows = await loadTraitements(pid, true);
+      if (seq !== fondSeqRef.current || selectedPatientIdRef.current !== pid) return 'stale';
+      setFondError(false);
+      const sig = rows.map(t => `${t.id}:${t.medicament_id ?? ''}`).sort().join(',');
+      if (sig === fondSigRef.current) return 'unchanged';
+      fondSigRef.current = sig;
+      setFondTraitements(rows);
+      const ids = new Set(rows.map(r => r.id));
+      setFondExcluded(prev => {
+        const next = new Set([...prev].filter(id => ids.has(id)));
+        return next.size === prev.size ? prev : next;
+      });
+      return 'changed';
+    } catch (e) {
+      if (seq !== fondSeqRef.current || selectedPatientIdRef.current !== pid) return 'stale';
+      console.error('[OrdoSur] traitements_chroniques load error:', e);
+      setFondError(true);
+      return 'error';
+    } finally {
+      if (seq === fondSeqRef.current) setFondLoading(false);
+    }
+  }, []);
+
+  // Changement de patient : liste repartie de zéro, tout coché.
   useEffect(() => {
     const pid = selectedPatient?.id;
-    setFondExcluded(new Set());
-    if (!pid) { setFondTraitements([]); setFondError(false); setFondLoading(false); return; }
-    let cancelled = false;
-    setFondLoading(true);
-    setFondError(false);
-    setFondTraitements([]);
-    loadTraitements(pid, true)
-      .then(rows => { if (!cancelled) setFondTraitements(rows); })
-      .catch(e => {
-        console.error('[OrdoSur] traitements_chroniques load error:', e);
-        if (!cancelled) setFondError(true);
-      })
-      .finally(() => { if (!cancelled) setFondLoading(false); });
-    return () => { cancelled = true; };
-  }, [selectedPatient?.id, fondReloadKey]);
+    if (autoVerdictRef.current) { autoVerdictRef.current = false; setLoading(false); }
+    if (!pid) {
+      fondSeqRef.current++;
+      fondSigRef.current = '';
+      setFondTraitements([]); setFondExcluded(new Set()); setFondError(false); setFondLoading(false);
+      return;
+    }
+    refreshFond(pid, { reset: true });
+  }, [selectedPatient?.id, refreshFond]);
+
+  // Niveau 1 — ajout / arrêt dans le profil patient.
+  const handleTraitementsChanged = useCallback((pid: string) => {
+    if (pid === selectedPatientIdRef.current) refreshFond(pid);
+  }, [refreshFond]);
 
   // Sprint 3b — Clé de l'ensemble analysé : médicaments du Vérificateur + traitements de
   // fond inclus. Tout changement (ajout/retrait, case décochée, traitement rechargé)
@@ -3672,11 +3725,26 @@ export function DoctorDashboard() {
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
   };
 
-  const checkInteractions = async () => {
+  const checkInteractions = async (opts?: { skipFondRefresh?: boolean }) => {
     if (selectedMeds.length < 1) { showToast('Sélectionnez au moins 1 médicament', 'error'); return; }
     if (!selectedPatient) { showToast('Sélectionnez un patient pour analyser les contre-indications', 'error'); return; }
     if (fondLoading || analysisPending) { showToast('Analyse en cours — réessayez dans un instant', 'info'); return; }
     setLoading(true);
+
+    // Niveau 3 — traitement de fond rechargé juste avant le verdict. Liste modifiée → runCheck
+    // se relance sur la nouvelle liste et le verdict est calculé à la fin (autoVerdictRef).
+    // (Comparaison stricte : onClick transmet l'événement en 1er argument.)
+    let fondFailed = fondError;
+    if (opts?.skipFondRefresh !== true) {
+      const status = await refreshFond(selectedPatient.id);
+      if (status === 'stale') { setLoading(false); return; }
+      if (status === 'changed') {
+        autoVerdictRef.current = true;
+        showToast('Traitement de fond mis à jour — analyse relancée', 'info');
+        return; // loading conservé jusqu'au verdict automatique
+      }
+      fondFailed = status === 'error';
+    }
     await new Promise(r => setTimeout(r, 200));
 
     let overallSeverity: InteractionResult['severity'] = 'safe';
@@ -3730,7 +3798,7 @@ export function DoctorDashboard() {
     const preexistingOnly = overallSeverity === 'safe' && preexistingCount > 0;
     if (preexistingOnly) overallSeverity = 'conditional';
     // Sprint 3 — traitement de fond non chargé : vérification croisée non faite → jamais vert.
-    const fondUnavailable = overallSeverity === 'safe' && fondError;
+    const fondUnavailable = overallSeverity === 'safe' && fondFailed;
     if (fondUnavailable) overallSeverity = 'conditional';
 
     // Source unique de vérité : même nonVerifiables que le panneau temps réel.
@@ -3757,7 +3825,7 @@ export function DoctorDashboard() {
           : preexistingOnly
             ? preexistingLabel
           : fondUnavailable
-            ? 'Traitement de fond non chargé — vérification croisée non effectuée'
+            ? 'Traitement de fond non chargé — analyse incomplète'
           : overallSeverity === 'attention'
             ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
             : reasons.length > 0
@@ -3768,16 +3836,31 @@ export function DoctorDashboard() {
                   ? `✓ Aucune contre-indication documentée pour ${selectedMeds[0].nom} avec le profil de ce patient`
                   : `✓ Aucune interaction documentée entre les médicaments vérifiés`;
     // Les alertes préexistantes sont toujours mentionnées dans le bandeau, quel que soit le verdict.
-    const description = preexistingCount > 0 && !preexistingOnly
+    const withPreexisting = preexistingCount > 0 && !preexistingOnly
       ? `${baseDescription} · ${preexistingLabel}`
       : baseDescription;
+    // Échec du rechargement du fond : toujours signalé, quel que soit le verdict.
+    const description = fondFailed && !fondUnavailable
+      ? `${withPreexisting} · Traitement de fond non chargé — analyse incomplète`
+      : withPreexisting;
 
     setAnalyzedKey(currentAnalysisKey);
     setResult({ severity: overallSeverity, title: resultTitle, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);
   };
 
+  // Niveau 3 (suite) — le fond a changé au clic « Analyser » : verdict calculé automatiquement
+  // dès que runCheck a terminé sur la nouvelle liste (jamais sur les alertes de l'ancienne).
+  const checkInteractionsRef = useRef(checkInteractions);
+  checkInteractionsRef.current = checkInteractions;
+  useEffect(() => {
+    if (!autoVerdictRef.current || analysisPending) return;
+    autoVerdictRef.current = false;
+    checkInteractionsRef.current({ skipFondRefresh: true });
+  }, [interactionAlerts, analysisPending]);
+
   const resetAnalysis = () => {
+    if (autoVerdictRef.current) { autoVerdictRef.current = false; setLoading(false); }
     setSelectedMeds([]); setMedSearchTerm(''); setInteractionAlerts([]); setResult(null); setNonVerifiables([]); setMedVerifInfo(new Map());
   };
 
@@ -3897,6 +3980,13 @@ export function DoctorDashboard() {
   // Navigate to checker with patient pre-selected
   const navigateToChecker = () => setActiveView('checker');
 
+  // Niveau 2 — la vue Vérificateur redevient active avec un patient déjà sélectionné.
+  useEffect(() => {
+    const pid = selectedPatientIdRef.current;
+    if (activeView === 'checker' && pid) refreshFond(pid);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeView]);
+
   const openAddPatient = () => {
     setEditingPatient(null);
     setShowPatientModal(true);
@@ -3983,7 +4073,7 @@ export function DoctorDashboard() {
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   type="button"
-                  onClick={checkInteractions}
+                  onClick={() => checkInteractions()}
                   disabled={loading || selectedMeds.length === 0}
                   className="px-4 py-2 rounded-xl bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-60 text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2"
                 >
@@ -4044,6 +4134,7 @@ export function DoctorDashboard() {
                 resetAnalysis={resetAnalysis}
                 doctorId={doctorProfile?.id ?? null}
                 orgId={user?.org_id ?? null}
+                onTraitementsChanged={handleTraitementsChanged}
                 initialPatientId={pendingPatientId}
                 onInitialPatientHandled={() => setPendingPatientId(null)}
               />
@@ -4091,7 +4182,7 @@ export function DoctorDashboard() {
                 fondExcluded={fondExcluded}
                 toggleFond={toggleFond}
                 renewFond={renewFond}
-                reloadFond={() => setFondReloadKey(k => k + 1)}
+                reloadFond={() => { if (selectedPatient) refreshFond(selectedPatient.id); }}
                 analysisPending={analysisPending}
               />
             )}

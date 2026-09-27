@@ -21,6 +21,8 @@ interface Props {
   patient: { id: string; prenom: string; nom: string; traitements_en_cours?: string | null };
   doctorId: string | null;
   orgId: string | null;
+  /** Appelé après chaque ajout ou arrêt réussi (synchronise le Vérificateur). */
+  onChanged?: (patientId: string) => void;
 }
 
 const inputCls =
@@ -106,7 +108,7 @@ function FormError({ message }: { message: string | null }) {
   );
 }
 
-export function TraitementFondSection({ patient, doctorId, orgId }: Props) {
+export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: Props) {
   const canWrite = !!doctorId && !!orgId;
   const [items, setItems] = useState<TraitementChronique[]>([]);
   const [loading, setLoading] = useState(true);
@@ -201,6 +203,7 @@ export function TraitementFondSection({ patient, doctorId, orgId }: Props) {
       });
       if (error) throw error;
       setAddOpen(false);
+      onChanged?.(patient.id);
       await reload();
     } catch (e: unknown) {
       console.error('[TraitementFond] insert error:', e);
@@ -226,6 +229,7 @@ export function TraitementFondSection({ patient, doctorId, orgId }: Props) {
         .eq('id', stopTarget.id);
       if (error) throw error;
       setStopTarget(null);
+      onChanged?.(patient.id);
       await reload();
     } catch (e: unknown) {
       console.error('[TraitementFond] stop error:', e);

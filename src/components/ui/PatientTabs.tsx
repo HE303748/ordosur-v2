@@ -451,7 +451,10 @@ function ConsultationsTab({ patient, doctorId, orgId }: ConsultationsTabProps) {
 }
 
 /* ── Resume Tab ─────────────────────────────────────────────────── */
-function ResumeTab({ patient, doctorId, orgId }: { patient: Patient; doctorId: string | null; orgId: string | null }) {
+function ResumeTab({ patient, doctorId, orgId, onTraitementsChanged }: {
+  patient: Patient; doctorId: string | null; orgId: string | null;
+  onTraitementsChanged?: (patientId: string) => void;
+}) {
   const hasInfo =
     (patient.pathologies?.length ?? 0) > 0 ||
     (patient.allergies_medicaments?.length ?? 0) > 0 ||
@@ -584,7 +587,7 @@ function ResumeTab({ patient, doctorId, orgId }: { patient: Patient; doctorId: s
 
       {/* Sprint 3 — Traitement de fond structuré (remplace l'affichage du texte libre,
           désormais présenté en « Notes antérieures » en lecture seule dans la section). */}
-      <TraitementFondSection patient={patient} doctorId={doctorId} orgId={orgId} />
+      <TraitementFondSection patient={patient} doctorId={doctorId} orgId={orgId} onChanged={onTraitementsChanged} />
 
       {!hasInfo && (
         <div className="text-center py-10">
@@ -685,9 +688,11 @@ interface PatientTabsProps {
   // pour que la RLS INSERT policy consultations_insert soit satisfaite.
   doctorId?: string | null;
   orgId?: string | null;
+  // Sprint 3 fix — ajout / arrêt d'un traitement de fond : le Vérificateur recharge la liste.
+  onTraitementsChanged?: (patientId: string) => void;
 }
 
-export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker, doctorId, orgId }: PatientTabsProps) {
+export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker, doctorId, orgId, onTraitementsChanged }: PatientTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('resume');
 
   return (
@@ -800,7 +805,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker,
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
           >
-            {activeTab === 'resume'        && <ResumeTab patient={patient} doctorId={doctorId ?? null} orgId={orgId ?? null} />}
+            {activeTab === 'resume'        && <ResumeTab patient={patient} doctorId={doctorId ?? null} orgId={orgId ?? null} onTraitementsChanged={onTraitementsChanged} />}
             {activeTab === 'ordonnances'   && <OrdonnancesTab ordonnances={ordonnances} />}
             {activeTab === 'consultations' && (
               <ConsultationsTab
