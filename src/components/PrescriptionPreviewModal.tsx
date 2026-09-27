@@ -20,6 +20,12 @@ interface PrescriptionPreviewModalProps {
   onClose: () => void;
   onBack: () => void;
   onSave: () => void;
+  /**
+   * Sprint 3b — motif de blocage (vérification périmée / confirmation hors base manquante).
+   * Non nul → Enregistrer, Imprimer et Télécharger PDF désactivés : aucune ordonnance ne
+   * sort sans vérification.
+   */
+  blockedReason?: string | null;
   ordreNumber: string;
   logo_url?: string | null;
   doctor: {
@@ -53,6 +59,7 @@ export function PrescriptionPreviewModal({
   onClose,
   onBack,
   onSave,
+  blockedReason = null,
   ordreNumber,
   logo_url,
   doctor,
@@ -71,9 +78,10 @@ export function PrescriptionPreviewModal({
   const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const todayIso = new Date().toISOString().split('T')[0];
 
-  const handlePrint = () => window.print();
+  const handlePrint = () => { if (blockedReason) return; window.print(); };
 
   const handleDownloadPdf = async () => {
+    if (blockedReason) return;
     setPdfError(null);
     setPdfLoading(true);
     try {
@@ -182,20 +190,27 @@ export function PrescriptionPreviewModal({
           </div>
         )}
 
+        {blockedReason && (
+          <div role="status" className="flex items-start gap-2 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-900 no-print">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600" />
+            <span>{blockedReason} Revenez au formulaire avec « Modifier ».</span>
+          </div>
+        )}
+
         <div className="flex gap-2 justify-end no-print flex-wrap">
           <Button onClick={onBack} variant="secondary">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Modifier
           </Button>
-          <Button onClick={onSave} variant="primary">
+          <Button onClick={onSave} variant="primary" disabled={!!blockedReason}>
             <Save className="w-4 h-4 mr-2" />
             Enregistrer
           </Button>
-          <Button onClick={handlePrint} variant="secondary">
+          <Button onClick={handlePrint} variant="secondary" disabled={!!blockedReason}>
             <Printer className="w-4 h-4 mr-2" />
             Imprimer
           </Button>
-          <Button onClick={handleDownloadPdf} variant="secondary" disabled={pdfLoading}>
+          <Button onClick={handleDownloadPdf} variant="secondary" disabled={pdfLoading || !!blockedReason}>
             {pdfLoading
               ? <span className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mr-2" />
               : <Download className="w-4 h-4 mr-2" />}

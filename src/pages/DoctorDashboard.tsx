@@ -24,6 +24,7 @@ import { PrescriptionFormModal, type UncheckedLine } from '../components/Prescri
 import {
   loadTraitements, fondMedId, fondDisplayName, type TraitementChronique,
 } from '../lib/traitementsChroniques';
+import { computeVerification, verificationBlockMessage } from '../lib/ordonnanceVerification';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
 import { PatientImportModal } from '../components/PatientImportModal';
@@ -2541,6 +2542,10 @@ export function DoctorDashboard() {
   const [fondReloadKey, setFondReloadKey] = useState(0);
   // runCheck en cours : le bouton « Analyser » attend la fin du calcul des alertes.
   const [analysisPending, setAnalysisPending] = useState(false);
+  // Sprint 3b — ensemble analysé au dernier clic « Analyser » (médicaments + fond inclus)
+  // et confirmation explicite des lignes hors base (clé = liste des noms confirmés).
+  const [analyzedKey, setAnalyzedKey] = useState<string | null>(null);
+  const [horsBaseConfirmedKey, setHorsBaseConfirmedKey] = useState<string | null>(null);
   const [confirmDeletePatient, setConfirmDeletePatient] = useState<Patient | null>(null);
   const [deletePatientLoading, setDeletePatientLoading] = useState(false);
   // Volet 2 — synonymes des pathologies du patient sélectionné.
@@ -2659,14 +2664,23 @@ export function DoctorDashboard() {
     return () => { cancelled = true; };
   }, [selectedPatient?.id, fondReloadKey]);
 
-  // Tout changement de l'ensemble analysé (case décochée, traitement rechargé) invalide le
-  // verdict affiché : il devra être recalculé via « Analyser » (jamais de verdict périmé).
-  const fondVerdictKeyRef = useRef('');
+  // Sprint 3b — Clé de l'ensemble analysé : médicaments du Vérificateur + traitements de
+  // fond inclus. Tout changement (ajout/retrait, case décochée, traitement rechargé)
+  // invalide le verdict : il devra être recalculé via « Analyser » (jamais de verdict périmé,
+  // jamais d'ordonnance enregistrée sur une analyse qui ne correspond plus).
+  const currentAnalysisKey = useMemo(() => {
+    const meds = selectedMeds.map(m => m.id).sort().join(',');
+    const fond = fondTraitements
+      .filter(t => !fondExcluded.has(t.id))
+      .map(t => fondMedId(t))
+      .filter(id => !selectedMeds.some(m => m.id === id))
+      .sort().join(',');
+    return `${meds}#${fond}`;
+  }, [selectedMeds, fondTraitements, fondExcluded]);
+  const analysisValid = !!result && analyzedKey === currentAnalysisKey;
   useEffect(() => {
-    const key = `${fondTraitements.map(t => t.id).join(',')}|${[...fondExcluded].sort().join(',')}`;
-    if (fondVerdictKeyRef.current && fondVerdictKeyRef.current !== key) setResult(null);
-    fondVerdictKeyRef.current = key;
-  }, [fondTraitements, fondExcluded]);
+    if (result && analyzedKey !== currentAnalysisKey) setResult(null);
+  }, [result, analyzedKey, currentAnalysisKey]);
 
   // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
   // Sprint 3 — l'ensemble analysé = médicaments de la prescription en cours (selectedMeds)
@@ -3226,6 +3240,8 @@ export function DoctorDashboard() {
         supabase.from('interaction_logs')
           .select('id, patient_id, medicament_a, medicament_b, risk_level, timestamp', { count: 'exact' })
           .eq('doctor_id', doctorProfile?.id || user.id)
+          // Sprint 3b — les confirmations « hors base » ne sont pas des interactions détectées
+          .or('source.is.null,source.neq.hors_base_confirme')
           .order('timestamp', { ascending: false })
           .limit(INT_WINDOW),
         // Requête ajoutée : rendez-vous du jour (même périmètre org que l'Agenda)
@@ -3375,6 +3391,18 @@ export function DoctorDashboard() {
       return;
     }
 
+    // Sprint 3b — Filet de sécurité : aucune ordonnance enregistrée si l'une de ses lignes
+    // n'a pas été analysée sur la sélection actuelle, ou si des lignes hors base n'ont pas
+    // été explicitement confirmées. Même calcul que le formulaire et l'aperçu.
+    const verification = computeVerification(
+      prescriptionData.medications ?? [], selectedMeds, analysisValid, horsBaseConfirmedKey,
+    );
+    const blockMessage = verificationBlockMessage(verification);
+    if (blockMessage) {
+      showToast(`Enregistrement refusé — ${blockMessage}`, 'error');
+      return;
+    }
+
     const payload = {
       doctor_id:    doctorId,
       patient_id:   selectedPatient.id,
@@ -3470,7 +3498,27 @@ export function DoctorDashboard() {
         console.error('[OrdoSur] interaction_logs logging failed (non-blocking):', logErr);
       }
 
+      // Sprint 3b — Traçabilité de la confirmation « hors base » (1 ligne par médicament).
+      try {
+        if (verification.horsBase.length > 0) {
+          const { error: hbErr } = await supabase.from('interaction_logs').insert(
+            verification.horsBase.map(l => ({
+              doctor_id:    doctorId,
+              patient_id:   selectedPatient.id,
+              medicament_a: l.nom.trim(),
+              medicament_b: null,
+              risk_level:   'attention',
+              source:       'hors_base_confirme',
+            })),
+          );
+          if (hbErr) console.error('[OrdoSur] hors_base_confirme log error (non-blocking):', hbErr);
+        }
+      } catch (hbErr) {
+        console.error('[OrdoSur] hors_base_confirme logging failed (non-blocking):', hbErr);
+      }
+
       showToast('Ordonnance enregistrée avec succès', 'success');
+      setHorsBaseConfirmedKey(null);
       setShowPrescriptionPreview(false);
       setPrescriptionData(null);
       discardOrdonnanceDraft();
@@ -3578,16 +3626,28 @@ export function DoctorDashboard() {
    * médicament manuel : CI par nom, non vérifiable méd×méd, jamais de vert plein), le
    * verdict est invalidé et le formulaire se rouvre après la nouvelle analyse.
    */
-  const handleVerifyFormAdditions = (lines: UncheckedLine[]) => {
+  const handleVerifyFormAdditions = (lines: UncheckedLine[], removedIds: string[] = []) => {
     const draft = formDraftRef.current;
-    let nextSel = [...selectedMeds];
+    // Médicaments analysés retirés de l'ordonnance : retirés aussi de l'analyse.
+    let nextSel = selectedMeds.filter(m => !removedIds.includes(m.id));
     const lineIdMap = new Map<string, string | null>(); // id ligne → nouvel id Vérificateur (null = doublon supprimé)
     for (const { line, replacesCheckerId } of lines) {
       const nom = line.nom.trim();
       if (!nom) continue;
       if (replacesCheckerId) nextSel = nextSel.filter(m => m.id !== replacesCheckerId);
-      const existing = nextSel.find(m => normalizeDrugName(m.nom) === normalizeDrugName(nom));
+      // Sprint 3b — ligne reliée à la base (autocomplete) : analysée comme un médicament
+      // du Vérificateur (UUID → RPC interactions + CI par DCI / dci_canonique).
+      const med = line.medicament;
+      const existing = med
+        ? nextSel.find(m => m.id === med.id)
+        : nextSel.find(m => normalizeDrugName(m.nom) === normalizeDrugName(nom));
       if (existing) { lineIdMap.set(line.id, null); continue; }
+      if (med) {
+        nextSel.push({ id: med.id, nom, dci: med.dci ?? null, dci_canonique: med.dci_canonique ?? null });
+        lineIdMap.set(line.id, med.id);
+        continue;
+      }
+      // Saisie libre → médicament manuel : CI par nom, non vérifiable méd×méd.
       const id = `manual_form_${line.id.replace(/^chk-/, '')}`;
       nextSel.push({ id, nom, dci: null, manual: true });
       lineIdMap.set(line.id, id);
@@ -3598,7 +3658,7 @@ export function DoctorDashboard() {
         medications: draft.medications.flatMap(m => {
           if (!lineIdMap.has(m.id)) return [m];
           const newId = lineIdMap.get(m.id);
-          return newId ? [{ ...m, id: `chk-${newId}`, addedInForm: false }] : [];
+          return newId ? [{ ...m, id: `chk-${newId}`, addedInForm: false, medicament: null, horsBase: false }] : [];
         }),
       };
     }
@@ -3712,6 +3772,7 @@ export function DoctorDashboard() {
       ? `${baseDescription} · ${preexistingLabel}`
       : baseDescription;
 
+    setAnalyzedKey(currentAnalysisKey);
     setResult({ severity: overallSeverity, title: resultTitle, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);
   };
@@ -3777,6 +3838,7 @@ export function DoctorDashboard() {
     if (next === null || next === prev) return;
     if (prev && doctorProfile?.id) clearDraft(doctorProfile.id, prev);
     formDraftRef.current = null;
+    setHorsBaseConfirmedKey(null);
     reopenFormAfterCheckRef.current = false;
     setDraftRestored(false);
     prevDraftPatientIdRef.current = next;
@@ -3818,6 +3880,7 @@ export function DoctorDashboard() {
     if (doctorProfile?.id && selectedPatient) clearDraft(doctorProfile.id, selectedPatient.id);
     formDraftRef.current = null;
     reopenFormAfterCheckRef.current = false;
+    setHorsBaseConfirmedKey(null);
     setDraftRestored(false);
     setShowPrescriptionForm(false);
     setFormResetKey(k => k + 1);
@@ -4186,6 +4249,10 @@ export function DoctorDashboard() {
             posologie: fondTraitements.find(t => fondMedId(t) === m.id)?.posologie ?? null,
           }))}
           onVerifyUnchecked={handleVerifyFormAdditions}
+          selectedMeds={selectedMeds}
+          analysisValid={analysisValid}
+          horsBaseConfirmedKey={horsBaseConfirmedKey}
+          onConfirmHorsBase={setHorsBaseConfirmedKey}
           initialForm={formDraftRef.current}
           onFormChange={f => { formDraftRef.current = f; scheduleDraftSave(); }}
           restored={draftRestored}
@@ -4210,6 +4277,9 @@ export function DoctorDashboard() {
             setShowPrescriptionForm(true);
           }}
           onSave={handleSaveOrdonnance}
+          blockedReason={verificationBlockMessage(
+            computeVerification(prescriptionData.medications ?? [], selectedMeds, analysisValid, horsBaseConfirmedKey),
+          )}
           ordreNumber={prescriptionOrdreNumber}
           logo_url={doctorProfile?.logo_url ?? null}
           doctor={{

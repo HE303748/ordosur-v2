@@ -140,7 +140,9 @@ export function RiskDistributionChart({ doctorId }: RiskDistributionChartProps) 
       const { data: logs } = await supabase
         .from('interaction_logs')
         .select('risk_level')
-        .eq('doctor_id', doctorId);
+        .eq('doctor_id', doctorId)
+        // Sprint 3b — les confirmations « hors base » ne sont pas des analyses de risque
+        .or('source.is.null,source.neq.hors_base_confirme');
 
       if (logs && logs.length > 0) {
         const counts: Record<string, number> = { safe: 0, attention: 0, dangerous: 0 };
