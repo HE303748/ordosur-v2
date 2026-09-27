@@ -4,6 +4,8 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { generateOrdonnancePdf, PdfInteractionAlert } from '../lib/pdfService';
 import { formatAge } from '../lib/ageUtils';
+import { formatNomPropre } from '../lib/formatName';
+import { DocumentSignatureBlock } from './DocumentSignatureBlock';
 
 interface MedicationForm {
   id: string;
@@ -122,7 +124,7 @@ export function PrescriptionPreviewModal({
 
           {/* Médecin */}
           <div className="mb-4">
-            <p className="text-xl font-bold text-blue-700">Dr {doctor.prenom} {doctor.nom}</p>
+            <p className="text-xl font-bold text-blue-700">Dr. {formatNomPropre(doctor.prenom)} {formatNomPropre(doctor.nom)}</p>
             {doctor.specialite && <p className="text-sm text-gray-600">{doctor.specialite}</p>}
             {doctor.rpps && <p className="text-sm text-gray-600">N° INPE : {doctor.rpps}</p>}
             {doctor.ordre_number && <p className="text-sm text-gray-600">N° Ordre : {doctor.ordre_number}</p>}
@@ -130,7 +132,7 @@ export function PrescriptionPreviewModal({
 
           {/* Patient — repère à l'écran ; non imprimé si l'option PDF est désactivée */}
           <div className={`mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200 ${showPatientName ? '' : 'print:hidden'}`}>
-            <p className="font-semibold">Patient : {patient.prenom} {patient.nom}</p>
+            <p className="font-semibold">Patient : {formatNomPropre(patient.prenom)} {formatNomPropre(patient.nom)}</p>
             {!showPatientName && (
               <p className="text-xs text-slate-500 mt-0.5">Non imprimé sur l'ordonnance (modifiable dans Paramètres › Cabinet)</p>
             )}
@@ -170,9 +172,7 @@ export function PrescriptionPreviewModal({
             </div>
           )}
 
-          <div className="mt-6 pt-4 border-t flex justify-end items-center text-sm text-gray-500">
-            <p>Signature : Dr {doctor.prenom} {doctor.nom}</p>
-          </div>
+          <DocumentSignatureBlock date={today} />
         </div>
 
         {pdfError && (

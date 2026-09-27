@@ -10,6 +10,9 @@ import QRCode from 'qrcode';
 import { supabase, Patient } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { PageTransition } from './PageTransition';
+import { formatNomPropre } from '../../lib/formatName';
+import { drawSignatureBlock } from '../../lib/pdfService';
+import { DocumentSignatureBlock } from '../DocumentSignatureBlock';
 
 /* ── Types ─────────────────────────────────────────────────────────────────── */
 type CertType =
@@ -29,7 +32,6 @@ interface DoctorInfo {
   inpe: string;
   adresse: string;
   telephone: string;
-  ville: string;
   orgName: string;
 }
 
@@ -63,7 +65,6 @@ interface DocumentsViewProps {
       name?: string;
       adresse?: string | null;
       telephone?: string | null;
-      ville?: string | null;
     } | null;
   } | null;
 }
@@ -91,8 +92,8 @@ const CERT_CONFIGS: Record<CertType, CertConfig> = {
 
 /* ── Templates ──────────────────────────────────────────────────────────────── */
 function getTemplate(type: CertType, doctorNom: string, patientNom: string, date: string): string {
-  const patient = patientNom || '[NOM DU PATIENT]';
-  const doctor  = doctorNom  || '[NOM DU MÉDECIN]';
+  const patient = formatNomPropre(patientNom) || '[NOM DU PATIENT]';
+  const doctor  = formatNomPropre(doctorNom)  || '[NOM DU MÉDECIN]';
   const d = date || new Date().toLocaleDateString('fr-FR');
 
   switch (type) {
@@ -231,6 +232,9 @@ async function generateCertificatPdf(params: {
   logoUrl?: string | null;
 }): Promise<void> {
   const { type, certName, certBody, certDate, numero, doctor, patient, inclureLogo, inclureQR, logoUrl } = params;
+  // Noms formatés à l'affichage uniquement (la donnée en base reste inchangée)
+  const doctorName  = formatNomPropre(`${doctor.prenom} ${doctor.nom}`);
+  const patientName = formatNomPropre(`${patient.prenom} ${patient.nom}`);
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageW = 210;
@@ -245,8 +249,8 @@ async function generateCertificatPdf(params: {
     const qrText = [
       `N° ${numero}`,
       `${CERT_CONFIGS[type].label}`,
-      `Patient: ${patient.prenom} ${patient.nom}`,
-      `Médecin: Dr. ${doctor.prenom} ${doctor.nom}`,
+      `Patient: ${patientName}`,
+      `Médecin: Dr. ${doctorName}`,
       `Date: ${formatDateFr(certDate)}`,
     ].join('\n');
     qrDataUrl = await QRCode.toDataURL(qrText, { width: 100, margin: 1, color: { dark: '#1e3a8a' } });
@@ -276,13 +280,13 @@ async function generateCertificatPdf(params: {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(12);
   doc.setTextColor(30, 64, 175);
-  doc.text(doctor.orgName || `Cabinet Dr. ${doctor.prenom} ${doctor.nom}`, mL, y);
+  doc.text(doctor.orgName || `Cabinet Dr. ${doctorName}`, mL, y);
   y += 6;
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
   doc.setTextColor(70, 70, 70);
-  doc.text(`Dr. ${doctor.prenom} ${doctor.nom}`, mL, y); y += 4.5;
+  doc.text(`Dr. ${doctorName}`, mL, y); y += 4.5;
   if (doctor.specialite) { doc.text(doctor.specialite, mL, y); y += 4.5; }
   if (doctor.inpe) { doc.text(`N° INPE : ${doctor.inpe}`, mL, y); y += 4.5; }
   if (doctor.adresse) { doc.text(doctor.adresse, mL, y); y += 4.5; }
@@ -317,7 +321,7 @@ async function generateCertificatPdf(params: {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.setTextColor(50, 50, 50);
-    doc.text(`${patient.prenom} ${patient.nom}`, mL + 4, y + 4);
+    doc.text(patientName, mL + 4, y + 4);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.5);
     doc.setTextColor(80, 80, 80);
@@ -357,28 +361,10 @@ async function generateCertificatPdf(params: {
     y += 5.5;
   }
 
-  // ── Closing / Fait à ─────────────────────────────────────────────────────
+  // ── Date + signature/cachet — même bloc que l'ordonnance ─────────────────
   y = Math.max(y + 8, pageH - 65);
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(9.5);
-  doc.setTextColor(60, 60, 60);
-  doc.text(`Fait à ${doctor.ville || 'Casablanca'}, le ${formatDateFr(certDate)}`, pageW - mR, y, { align: 'right' });
-  y += 10;
-
-  // ── Signature zone ────────────────────────────────────────────────────────
-  const sigX = pageW - mR - 65;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.setTextColor(30, 30, 30);
-  doc.text('Signature et cachet du médecin', sigX, y, { align: 'left' });
-  y += 4;
-  doc.setDrawColor(160, 160, 160);
-  doc.setLineWidth(0.3);
-  doc.setLineDash([1, 1]);
-  doc.line(sigX, y, pageW - mR, y);
-  y += 14;
-  doc.line(sigX, y, pageW - mR, y);
-  doc.setLineDash([]);
+  if (y > pageH - 40) { doc.addPage(); y = mT + 10; }
+  drawSignatureBlock(doc, y, certDate);
 
   // ── Footer ────────────────────────────────────────────────────────────────
   doc.setFont('helvetica', 'normal');
@@ -416,7 +402,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
   const [inclureQR, setInclureQR] = useState(false);
   const [editDoctorInfo, setEditDoctorInfo] = useState(false);
   const [doctorInfo, setDoctorInfo] = useState<DoctorInfo>({
-    nom: '', prenom: '', specialite: '', inpe: '', adresse: '', telephone: '', ville: 'Casablanca', orgName: '',
+    nom: '', prenom: '', specialite: '', inpe: '', adresse: '', telephone: '', orgName: '',
   });
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [patientSearch, setPatientSearch] = useState('');
@@ -439,8 +425,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
         inpe:      doctorProfile?.inpe        || '',
         adresse:   org?.adresse              || '',
         telephone: org?.telephone            || '',
-        ville:     (org as any)?.ville       || 'Casablanca',
-        orgName:   org?.name                 || `Cabinet Dr. ${user.prenom} ${user.nom}`,
+        orgName:   org?.name                 || `Cabinet Dr. ${formatNomPropre(`${user.prenom} ${user.nom}`)}`,
       });
     }
   // Dépendances primitives : ne pas écraser le formulaire quand le profil est rechargé.
@@ -855,7 +840,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                   className="flex items-center gap-2 text-xs text-slate-500 dark:text-[#94A3B8] hover:text-slate-700 dark:hover:text-[#E2E8F0] transition-colors mb-2"
                 >
                   <Stethoscope className="w-3.5 h-3.5" />
-                  <span>Dr. {doctorInfo.prenom} {doctorInfo.nom}</span>
+                  <span>Dr. {formatNomPropre(`${doctorInfo.prenom} ${doctorInfo.nom}`)}</span>
                   {doctorInfo.specialite && <span className="text-slate-400 dark:text-[#475569]">· {doctorInfo.specialite}</span>}
                   <Edit2 className="w-3 h-3 ml-1 opacity-50" />
                 </button>
@@ -875,7 +860,6 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                           { key: 'specialite', label: 'Spécialité',  icon: Stethoscope },
                           { key: 'inpe',       label: 'N° INPE',     icon: FileText },
                           { key: 'telephone',  label: 'Téléphone',   icon: Phone },
-                          { key: 'ville',      label: 'Ville',       icon: MapPin },
                           { key: 'adresse',    label: 'Adresse',     icon: MapPin },
                           { key: 'orgName',    label: 'Nom cabinet', icon: FileText },
                         ].map(({ key, label }) => (
@@ -986,7 +970,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <p className="font-bold text-blue-700 text-base">{doctorInfo.orgName}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">Dr. {doctorInfo.prenom} {doctorInfo.nom}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Dr. {formatNomPropre(`${doctorInfo.prenom} ${doctorInfo.nom}`)}</p>
                         {doctorInfo.specialite && <p className="text-xs text-slate-400">{doctorInfo.specialite}</p>}
                         {doctorInfo.inpe && <p className="text-xs text-slate-400">N° INPE : {doctorInfo.inpe}</p>}
                         {doctorInfo.adresse && <p className="text-xs text-slate-400">{doctorInfo.adresse}</p>}
@@ -1003,7 +987,7 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                     {/* Patient */}
                     {(currentPatient.nom || currentPatient.prenom) && (
                       <div className="bg-slate-50 rounded-lg p-3 mb-4">
-                        <p className="text-sm font-semibold text-slate-800">{currentPatient.prenom} {currentPatient.nom}</p>
+                        <p className="text-sm font-semibold text-slate-800">{formatNomPropre(`${currentPatient.prenom} ${currentPatient.nom}`)}</p>
                         {currentPatient.dateNaissance && <p className="text-xs text-slate-500 mt-0.5">Né(e) le : {formatDateFr(currentPatient.dateNaissance)}</p>}
                       </div>
                     )}
@@ -1018,16 +1002,8 @@ export function DocumentsView({ patients, showToast, doctorProfile }: DocumentsV
                       {certBody}
                     </div>
 
-                    {/* Closing */}
-                    <p className="text-sm italic text-slate-600 text-right mb-6">
-                      Fait à {doctorInfo.ville || 'Casablanca'}, le {formatDateFr(certDate)}
-                    </p>
-
-                    {/* Signature */}
-                    <div className="ml-auto w-64">
-                      <p className="text-xs text-slate-500 mb-1 text-center">Signature et cachet du médecin</p>
-                      <div className="border-b border-dashed border-slate-300 h-12" />
-                    </div>
+                    {/* Date + signature/cachet — même bloc que l'ordonnance */}
+                    <DocumentSignatureBlock date={formatDateFr(certDate)} />
 
                     {/* Footer */}
                     <p className="text-center text-xs text-slate-300 mt-6">
