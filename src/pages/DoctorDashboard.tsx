@@ -49,7 +49,9 @@ import { DocumentsView } from '../components/ui/DocumentsView';
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface InteractionResult {
-  severity: 'safe' | 'attention' | 'dangerous';
+  // Sprint 2 — 'conditional' = « Sécuritaire sous réserve » : seules des CI conditionnelles
+  // (grossesse / allaitement / procréation) ont été trouvées.
+  severity: 'safe' | 'conditional' | 'attention' | 'dangerous';
   title?: string;
   description: string;
   alternatives: string[];
@@ -76,7 +78,13 @@ interface DbContraindication {
   description: string;
   age_max_mois?: number | null;
   age_min_mois?: number | null;
+  // Sprint 2 — 'F' = femme uniquement, 'M' = homme uniquement, NULL = tous.
+  sexe_applicable?: 'F' | 'M' | null;
 }
+
+// Sprint 2 — CI « femme » relevant du bloc conditionnel « Grossesse, allaitement, procréation ».
+// Testé sur condition_valeur normalisée (sans accents, minuscules).
+const PREGNANCY_CTX_RE = /grossesse|allait|procreer|enceinte/;
 
 interface InteractionAlert {
   type: 'drug_drug' | 'contraindication' | 'info';
@@ -90,6 +98,18 @@ interface InteractionAlert {
   // Affichée à côté de l'alerte pour que le médecin contextualise (ex: "HTA sévère non
   // contrôlée (PA > 180/110 mmHg)" plutôt que juste "Hypertension").
   condition?: string;
+  // Sprint 2 — CI grossesse/allaitement/procréation chez une patiente :
+  //   pregnancyContext → affichée dans le bloc conditionnel replié (déclenchée sur le médicament seul)
+  //   pregnancyFirm    → « Grossesse »/« Allaitement » dans les pathologies : alerte ferme, dépliée
+  pregnancyContext?: boolean;
+  pregnancyFirm?: boolean;
+}
+
+// Sprint 2 — Alerte non applicable au patient (sexe, âge de procréation), masquée mais
+// consultable via « Afficher ». Jamais journalisée.
+interface MaskedAlert {
+  alert: InteractionAlert;
+  reason: string;
 }
 
 // Volet 2 — Racines médicales génériques mono-mot, partagées entre maladies cliniquement
@@ -541,8 +561,8 @@ function SeverityBadge({ s }: { s: SeveriteKey }) {
   );
 }
 
-function AlertCard({ alert }: { alert: InteractionAlert }) {
-  const [open, setOpen] = useState(false);
+function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
   const desc = alert.description ?? '';
 
   // Extraction "Conduite à tenir" si présente dans la description
@@ -603,6 +623,39 @@ function AlertCard({ alert }: { alert: InteractionAlert }) {
   );
 }
 
+// Sprint 2 — Bloc conditionnel « Grossesse, allaitement, procréation » (patiente).
+// Replié par défaut ; fermé, il affiche la sévérité maximale et le nombre de CI.
+function PregnancyContextBlock({ alerts }: { alerts: InteractionAlert[] }) {
+  const [open, setOpen] = useState(false);
+  const maxSev = alerts.reduce<SeveriteKey>(
+    (max, a) => (SEVER_ORDER[a.severite] < SEVER_ORDER[max] ? a.severite : max),
+    alerts[0].severite,
+  );
+  return (
+    <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors flex-wrap"
+      >
+        <ChevronDown className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+        <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
+          Si grossesse, allaitement ou projet de grossesse
+        </span>
+        <span className="text-xs text-slate-500 dark:text-[#94A3B8]">
+          {alerts.length} contre-indication{alerts.length > 1 ? 's' : ''}
+        </span>
+        <span className="ml-auto"><SeverityBadge s={maxSev} /></span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {alerts.map((alert, idx) => <AlertCard key={idx} alert={alert} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── CheckerView ─────────────────────────────────────────────────────────────
 
 interface CheckerViewProps {
@@ -626,6 +679,7 @@ interface CheckerViewProps {
   addManualMedication: (nom: string) => void;
   removeMedication: (id: string) => void;
   interactionAlerts: InteractionAlert[];
+  maskedAlerts: MaskedAlert[];
   ageUnknownWarning: boolean;
   nonVerifiables: string[];
   medVerifInfo: Map<string, { hasSID: boolean; source: string | null }>;
@@ -648,11 +702,12 @@ function CheckerView({
   medSearchResults, selectedMeds, medSearchTerm, setMedSearchTerm,
   showMedDropdown, setShowMedDropdown, medSearchLoading, searchMedications,
   addMedication, addManualMedication, removeMedication,
-  interactionAlerts, ageUnknownWarning, nonVerifiables, medVerifInfo, result, loading,
+  interactionAlerts, maskedAlerts, ageUnknownWarning, nonVerifiables, medVerifInfo, result, loading,
   checkInteractions, resetAnalysis, resultsRef,
   loadPatientOrdonnances, patientOrdonnances,
   onAddPatient, setShowPrescriptionForm,
 }: CheckerViewProps) {
+  const [showMasked, setShowMasked] = useState(false);
   // Déduplication calculée une fois pour toute la vue
   const clinicalAlerts = interactionAlerts.filter(a => a.severite !== 'info');
   const infoAlerts     = interactionAlerts.filter(a => a.severite === 'info');
@@ -672,6 +727,10 @@ function CheckerView({
   if (dedupAlerts.length !== clinicalAlerts.length) {
     console.warn(`[OrdoSur] Déduplication écran : ${clinicalAlerts.length - dedupAlerts.length} alerte(s) dupliquée(s) absorbée(s)`);
   }
+  // Sprint 2 — alertes fermes (cartes) vs bloc conditionnel grossesse (replié)
+  const firmAlerts          = dedupAlerts.filter(a => !a.pregnancyContext);
+  const pregnancyCtxAlerts  = dedupAlerts.filter(a => a.pregnancyContext);
+  const maskedReasons = [...new Set(maskedAlerts.map(m => m.reason))].join(', ');
 
   return (
     <PageTransition>
@@ -923,26 +982,30 @@ function CheckerView({
             {/* 1. Bandeau verdict */}
             {result && (
               <div className={`bg-white dark:bg-[#111827] rounded-2xl shadow-sm overflow-hidden border-l-4 ${
-                result.severity === 'safe'      ? 'border-l-emerald-500' :
-                result.severity === 'attention' ? 'border-l-amber-500'   : 'border-l-[#DC2626]'
+                result.severity === 'safe'        ? 'border-l-emerald-500' :
+                result.severity === 'conditional' ? 'border-l-[#0A1628] dark:border-l-slate-300' :
+                result.severity === 'attention'   ? 'border-l-amber-500'   : 'border-l-[#DC2626]'
               }`}>
                 <div className={`px-4 lg:px-6 py-4 lg:py-5 ${
-                  result.severity === 'safe'      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
-                  result.severity === 'attention' ? 'bg-gradient-to-r from-amber-500 to-amber-600'     :
+                  result.severity === 'safe'        ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+                  result.severity === 'conditional' ? 'bg-[#0A1628]/[0.05] dark:bg-white/[0.04]'         :
+                  result.severity === 'attention'   ? 'bg-gradient-to-r from-amber-500 to-amber-600'     :
                                                     'bg-gradient-to-r from-[#DC2626] to-red-700'
                 }`}>
                   <div className="flex items-center gap-3 lg:gap-4">
                     {result.severity === 'safe'      && <CheckCircle2  className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
+                    {result.severity === 'conditional' && <Shield      className="w-8 h-8 lg:w-10 lg:h-10 text-[#0A1628] dark:text-slate-200 flex-shrink-0" />}
                     {result.severity === 'attention' && <AlertTriangle className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
                     {result.severity === 'dangerous' && <X             className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-xl lg:text-2xl font-black text-white uppercase tracking-tight">
+                      <h3 className={`text-xl lg:text-2xl font-black uppercase tracking-tight ${result.severity === 'conditional' ? 'text-[#0A1628] dark:text-[#E2E8F0]' : 'text-white'}`}>
                         {(result.title ?? (
-                          result.severity === 'safe'      ? 'Aucune interaction détectée' :
+                          result.severity === 'safe'        ? 'Aucune interaction détectée' :
+                          result.severity === 'conditional' ? 'Sécuritaire sous réserve'    :
                           result.severity === 'attention' ? 'Attention'                   : 'Prescription à risque'
                         )).replace(/^[⚠✓]\s+/, '')}
                       </h3>
-                      <p className="text-white/90 mt-0.5 text-xs lg:text-sm break-words">{result.description}</p>
+                      <p className={`mt-0.5 text-xs lg:text-sm break-words ${result.severity === 'conditional' ? 'text-[#0A1628]/80 dark:text-[#94A3B8]' : 'text-white/90'}`}>{result.description}</p>
                     </div>
                   </div>
                 </div>
@@ -958,11 +1021,35 @@ function CheckerView({
             )}
 
             {/* 3. Grille de cartes (1 col mobile, 2 col desktop) */}
-            {dedupAlerts.length > 0 && (
+            {firmAlerts.length > 0 && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                {dedupAlerts.map((alert, idx) => (
-                  <AlertCard key={idx} alert={alert} />
+                {firmAlerts.map((alert, idx) => (
+                  <AlertCard key={idx} alert={alert} defaultOpen={!!alert.pregnancyFirm} />
                 ))}
+              </div>
+            )}
+
+            {/* 3b. Sprint 2 — Bloc conditionnel grossesse / allaitement / procréation */}
+            {pregnancyCtxAlerts.length > 0 && <PregnancyContextBlock alerts={pregnancyCtxAlerts} />}
+
+            {/* 3c. Sprint 2 — Alertes non applicables (sexe / âge), masquées mais consultables */}
+            {maskedAlerts.length > 0 && (
+              <div className="space-y-2">
+                <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94A3B8]">
+                  <Info className="w-3.5 h-3.5 flex-shrink-0" />
+                  {maskedAlerts.length} alerte{maskedAlerts.length > 1 ? 's' : ''} non applicable{maskedAlerts.length > 1 ? 's' : ''} masquée{maskedAlerts.length > 1 ? 's' : ''} ({maskedReasons})
+                  <button
+                    onClick={() => setShowMasked(s => !s)}
+                    className="ml-1 font-semibold text-[#00A86B] hover:text-[#006B47] transition-colors"
+                  >
+                    {showMasked ? 'Masquer' : 'Afficher'}
+                  </button>
+                </p>
+                {showMasked && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 opacity-70">
+                    {maskedAlerts.map((m, idx) => <AlertCard key={idx} alert={m.alert} />)}
+                  </div>
+                )}
               </div>
             )}
 
@@ -2248,6 +2335,7 @@ export function DoctorDashboard() {
   const [allContraindications, setAllContraindications] = useState<DbContraindication[]>([]);
   const [interactionAlerts, setInteractionAlerts] = useState<InteractionAlert[]>([]);
   const [ageUnknownWarning, setAgeUnknownWarning] = useState(false);
+  const [maskedAlerts, setMaskedAlerts] = useState<MaskedAlert[]>([]);
   const [nonVerifiables, setNonVerifiables] = useState<string[]>([]);
   // Ingrédients vérifiés sans interaction documentée : hasSID = true si au moins
   // un ingrédient du méd porte sans_interaction_documentee = true.
@@ -2353,7 +2441,7 @@ export function DoctorDashboard() {
 
   // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
   useEffect(() => {
-    if (selectedMeds.length === 0) { setInteractionAlerts([]); setAgeUnknownWarning(false); setMedVerifInfo(new Map()); return; }
+    if (selectedMeds.length === 0) { setInteractionAlerts([]); setMaskedAlerts([]); setAgeUnknownWarning(false); setMedVerifInfo(new Map()); return; }
 
     // Normalize: strip accents, lowercase, remove non-alphanumeric
     const norm = (s: string) =>
@@ -2534,6 +2622,20 @@ export function DoctorDashboard() {
       setNonVerifiables(nonVerifiablesList);
 
       // ── 2. Contraindications (runs even with 1 med, requires patient) ──────
+      // Sprint 2 — contexte patient pour le filtrage par sexe et le bloc grossesse.
+      const masked: MaskedAlert[] = [];
+      const maskedSeen = new Set<string>();
+      const patientSexe: 'M' | 'F' | null =
+        selectedPatient?.sexe === 'M' || selectedPatient?.sexe === 'F' ? selectedPatient.sexe : null;
+      const pathoNorms = (selectedPatient?.pathologies || []).map(p => norm(p));
+      const hasGrossesse   = pathoNorms.some(p => p.includes('grossesse') || p.includes('enceinte'));
+      const hasAllaitement = pathoNorms.some(p => p.includes('allait'));
+      const pregnancyGuard = hasGrossesse || hasAllaitement;
+      // 12 à 55 ans inclus ; date de naissance inconnue → bloc affiché (zéro fausse réassurance).
+      const patientAgeMois = getAgeEnMois(selectedPatient?.date_naissance);
+      const patientAgeAns = patientAgeMois === null ? null : Math.floor(patientAgeMois / 12);
+      const childbearingAge = patientAgeAns === null || (patientAgeAns >= 12 && patientAgeAns <= 55);
+
       if (selectedPatient && allContraindications.length > 0) {
         // Volet 2 — Termes de test par condition patient.
         //   • normName : nom normalisé → matching SUBSTRING bidirectionnel (logique d'origine,
@@ -2594,21 +2696,55 @@ export function DoctorDashboard() {
             ) return true;
             return term.synRegexes.some(re => re.test(cv));
           });
-          if (!condMatch) continue;
 
           const key = `ci|${selectedMeds[matchedIdx].nom}|${contra.condition_valeur.slice(0, 30)}`;
-          if (!seen.has(key)) {
+          const alert: InteractionAlert = {
+            type: 'contraindication',
+            severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
+            description: contra.description,
+            involved: [selectedMeds[matchedIdx].nom],
+            condition: contra.condition_valeur, // Volet 2 — libellé brut exact pour affichage
+          };
+          const pushAlert = (a: InteractionAlert) => {
+            if (seen.has(key)) return;
             seen.add(key);
-            alerts.push({
-              type: 'contraindication',
-              severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
-              description: contra.description,
-              involved: [selectedMeds[matchedIdx].nom],
-              condition: contra.condition_valeur, // Volet 2 — libellé brut exact pour affichage
-            });
+            alerts.push(a);
+          };
+          // Masquée uniquement si la logique d'origine l'aurait affichée : on ne compte
+          // que ce qui disparaît réellement de l'écran.
+          const pushMasked = (reason: string) => {
+            if (!condMatch || maskedSeen.has(key)) return;
+            maskedSeen.add(key);
+            masked.push({ alert, reason });
+          };
+
+          // ── Sprint 2 — filtrage par sexe / bloc grossesse ─────────────────
+          const sexeCI = contra.sexe_applicable ?? null;
+
+          // a. Sexe non applicable → masquée. Sexe patient inconnu → rien n'est masqué.
+          //    Garde-fou : grossesse/allaitement en pathologie → jamais masquée.
+          if (sexeCI && patientSexe && sexeCI !== patientSexe && !pregnancyGuard) {
+            pushMasked(patientSexe === 'M' ? 'patient homme' : 'patiente femme');
+            continue;
           }
+
+          // b. Patiente + CI grossesse/allaitement/procréation : déclenchée sur le médicament seul.
+          if (patientSexe === 'F' && sexeCI === 'F' && PREGNANCY_CTX_RE.test(cv)) {
+            const firm =
+              (hasGrossesse && /grossesse|enceinte/.test(cv)) ||
+              (hasAllaitement && /allait/.test(cv));
+            if (firm) pushAlert({ ...alert, pregnancyFirm: true });
+            else if (childbearingAge) pushAlert({ ...alert, pregnancyContext: true });
+            else pushMasked('patiente hors âge de procréation');
+            continue;
+          }
+
+          // c. Logique d'origine (inchangée)
+          if (!condMatch) continue;
+          pushAlert(alert);
         }
       }
+      setMaskedAlerts(masked);
 
       // ── 3. DCI non identifiée — avertissement qualité de données ──────────
       // Sprint #3.0.7 — Ce n'est PAS une interaction clinique : c'est un signal
@@ -3111,7 +3247,7 @@ export function DoctorDashboard() {
     setLoading(true);
     await new Promise(r => setTimeout(r, 200));
 
-    let overallSeverity: 'safe' | 'attention' | 'dangerous' = 'safe';
+    let overallSeverity: InteractionResult['severity'] = 'safe';
     const reasons: string[] = [];
 
     // Doublons — uniquement si ≥ 2 médicaments
@@ -3126,7 +3262,13 @@ export function DoctorDashboard() {
       }
     }
 
-    for (const alert of interactionAlerts) {
+    // Sprint 2 — Le bloc conditionnel (grossesse/allaitement/procréation) ne rend pas la
+    // prescription « à risque » à lui seul, mais interdit tout verdict vert : seul, il donne
+    // « Sécuritaire sous réserve » ; avec une alerte ferme, l'alerte ferme l'emporte.
+    const firmAlerts = interactionAlerts.filter(a => !a.pregnancyContext);
+    const pregnancyCtxCount = interactionAlerts.length - firmAlerts.length;
+
+    for (const alert of firmAlerts) {
       if (alert.severite === 'contre_indication') overallSeverity = 'dangerous';
       else if (alert.severite === 'majeure' && overallSeverity !== 'dangerous') overallSeverity = 'attention';
       else if (alert.severite === 'moderee' && overallSeverity === 'safe') overallSeverity = 'attention';
@@ -3138,11 +3280,15 @@ export function DoctorDashboard() {
       reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
 
-    const nbCI = interactionAlerts.filter(a => a.severite === 'contre_indication').length;
+    const nbCI = firmAlerts.filter(a => a.severite === 'contre_indication').length;
     // Sprint #3.0.8 — Compte TOUTES les vraies interactions cliniques (exclut non_classee + info)
     // pour que "X interaction(s) signalée(s)" corresponde exactement au nombre de cards affichées.
     const clinicalSeverities: InteractionAlert['severite'][] = ['contre_indication', 'majeure', 'moderee', 'mineure'];
-    const nbSignaled = interactionAlerts.filter(a => clinicalSeverities.includes(a.severite)).length;
+    const nbSignaled = firmAlerts.filter(a => clinicalSeverities.includes(a.severite)).length;
+    const pregnancyOnly = overallSeverity === 'safe' && pregnancyCtxCount > 0 && nbSignaled === 0;
+    if (pregnancyOnly) overallSeverity = 'conditional';
+    // Alerte ferme mineure + bloc conditionnel : jamais de vert.
+    else if (overallSeverity === 'safe' && pregnancyCtxCount > 0) overallSeverity = 'attention';
 
     // Source unique de vérité : même nonVerifiables que le panneau temps réel.
     // allNonVerifiable → pas de bandeau vert, severity forcée à 'attention'.
@@ -3162,6 +3308,8 @@ export function DoctorDashboard() {
         ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé`
         : allNonVerifiable
           ? `Aucun des médicaments sélectionnés ne permet la vérification automatique des interactions — vérifiez manuellement`
+          : pregnancyOnly
+            ? `Aucune alerte, sauf en cas de grossesse ou d'allaitement (${pregnancyCtxCount} CI)`
           : overallSeverity === 'attention'
             ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
             : reasons.length > 0
@@ -3469,6 +3617,7 @@ export function DoctorDashboard() {
                 addManualMedication={addManualMedication}
                 removeMedication={removeMedication}
                 interactionAlerts={interactionAlerts}
+                maskedAlerts={maskedAlerts}
                 ageUnknownWarning={ageUnknownWarning}
                 nonVerifiables={nonVerifiables}
                 medVerifInfo={medVerifInfo}
