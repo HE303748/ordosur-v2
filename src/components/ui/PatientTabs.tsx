@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart, FileText, Syringe, FolderOpen, Activity,
   Phone, Mail, MapPin, Plus, AlertTriangle, User,
-  Droplets, Scissors, Edit, X, Stethoscope, Clock,
+  Droplets, Edit, X, Stethoscope, Clock,
   CheckCircle2, AlertCircle,
 } from 'lucide-react';
 import { PatientAvatar } from './PatientAvatar';
 import { TraitementFondSection } from './TraitementFondSection';
+import { AntecedentsSection, PathologiesActivesBlock, type PatientPatch } from './AntecedentsSection';
 import { supabase } from '../../lib/supabase';
 
 interface Patient {
@@ -21,6 +22,7 @@ interface Patient {
   adresse?: string | null;
   groupe_sanguin?: string | null;
   pathologies?: string[];
+  pathologies_depuis?: Record<string, number> | null;
   allergies_medicaments?: string[];
   allergies_alimentaires?: string[];
   antecedents_chirurgicaux?: string | null;
@@ -451,15 +453,18 @@ function ConsultationsTab({ patient, doctorId, orgId }: ConsultationsTabProps) {
 }
 
 /* ── Resume Tab ─────────────────────────────────────────────────── */
-function ResumeTab({ patient, doctorId, orgId, onTraitementsChanged }: {
+function ResumeTab({ patient, doctorId, orgId, onTraitementsChanged, onPatientPatched }: {
   patient: Patient; doctorId: string | null; orgId: string | null;
   onTraitementsChanged?: (patientId: string) => void;
+  onPatientPatched?: (patientId: string, patch: PatientPatch) => void;
 }) {
+  // Sprint 4 — antecedents_chirurgicaux est désormais affiché (lecture seule) dans la
+  // section Antécédents, rubrique « Notes antérieures ».
   const hasInfo =
     (patient.pathologies?.length ?? 0) > 0 ||
     (patient.allergies_medicaments?.length ?? 0) > 0 ||
     (patient.allergies_alimentaires?.length ?? 0) > 0 ||
-    patient.groupe_sanguin || patient.antecedents_chirurgicaux;
+    patient.groupe_sanguin;
 
   return (
     <div className="space-y-4">
@@ -534,18 +539,8 @@ function ResumeTab({ patient, doctorId, orgId, onTraitementsChanged }: {
                 </span>
               </div>
             )}
-            {(patient.pathologies?.length ?? 0) > 0 && (
-              <div>
-                <p className="text-xs text-slate-500 dark:text-[#94A3B8] mb-1.5">Pathologies</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {patient.pathologies!.map(p => (
-                    <span key={p} className="px-2.5 py-1 bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300 text-xs rounded-full font-medium border border-blue-200 dark:border-blue-500/30">
-                      {p}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Sprint 4 — pathologies (source du moteur, inchangée) + année de diagnostic */}
+            <PathologiesActivesBlock patient={patient} canWrite={!!doctorId && !!orgId} onPatientPatched={onPatientPatched} />
             {(patient.allergies_medicaments?.length ?? 0) > 0 && (
               <div>
                 <p className="text-xs text-slate-500 dark:text-[#94A3B8] mb-1.5 flex items-center gap-1.5">
@@ -572,15 +567,6 @@ function ResumeTab({ patient, doctorId, orgId, onTraitementsChanged }: {
                 </div>
               </div>
             )}
-            {patient.antecedents_chirurgicaux && (
-              <div className="flex items-start gap-2">
-                <Scissors className="w-4 h-4 text-slate-400 dark:text-[#475569] mt-0.5" />
-                <div>
-                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Antécédents chirurgicaux</p>
-                  <p className="text-sm text-slate-700 dark:text-[#E2E8F0] mt-0.5">{patient.antecedents_chirurgicaux}</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -588,6 +574,9 @@ function ResumeTab({ patient, doctorId, orgId, onTraitementsChanged }: {
       {/* Sprint 3 — Traitement de fond structuré (remplace l'affichage du texte libre,
           désormais présenté en « Notes antérieures » en lecture seule dans la section). */}
       <TraitementFondSection patient={patient} doctorId={doctorId} orgId={orgId} onChanged={onTraitementsChanged} />
+
+      {/* Sprint 4 — Antécédents structurés (information, non analysés par le moteur). */}
+      <AntecedentsSection patient={patient} doctorId={doctorId} orgId={orgId} onPatientPatched={onPatientPatched} />
 
       {!hasInfo && (
         <div className="text-center py-10">
@@ -690,9 +679,10 @@ interface PatientTabsProps {
   orgId?: string | null;
   // Sprint 3 fix — ajout / arrêt d'un traitement de fond : le Vérificateur recharge la liste.
   onTraitementsChanged?: (patientId: string) => void;
+  onPatientPatched?: (patientId: string, patch: PatientPatch) => void;
 }
 
-export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker, doctorId, orgId, onTraitementsChanged }: PatientTabsProps) {
+export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker, doctorId, orgId, onTraitementsChanged, onPatientPatched }: PatientTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('resume');
 
   return (
@@ -805,7 +795,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker,
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
           >
-            {activeTab === 'resume'        && <ResumeTab patient={patient} doctorId={doctorId ?? null} orgId={orgId ?? null} onTraitementsChanged={onTraitementsChanged} />}
+            {activeTab === 'resume'        && <ResumeTab patient={patient} doctorId={doctorId ?? null} orgId={orgId ?? null} onTraitementsChanged={onTraitementsChanged} onPatientPatched={onPatientPatched} />}
             {activeTab === 'ordonnances'   && <OrdonnancesTab ordonnances={ordonnances} />}
             {activeTab === 'consultations' && (
               <ConsultationsTab

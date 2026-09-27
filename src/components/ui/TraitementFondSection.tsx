@@ -41,7 +41,7 @@ function NonVerifiableBadge() {
 }
 
 /** Bottom-sheet mobile / modale desktop — même pattern que ConsultationsTab. */
-function Sheet({ open, onClose, busy, icon, title, subtitle, children, footer }: {
+export function Sheet({ open, onClose, busy, icon, title, subtitle, children, footer }: {
   open: boolean; onClose: () => void; busy: boolean;
   icon: React.ReactNode; title: string; subtitle: string;
   children: React.ReactNode; footer: React.ReactNode;
@@ -98,7 +98,7 @@ function Sheet({ open, onClose, busy, icon, title, subtitle, children, footer }:
   );
 }
 
-function FormError({ message }: { message: string | null }) {
+export function FormError({ message }: { message: string | null }) {
   if (!message) return null;
   return (
     <div className="flex items-start gap-2.5 px-4 py-3 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl text-sm text-red-700 dark:text-red-400">

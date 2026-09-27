@@ -56,6 +56,8 @@ export interface Patient {
   adresse?: string | null;
   cnie?: string | null;
   pathologies?: string[] | null;
+  // Sprint 4 — { libellé exact de pathologies: année de diagnostic } — affichage seul, jamais lu par le moteur
+  pathologies_depuis?: Record<string, number> | null;
   allergies_medicaments?: string[] | null;
   allergies_alimentaires?: string[] | null;
   groupe_sanguin?: string | null;

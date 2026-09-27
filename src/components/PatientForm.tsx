@@ -3,6 +3,7 @@ import { User, Phone, Mail, MapPin, Calendar, Heart, Plus, X, Pill, Leaf, Scisso
 import { Button } from './Button';
 import { Input } from './Input';
 import { Patient, supabase } from '../lib/supabase';
+import { cleanPathologiesDepuis, parseYear, currentYear, type PathologiesDepuis } from '../lib/antecedents';
 
 interface PatientFormProps {
   patient?: Patient | null;
@@ -42,6 +43,7 @@ function BadgeSelector({
   onChange,
   placeholder,
   asyncSearch,
+  renderBadgeExtra,
 }: {
   label: string;
   icon: React.ElementType;
@@ -53,6 +55,8 @@ function BadgeSelector({
   // Sprint Quick Fix B — recherche server-side optionnelle (utilisée pour pathologies).
   // Si absente, filtre client-side sur `suggestions` (comportement original — allergies).
   asyncSearch?: (q: string) => Promise<string[]>;
+  // Sprint 4 — contenu additionnel dans chaque badge (champ « depuis [année] » des pathologies).
+  renderBadgeExtra?: (val: string) => React.ReactNode;
 }) {
   const [input, setInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -121,8 +125,9 @@ function BadgeSelector({
       {values.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-2">
           {values.map(v => (
-            <span key={v} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${c.badge}`}>
-              {v}
+            <span key={v} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium max-w-full ${c.badge}`}>
+              <span className="break-words min-w-0">{v}</span>
+              {renderBadgeExtra?.(v)}
               <button type="button" onClick={() => remove(v)} className={`rounded-full p-0.5 transition-colors ${c.btn}`}>
                 <X className="w-2.5 h-2.5" />
               </button>
@@ -229,6 +234,9 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
     antecedents_chirurgicaux: '',
     traitements_en_cours: '',
   });
+  // Sprint 4 — année de diagnostic par pathologie (saisie texte ; affichage seul, jamais lu par le moteur).
+  const [pathoDepuis, setPathoDepuis] = useState<Record<string, string>>({});
+  const [depuisError, setDepuisError] = useState<string | null>(null);
 
   useEffect(() => {
     if (patient) {
@@ -248,6 +256,11 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
         antecedents_chirurgicaux: patient.antecedents_chirurgicaux ?? '',
         traitements_en_cours: patient.traitements_en_cours ?? '',
       });
+      const d: Record<string, string> = {};
+      for (const [k, v] of Object.entries(patient.pathologies_depuis ?? {})) {
+        if (typeof v === 'number') d[k] = String(v);
+      }
+      setPathoDepuis(d);
     }
   }, [patient]);
 
@@ -258,6 +271,16 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Années de diagnostic : validées, puis nettoyées des clés orphelines (pathologie retirée).
+    const depuis: PathologiesDepuis = {};
+    for (const p of formData.pathologies) {
+      const raw = (pathoDepuis[p] ?? '').trim();
+      if (!raw) continue;
+      const y = parseYear(raw);
+      if (y === null) { setDepuisError(`Année invalide pour « ${p} » (1900–${currentYear()}).`); return; }
+      depuis[p] = y;
+    }
+    setDepuisError(null);
     onSave({
       prenom: formData.prenom.trim(),
       nom: formData.nom.trim(),
@@ -268,6 +291,7 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
       adresse: formData.adresse.trim() || null,
       cnie: formData.cnie.trim() || null,
       pathologies: formData.pathologies.length > 0 ? formData.pathologies : null,
+      pathologies_depuis: cleanPathologiesDepuis(formData.pathologies, depuis),
       allergies_medicaments: formData.allergies_medicaments.length > 0 ? formData.allergies_medicaments : null,
       allergies_alimentaires: formData.allergies_alimentaires.length > 0 ? formData.allergies_alimentaires : null,
       groupe_sanguin: formData.groupe_sanguin || null,
@@ -395,7 +419,31 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
             values={formData.pathologies}
             onChange={v => setFormData(prev => ({ ...prev, pathologies: v }))}
             placeholder="Rechercher une pathologie..."
+            renderBadgeExtra={p => (
+              <span className="inline-flex items-center gap-1 pl-1 ml-0.5 border-l border-violet-200 flex-shrink-0">
+                <span className="text-[10px] font-normal text-violet-600">depuis</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  placeholder="année"
+                  value={pathoDepuis[p] ?? ''}
+                  onChange={e => {
+                    const v = e.target.value.replace(/\D/g, '');
+                    setPathoDepuis(prev => ({ ...prev, [p]: v }));
+                  }}
+                  onKeyDown={e => { if (e.key === 'Enter') e.preventDefault(); }}
+                  aria-label={`Année de diagnostic — ${p}`}
+                  className="w-12 px-1 py-0 text-[11px] bg-white/70 border border-violet-200 rounded focus:outline-none focus:ring-1 focus:ring-violet-400"
+                />
+              </span>
+            )}
           />
+          {depuisError && (
+            <p className="text-xs text-red-600 flex items-center gap-1">
+              <AlertTriangle className="w-3.5 h-3.5" /> {depuisError}
+            </p>
+          )}
 
           {/* Allergies médicaments */}
           <BadgeSelector

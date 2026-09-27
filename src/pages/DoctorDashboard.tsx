@@ -46,6 +46,7 @@ import { PageTransition } from '../components/ui/PageTransition';
 import { DoctorHomeView, type HomeStats, type HomeAlert, type HomeRdv } from '../components/ui/DoctorHomeView';
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
 import { PatientTabs } from '../components/ui/PatientTabs';
+import { AntecedentsResume, type PatientPatch } from '../components/ui/AntecedentsSection';
 import { AgendaView } from '../components/ui/AgendaView';
 import { EncyclopedieView } from '../components/ui/EncyclopedieView';
 import { DocumentsView } from '../components/ui/DocumentsView';
@@ -238,6 +239,7 @@ interface PatientsViewProps {
   initialPatientId?: string | null;
   onInitialPatientHandled?: () => void;
   onTraitementsChanged?: (patientId: string) => void;
+  onPatientPatched?: (patientId: string, patch: PatientPatch) => void;
 }
 
 function PatientsView({
@@ -245,7 +247,7 @@ function PatientsView({
   onAddPatient, onImportPatients, onEditPatient, onDeletePatient, onNavigateToChecker,
   patientOrdonnances, loadPatientOrdonnances,
   showMedicationHistory, setShowMedicationHistory, resetAnalysis,
-  doctorId, orgId, initialPatientId, onInitialPatientHandled, onTraitementsChanged,
+  doctorId, orgId, initialPatientId, onInitialPatientHandled, onTraitementsChanged, onPatientPatched,
 }: PatientsViewProps) {
   const [search, setSearch] = useState('');
   // 'all' = tous · 'recent' = ajoutés <30j
@@ -485,6 +487,7 @@ function PatientsView({
               doctorId={doctorId ?? null}
               orgId={orgId ?? null}
               onTraitementsChanged={onTraitementsChanged}
+              onPatientPatched={onPatientPatched}
             />
           </>
         )}
@@ -1011,6 +1014,9 @@ function CheckerView({
                       )}
                     </div>
                   )}
+
+                  {/* Sprint 4 — Antécédents : information, non analysés par le moteur */}
+                  <AntecedentsResume patientId={selectedPatient.id} pathologies={selectedPatient.pathologies} />
 
                   {/* Sprint 3 — Traitement de fond : inclus dans l'analyse, renouvelable */}
                   <FondPanel
@@ -2653,7 +2659,10 @@ export function DoctorDashboard() {
     };
     loadSynonyms();
     return () => { cancelled = true; };
-  }, [selectedPatient?.id]);
+    // Sprint 4 — rechargé aussi quand les pathologies du MÊME patient changent (ajout depuis
+    // le profil ou la fiche) : sinon la nouvelle pathologie était testée sans ses synonymes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPatient?.id, (selectedPatient?.pathologies ?? []).join('|')]);
 
   // Sprint 3 — Traitement de fond actif du patient sélectionné.
   // Fix — la liste était chargée UNIQUEMENT au changement de patient : un traitement ajouté
@@ -3615,6 +3624,13 @@ export function DoctorDashboard() {
     }
   };
 
+  // Sprint 4 — mise à jour ciblée depuis le profil (dates des pathologies, ajout explicite
+  // d'un antécédent actif aux pathologies chroniques). L'écriture est déjà faite en base.
+  const handlePatientPatched = (patientId: string, patch: PatientPatch) => {
+    setPatients(prev => prev.map(p => (p.id === patientId ? { ...p, ...patch } : p)));
+    setSelectedPatient(prev => (prev && prev.id === patientId ? { ...prev, ...patch } : prev));
+  };
+
   const handleDeletePatient = async (patientId: string) => {
     setDeletePatientLoading(true);
     try {
@@ -4135,6 +4151,7 @@ export function DoctorDashboard() {
                 doctorId={doctorProfile?.id ?? null}
                 orgId={user?.org_id ?? null}
                 onTraitementsChanged={handleTraitementsChanged}
+                onPatientPatched={handlePatientPatched}
                 initialPatientId={pendingPatientId}
                 onInitialPatientHandled={() => setPendingPatientId(null)}
               />
