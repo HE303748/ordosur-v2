@@ -3,10 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart, FileText, Syringe, FolderOpen, Activity,
   Phone, Mail, MapPin, Plus, AlertTriangle, User,
-  Droplets, Pill, Scissors, Edit, X, Stethoscope, Clock,
+  Droplets, Scissors, Edit, X, Stethoscope, Clock,
   CheckCircle2, AlertCircle,
 } from 'lucide-react';
 import { PatientAvatar } from './PatientAvatar';
+import { TraitementFondSection } from './TraitementFondSection';
 import { supabase } from '../../lib/supabase';
 
 interface Patient {
@@ -450,12 +451,12 @@ function ConsultationsTab({ patient, doctorId, orgId }: ConsultationsTabProps) {
 }
 
 /* ── Resume Tab ─────────────────────────────────────────────────── */
-function ResumeTab({ patient }: { patient: Patient }) {
+function ResumeTab({ patient, doctorId, orgId }: { patient: Patient; doctorId: string | null; orgId: string | null }) {
   const hasInfo =
     (patient.pathologies?.length ?? 0) > 0 ||
     (patient.allergies_medicaments?.length ?? 0) > 0 ||
     (patient.allergies_alimentaires?.length ?? 0) > 0 ||
-    patient.groupe_sanguin || patient.traitements_en_cours || patient.antecedents_chirurgicaux;
+    patient.groupe_sanguin || patient.antecedents_chirurgicaux;
 
   return (
     <div className="space-y-4">
@@ -577,18 +578,13 @@ function ResumeTab({ patient }: { patient: Patient }) {
                 </div>
               </div>
             )}
-            {patient.traitements_en_cours && (
-              <div className="flex items-start gap-2">
-                <Pill className="w-4 h-4 text-violet-400 mt-0.5" />
-                <div>
-                  <p className="text-xs text-slate-500 dark:text-[#94A3B8]">Traitements en cours</p>
-                  <p className="text-sm text-slate-700 dark:text-[#E2E8F0] mt-0.5">{patient.traitements_en_cours}</p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
+
+      {/* Sprint 3 — Traitement de fond structuré (remplace l'affichage du texte libre,
+          désormais présenté en « Notes antérieures » en lecture seule dans la section). */}
+      <TraitementFondSection patient={patient} doctorId={doctorId} orgId={orgId} />
 
       {!hasInfo && (
         <div className="text-center py-10">
@@ -804,7 +800,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker,
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.15 }}
           >
-            {activeTab === 'resume'        && <ResumeTab patient={patient} />}
+            {activeTab === 'resume'        && <ResumeTab patient={patient} doctorId={doctorId ?? null} orgId={orgId ?? null} />}
             {activeTab === 'ordonnances'   && <OrdonnancesTab ordonnances={ordonnances} />}
             {activeTab === 'consultations' && (
               <ConsultationsTab

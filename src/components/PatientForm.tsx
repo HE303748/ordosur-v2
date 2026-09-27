@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { User, Phone, Mail, MapPin, Calendar, Heart, Plus, X, Pill, Leaf, Scissors, ClipboardList, CreditCard } from 'lucide-react';
+import { User, Phone, Mail, MapPin, Calendar, Heart, Plus, X, Pill, Leaf, Scissors, ClipboardList, CreditCard, AlertTriangle } from 'lucide-react';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Patient, supabase } from '../lib/supabase';
@@ -449,6 +449,13 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
               placeholder="Ex: Metformine 500mg 2x/j, Bisoprolol 5mg 1x/j..."
               className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-transparent outline-none resize-none"
             />
+            {/* Sprint 3 — texte libre jamais analysé : le traitement de fond structuré se
+                saisit dans le profil patient (onglet Résumé) pour être vérifié par le moteur. */}
+            <p className="mt-1 flex items-start gap-1 text-[11px] text-amber-700">
+              <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-0.5" />
+              Texte libre non analysé par le moteur. Pour la vérification croisée, ajoutez chaque
+              médicament dans « Traitement de fond » (profil patient, onglet Résumé).
+            </p>
           </div>
 
         </div>

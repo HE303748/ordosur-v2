@@ -5,7 +5,7 @@ import {
   Search, Plus, X, AlertTriangle,
   CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
   Users, Trash2, CreditCard as Edit,
-  Download, ArrowLeft, ChevronRight, ChevronDown, Info,
+  Download, ArrowLeft, ChevronRight, ChevronDown, Info, RotateCcw, History,
 } from 'lucide-react';
 import { generateOrdonnancePdf } from '../lib/pdfService';
 import { formatAge, getAgeEnMois } from '../lib/ageUtils';
@@ -20,7 +20,10 @@ import { SPECIALITES } from '../lib/specialites';
 import { Button } from '../components/Button';
 import { Modal } from '../components/Modal';
 import { PatientForm } from '../components/PatientForm';
-import { PrescriptionFormModal } from '../components/PrescriptionFormModal';
+import { PrescriptionFormModal, type UncheckedLine } from '../components/PrescriptionFormModal';
+import {
+  loadTraitements, fondMedId, fondDisplayName, type TraitementChronique,
+} from '../lib/traitementsChroniques';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
 import { PatientImportModal } from '../components/PatientImportModal';
@@ -103,7 +106,16 @@ interface InteractionAlert {
   //   pregnancyFirm    → « Grossesse »/« Allaitement » dans les pathologies : alerte ferme, dépliée
   pregnancyContext?: boolean;
   pregnancyFirm?: boolean;
+  // Sprint 3 — provenance des médicaments impliqués :
+  //   nouveau → uniquement des médicaments de la prescription en cours
+  //   mixte   → nouveau × traitement de fond (badge « avec traitement de fond »)
+  //   fond    → traitement de fond seul (fond × fond, fond × patient) : alerte préexistante
+  // Absent = 'nouveau' (rétrocompatibilité).
+  origin?: 'nouveau' | 'mixte' | 'fond';
 }
+
+// Sprint 3 — Médicament transmis au moteur (prescription en cours ou traitement de fond).
+type CheckerMed = { id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean };
 
 // Sprint 2 — Alerte non applicable au patient (sexe, âge de procréation), masquée mais
 // consultable via « Afficher ». Jamais journalisée.
@@ -544,6 +556,26 @@ const SEVER_ORDER = {
 } as const;
 type SeveriteKey = InteractionAlert['severite'];
 
+/**
+ * Déduplication écran des alertes cliniques (hors 'info') — source unique partagée entre
+ * l'affichage (CheckerView) et le verdict (checkInteractions) pour que les compteurs
+ * affichés correspondent exactement aux cartes.
+ */
+function dedupClinicalAlerts(alerts: InteractionAlert[]): InteractionAlert[] {
+  const dedupMap = new Map<string, InteractionAlert>();
+  for (const alert of alerts) {
+    if (alert.severite === 'info') continue;
+    const key = alert.type === 'contraindication'
+      ? `ci|${alert.involved[0]}|${alert.condition ?? ''}`
+      : `dd|${[...alert.involved].sort().join('|')}`;
+    const prev = dedupMap.get(key);
+    if (!prev || SEVER_ORDER[alert.severite] < SEVER_ORDER[prev.severite]) {
+      dedupMap.set(key, alert);
+    }
+  }
+  return [...dedupMap.values()].sort((a, b) => SEVER_ORDER[a.severite] - SEVER_ORDER[b.severite]);
+}
+
 function SeverityBadge({ s }: { s: SeveriteKey }) {
   const cfg: Record<SeveriteKey, { label: string; cls: string }> = {
     contre_indication: { label: 'Contre-indication',  cls: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30' },
@@ -591,6 +623,11 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
         <div className="flex items-start gap-2 mb-1.5 flex-wrap">
           <SeverityBadge s={alert.severite} />
           <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0] leading-tight">{pairLabel}</span>
+          {alert.origin === 'mixte' && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#0A1628] dark:text-slate-200 bg-[#0A1628]/[0.06] dark:bg-white/[0.08] border border-[#0A1628]/15 dark:border-white/15 rounded px-1.5 py-0.5">
+              <Pill className="w-3 h-3" aria-hidden /> avec traitement de fond
+            </span>
+          )}
         </div>
         {/* Ligne 2 : risque (description courte) */}
         <p className="text-sm text-slate-600 dark:text-[#94A3B8] leading-snug line-clamp-2">{shortDesc}</p>
@@ -656,6 +693,141 @@ function PregnancyContextBlock({ alerts }: { alerts: InteractionAlert[] }) {
   );
 }
 
+// Sprint 3 — Alertes préexistantes : impliquent uniquement le traitement de fond (fond × fond,
+// fond × pathologie). Repliées par défaut mais JAMAIS masquées : l'en-tête reste visible avec
+// le nombre et la sévérité maximale.
+function PreexistingAlertsBlock({ alerts }: { alerts: InteractionAlert[] }) {
+  const [open, setOpen] = useState(false);
+  const maxSev = alerts.reduce<SeveriteKey>(
+    (max, a) => (SEVER_ORDER[a.severite] < SEVER_ORDER[max] ? a.severite : max),
+    alerts[0].severite,
+  );
+  return (
+    <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors flex-wrap"
+      >
+        <ChevronDown className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+        <History className="w-4 h-4 text-[#0A1628] dark:text-slate-300 flex-shrink-0" aria-hidden />
+        <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
+          Alertes préexistantes ({alerts.length})
+        </span>
+        <span className="text-xs text-slate-500 dark:text-[#94A3B8]">
+          dans le traitement de fond, hors prescription en cours
+        </span>
+        <span className="ml-auto"><SeverityBadge s={maxSev} /></span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {alerts.map((alert, idx) => <AlertCard key={idx} alert={alert} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Sprint 3 — Panneau « Traitement de fond (N) » du Vérificateur.
+function FondPanel({
+  patient, traitements, loading, error, excluded, selectedMedIds, onToggle, onRenew, onRetry,
+}: {
+  patient: Patient;
+  traitements: TraitementChronique[];
+  loading: boolean;
+  error: boolean;
+  excluded: Set<string>;
+  selectedMedIds: Set<string>;
+  onToggle: (id: string) => void;
+  onRenew: (t: TraitementChronique) => void;
+  onRetry: () => void;
+}) {
+  const legacy = patient.traitements_en_cours?.trim();
+  return (
+    <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] bg-[#FAFAF7] dark:bg-white/[0.02] p-3.5">
+      <p className="text-xs font-bold text-[#0A1628] dark:text-[#E2E8F0] uppercase tracking-widest flex items-center gap-2 mb-2">
+        <Pill className="w-3.5 h-3.5 text-[#00A86B]" aria-hidden />
+        Traitement de fond{!loading && !error ? ` (${traitements.length})` : ''}
+      </p>
+
+      {loading ? (
+        <div className="space-y-2">
+          {[1, 2].map(i => <div key={i} className="h-11 rounded-lg bg-slate-100 dark:bg-white/[0.04] animate-pulse" />)}
+        </div>
+      ) : error ? (
+        <p className="flex items-start gap-1.5 text-xs text-amber-800 dark:text-amber-300">
+          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+          <span>
+            Traitement de fond non chargé — vérification croisée impossible.{' '}
+            <button onClick={onRetry} className="font-semibold underline underline-offset-2">Réessayer</button>
+          </span>
+        </p>
+      ) : traitements.length === 0 ? (
+        <p className="text-xs text-slate-500 dark:text-[#94A3B8] italic">
+          Aucun traitement de fond structuré. Ajoutez-le depuis le profil patient (onglet Résumé).
+        </p>
+      ) : (
+        <ul className="space-y-1.5">
+          {traitements.map(t => {
+            const medId = fondMedId(t);
+            const renewed = selectedMedIds.has(medId);
+            const included = !excluded.has(t.id);
+            return (
+              <li key={t.id} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-white dark:bg-[#111827] border border-slate-100 dark:border-white/[0.06]">
+                <label className="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer" title="Inclure dans l'analyse">
+                  <input
+                    type="checkbox"
+                    checked={renewed || included}
+                    disabled={renewed}
+                    onChange={() => onToggle(t.id)}
+                    aria-label={`Inclure ${fondDisplayName(t)} dans l'analyse`}
+                    className="w-4 h-4 rounded border-slate-300 text-[#00A86B] focus:ring-[#00A86B] flex-shrink-0 disabled:opacity-60"
+                  />
+                  <span className="min-w-0">
+                    <span className={`block text-sm font-semibold truncate ${included || renewed ? 'text-[#0A1628] dark:text-[#E2E8F0]' : 'text-slate-400 line-through'}`}>
+                      {fondDisplayName(t)}
+                    </span>
+                    <span className="flex items-center gap-1.5 flex-wrap">
+                      {t.posologie && <span className="text-xs text-slate-500 dark:text-[#94A3B8] truncate">{t.posologie}</span>}
+                      {!t.medicament_id && (
+                        <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded px-1 dark:bg-amber-500/10 dark:border-amber-500/30 dark:text-amber-300">
+                          Non vérifiable par le moteur
+                        </span>
+                      )}
+                      {!included && !renewed && (
+                        <span className="text-[10px] font-semibold text-slate-500">Exclu de l'analyse</span>
+                      )}
+                    </span>
+                  </span>
+                </label>
+                {renewed ? (
+                  <span className="flex items-center gap-1 text-xs font-semibold text-[#006B47] flex-shrink-0">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Renouvelé
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => onRenew(t)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-[#006B47] border border-[#00A86B]/30 rounded-lg hover:bg-[#E6F4EE] transition-colors flex-shrink-0"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" /> Renouveler
+                  </button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {legacy && (
+        <p className="mt-2.5 text-xs text-slate-600 dark:text-[#94A3B8] line-clamp-3" title={legacy}>
+          <span className="font-semibold text-amber-800 dark:text-amber-300">Notes antérieures (non analysées) : </span>
+          {legacy}
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ─── CheckerView ─────────────────────────────────────────────────────────────
 
 interface CheckerViewProps {
@@ -692,6 +864,15 @@ interface CheckerViewProps {
   patientOrdonnances: any[];
   onAddPatient: () => void;
   setShowPrescriptionForm: (v: boolean) => void;
+  // Sprint 3 — traitement de fond
+  fondTraitements: TraitementChronique[];
+  fondLoading: boolean;
+  fondError: boolean;
+  fondExcluded: Set<string>;
+  toggleFond: (id: string) => void;
+  renewFond: (t: TraitementChronique) => void;
+  reloadFond: () => void;
+  analysisPending: boolean;
 }
 
 function CheckerView({
@@ -706,30 +887,24 @@ function CheckerView({
   checkInteractions, resetAnalysis, resultsRef,
   loadPatientOrdonnances, patientOrdonnances,
   onAddPatient, setShowPrescriptionForm,
+  fondTraitements, fondLoading, fondError, fondExcluded, toggleFond, renewFond, reloadFond,
+  analysisPending,
 }: CheckerViewProps) {
   const [showMasked, setShowMasked] = useState(false);
   // Déduplication calculée une fois pour toute la vue
   const clinicalAlerts = interactionAlerts.filter(a => a.severite !== 'info');
   const infoAlerts     = interactionAlerts.filter(a => a.severite === 'info');
-  const dedupMap = new Map<string, InteractionAlert>();
-  for (const alert of clinicalAlerts) {
-    const key = alert.type === 'contraindication'
-      ? `ci|${alert.involved[0]}|${alert.condition ?? ''}`
-      : `dd|${[...alert.involved].sort().join('|')}`;
-    const prev = dedupMap.get(key);
-    if (!prev || SEVER_ORDER[alert.severite] < SEVER_ORDER[prev.severite]) {
-      dedupMap.set(key, alert);
-    }
-  }
-  const dedupAlerts = [...dedupMap.values()].sort(
-    (a, b) => SEVER_ORDER[a.severite] - SEVER_ORDER[b.severite],
-  );
+  const dedupAlerts = dedupClinicalAlerts(clinicalAlerts);
   if (dedupAlerts.length !== clinicalAlerts.length) {
     console.warn(`[OrdoSur] Déduplication écran : ${clinicalAlerts.length - dedupAlerts.length} alerte(s) dupliquée(s) absorbée(s)`);
   }
+  // Sprint 3 — alertes impliquant au moins un nouveau médicament vs préexistantes (fond seul)
+  const currentAlerts       = dedupAlerts.filter(a => a.origin !== 'fond');
+  const preexistingAlerts   = dedupAlerts.filter(a => a.origin === 'fond');
   // Sprint 2 — alertes fermes (cartes) vs bloc conditionnel grossesse (replié)
-  const firmAlerts          = dedupAlerts.filter(a => !a.pregnancyContext);
-  const pregnancyCtxAlerts  = dedupAlerts.filter(a => a.pregnancyContext);
+  const firmAlerts          = currentAlerts.filter(a => !a.pregnancyContext);
+  const pregnancyCtxAlerts  = currentAlerts.filter(a => a.pregnancyContext);
+  const selectedMedIds      = new Set(selectedMeds.map(m => m.id));
   const maskedReasons = [...new Set(maskedAlerts.map(m => m.reason))].join(', ');
 
   return (
@@ -831,6 +1006,19 @@ function CheckerView({
                       )}
                     </div>
                   )}
+
+                  {/* Sprint 3 — Traitement de fond : inclus dans l'analyse, renouvelable */}
+                  <FondPanel
+                    patient={selectedPatient}
+                    traitements={fondTraitements}
+                    loading={fondLoading}
+                    error={fondError}
+                    excluded={fondExcluded}
+                    selectedMedIds={selectedMedIds}
+                    onToggle={toggleFond}
+                    onRenew={renewFond}
+                    onRetry={reloadFond}
+                  />
                 </div>
               ) : (
                 <div className="text-center py-8 text-slate-400">
@@ -961,8 +1149,8 @@ function CheckerView({
                   onClick={checkInteractions}
                   variant="primary"
                   size="lg"
-                  loading={loading}
-                  disabled={selectedMeds.length < 1}
+                  loading={loading || analysisPending}
+                  disabled={selectedMeds.length < 1 || fondLoading}
                   className="flex-1"
                 >
                   <Shield className="w-4 h-4 mr-2" />
@@ -1032,6 +1220,9 @@ function CheckerView({
             {/* 3b. Sprint 2 — Bloc conditionnel grossesse / allaitement / procréation */}
             {pregnancyCtxAlerts.length > 0 && <PregnancyContextBlock alerts={pregnancyCtxAlerts} />}
 
+            {/* 3b'. Sprint 3 — Alertes préexistantes (traitement de fond seul), repliées, jamais masquées */}
+            {preexistingAlerts.length > 0 && <PreexistingAlertsBlock alerts={preexistingAlerts} />}
+
             {/* 3c. Sprint 2 — Alertes non applicables (sexe / âge), masquées mais consultables */}
             {maskedAlerts.length > 0 && (
               <div className="space-y-2">
@@ -1078,7 +1269,7 @@ function CheckerView({
             {infoAlerts.length > 0 && (
               <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-[#94A3B8]">
                 <Info className="w-3.5 h-3.5 flex-shrink-0" />
-                DCI non mappée&nbsp;: {infoAlerts.map(a => a.involved[0]).join(', ')}
+                DCI non mappée&nbsp;: {infoAlerts.map(a => a.origin === 'fond' ? `${a.involved[0]} (traitement de fond)` : a.involved[0]).join(', ')}
               </p>
             )}
 
@@ -2340,6 +2531,16 @@ export function DoctorDashboard() {
   // Ingrédients vérifiés sans interaction documentée : hasSID = true si au moins
   // un ingrédient du méd porte sans_interaction_documentee = true.
   const [medVerifInfo, setMedVerifInfo] = useState<Map<string, { hasSID: boolean; source: string | null }>>(() => new Map());
+  // Sprint 3 — Traitement de fond du patient sélectionné (actifs uniquement) + cases
+  // « Inclure dans l'analyse » décochées (ids de traitements_chroniques). Non persisté :
+  // chaque nouveau patient / rechargement repart « tout coché » (choix le plus sûr).
+  const [fondTraitements, setFondTraitements] = useState<TraitementChronique[]>([]);
+  const [fondLoading, setFondLoading] = useState(false);
+  const [fondError, setFondError] = useState(false);
+  const [fondExcluded, setFondExcluded] = useState<Set<string>>(() => new Set());
+  const [fondReloadKey, setFondReloadKey] = useState(0);
+  // runCheck en cours : le bouton « Analyser » attend la fin du calcul des alertes.
+  const [analysisPending, setAnalysisPending] = useState(false);
   const [confirmDeletePatient, setConfirmDeletePatient] = useState<Patient | null>(null);
   const [deletePatientLoading, setDeletePatientLoading] = useState(false);
   // Volet 2 — synonymes des pathologies du patient sélectionné.
@@ -2439,22 +2640,77 @@ export function DoctorDashboard() {
     return () => { cancelled = true; };
   }, [selectedPatient?.id]);
 
-  // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
+  // Sprint 3 — Chargement du traitement de fond actif à la sélection du patient.
   useEffect(() => {
-    if (selectedMeds.length === 0) { setInteractionAlerts([]); setMaskedAlerts([]); setAgeUnknownWarning(false); setMedVerifInfo(new Map()); return; }
+    const pid = selectedPatient?.id;
+    setFondExcluded(new Set());
+    if (!pid) { setFondTraitements([]); setFondError(false); setFondLoading(false); return; }
+    let cancelled = false;
+    setFondLoading(true);
+    setFondError(false);
+    setFondTraitements([]);
+    loadTraitements(pid, true)
+      .then(rows => { if (!cancelled) setFondTraitements(rows); })
+      .catch(e => {
+        console.error('[OrdoSur] traitements_chroniques load error:', e);
+        if (!cancelled) setFondError(true);
+      })
+      .finally(() => { if (!cancelled) setFondLoading(false); });
+    return () => { cancelled = true; };
+  }, [selectedPatient?.id, fondReloadKey]);
+
+  // Tout changement de l'ensemble analysé (case décochée, traitement rechargé) invalide le
+  // verdict affiché : il devra être recalculé via « Analyser » (jamais de verdict périmé).
+  const fondVerdictKeyRef = useRef('');
+  useEffect(() => {
+    const key = `${fondTraitements.map(t => t.id).join(',')}|${[...fondExcluded].sort().join(',')}`;
+    if (fondVerdictKeyRef.current && fondVerdictKeyRef.current !== key) setResult(null);
+    fondVerdictKeyRef.current = key;
+  }, [fondTraitements, fondExcluded]);
+
+  // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
+  // Sprint 3 — l'ensemble analysé = médicaments de la prescription en cours (selectedMeds)
+  //            + traitements de fond actifs cochés (« Inclure dans l'analyse »).
+  //            Chaque alerte porte son origine : nouveau / mixte / fond.
+  useEffect(() => {
+    if (selectedMeds.length === 0) { setInteractionAlerts([]); setMaskedAlerts([]); setAgeUnknownWarning(false); setMedVerifInfo(new Map()); setAnalysisPending(false); return; }
 
     // Normalize: strip accents, lowercase, remove non-alphanumeric
     const norm = (s: string) =>
       s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
        .replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
 
-    const medDCIs = selectedMeds.map(m => ({
+    // ── Sprint 3 — Ensemble analysé ─────────────────────────────────────────
+    // Un traitement de fond déjà présent dans selectedMeds (renouvelé) est traité comme
+    // « nouveau » : il figurera sur l'ordonnance. Dédoublonnage par id.
+    const newIds = new Set(selectedMeds.map(m => m.id));
+    const fondMeds: CheckerMed[] = [];
+    for (const t of fondTraitements) {
+      if (fondExcluded.has(t.id)) continue;
+      const id = fondMedId(t);
+      if (newIds.has(id) || fondMeds.some(f => f.id === id)) continue;
+      fondMeds.push({
+        id,
+        nom: fondDisplayName(t),
+        dci: t.medicament?.dci ?? null,
+        dci_canonique: t.medicament?.dci_canonique ?? null,
+        manual: !t.medicament_id,
+      });
+    }
+    const fondIdSet = new Set(fondMeds.map(m => m.id));
+    const analysisMeds: CheckerMed[] = [...selectedMeds, ...fondMeds];
+    const originOfMed = (id: string): 'nouveau' | 'fond' => (fondIdSet.has(id) ? 'fond' : 'nouveau');
+
+    const medDCIs = analysisMeds.map(m => ({
       ...m,
       normalizedDCI:  norm(m.dci || ''),
       normalizedName: norm(m.nom),
       // Phase 2b — 3e source de matching (forme sel → INN canonique). '' si absent.
       normalizedCanonique: norm(m.dci_canonique || ''),
     }));
+
+    let cancelled = false;
+    setAnalysisPending(true);
 
     const runCheck = async () => {
       const alerts: InteractionAlert[] = [];
@@ -2464,11 +2720,43 @@ export function DoctorDashboard() {
       // Les méds manuels sont exclus de l'appel V2 (pas d'UUID DB).
       // Ils sont explicitement listés dans le bandeau ambre, fusionnés avec les
       // medicaments_non_verifiables retournés par la RPC — jamais d'échec silencieux.
-      const manualMeds = selectedMeds.filter(m => m.manual);
-      const dbMeds = selectedMeds.filter(m => !m.manual);
+      const manualMeds = analysisMeds.filter(m => m.manual);
+      const dbMeds = analysisMeds.filter(m => !m.manual);
       let rpcNonVerifiables: string[] = [];
       let medicamentsVerifiesNoms = new Set<string>();
       let interactionsForGuard: Array<{ medicament_a: string; medicament_b: string }> = [];
+
+      // Sprint 3 — la RPC renvoie medicaments.nom (pas l'id ni le nom commercial affiché).
+      // Correspondance nom base → ids pour classer chaque paire (nouveau / mixte / fond).
+      // Requête filtrée par UUID, faite uniquement si un traitement de fond est analysé.
+      const dbNomToIds = new Map<string, string[]>();
+      const dbFondMeds = dbMeds.filter(m => fondIdSet.has(m.id));
+      if (dbFondMeds.length > 0 && dbMeds.length >= 2) {
+        const { data: nomRows } = await supabase
+          .from('medicaments')
+          .select('id, nom')
+          .in('id', dbMeds.map(m => m.id));
+        if (cancelled) return;
+        for (const r of (nomRows as Array<{ id: string; nom: string }> | null) ?? []) {
+          const list = dbNomToIds.get(r.nom) ?? [];
+          list.push(r.id);
+          dbNomToIds.set(r.nom, list);
+        }
+      }
+      // Côté d'une paire : 'fond' seulement si TOUS les ids portant ce nom sont du fond.
+      // Nom introuvable ou ambigu → 'nouveau' (jamais relégué à tort en « préexistant »).
+      const sideOrigin = (dbNom: string): 'nouveau' | 'fond' => {
+        const ids = dbNomToIds.get(dbNom);
+        if (!ids || ids.length === 0) return 'nouveau';
+        return ids.every(id => fondIdSet.has(id)) ? 'fond' : 'nouveau';
+      };
+      const pairOrigin = (a: string, b: string): InteractionAlert['origin'] => {
+        if (fondIdSet.size === 0) return 'nouveau';
+        const oa = sideOrigin(a), ob = sideOrigin(b);
+        if (oa === 'fond' && ob === 'fond') return 'fond';
+        if (oa === 'fond' || ob === 'fond') return 'mixte';
+        return 'nouveau';
+      };
 
       if (dbMeds.length >= 2) {
         try {
@@ -2476,6 +2764,7 @@ export function DoctorDashboard() {
             'check_interactions_v2',
             { p_med_ids: dbMeds.map(m => m.id) }
           );
+          if (cancelled) return;
           if (v2Data) {
             const {
               interactions = [],
@@ -2508,6 +2797,7 @@ export function DoctorDashboard() {
                   severite: sev,
                   description: molDesc,
                   involved: [inter.medicament_a, inter.medicament_b],
+                  origin: pairOrigin(inter.medicament_a, inter.medicament_b),
                 });
               } else {
                 existing.description = mergeDescriptions(existing.description, molDesc);
@@ -2536,6 +2826,7 @@ export function DoctorDashboard() {
           .from('medicament_ingredients')
           .select('medicament_id, ingredient_id')
           .in('medicament_id', allDbMedIds);
+        if (cancelled) return;
 
         if (miRows && (miRows as Array<{ medicament_id: string; ingredient_id: string }>).length > 0) {
           for (const mi of miRows as Array<{ medicament_id: string; ingredient_id: string }>) {
@@ -2546,6 +2837,7 @@ export function DoctorDashboard() {
             .from('ingredients')
             .select('id, name_en, sans_interaction_documentee, source_verification')
             .in('id', ingIds);
+          if (cancelled) return;
 
           if (ingRows) {
             type IngRow = { id: string; name_en: string | null; sans_interaction_documentee: boolean | null; source_verification: string | null };
@@ -2619,7 +2911,13 @@ export function DoctorDashboard() {
       for (const m of manualMeds) {
         if (!nonVerifiablesList.includes(m.nom)) nonVerifiablesList.push(m.nom);
       }
-      setNonVerifiables(nonVerifiablesList);
+      // Sprint 3 — un traitement de fond non vérifiable est signalé comme tel.
+      // (Noms de la prescription en cours inchangés : checkInteractions les compare à selectedMeds.)
+      const fondOnlyNames = new Set<string>();
+      for (const m of fondMeds) fondOnlyNames.add(m.nom);
+      for (const [dbNom, ids] of dbNomToIds) if (ids.every(id => fondIdSet.has(id))) fondOnlyNames.add(dbNom);
+      for (const m of selectedMeds) fondOnlyNames.delete(m.nom);
+      setNonVerifiables(nonVerifiablesList.map(n => (fondOnlyNames.has(n) ? `${n} (traitement de fond)` : n)));
 
       // ── 2. Contraindications (runs even with 1 med, requires patient) ──────
       // Sprint 2 — contexte patient pour le filtrage par sexe et le bloc grossesse.
@@ -2635,6 +2933,17 @@ export function DoctorDashboard() {
       const patientAgeMois = getAgeEnMois(selectedPatient?.date_naissance);
       const patientAgeAns = patientAgeMois === null ? null : Math.floor(patientAgeMois / 12);
       const childbearingAge = patientAgeAns === null || (patientAgeAns >= 12 && patientAgeAns <= 55);
+
+      // Sprint 3 — tous les médicaments correspondant au motif (et plus seulement le premier) :
+      // un même motif peut viser un nouveau médicament ET un traitement de fond.
+      const matchMeds = (dciParts: string[]) => medDCIs.filter(m =>
+        dciParts.some(dp =>
+          m.normalizedDCI.includes(dp) ||
+          m.normalizedName.includes(dp) ||
+          (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp)) ||
+          (ingNamesByMedId.get(m.id)?.some(ing => ing.includes(dp)) ?? false)
+        )
+      );
 
       if (selectedPatient && allContraindications.length > 0) {
         // Volet 2 — Termes de test par condition patient.
@@ -2670,20 +2979,13 @@ export function DoctorDashboard() {
           const dciParts = contra.dci_pattern.split('|').map(p => norm(p.trim())).filter(p => p.length > 2);
           const cv = norm(contra.condition_valeur);
 
-          // Find which selected med matches this dci pattern.
+          // Find which analysed meds match this dci pattern.
           // Phase 2b — normalizedCanonique en 3e source (résout les formes sel : Aspégic
           // "acétylsalicylate de lysine" → canonique "aspirine ..."). Additif, '' si absent.
           // Fallback ingrédients (4e source) — méds marocains avec dci null : on cherche
           // via medicament_ingredients → ingredients.name_en (chargé avant ce bloc).
-          const matchedIdx = medDCIs.findIndex(m =>
-            dciParts.some(dp =>
-              m.normalizedDCI.includes(dp) ||
-              m.normalizedName.includes(dp) ||
-              (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp)) ||
-              (ingNamesByMedId.get(m.id)?.some(ing => ing.includes(dp)) ?? false)
-            )
-          );
-          if (matchedIdx === -1) continue;
+          const matched = matchMeds(dciParts);
+          if (matched.length === 0) continue;
 
           // Check patient has the contraindicated condition :
           //   nom → substring bidirectionnel + préfixe slice-14 (inchangé)
@@ -2697,51 +2999,54 @@ export function DoctorDashboard() {
             return term.synRegexes.some(re => re.test(cv));
           });
 
-          const key = `ci|${selectedMeds[matchedIdx].nom}|${contra.condition_valeur.slice(0, 30)}`;
-          const alert: InteractionAlert = {
-            type: 'contraindication',
-            severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
-            description: contra.description,
-            involved: [selectedMeds[matchedIdx].nom],
-            condition: contra.condition_valeur, // Volet 2 — libellé brut exact pour affichage
-          };
-          const pushAlert = (a: InteractionAlert) => {
-            if (seen.has(key)) return;
-            seen.add(key);
-            alerts.push(a);
-          };
-          // Masquée uniquement si la logique d'origine l'aurait affichée : on ne compte
-          // que ce qui disparaît réellement de l'écran.
-          const pushMasked = (reason: string) => {
-            if (!condMatch || maskedSeen.has(key)) return;
-            maskedSeen.add(key);
-            masked.push({ alert, reason });
-          };
+          for (const med of matched) {
+            const key = `ci|${med.nom}|${contra.condition_valeur.slice(0, 30)}`;
+            const alert: InteractionAlert = {
+              type: 'contraindication',
+              severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
+              description: contra.description,
+              involved: [med.nom],
+              condition: contra.condition_valeur, // Volet 2 — libellé brut exact pour affichage
+              origin: originOfMed(med.id),
+            };
+            const pushAlert = (a: InteractionAlert) => {
+              if (seen.has(key)) return;
+              seen.add(key);
+              alerts.push(a);
+            };
+            // Masquée uniquement si la logique d'origine l'aurait affichée : on ne compte
+            // que ce qui disparaît réellement de l'écran.
+            const pushMasked = (reason: string) => {
+              if (!condMatch || maskedSeen.has(key)) return;
+              maskedSeen.add(key);
+              masked.push({ alert, reason });
+            };
 
-          // ── Sprint 2 — filtrage par sexe / bloc grossesse ─────────────────
-          const sexeCI = contra.sexe_applicable ?? null;
+            // ── Sprint 2 — filtrage par sexe / bloc grossesse ─────────────────
+            const sexeCI = contra.sexe_applicable ?? null;
 
-          // a. Sexe non applicable → masquée. Sexe patient inconnu → rien n'est masqué.
-          //    Garde-fou : grossesse/allaitement en pathologie → jamais masquée.
-          if (sexeCI && patientSexe && sexeCI !== patientSexe && !pregnancyGuard) {
-            pushMasked(patientSexe === 'M' ? 'patient homme' : 'patiente femme');
-            continue;
+            // a. Sexe non applicable → masquée. Sexe patient inconnu → rien n'est masqué.
+            //    Garde-fou : grossesse/allaitement en pathologie → jamais masquée.
+            if (sexeCI && patientSexe && sexeCI !== patientSexe && !pregnancyGuard) {
+              pushMasked(patientSexe === 'M' ? 'patient homme' : 'patiente femme');
+              continue;
+            }
+
+            // b. Patiente + CI grossesse/allaitement/procréation : déclenchée sur le médicament seul.
+            if (patientSexe === 'F' && sexeCI === 'F' && PREGNANCY_CTX_RE.test(cv)) {
+              const firm =
+                (hasGrossesse && /grossesse|enceinte/.test(cv)) ||
+                (hasAllaitement && /allait/.test(cv));
+              if (firm) pushAlert({ ...alert, pregnancyFirm: true });
+              else if (childbearingAge) pushAlert({ ...alert, pregnancyContext: true });
+              else pushMasked('patiente hors âge de procréation');
+              continue;
+            }
+
+            // c. Logique d'origine (inchangée)
+            if (!condMatch) continue;
+            pushAlert(alert);
           }
-
-          // b. Patiente + CI grossesse/allaitement/procréation : déclenchée sur le médicament seul.
-          if (patientSexe === 'F' && sexeCI === 'F' && PREGNANCY_CTX_RE.test(cv)) {
-            const firm =
-              (hasGrossesse && /grossesse|enceinte/.test(cv)) ||
-              (hasAllaitement && /allait/.test(cv));
-            if (firm) pushAlert({ ...alert, pregnancyFirm: true });
-            else if (childbearingAge) pushAlert({ ...alert, pregnancyContext: true });
-            else pushMasked('patiente hors âge de procréation');
-            continue;
-          }
-
-          // c. Logique d'origine (inchangée)
-          if (!condMatch) continue;
-          pushAlert(alert);
         }
       }
       setMaskedAlerts(masked);
@@ -2751,7 +3056,7 @@ export function DoctorDashboard() {
       // que le médicament marocain n'a pas de DCI mappée → on ne peut pas
       // chercher de contre-indications. Type 'info' + severite 'info' pour
       // un badge neutre non-anxiogène, distinct des vraies interactions mineures.
-      for (const m of selectedMeds) {
+      for (const m of analysisMeds) {
         if (!m.dci || m.dci.trim() === '') {
           const key = `nodci|${m.nom}`;
           if (!seen.has(key)) {
@@ -2761,6 +3066,7 @@ export function DoctorDashboard() {
               severite: 'info',
               description: `Médicament marocain non rattaché à une DCI — vérification des contre-indications limitée pour "${m.nom}".`,
               involved: [m.nom],
+              origin: originOfMed(m.id),
             });
           }
         }
@@ -2779,15 +3085,8 @@ export function DoctorDashboard() {
           if (contra.age_max_mois == null && contra.age_min_mois == null) continue;
 
           const dciParts = contra.dci_pattern.split('|').map(p => norm(p.trim())).filter(p => p.length > 2);
-          const matchedIdx = medDCIs.findIndex(m =>
-            dciParts.some(dp =>
-              m.normalizedDCI.includes(dp) ||
-              m.normalizedName.includes(dp) ||
-              (m.normalizedCanonique !== '' && m.normalizedCanonique.includes(dp)) ||
-              (ingNamesByMedId.get(m.id)?.some(ing => ing.includes(dp)) ?? false)
-            )
-          );
-          if (matchedIdx === -1) continue;
+          const matched = matchMeds(dciParts);
+          if (matched.length === 0) continue;
 
           hasAgeCICandidate = true;
           if (ageEnMois === null) continue; // pas d'alerte si âge inconnu
@@ -2810,16 +3109,19 @@ export function DoctorDashboard() {
             return parts.join(' / ');
           })();
 
-          const key = `age-ci|${selectedMeds[matchedIdx].nom}|${contra.dci_pattern}`;
-          if (!seen.has(key)) {
-            seen.add(key);
-            alerts.push({
-              type: 'contraindication',
-              severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
-              description: contra.description,
-              involved: [selectedMeds[matchedIdx].nom],
-              condition: conditionLabel,
-            });
+          for (const med of matched) {
+            const key = `age-ci|${med.nom}|${contra.dci_pattern}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              alerts.push({
+                type: 'contraindication',
+                severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
+                description: contra.description,
+                involved: [med.nom],
+                condition: conditionLabel,
+                origin: originOfMed(med.id),
+              });
+            }
           }
         }
 
@@ -2829,10 +3131,15 @@ export function DoctorDashboard() {
       }
 
       setInteractionAlerts(alerts);
+      setAnalysisPending(false);
     };
 
-    runCheck();
-  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms]);
+    runCheck().catch(e => {
+      console.error('[runCheck] error:', e);
+      if (!cancelled) setAnalysisPending(false);
+    });
+    return () => { cancelled = true; };
+  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded]);
 
   // ── Data loaders ─────────────────────────────────────────────────────────
 
@@ -3124,8 +3431,10 @@ export function DoctorDashboard() {
       // Failure here MUST NOT invalidate the prescription, which is already
       // saved at this point — wrap in an isolated try/catch.
       try {
+        // Sprint 3 — alertes préexistantes (traitement de fond seul) non journalisées :
+        // elles ne concernent pas la prescription enregistrée.
         const loggableAlerts = (interactionAlerts || []).filter(
-          a => a.severite !== 'non_classee' && a.severite !== 'info'
+          a => a.severite !== 'non_classee' && a.severite !== 'info' && a.origin !== 'fond'
         );
         if (loggableAlerts.length > 0) {
           const severityToRisk: Record<
@@ -3146,6 +3455,7 @@ export function DoctorDashboard() {
             // contraindications only have 1 involved med — duplicate to satisfy NOT NULL
             medicament_b: alert.involved[1] ?? alert.involved[0],
             risk_level:   severityToRisk[alert.severite],
+            source:       alert.origin === 'mixte' ? 'avec_traitement_fond' : 'nouveau',
           }));
           const { error: logErr } = await supabase
             .from('interaction_logs')
@@ -3241,9 +3551,71 @@ export function DoctorDashboard() {
 
   const removeMedication = (medId: string) => setSelectedMeds(selectedMeds.filter(m => m.id !== medId));
 
+  // Sprint 3 — Traitement de fond dans le Vérificateur
+  const toggleFond = (traitementId: string) => {
+    setFondExcluded(prev => {
+      const next = new Set(prev);
+      if (next.has(traitementId)) next.delete(traitementId); else next.add(traitementId);
+      return next;
+    });
+  };
+
+  /** « Renouveler » : le traitement devient une ligne de l'ordonnance (analysé comme nouveau). */
+  const renewFond = (t: TraitementChronique) => {
+    const id = fondMedId(t);
+    setSelectedMeds(prev => prev.some(m => m.id === id) ? prev : [
+      ...prev,
+      t.medicament
+        ? { id, nom: fondDisplayName(t), dci: t.medicament.dci ?? null, dci_canonique: t.medicament.dci_canonique ?? null }
+        : { id, nom: t.medicament_nom, dci: null, manual: true },
+    ]);
+    setResult(null);
+  };
+
+  /**
+   * Sprint 3 — « Relancer la vérification » depuis le formulaire d'ordonnance : les lignes
+   * ajoutées ou renommées dans le formulaire sont renvoyées au Vérificateur (saisie libre →
+   * médicament manuel : CI par nom, non vérifiable méd×méd, jamais de vert plein), le
+   * verdict est invalidé et le formulaire se rouvre après la nouvelle analyse.
+   */
+  const handleVerifyFormAdditions = (lines: UncheckedLine[]) => {
+    const draft = formDraftRef.current;
+    let nextSel = [...selectedMeds];
+    const lineIdMap = new Map<string, string | null>(); // id ligne → nouvel id Vérificateur (null = doublon supprimé)
+    for (const { line, replacesCheckerId } of lines) {
+      const nom = line.nom.trim();
+      if (!nom) continue;
+      if (replacesCheckerId) nextSel = nextSel.filter(m => m.id !== replacesCheckerId);
+      const existing = nextSel.find(m => normalizeDrugName(m.nom) === normalizeDrugName(nom));
+      if (existing) { lineIdMap.set(line.id, null); continue; }
+      const id = `manual_form_${line.id.replace(/^chk-/, '')}`;
+      nextSel.push({ id, nom, dci: null, manual: true });
+      lineIdMap.set(line.id, id);
+    }
+    if (draft) {
+      formDraftRef.current = {
+        ...draft,
+        medications: draft.medications.flatMap(m => {
+          if (!lineIdMap.has(m.id)) return [m];
+          const newId = lineIdMap.get(m.id);
+          return newId ? [{ ...m, id: `chk-${newId}`, addedInForm: false }] : [];
+        }),
+      };
+    }
+    setSelectedMeds(nextSel);
+    setResult(null);
+    reopenFormAfterCheckRef.current = true;
+    setShowPrescriptionForm(false);
+    setActiveView('checker');
+    scheduleDraftSave();
+    showToast('Médicaments ajoutés à l\'analyse — cliquez sur « Analyser » pour relancer la vérification', 'info');
+    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+  };
+
   const checkInteractions = async () => {
     if (selectedMeds.length < 1) { showToast('Sélectionnez au moins 1 médicament', 'error'); return; }
     if (!selectedPatient) { showToast('Sélectionnez un patient pour analyser les contre-indications', 'error'); return; }
+    if (fondLoading || analysisPending) { showToast('Analyse en cours — réessayez dans un instant', 'info'); return; }
     setLoading(true);
     await new Promise(r => setTimeout(r, 200));
 
@@ -3265,8 +3637,13 @@ export function DoctorDashboard() {
     // Sprint 2 — Le bloc conditionnel (grossesse/allaitement/procréation) ne rend pas la
     // prescription « à risque » à lui seul, mais interdit tout verdict vert : seul, il donne
     // « Sécuritaire sous réserve » ; avec une alerte ferme, l'alerte ferme l'emporte.
-    const firmAlerts = interactionAlerts.filter(a => !a.pregnancyContext);
-    const pregnancyCtxCount = interactionAlerts.length - firmAlerts.length;
+    // Sprint 3 — Le verdict est piloté par les alertes impliquant au moins un nouveau
+    // médicament (origine 'nouveau' ou 'mixte'). Les alertes préexistantes (fond seul)
+    // interdisent tout vert plein : seules, elles donnent « Sécuritaire sous réserve ».
+    const currentAlerts = interactionAlerts.filter(a => a.origin !== 'fond');
+    const preexistingCount = dedupClinicalAlerts(interactionAlerts.filter(a => a.origin === 'fond')).length;
+    const firmAlerts = currentAlerts.filter(a => !a.pregnancyContext);
+    const pregnancyCtxCount = currentAlerts.length - firmAlerts.length;
 
     for (const alert of firmAlerts) {
       if (alert.severite === 'contre_indication') overallSeverity = 'dangerous';
@@ -3289,6 +3666,12 @@ export function DoctorDashboard() {
     if (pregnancyOnly) overallSeverity = 'conditional';
     // Alerte ferme mineure + bloc conditionnel : jamais de vert.
     else if (overallSeverity === 'safe' && pregnancyCtxCount > 0) overallSeverity = 'attention';
+    // Sprint 3 — seules des alertes préexistantes : « Sécuritaire sous réserve », jamais vert.
+    const preexistingOnly = overallSeverity === 'safe' && preexistingCount > 0;
+    if (preexistingOnly) overallSeverity = 'conditional';
+    // Sprint 3 — traitement de fond non chargé : vérification croisée non faite → jamais vert.
+    const fondUnavailable = overallSeverity === 'safe' && fondError;
+    if (fondUnavailable) overallSeverity = 'conditional';
 
     // Source unique de vérité : même nonVerifiables que le panneau temps réel.
     // allNonVerifiable → pas de bandeau vert, severity forcée à 'attention'.
@@ -3303,13 +3686,18 @@ export function DoctorDashboard() {
         ? 'Résultat partiel — médicaments vérifiés uniquement'
         : undefined;
 
-    const description =
+    const preexistingLabel = `Alertes préexistantes dans le traitement de fond (${preexistingCount})`;
+    const baseDescription =
       overallSeverity === 'dangerous'
         ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé`
         : allNonVerifiable
           ? `Aucun des médicaments sélectionnés ne permet la vérification automatique des interactions — vérifiez manuellement`
           : pregnancyOnly
             ? `Aucune alerte, sauf en cas de grossesse ou d'allaitement (${pregnancyCtxCount} CI)`
+          : preexistingOnly
+            ? preexistingLabel
+          : fondUnavailable
+            ? 'Traitement de fond non chargé — vérification croisée non effectuée'
           : overallSeverity === 'attention'
             ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
             : reasons.length > 0
@@ -3319,6 +3707,10 @@ export function DoctorDashboard() {
                 : selectedMeds.length === 1
                   ? `✓ Aucune contre-indication documentée pour ${selectedMeds[0].nom} avec le profil de ce patient`
                   : `✓ Aucune interaction documentée entre les médicaments vérifiés`;
+    // Les alertes préexistantes sont toujours mentionnées dans le bandeau, quel que soit le verdict.
+    const description = preexistingCount > 0 && !preexistingOnly
+      ? `${baseDescription} · ${preexistingLabel}`
+      : baseDescription;
 
     setResult({ severity: overallSeverity, title: resultTitle, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
     setLoading(false);
@@ -3630,6 +4022,14 @@ export function DoctorDashboard() {
                 patientOrdonnances={patientOrdonnances}
                 onAddPatient={openAddPatient}
                 setShowPrescriptionForm={setShowPrescriptionForm}
+                fondTraitements={fondTraitements}
+                fondLoading={fondLoading}
+                fondError={fondError}
+                fondExcluded={fondExcluded}
+                toggleFond={toggleFond}
+                renewFond={renewFond}
+                reloadFond={() => setFondReloadKey(k => k + 1)}
+                analysisPending={analysisPending}
               />
             )}
 
@@ -3779,7 +4179,13 @@ export function DoctorDashboard() {
           onClose={() => setShowPrescriptionForm(false)}
           onCancel={discardOrdonnanceDraft}
           patient={selectedPatient}
-          initialMedications={selectedMeds.map(m => ({ id: m.id, nom: (m as any).nom_commercial || m.nom || '' }))}
+          initialMedications={selectedMeds.map(m => ({
+            id: m.id,
+            nom: (m as any).nom_commercial || m.nom || '',
+            // Sprint 3 — renouvellement : reprise de la posologie du traitement de fond
+            posologie: fondTraitements.find(t => fondMedId(t) === m.id)?.posologie ?? null,
+          }))}
+          onVerifyUnchecked={handleVerifyFormAdditions}
           initialForm={formDraftRef.current}
           onFormChange={f => { formDraftRef.current = f; scheduleDraftSave(); }}
           restored={draftRestored}

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Calendar, History } from 'lucide-react';
+import { Plus, Trash2, Calendar, History, AlertTriangle, RefreshCw } from 'lucide-react';
 import type { DraftForm } from '../lib/ordonnanceDraft';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
 
-interface MedicationForm {
+export interface MedicationForm {
   id: string;
   nom: string;
   posologie: string;
@@ -23,19 +23,31 @@ interface PrescriptionFormModalProps {
     prenom: string;
     nom: string;
   };
-  initialMedications: Array<{ id: string; nom: string }>;
+  // Sprint 3 — posologie : reprise du traitement de fond lors d'un « Renouveler ».
+  initialMedications: Array<{ id: string; nom: string; posologie?: string | null }>;
   /** État du formulaire à reprendre à l'ouverture (brouillon ou saisie précédente). */
   initialForm?: DraftForm | null;
   onFormChange?: (form: DraftForm) => void;
   /** Bandeau « Brouillon restauré » + action « Repartir de zéro ». */
   restored?: boolean;
   onDiscardDraft?: () => void;
+  /**
+   * Sprint 3 — lignes arrivées sur l'ordonnance sans passer par le moteur (ajoutées ou
+   * renommées dans ce formulaire). Le parent les renvoie au Vérificateur pour analyse.
+   */
+  onVerifyUnchecked?: (lines: UncheckedLine[]) => void;
   onPreview: (data: {
     motif: string;
     medications: MedicationForm[];
     remarks: string;
     nextAppointment?: string;
   }) => void;
+}
+
+export interface UncheckedLine {
+  line: MedicationForm;
+  /** Ligne issue du Vérificateur dont le nom a été modifié : id du médicament d'origine. */
+  replacesCheckerId?: string;
 }
 
 const getDosageSuggestion = (medName: string): { posologie: string; duree: string } => {
@@ -81,6 +93,7 @@ export function PrescriptionFormModal({
   onFormChange,
   restored = false,
   onDiscardDraft,
+  onVerifyUnchecked,
   onPreview
 }: PrescriptionFormModalProps) {
   const [motif, setMotif] = useState('');
@@ -105,7 +118,7 @@ export function PrescriptionFormModal({
         return {
           id,
           nom: med.nom,
-          posologie: suggestion.posologie,
+          posologie: med.posologie?.trim() || suggestion.posologie,
           duree: suggestion.duree,
           quantite: calculateQuantity(suggestion.posologie, suggestion.duree)
         };
@@ -158,6 +171,21 @@ export function PrescriptionFormModal({
   const handleRemoveMedication = (id: string) => {
     setMedications(prev => prev.filter(med => med.id !== id));
   };
+
+  // Sprint 3 — Lignes non vérifiées par le moteur :
+  //  • ajoutées dans ce formulaire (addedInForm) ;
+  //  • issues du Vérificateur mais renommées ici (le nom analysé n'est plus celui prescrit).
+  const checkerNames = new Map(initialMedications.map(m => [`chk-${m.id}`, m.nom]));
+  const uncheckedLines: UncheckedLine[] = medications.flatMap((m): UncheckedLine[] => {
+    if (!m.nom.trim()) return [];
+    if (m.addedInForm) return [{ line: m }];
+    const original = checkerNames.get(m.id);
+    if (original !== undefined && original.trim() !== m.nom.trim()) {
+      return [{ line: m, replacesCheckerId: m.id.slice(4) }];
+    }
+    return [];
+  });
+  const uncheckedIds = new Set(uncheckedLines.map(u => u.line.id));
 
   const handlePreview = () => {
     const nextAppointment = appointmentDate && appointmentTime
@@ -238,10 +266,48 @@ export function PrescriptionFormModal({
             </Button>
           </div>
 
+          {/* Sprint 3 — médicaments arrivés sur l'ordonnance sans analyse du moteur */}
+          {uncheckedLines.length > 0 && (
+            <div
+              role="status"
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200"
+            >
+              <div className="flex items-start gap-2 flex-1 min-w-0">
+                <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" aria-hidden />
+                <p className="text-sm text-amber-900">
+                  <span className="font-semibold">
+                    {uncheckedLines.length} médicament{uncheckedLines.length > 1 ? 's' : ''} ajouté{uncheckedLines.length > 1 ? 's' : ''} sans analyse
+                  </span>
+                  <span className="text-amber-800"> — interactions et contre-indications non vérifiées.</span>
+                </p>
+              </div>
+              {onVerifyUnchecked && (
+                <button
+                  type="button"
+                  onClick={() => onVerifyUnchecked(uncheckedLines)}
+                  className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-amber-300 text-sm font-semibold text-amber-900 hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 transition-colors whitespace-nowrap"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" aria-hidden />
+                  Relancer la vérification
+                </button>
+              )}
+            </div>
+          )}
+
           {medications.map((med, idx) => (
             <div key={med.id} className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
               <div className="flex justify-between items-start">
-                <h4 className="font-semibold text-slate-900">Médicament {idx + 1}</h4>
+                <h4 className="font-semibold text-slate-900 flex items-center gap-2 flex-wrap">
+                  Médicament {idx + 1}
+                  {uncheckedIds.has(med.id) && (
+                    <span
+                      title="Ce médicament n'a pas été analysé par le moteur d'interactions"
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5"
+                    >
+                      <AlertTriangle className="w-3 h-3" aria-hidden /> Non vérifié
+                    </span>
+                  )}
+                </h4>
                 {medications.length > 1 && (
                   <button
                     onClick={() => handleRemoveMedication(med.id)}
