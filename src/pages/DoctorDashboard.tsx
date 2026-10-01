@@ -25,6 +25,7 @@ import {
   loadTraitements, fondMedId, fondDisplayName, type TraitementChronique,
 } from '../lib/traitementsChroniques';
 import { computeVerification, verificationBlockMessage } from '../lib/ordonnanceVerification';
+import { notifyDataChanged, useDataSync } from '../lib/dataSync';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
 import { PatientImportModal } from '../components/PatientImportModal';
@@ -1346,39 +1347,55 @@ function StatsView({ userId, doctorId }: { userId: string; doctorId: string }) {
 interface OrdonnancesViewProps {
   onNavigate: (v: ViewType) => void;
   doctorId: string;
-  refreshKey?: number;
   doctorInfo?: { nom: string; prenom: string; specialite?: string | null; rpps?: string | null; ordre_number?: string | null } | null;
   orgInfo?: { name: string; adresse?: string | null; telephone?: string | null } | null;
   logoUrl?: string | null;
   showPatientName?: boolean;
 }
 
-function OrdonnancesView({ onNavigate, doctorId, refreshKey = 0, doctorInfo, orgInfo, logoUrl, showPatientName = false }: OrdonnancesViewProps) {
+function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, showPatientName = false }: OrdonnancesViewProps) {
   const [ords, setOrds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [timeFilter, setTimeFilter] = useState<'all' | 'month' | 'quarter'>('all');
   const [pdfLoadingId, setPdfLoadingId] = useState<string | null>(null);
   const ordsLoadedRef = useRef(false);
+  // Seule la dernière requête lancée met à jour la liste (réponses hors d'ordre ignorées).
+  const fetchSeqRef = useRef(0);
 
+  // Chargement à chaque ouverture de la vue (montage) et quand le profil médecin arrive.
   useEffect(() => {
     if (!doctorId) return;
     fetchOrdonnances();
-  }, [doctorId, refreshKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doctorId]);
+
+  // Ordonnance enregistrée ailleurs (Vérificateur, Imprimer/PDF) ou retour sur l'onglet.
+  useDataSync(['ordonnances'], () => { if (doctorId) fetchOrdonnances(); });
 
   const fetchOrdonnances = async () => {
-    // Skeleton uniquement au premier chargement (refreshKey → rafraîchissement silencieux).
+    const seq = ++fetchSeqRef.current;
+    // Skeleton uniquement au premier chargement (rechargements ensuite silencieux).
     if (!ordsLoadedRef.current) setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('ordonnances')
       .select('id, date, created_at, statut, patient_id, ordre_number, ordonnance_lignes(medicament_nom, posologie, duree, instructions)')
       .eq('doctor_id', doctorId)
       .order('created_at', { ascending: false })
       .limit(100);
+    if (seq !== fetchSeqRef.current) return;
+    if (error) {
+      // Liste conservée telle quelle plutôt que vidée sur une erreur passagère.
+      console.error('[OrdonnancesView] fetch error:', error);
+      ordsLoadedRef.current = true;
+      setLoading(false);
+      return;
+    }
 
     if (data && data.length > 0) {
       const pIds = [...new Set(data.map((o: any) => o.patient_id).filter(Boolean))];
       const { data: pats } = await supabase.from('patients').select('id, prenom, nom').in('id', pIds);
+      if (seq !== fetchSeqRef.current) return;
       const pMap = new Map((pats || []).map((p: any) => [p.id, { prenom: p.prenom, nom: p.nom }]));
       setOrds(data.map((o: any) => {
         const p = pMap.get(o.patient_id);
@@ -2599,7 +2616,6 @@ export function DoctorDashboard() {
   const [agendaDate, setAgendaDate] = useState<string | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const patientsLoadedRef = useRef(false);
-  const [ordRefreshKey, setOrdRefreshKey] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // Auth guard
@@ -3412,6 +3428,8 @@ export function DoctorDashboard() {
       const { data, error } = await supabase.from('ordonnances')
         .select(`id, date, statut, doctor_id, created_at, ordonnance_lignes(id, medicament_nom, posologie, duree, instructions)`)
         .eq('patient_id', patientId).order('created_at', { ascending: false });
+      // Patient changé entre-temps : la réponse ne le concerne plus.
+      if (selectedPatientIdRef.current && selectedPatientIdRef.current !== patientId) return;
       if (error || !data || data.length === 0) { setPatientOrdonnances([]); return; }
 
       const doctorIds = [...new Set(data.map((o: any) => o.doctor_id))].filter(Boolean);
@@ -3443,6 +3461,26 @@ export function DoctorDashboard() {
       }));
     } catch { setPatientOrdonnances([]); }
   };
+
+  // ── Synchronisation entre vues (src/lib/dataSync.ts) ───────────────────────
+  // Ordonnance enregistrée → compteurs/alertes de l'Accueil + ordonnances du profil patient.
+  useDataSync(['ordonnances'], () => {
+    loadStats();
+    const pid = selectedPatientIdRef.current;
+    if (pid) loadPatientOrdonnances(pid);
+  }, { onFocus: false });
+  // RDV créé/modifié/supprimé dans l'Agenda → « RDV du jour » de l'Accueil.
+  useDataSync(['rendez_vous'], () => { loadStats(); }, { onFocus: false });
+
+  // Retour sur l'Accueil (ou sur l'onglet du navigateur depuis l'Accueil) : compteurs et
+  // RDV du jour rechargés (6 requêtes bornées). Le 1er affichage est déjà chargé au montage.
+  const viewEffectMountedRef = useRef(false);
+  useEffect(() => {
+    if (!viewEffectMountedRef.current) { viewEffectMountedRef.current = true; return; }
+    if (activeView === 'home') loadStats();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeView]);
+  useDataSync([], () => { if (activeView === 'home') loadStats(); });
 
   // ── Prescription save ─────────────────────────────────────────────────────
 
@@ -3615,11 +3653,8 @@ export function DoctorDashboard() {
         setPrescriptionData(null);
       }
       discardOrdonnanceDraft();
-      loadStats();
-      setOrdRefreshKey(k => k + 1); // trigger OrdonnancesView reload
-
-      // Refresh patient ordonnances if one is selected
-      if (selectedPatient) loadPatientOrdonnances(selectedPatient.id);
+      // Vues abonnées : liste Ordonnances, compteurs de l'Accueil, profil patient.
+      notifyDataChanged('ordonnances');
       return true;
 
     } catch (e: any) {
@@ -4242,7 +4277,6 @@ export function DoctorDashboard() {
                 key="ordonnances"
                 onNavigate={setActiveView}
                 doctorId={doctorProfile?.id || user?.id || ''}
-                refreshKey={ordRefreshKey}
                 doctorInfo={user ? {
                   nom: user.nom,
                   prenom: user.prenom,

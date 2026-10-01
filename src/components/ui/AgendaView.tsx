@@ -4,6 +4,7 @@ import {
   ChevronLeft, ChevronRight, Plus, X, Search, UserPlus,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { notifyDataChanged, useDataSync } from '../../lib/dataSync';
 import { useAuth } from '../../contexts/AuthContext';
 import { PageTransition } from './PageTransition';
 
@@ -334,28 +335,37 @@ export function AgendaView({ patients, showToast, initialDate }: AgendaViewProps
   }, [user?.id, user?.org_id, fmt(weekDays[0])]);
 
   useEffect(() => { load(); }, [load]);
+  // Retour sur l'onglet du navigateur : RDV ajoutés entre-temps (ex. par le secrétariat).
+  useDataSync([], () => { load(); });
 
   const handleSave = async (formData: Partial<RendezVous>) => {
     if (!user) return;
     try {
-      if (editingRdv) {
-        await supabase.from('rendez_vous').update(formData).eq('id', editingRdv.id);
-        showToast('Rendez-vous mis à jour', 'success');
-      } else {
-        await supabase.from('rendez_vous').insert({ ...formData, org_id: user.org_id, doctor_id: user.id });
-        showToast('Rendez-vous créé', 'success');
-      }
+      // Supabase ne lève pas d'exception : l'erreur est dans la réponse.
+      const { error } = editingRdv
+        ? await supabase.from('rendez_vous').update(formData).eq('id', editingRdv.id)
+        : await supabase.from('rendez_vous').insert({ ...formData, org_id: user.org_id, doctor_id: user.id });
+      if (error) throw error;
+      showToast(editingRdv ? 'Rendez-vous mis à jour' : 'Rendez-vous créé', 'success');
       setShowModal(false); setEditingRdv(null); load();
-    } catch {
+      notifyDataChanged('rendez_vous');
+    } catch (e) {
+      console.error('[AgendaView] save error:', e);
       showToast('Erreur lors de l\'enregistrement', 'error');
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Supprimer ce rendez-vous ?')) return;
-    await supabase.from('rendez_vous').delete().eq('id', id);
+    const { error } = await supabase.from('rendez_vous').delete().eq('id', id);
+    if (error) {
+      console.error('[AgendaView] delete error:', error);
+      showToast('Erreur lors de la suppression', 'error');
+      return;
+    }
     showToast('Rendez-vous supprimé', 'info');
     load();
+    notifyDataChanged('rendez_vous');
   };
 
   const openNew = (date?: string) => { setEditingRdv(null); setClickedDate(date); setShowModal(true); };
