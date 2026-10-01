@@ -2574,6 +2574,11 @@ export function DoctorDashboard() {
   const [showPrescriptionPreview, setShowPrescriptionPreview] = useState(false);
   const [prescriptionData, setPrescriptionData] = useState<any>(null);
   const [prescriptionOrdreNumber, setPrescriptionOrdreNumber] = useState('');
+  // Enregistrement auto à l'impression/PDF : n° d'ordre déjà enregistré (anti-doublon)
+  // et enregistrement en cours (partagé entre clics rapprochés).
+  const [savedOrdreNumber, setSavedOrdreNumber] = useState<string | null>(null);
+  const savedOrdreNumberRef = useRef<string | null>(null);
+  const savingOrdonnanceRef = useRef<Promise<boolean> | null>(null);
   const [showMedicationHistory, setShowMedicationHistory] = useState(false);
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
 
@@ -3441,8 +3446,27 @@ export function DoctorDashboard() {
 
   // ── Prescription save ─────────────────────────────────────────────────────
 
-  const handleSaveOrdonnance = async () => {
-    if (!user || !selectedPatient || !prescriptionData) return;
+  /**
+   * Enregistre l'ordonnance de l'aperçu. Résout `true` si elle est enregistrée (ou l'était
+   * déjà : jamais de doublon), `false` sinon (un toast d'erreur a été affiché).
+   * `keepPreview` : appelé par Imprimer / Télécharger PDF — l'aperçu reste ouvert.
+   */
+  const handleSaveOrdonnance = (opts?: { keepPreview?: boolean }): Promise<boolean> => {
+    if (prescriptionOrdreNumber && savedOrdreNumberRef.current === prescriptionOrdreNumber) {
+      return Promise.resolve(true);
+    }
+    if (savingOrdonnanceRef.current) return savingOrdonnanceRef.current;
+    const p = saveOrdonnanceNow(opts?.keepPreview === true)
+      .finally(() => { savingOrdonnanceRef.current = null; });
+    savingOrdonnanceRef.current = p;
+    return p;
+  };
+
+  const saveOrdonnanceNow = async (keepPreview: boolean): Promise<boolean> => {
+    if (!user || !selectedPatient || !prescriptionData) {
+      showToast("Ordonnance introuvable — rouvrez l'aperçu", 'error');
+      return false;
+    }
 
     // BUG FIX: doctor_id must be doctors.id (PK), NOT user.id (auth UUID).
     // The ordonnances table has a FK ordonnances.doctor_id → doctors.id,
@@ -3450,7 +3474,7 @@ export function DoctorDashboard() {
     const doctorId = doctorProfile?.id;
     if (!doctorId) {
       showToast('Profil médecin non chargé — rechargez la page', 'error');
-      return;
+      return false;
     }
 
     // Sprint 3b — Filet de sécurité : aucune ordonnance enregistrée si l'une de ses lignes
@@ -3462,7 +3486,7 @@ export function DoctorDashboard() {
     const blockMessage = verificationBlockMessage(verification);
     if (blockMessage) {
       showToast(`Enregistrement refusé — ${blockMessage}`, 'error');
-      return;
+      return false;
     }
 
     const payload = {
@@ -3551,7 +3575,7 @@ export function DoctorDashboard() {
             .from('interaction_logs')
             .insert(interactionRows);
           if (logErr) {
-            console.error('[OrdoSur] interaction_logs insert error (non-blocking):', logErr);
+            console.error('[OrdoSur] interaction_logs insert error (non-blocking):', logErr.message, logErr, interactionRows);
           } else {
             console.log('[OrdoSur] Logged', interactionRows.length, 'interaction(s) to interaction_logs');
           }
@@ -3563,36 +3587,45 @@ export function DoctorDashboard() {
       // Sprint 3b — Traçabilité de la confirmation « hors base » (1 ligne par médicament).
       try {
         if (verification.horsBase.length > 0) {
-          const { error: hbErr } = await supabase.from('interaction_logs').insert(
-            verification.horsBase.map(l => ({
-              doctor_id:    doctorId,
-              patient_id:   selectedPatient.id,
-              medicament_a: l.nom.trim(),
-              medicament_b: null,
-              risk_level:   'attention',
-              source:       'hors_base_confirme',
-            })),
-          );
-          if (hbErr) console.error('[OrdoSur] hors_base_confirme log error (non-blocking):', hbErr);
+          const hbRows = verification.horsBase.map(l => ({
+            doctor_id:    doctorId,
+            patient_id:   selectedPatient.id,
+            medicament_a: l.nom.trim(),
+            medicament_b: null,
+            risk_level:   'attention',
+            source:       'hors_base_confirme',
+          }));
+          const { error: hbErr } = await supabase.from('interaction_logs').insert(hbRows);
+          if (hbErr) {
+            console.error('[OrdoSur] hors_base_confirme log error (non-blocking):', hbErr.message, hbErr, hbRows);
+          } else {
+            console.log('[OrdoSur] Logged', hbRows.length, 'hors_base_confirme line(s) to interaction_logs');
+          }
         }
       } catch (hbErr) {
         console.error('[OrdoSur] hors_base_confirme logging failed (non-blocking):', hbErr);
       }
 
+      savedOrdreNumberRef.current = prescriptionOrdreNumber;
+      setSavedOrdreNumber(prescriptionOrdreNumber);
       showToast('Ordonnance enregistrée avec succès', 'success');
       setHorsBaseConfirmedKey(null);
-      setShowPrescriptionPreview(false);
-      setPrescriptionData(null);
+      if (!keepPreview) {
+        setShowPrescriptionPreview(false);
+        setPrescriptionData(null);
+      }
       discardOrdonnanceDraft();
       loadStats();
       setOrdRefreshKey(k => k + 1); // trigger OrdonnancesView reload
 
       // Refresh patient ordonnances if one is selected
       if (selectedPatient) loadPatientOrdonnances(selectedPatient.id);
+      return true;
 
     } catch (e: any) {
       console.error('[OrdoSur] handleSaveOrdonnance error:', e);
       showToast(e?.message || "Erreur lors de l'enregistrement de l'ordonnance", 'error');
+      return false;
     }
   };
 
@@ -4385,7 +4418,10 @@ export function DoctorDashboard() {
             setShowPrescriptionForm(true);
           }}
           onSave={handleSaveOrdonnance}
-          blockedReason={verificationBlockMessage(
+          isSaved={savedOrdreNumber === prescriptionOrdreNumber}
+          // Une fois enregistrée (garde-fous passés), l'analyse est réinitialisée :
+          // le blocage ne s'applique plus à cette ordonnance figée.
+          blockedReason={savedOrdreNumber === prescriptionOrdreNumber ? null : verificationBlockMessage(
             computeVerification(prescriptionData.medications ?? [], selectedMeds, analysisValid, horsBaseConfirmedKey),
           )}
           ordreNumber={prescriptionOrdreNumber}

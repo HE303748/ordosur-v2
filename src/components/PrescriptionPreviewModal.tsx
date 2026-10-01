@@ -19,7 +19,13 @@ interface PrescriptionPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onBack: () => void;
-  onSave: () => void;
+  /**
+   * Enregistre l'ordonnance (garde-fous Sprint 3b). Résout `true` si elle est enregistrée
+   * (ou l'était déjà). Imprimer / Télécharger PDF l'appellent avec `keepPreview`.
+   */
+  onSave: (opts?: { keepPreview?: boolean }) => Promise<boolean>;
+  /** Ordonnance déjà enregistrée : Imprimer / PDF ne réenregistrent pas. */
+  isSaved?: boolean;
   /**
    * Sprint 3b — motif de blocage (vérification périmée / confirmation hors base manquante).
    * Non nul → Enregistrer, Imprimer et Télécharger PDF désactivés : aucune ordonnance ne
@@ -59,6 +65,7 @@ export function PrescriptionPreviewModal({
   onClose,
   onBack,
   onSave,
+  isSaved = false,
   blockedReason = null,
   ordreNumber,
   logo_url,
@@ -78,11 +85,36 @@ export function PrescriptionPreviewModal({
   const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const todayIso = new Date().toISOString().split('T')[0];
 
-  const handlePrint = () => { if (blockedReason) return; window.print(); };
+  const [saving, setSaving] = useState(false);
+  const busy = saving || pdfLoading;
+
+  /** Enregistre l'ordonnance si besoin avant toute sortie papier/PDF. */
+  const ensureSaved = async (): Promise<boolean> => {
+    if (isSaved) return true;
+    setSaving(true);
+    try {
+      return await onSave({ keepPreview: true });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (blockedReason || busy || isSaved) return;
+    setSaving(true);
+    try { await onSave(); } finally { setSaving(false); }
+  };
+
+  const handlePrint = async () => {
+    if (blockedReason || busy) return;
+    if (!(await ensureSaved())) return; // échec : toast affiché par onSave, pas d'impression
+    window.print();
+  };
 
   const handleDownloadPdf = async () => {
-    if (blockedReason) return;
+    if (blockedReason || busy) return;
     setPdfError(null);
+    if (!(await ensureSaved())) return;
     setPdfLoading(true);
     try {
       await generateOrdonnancePdf({
@@ -198,19 +230,24 @@ export function PrescriptionPreviewModal({
         )}
 
         <div className="flex gap-2 justify-end no-print flex-wrap">
-          <Button onClick={onBack} variant="secondary">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Modifier
+          {/* Ordonnance enregistrée : figée, toute modification = nouvelle ordonnance */}
+          {!isSaved && (
+            <Button onClick={onBack} variant="secondary" disabled={busy}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Modifier
+            </Button>
+          )}
+          <Button onClick={handleSave} variant="primary" disabled={!!blockedReason || busy || isSaved}>
+            {saving
+              ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin mr-2" />
+              : <Save className="w-4 h-4 mr-2" />}
+            {isSaved ? 'Enregistrée' : saving ? 'Enregistrement…' : 'Enregistrer'}
           </Button>
-          <Button onClick={onSave} variant="primary" disabled={!!blockedReason}>
-            <Save className="w-4 h-4 mr-2" />
-            Enregistrer
-          </Button>
-          <Button onClick={handlePrint} variant="secondary" disabled={!!blockedReason}>
+          <Button onClick={handlePrint} variant="secondary" disabled={!!blockedReason || busy}>
             <Printer className="w-4 h-4 mr-2" />
             Imprimer
           </Button>
-          <Button onClick={handleDownloadPdf} variant="secondary" disabled={pdfLoading || !!blockedReason}>
+          <Button onClick={handleDownloadPdf} variant="secondary" disabled={busy || !!blockedReason}>
             {pdfLoading
               ? <span className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mr-2" />
               : <Download className="w-4 h-4 mr-2" />}
