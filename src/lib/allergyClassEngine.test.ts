@@ -183,3 +183,48 @@ describe('mergeAllergyAlerts — jamais de perte de la sévérité la plus haute
     expect(m.alsoByIndex.size).toBe(0);
   });
 });
+
+// ─── Audit des motifs (correctif 4e-B) — fiches réelles 🇲🇦 ───────────────────
+const PONSTYL:    AllergyMed = { id: 'ponstyl', nom: 'PONSTYL 500 MG', dci: 'ACIDE MÉFÉNAMIQUE', ingredients: ['acide mefenamique'] };
+const NIFLURIL:   AllergyMed = { id: 'nifluril', nom: 'NIFLURIL', dci: 'ACIDE NIFLUMIQUE', ingredients: ['acide niflumique'] };
+const ACIGAM:     AllergyMed = { id: 'acigam', nom: 'ACIGAM 100 MG', dci: 'ACIDE TIAPROFENIQUE', ingredients: ['acide tiaprofenique'] };
+const EDARBYCLOR: AllergyMed = { id: 'edarbyclor', nom: 'EDARBYCLOR 40 MG / 12', dci: 'AZILSARTAN MEDOXOMIL | CHLORTHALIDONE', ingredients: ['chlorthalidone', 'azilsartan medoxomil'] };
+const CARDIOFLEX: AllergyMed = { id: 'cardioflex', nom: 'CARDIOFLEX 100 MG', dci: 'ACIDE ACETILSALICYLIQUE' };
+const COANGINIB:  AllergyMed = { id: 'coanginib', nom: 'CO-ANGINIB 50 MG / 12.5 MG', dci: 'LOSARTAN | HYDROCHLORTHIAZIDE' };
+
+describe('molécules composées et variantes d’orthographe', () => {
+  it('allergie Ibuprofène → Ponstyl, Nifluril, Acigam en CI absolue', () => {
+    expect(sev([PONSTYL, NIFLURIL, ACIGAM], [al('Ibuprofène')]))
+      .toEqual({ ponstyl: 'absolue', nifluril: 'absolue', acigam: 'absolue' });
+  });
+
+  it('allergie Sulfamides antibactériens → Edarbyclor en Précaution', () => {
+    expect(sev([EDARBYCLOR], [al('Allergie aux Sulfamides')])).toEqual({ edarbyclor: 'precaution' });
+    expect(sev([EDARBYCLOR], [al('Sulfamides antibactériens')])).toEqual({ edarbyclor: 'precaution' });
+  });
+
+  it('forme inversée de la DCI (« TIAPROFÉNIQUE (ACIDE) ») et accents reconnus', () => {
+    const inverse: AllergyMed = { id: 'inv', nom: 'SURGAM', dci: 'TIAPROFÉNIQUE (ACIDE)' };
+    const accents: AllergyMed = { id: 'acc', nom: 'PONSTYL', dci: 'Acide méfénamique' };
+    expect(sev([inverse, accents], [al('Allergie aux AINS')])).toEqual({ inv: 'absolue', acc: 'absolue' });
+  });
+
+  it('orthographes fautives de la base : « acétilsalicylique », « hydrochlorthiazide »', () => {
+    expect(sev([CARDIOFLEX], [al('Aspirine')])).toEqual({ cardioflex: 'absolue' });
+    expect(sev([CARDIOFLEX], [al('Ibuprofène')])).toEqual({ cardioflex: 'absolue' });
+    expect(sev([COANGINIB], [al('Allergie aux Sulfamides')])).toEqual({ coanginib: 'precaution' });
+  });
+
+  it('non-régression : « cef » ne reconnaît ni l’acide folique ni le métoclopramide ; « morphin » pas l’apomorphine', () => {
+    const folique: AllergyMed = { id: 'fol', nom: 'ACFOL 5 MG', dci: 'ACIDE FOLIQUE', ingredients: ['folic acid'] };
+    const primperan: AllergyMed = { id: 'pri', nom: 'PRIMPERAN', dci: 'METOCLOPRAMIDE', ingredients: ['metoclopramide'] };
+    const apokinon: AllergyMed = { id: 'apo', nom: 'APOKINON', dci: "CHLORHYDRATE D'APOMORPHINE", ingredients: ['apomorphine'] };
+    expect(medFamilles(folique, familles).size).toBe(0);
+    expect(medFamilles(primperan, familles).size).toBe(0);
+    expect(medFamilles(apokinon, familles).size).toBe(0);
+    expect(run([folique, primperan], [al('Allergie aux Céphalosporines'), al('Céfixime')])).toEqual([]);
+    expect(run([apokinon], [al('Morphine'), al('Codéine')])).toEqual([]);
+    // « acide » seul ne suffit jamais : un autre acide n'est pas un AINS.
+    expect(run([folique], [al('Allergie aux AINS'), al('Ibuprofène')])).toEqual([]);
+  });
+});

@@ -97,12 +97,32 @@
       "dci_motif": "parecoxib"
     },
     {
+      "classe": "ains",
+      "dci_motif": "tiaprofeni"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "niflumi"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "mefenami"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "phenylbutazone"
+    },
+    {
       "classe": "aspirine",
       "dci_motif": "aspirine"
     },
     {
       "classe": "aspirine",
       "dci_motif": "acetylsalicyl"
+    },
+    {
+      "classe": "aspirine",
+      "dci_motif": "acetilsalicyl"
     },
     {
       "classe": "antiagregant",
@@ -115,6 +135,14 @@
     {
       "classe": "antiagregant",
       "dci_motif": "ticagrelor"
+    },
+    {
+      "classe": "antiagregant",
+      "dci_motif": "tirofiban"
+    },
+    {
+      "classe": "antiagregant",
+      "dci_motif": "dipyridamole"
     },
     {
       "classe": "anticoagulant",
@@ -159,6 +187,14 @@
     {
       "classe": "anticoagulant",
       "dci_motif": "heparine"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "bemiparine"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "fondaparinux"
     }
   ],
   "regles": [

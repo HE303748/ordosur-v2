@@ -180,3 +180,32 @@ describe('mergeWithExisting', () => {
     expect(mergeWithExisting(existing, alert).standalone).toHaveLength(1);
   });
 });
+
+// ─── Audit des motifs (Sprint 4e-B) — fiches réelles 🇲🇦 ──────────────────────
+describe('molécules composées et variantes d’orthographe (canal antécédents)', () => {
+  const ACIGAM:     EngineMed = { id: 'acigam', nom: 'ACIGAM 100 MG', dci: 'ACIDE TIAPROFENIQUE' };
+  const PONSTYL:    EngineMed = { id: 'ponstyl', nom: 'PONSTYL 500 MG', dci: 'ACIDE MÉFÉNAMIQUE' };
+  const CARDIOFLEX: EngineMed = { id: 'cardioflex', nom: 'CARDIOFLEX 100 MG', dci: 'ACIDE ACETILSALICYLIQUE' };
+  const ARIXTRA:    EngineMed = { id: 'arixtra', nom: 'ARIXTRA', dci: 'FONDAPARINUX SODIQUE' };
+  const ACFOL:      EngineMed = { id: 'acfol', nom: 'ACFOL 5 MG', dci: 'ACIDE FOLIQUE' };
+
+  it('antécédent d’hémorragie sous AINS → Acigam (et Ponstyl) en CI absolue', () => {
+    const r = run([ACIGAM, PONSTYL], [hemo({ en_cours: false, sous_ains: 'oui', episodes: '1' })]);
+    expect(Object.fromEntries(r.map(a => [a.medId, a.severite]))).toEqual({ acigam: 'absolue', ponstyl: 'absolue' });
+    expect(r.every(a => a.regleCode === 'R2')).toBe(true);
+  });
+
+  it('forme inversée « TIAPROFÉNIQUE (ACIDE) » reconnue', () => {
+    const r = run([{ id: 'inv', nom: 'SURGAM', dci: 'TIAPROFÉNIQUE (ACIDE)' }], [hemo({ en_cours: false, sous_ains: 'oui' })]);
+    expect(r[0]).toMatchObject({ severite: 'absolue', classe: 'ains' });
+  });
+
+  it('« acide acétilsalicylique » (orthographe de la base) et fondaparinux reconnus', () => {
+    const r = run([CARDIOFLEX, ARIXTRA], [hemo({ en_cours: false, sous_ains: 'non', episodes: '1' })]);
+    expect(Object.fromEntries(r.map(a => [a.medId, a.classe]))).toEqual({ cardioflex: 'aspirine', arixtra: 'anticoagulant' });
+  });
+
+  it('non-régression : l’acide folique n’est pas un AINS', () => {
+    expect(run([ACFOL], [hemo({ en_cours: true, sous_ains: 'oui' })])).toEqual([]);
+  });
+});

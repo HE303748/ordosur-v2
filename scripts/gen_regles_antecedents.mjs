@@ -20,12 +20,17 @@ const classes = {
     // Complément : membres de la classe ANSM « anti-inflammatoires non stéroïdiens »
     // commercialisés au Maroc (absents de la liste initiale).
     'acide tiaprofenique', 'morniflumate', 'fenoprofene', 'parecoxib',
+    // Sprint 4e-B (audit des motifs) : radicaux robustes aux formes inversées
+    // (« TIAPROFÉNIQUE (ACIDE) ») + phénylbutazone.
+    'tiaprofeni', 'niflumi', 'mefenami', 'phenylbutazone',
   ],
-  aspirine: ['aspirine', 'acetylsalicyl'],
-  antiagregant: ['clopidogrel', 'prasugrel', 'ticagrelor'],
+  // « acetilsalicyl » : orthographe fautive présente en base (CARDIOFLEX 100 MG).
+  aspirine: ['aspirine', 'acetylsalicyl', 'acetilsalicyl'],
+  antiagregant: ['clopidogrel', 'prasugrel', 'ticagrelor', 'tirofiban', 'dipyridamole'],
   anticoagulant: [
     'acenocoumarol', 'warfarine', 'fluindione', 'rivaroxaban', 'apixaban', 'dabigatran',
     'edoxaban', 'enoxaparine', 'tinzaparine', 'nadroparine', 'heparine',
+    'bemiparine', 'fondaparinux',
   ],
 };
 

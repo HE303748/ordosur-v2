@@ -72,11 +72,18 @@ insert into public.regles_antecedents_classes (classe, dci_motif) values
   ('ains', 'morniflumate'),
   ('ains', 'fenoprofene'),
   ('ains', 'parecoxib'),
+  ('ains', 'tiaprofeni'),
+  ('ains', 'niflumi'),
+  ('ains', 'mefenami'),
+  ('ains', 'phenylbutazone'),
   ('aspirine', 'aspirine'),
   ('aspirine', 'acetylsalicyl'),
+  ('aspirine', 'acetilsalicyl'),
   ('antiagregant', 'clopidogrel'),
   ('antiagregant', 'prasugrel'),
   ('antiagregant', 'ticagrelor'),
+  ('antiagregant', 'tirofiban'),
+  ('antiagregant', 'dipyridamole'),
   ('anticoagulant', 'acenocoumarol'),
   ('anticoagulant', 'warfarine'),
   ('anticoagulant', 'fluindione'),
@@ -87,7 +94,9 @@ insert into public.regles_antecedents_classes (classe, dci_motif) values
   ('anticoagulant', 'enoxaparine'),
   ('anticoagulant', 'tinzaparine'),
   ('anticoagulant', 'nadroparine'),
-  ('anticoagulant', 'heparine')
+  ('anticoagulant', 'heparine'),
+  ('anticoagulant', 'bemiparine'),
+  ('anticoagulant', 'fondaparinux')
 on conflict (classe, dci_motif) do nothing;
 
 insert into public.regles_antecedents (code, ordre, classe, antecedent_type, criteres, severite, titre, conduite, source) values

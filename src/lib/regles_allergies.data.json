@@ -357,6 +357,12 @@
     {
       "famille": "sulfamides_antibacteriens",
       "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "sulfasalazin"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
       "type": "alias",
       "motif": "sulfamide"
     },
@@ -424,6 +430,12 @@
       "famille": "diuretiques_sulfamides",
       "label": "diurétiques sulfamidés",
       "type": "molecule",
+      "motif": "torsemid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
       "motif": "piretanid"
     },
     {
@@ -431,6 +443,12 @@
       "label": "diurétiques sulfamidés",
       "type": "molecule",
       "motif": "hydrochlorothiazid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "hydrochlorthiazid"
     },
     {
       "famille": "diuretiques_sulfamides",
@@ -449,6 +467,24 @@
       "label": "diurétiques sulfamidés",
       "type": "molecule",
       "motif": "chlorthalidon"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "xipamid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "altizid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "clopamid"
     },
     {
       "famille": "ains",
@@ -627,6 +663,30 @@
     {
       "famille": "ains",
       "label": "AINS",
+      "type": "molecule",
+      "motif": "tiaprofeni"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "niflumi"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "mefenami"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "phenylbutazon"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
       "type": "alias",
       "motif": "ains"
     },
@@ -701,6 +761,30 @@
       "label": "aspirine",
       "type": "molecule",
       "motif": "acide acetylsalicylique"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "molecule",
+      "motif": "acetilsalicyl"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "molecule",
+      "motif": "salicylamid"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "molecule",
+      "motif": "salicylate de choline"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "molecule",
+      "motif": "choline salicylate"
     },
     {
       "famille": "aspirine",
@@ -821,6 +905,18 @@
       "label": "quinolones",
       "type": "molecule",
       "motif": "flumequin"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "molecule",
+      "motif": "nalidixi"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "molecule",
+      "motif": "pipemidi"
     },
     {
       "famille": "quinolones",

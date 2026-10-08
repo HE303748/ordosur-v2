@@ -38,7 +38,8 @@ const familles = {
   },
   sulfamides_antibacteriens: {
     label: 'sulfamides antibactériens',
-    molecules: ['sulfamethoxazol', 'sulfadiazin', 'sulfafurazol', 'sulfaguanidin', 'sulfacetamid', 'sulfadoxin', 'sulfamethizol', 'cotrimoxazol', 'co trimoxazol'],
+    // sulfasalazine : sulfamide (RCP : contre-indiquée en cas d'hypersensibilité aux sulfamides)
+    molecules: ['sulfamethoxazol', 'sulfadiazin', 'sulfafurazol', 'sulfaguanidin', 'sulfacetamid', 'sulfadoxin', 'sulfamethizol', 'cotrimoxazol', 'co trimoxazol', 'sulfasalazin'],
     alias: ['sulfamide', 'sulfamides', 'bactrim'],
   },
   sulfamides_hypoglycemiants: {
@@ -48,7 +49,8 @@ const familles = {
   },
   diuretiques_sulfamides: {
     label: 'diurétiques sulfamidés',
-    molecules: ['furosemid', 'bumetanid', 'torasemid', 'piretanid', 'hydrochlorothiazid', 'indapamid', 'chlortalidon', 'chlorthalidon'],
+    // Variantes d'orthographe présentes en base : « chlorthalidone », « hydrochlorthiazide » (sic).
+    molecules: ['furosemid', 'bumetanid', 'torasemid', 'torsemid', 'piretanid', 'hydrochlorothiazid', 'hydrochlorthiazid', 'indapamid', 'chlortalidon', 'chlorthalidon', 'xipamid', 'altizid', 'clopamid'],
     alias: [],
   },
   ains: {
@@ -58,12 +60,16 @@ const familles = {
       'tenoxicam', 'lornoxicam', 'indometacin', 'indomethacin', 'celecoxib', 'etoricoxib', 'parecoxib', 'flurbiprofen',
       'acide niflumique', 'niflumic', 'morniflumat', 'nimesulid', 'etodolac', 'sulindac', 'acide mefenamique', 'mefenamic',
       'ketorolac', 'acide tiaprofenique', 'tiaprofenic', 'fenoprofen', 'nabumeton',
+      // Radicaux valables en français, en anglais et en forme inversée (« TIAPROFÉNIQUE (ACIDE) »)
+      'tiaprofeni', 'niflumi', 'mefenami', 'phenylbutazon',
     ],
     alias: ['ains', 'anti inflammatoire', 'anti inflammatoires', 'antiinflammatoire', 'antiinflammatoires', 'brufen', 'voltarene', 'profenid', 'advil', 'nurofen'],
   },
   aspirine: {
     label: 'aspirine',
-    molecules: ['aspirin', 'acetylsalicyl', 'acide acetylsalicylique'],
+    // « acetilsalicyl » : orthographe fautive présente en base (CARDIOFLEX). Salicylés par
+    // voie orale ou buccale : salicylamide, salicylate de choline.
+    molecules: ['aspirin', 'acetylsalicyl', 'acide acetylsalicylique', 'acetilsalicyl', 'salicylamid', 'salicylate de choline', 'choline salicylate'],
     alias: ['aas', 'aspegic', 'kardegic', 'widal'],
   },
   macrolides: {
@@ -73,7 +79,7 @@ const familles = {
   },
   quinolones: {
     label: 'quinolones',
-    molecules: ['*floxacin', 'acide nalidixique', 'nalidixic', 'acide pipemidique', 'pipemidic', 'flumequin'],
+    molecules: ['*floxacin', 'acide nalidixique', 'nalidixic', 'acide pipemidique', 'pipemidic', 'flumequin', 'nalidixi', 'pipemidi'],
     alias: ['quinolone', 'quinolones', 'fluoroquinolone', 'fluoroquinolones'],
   },
   opioides: {
