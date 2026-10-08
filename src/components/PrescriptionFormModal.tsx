@@ -54,6 +54,12 @@ interface PrescriptionFormModalProps {
   analysisValid: boolean;
   horsBaseConfirmedKey: string | null;
   onConfirmHorsBase: (key: string | null) => void;
+  /**
+   * Sprint 4d — alertes de niveau maximal (CI absolue / interaction majeure) de l'analyse
+   * en cours : bandeau rouge persistant. La confirmation motivée est demandée à
+   * l'enregistrement, à l'impression et au PDF.
+   */
+  contraindicationAlerts?: string[];
   onPreview: (data: {
     motif: string;
     medications: MedicationForm[];
@@ -198,6 +204,7 @@ export function PrescriptionFormModal({
   analysisValid,
   horsBaseConfirmedKey,
   onConfirmHorsBase,
+  contraindicationAlerts = [],
   onPreview
 }: PrescriptionFormModalProps) {
   const [motif, setMotif] = useState('');
@@ -324,6 +331,20 @@ export function PrescriptionFormModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Créer une Ordonnance" size="xl">
       <div className="space-y-6">
+        {contraindicationAlerts.length > 0 && (
+          <div role="alert" className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 dark:bg-red-500/[0.08] dark:border-red-500/30">
+            <p className="flex items-center gap-2 text-sm font-semibold text-red-800 dark:text-red-300">
+              <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#DC2626]" aria-hidden />
+              Cette ordonnance contient {contraindicationAlerts.length} contre-indication{contraindicationAlerts.length > 1 ? 's' : ''}
+            </p>
+            <ul className="mt-1.5 ml-6 list-disc space-y-0.5 text-sm text-red-800/90 dark:text-red-300/90">
+              {contraindicationAlerts.map((l, i) => <li key={i} className="break-words">{l}</li>)}
+            </ul>
+            <p className="mt-1.5 ml-6 text-xs text-red-700/80 dark:text-red-300/70">
+              Une confirmation motivée vous sera demandée à l’enregistrement, à l’impression et au PDF.
+            </p>
+          </div>
+        )}
         {restored && (
           <div
             role="status"

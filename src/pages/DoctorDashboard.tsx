@@ -27,6 +27,11 @@ import {
 import { computeVerification, verificationBlockMessage } from '../lib/ordonnanceVerification';
 import { notifyDataChanged, useDataSync } from '../lib/dataSync';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
+import { DerogationModal } from '../components/DerogationModal';
+import {
+  derogationAlerts, ordonnanceSignature, isConfirmationValid, buildDerogationEntries, alertLabel,
+  type DerogationConfirmation,
+} from '../lib/derogation';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
 import { PatientImportModal } from '../components/PatientImportModal';
 import {
@@ -69,6 +74,13 @@ interface InteractionResult {
   reasons: string[];
   medications: any[];
   patientPrecautions: string[];
+  // Sprint 4d — instantané du run d'analyse : cartes, verdict et bouton « Créer une
+  // ordonnance » proviennent TOUJOURS du même run complet (jamais d'alerte pré-analyse).
+  runId?: number;
+  alerts?: InteractionAlert[];
+  masked?: MaskedAlert[];
+  nonVerifiables?: string[];
+  ageUnknown?: boolean;
 }
 
 interface DbInteraction {
@@ -890,14 +902,12 @@ interface CheckerViewProps {
   addMedication: (med: Medicament) => void;
   addManualMedication: (nom: string) => void;
   removeMedication: (id: string) => void;
-  interactionAlerts: InteractionAlert[];
-  maskedAlerts: MaskedAlert[];
-  ageUnknownWarning: boolean;
-  nonVerifiables: string[];
   medVerifInfo: Map<string, { hasSID: boolean; source: string | null }>;
   result: InteractionResult | null;
-  loading: boolean;
-  checkInteractions: () => void;
+  // Sprint 4d — analyse automatique : run en cours / en échec, relance manuelle.
+  analysisRunning: boolean;
+  analysisFailed: boolean;
+  rerunAnalysis: () => void;
   resetAnalysis: () => void;
   resultsRef: React.RefObject<HTMLDivElement>;
   loadPatientOrdonnances: (id: string) => Promise<void>;
@@ -928,8 +938,8 @@ function CheckerView({
   medSearchResults, selectedMeds, medSearchTerm, setMedSearchTerm,
   showMedDropdown, setShowMedDropdown, medSearchLoading, searchMedications,
   addMedication, addManualMedication, removeMedication,
-  interactionAlerts, maskedAlerts, ageUnknownWarning, nonVerifiables, medVerifInfo, result, loading,
-  checkInteractions, resetAnalysis, resultsRef,
+  medVerifInfo, result, analysisRunning, analysisFailed,
+  rerunAnalysis, resetAnalysis, resultsRef,
   loadPatientOrdonnances, patientOrdonnances,
   onAddPatient, setShowPrescriptionForm,
   fondTraitements, fondLoading, fondError, fondExcluded, toggleFond, renewFond, reloadFond,
@@ -937,6 +947,12 @@ function CheckerView({
   antecedents, antecedentsLoading, antecedentsError, antecedentRulesReady,
 }: CheckerViewProps) {
   const [showMasked, setShowMasked] = useState(false);
+  // Sprint 4d — cartes, bandeaux et verdict proviennent du MÊME run (instantané du verdict).
+  // Pas de verdict → aucune carte (jamais d'alerte partielle ou d'un run précédent).
+  const interactionAlerts = result?.alerts ?? [];
+  const maskedAlerts = result?.masked ?? [];
+  const nonVerifiables = result?.nonVerifiables ?? [];
+  const ageUnknownWarning = result?.ageUnknown ?? false;
   // Déduplication calculée une fois pour toute la vue
   const clinicalAlerts = interactionAlerts.filter(a => a.severite !== 'info');
   const infoAlerts     = interactionAlerts.filter(a => a.severite === 'info');
@@ -1201,15 +1217,15 @@ function CheckerView({
               {/* Action buttons */}
               <div className="flex gap-3">
                 <Button
-                  onClick={() => checkInteractions()}
+                  onClick={() => rerunAnalysis()}
                   variant="primary"
                   size="lg"
-                  loading={loading || analysisPending}
-                  disabled={selectedMeds.length < 1 || fondLoading}
+                  loading={analysisRunning || analysisPending}
+                  disabled={selectedMeds.length < 1 || !selectedPatient}
                   className="flex-1"
                 >
                   <Shield className="w-4 h-4 mr-2" />
-                  Analyser
+                  Relancer l'analyse
                 </Button>
                 <Button onClick={resetAnalysis} variant="ghost" size="lg">
                   Réinitialiser
@@ -1222,6 +1238,36 @@ function CheckerView({
         {/* ── Panneau résultats — Sprint 4 : pleine largeur, tout ici */}
         {selectedMeds.length >= 1 && (
           <div ref={resultsRef} className="mt-4 lg:mt-6 space-y-3">
+            {/* 0. Sprint 4d — pas de verdict : ni carte ni bouton, seulement l'état de l'analyse */}
+            {!result && !selectedPatient && (
+              <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-[#94A3B8] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-xl px-4 py-3">
+                <Info className="w-4 h-4 flex-shrink-0" />
+                Sélectionnez un patient pour lancer l'analyse (interactions et contre-indications).
+              </p>
+            )}
+            {!result && selectedPatient && analysisFailed && (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 dark:bg-amber-500/[0.08] dark:border-amber-500/20 dark:text-amber-300">
+                <span className="flex items-center gap-2 flex-1">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  Analyse impossible (erreur réseau ou serveur) — aucun résultat affiché.
+                </span>
+                <button onClick={rerunAnalysis} className="font-semibold underline underline-offset-2 text-left">Relancer l'analyse</button>
+              </div>
+            )}
+            {!result && selectedPatient && !analysisFailed && (
+              <div role="status" aria-live="polite" className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] p-4 lg:p-5 space-y-3">
+                <p className="flex items-center gap-2 text-sm font-semibold text-[#0A1628] dark:text-[#E2E8F0]">
+                  <span className="w-4 h-4 border-2 border-slate-300 border-t-[#00A86B] rounded-full animate-spin" aria-hidden />
+                  Analyse en cours…
+                </p>
+                <div className="h-14 rounded-xl bg-slate-100 dark:bg-white/[0.04] animate-pulse" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                  <div className="h-20 rounded-xl bg-slate-100 dark:bg-white/[0.04] animate-pulse" />
+                  <div className="h-20 rounded-xl bg-slate-100 dark:bg-white/[0.04] animate-pulse" />
+                </div>
+              </div>
+            )}
+
             {/* 1. Bandeau verdict */}
             {result && (
               <div className={`bg-white dark:bg-[#111827] rounded-2xl shadow-sm overflow-hidden border-l-4 ${
@@ -2593,7 +2639,6 @@ export function DoctorDashboard() {
 
   // Analysis
   const [result, setResult] = useState<InteractionResult | null>(null);
-  const [loading, setLoading] = useState(false);
   const [allContraindications, setAllContraindications] = useState<DbContraindication[]>([]);
   const [interactionAlerts, setInteractionAlerts] = useState<InteractionAlert[]>([]);
   const [ageUnknownWarning, setAgeUnknownWarning] = useState(false);
@@ -2614,10 +2659,22 @@ export function DoctorDashboard() {
   const fondSeqRef = useRef(0);
   const fondSigRef = useRef('');
   const selectedPatientIdRef = useRef<string | null>(null);
-  // Analyse demandée pendant que le fond changeait : verdict calculé dès que runCheck a fini.
-  const autoVerdictRef = useRef(false);
-  // runCheck en cours : le bouton « Analyser » attend la fin du calcul des alertes.
+  // runCheck en cours : le verdict attend la fin du calcul des alertes.
   const [analysisPending, setAnalysisPending] = useState(false);
+  // Sprint 4d — analyse automatique, un seul run affiché :
+  //   runSeqRef      : identifiant du dernier run lancé (les runs annulés n'écrivent rien) ;
+  //   alertsRunId    : run dont proviennent les alertes en mémoire ;
+  //   verdictWantedRef / refreshingRef : verdict à calculer dès que le run courant est fini
+  //                    et que le fond / les antécédents ont été rechargés ;
+  //   rerunTick      : « Relancer l'analyse » (run complet forcé).
+  const runSeqRef = useRef(0);
+  // (analysisRunning : dérivé plus bas — patient + médicaments, pas encore de verdict)
+  const [alertsRunId, setAlertsRunId] = useState(0);
+  const verdictWantedRef = useRef(false);
+  const refreshingRef = useRef(false);
+  const [verdictTick, setVerdictTick] = useState(0);
+  const [rerunTick, setRerunTick] = useState(0);
+  const [analysisFailed, setAnalysisFailed] = useState(false);
   // Sprint 3b — ensemble analysé au dernier clic « Analyser » (médicaments + fond inclus)
   // et confirmation explicite des lignes hors base (clé = liste des noms confirmés).
   const [analyzedKey, setAnalyzedKey] = useState<string | null>(null);
@@ -2639,6 +2696,11 @@ export function DoctorDashboard() {
   const [savedOrdreNumber, setSavedOrdreNumber] = useState<string | null>(null);
   const savedOrdreNumberRef = useRef<string | null>(null);
   const savingOrdonnanceRef = useRef<Promise<boolean> | null>(null);
+  // Sprint 4d — dérogation (prescription contre-indiquée) : confirmation liée à la signature
+  // de l'ordonnance (toute modification l'annule) + demande en cours (modale).
+  const [derogationConf, setDerogationConf] = useState<DerogationConfirmation | null>(null);
+  const [derogationRequest, setDerogationRequest] = useState<{ alerts: InteractionAlert[]; signature: string } | null>(null);
+  const derogationResolverRef = useRef<((c: DerogationConfirmation | null) => void) | null>(null);
   const [showMedicationHistory, setShowMedicationHistory] = useState(false);
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
 
@@ -2775,7 +2837,6 @@ export function DoctorDashboard() {
   // Changement de patient : liste repartie de zéro, tout coché.
   useEffect(() => {
     const pid = selectedPatient?.id;
-    if (autoVerdictRef.current) { autoVerdictRef.current = false; setLoading(false); }
     if (!pid) {
       fondSeqRef.current++;
       fondSigRef.current = '';
@@ -2896,10 +2957,14 @@ export function DoctorDashboard() {
     const ant = patientAntecedents.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
     return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}`;
   }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady]);
-  const analysisValid = !!result && analyzedKey === currentAnalysisKey;
+  // Sprint 4d — valide seulement si le verdict porte sur l'ensemble actuel ET sur le dernier run.
+  const analysisValid = !!result && analyzedKey === currentAnalysisKey && result.runId === alertsRunId;
   useEffect(() => {
-    if (result && analyzedKey !== currentAnalysisKey) setResult(null);
-  }, [result, analyzedKey, currentAnalysisKey]);
+    if (result && (analyzedKey !== currentAnalysisKey || result.runId !== alertsRunId)) {
+      setResult(null);
+      verdictWantedRef.current = true;
+    }
+  }, [result, analyzedKey, currentAnalysisKey, alertsRunId]);
 
   // Real-time interaction check — DCI-based, pipe-pattern splitting, accent normalization
   // Sprint 3 — l'ensemble analysé = médicaments de la prescription en cours (selectedMeds)
@@ -2944,6 +3009,11 @@ export function DoctorDashboard() {
 
     let cancelled = false;
     setAnalysisPending(true);
+    // Sprint 4d — nouveau run : l'ancien verdict et ses cartes disparaissent immédiatement.
+    const runId = ++runSeqRef.current;
+    verdictWantedRef.current = true;
+    setAnalysisFailed(false);
+    setResult(null);
 
     const runCheck = async () => {
       const alerts: InteractionAlert[] = [];
@@ -3104,6 +3174,9 @@ export function DoctorDashboard() {
           }
         }
       }
+      // Sprint 4d — run remplacé par un plus récent pendant les requêtes : il n'écrit rien.
+      // (La suite de runCheck est synchrone : aucune annulation possible au milieu.)
+      if (cancelled) return;
       setMedVerifInfo(medVerifInfoLocal);
 
       // ── Calcul des non-vérifiables ─────────────────────────────────────────
@@ -3397,15 +3470,16 @@ export function DoctorDashboard() {
       }
 
       setInteractionAlerts(alerts);
+      setAlertsRunId(runId);
       setAnalysisPending(false);
     };
 
     runCheck().catch(e => {
       console.error('[runCheck] error:', e);
-      if (!cancelled) setAnalysisPending(false);
+      if (!cancelled) { setAnalysisPending(false); setAnalysisFailed(true); }
     });
     return () => { cancelled = true; };
-  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses]);
+  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick]);
 
   // ── Data loaders ─────────────────────────────────────────────────────────
 
@@ -3581,13 +3655,19 @@ export function DoctorDashboard() {
     }
   };
 
+  // Sprint 4d — seule la réponse de la DERNIÈRE frappe s'affiche (une réponse lente à « br »
+  // ne remplace plus celle de « brufen »).
+  const medSearchSeqRef = useRef(0);
   const searchMedications = async (term: string) => {
-    if (term.length < 2) { setMedSearchResults([]); return; }
+    const seq = ++medSearchSeqRef.current;
+    if (term.length < 2) { setMedSearchResults([]); setMedSearchLoading(false); return; }
     setMedSearchLoading(true);
-    const { data } = await supabase.rpc('search_medicaments', {
+    const { data, error } = await supabase.rpc('search_medicaments', {
       search_term: term,
       limit_count: 15,
     });
+    if (seq !== medSearchSeqRef.current) return;
+    if (error) console.error('[OrdoSur] search_medicaments error:', error);
     setMedSearchResults((data as Medicament[]) || []);
     setMedSearchLoading(false);
   };
@@ -3696,6 +3776,23 @@ export function DoctorDashboard() {
       return false;
     }
 
+    // Sprint 4d — alerte de niveau maximal (CI absolue / interaction majeure) : le médecin
+    // confirme explicitement, avec un motif (modale), pour CETTE version de l'ordonnance.
+    // Alertes = celles du run d'analyse valide (garanti par le blocage ci-dessus).
+    const derogAlerts = derogationAlerts((result?.alerts ?? interactionAlerts).filter(a => a.origin !== 'fond'));
+    let derogation: DerogationConfirmation | null = null;
+    if (derogAlerts.length > 0) {
+      const signature = ordonnanceSignature(prescriptionData.medications ?? [], derogAlerts);
+      derogation = isConfirmationValid(derogationConf, signature)
+        ? derogationConf
+        : await new Promise<DerogationConfirmation | null>(resolve => {
+            derogationResolverRef.current = resolve;
+            setDerogationRequest({ alerts: derogAlerts, signature });
+          });
+      if (!derogation) return false; // « Modifier l'ordonnance » : rien n'est enregistré ni imprimé
+    }
+    const derogationEntries = derogation ? buildDerogationEntries(derogAlerts, derogation) : null;
+
     const payload = {
       doctor_id:    doctorId,
       patient_id:   selectedPatient.id,
@@ -3706,6 +3803,8 @@ export function DoctorDashboard() {
       motif:        prescriptionData.motif ?? null,
       remarques:    prescriptionData.remarks ?? null,
       prochain_rdv: prescriptionData.nextAppointment ?? null,
+      // Sprint 4d — traçabilité des dérogations (jamais imprimée sur l'ordonnance).
+      derogations:  derogationEntries,
     };
 
     console.log('[OrdoSur] Saving ordonnance payload:', payload);
@@ -3795,6 +3894,25 @@ export function DoctorDashboard() {
         console.error('[OrdoSur] interaction_logs logging failed (non-blocking):', logErr);
       }
 
+      // Sprint 4d — Traçabilité des dérogations : 1 ligne interaction_logs par alerte confirmée.
+      try {
+        if (derogationEntries && derogationEntries.length > 0) {
+          const dRows = derogAlerts.map(a => ({
+            doctor_id:    doctorId,
+            patient_id:   selectedPatient.id,
+            medicament_a: a.involved[0],
+            medicament_b: a.type === 'drug_drug' ? (a.involved[1] ?? null) : null,
+            risk_level:   'dangerous',
+            source:       'derogation',
+          }));
+          const { error: dErr } = await supabase.from('interaction_logs').insert(dRows);
+          if (dErr) console.error('[OrdoSur] derogation log error (non-blocking):', dErr.message, dErr, dRows);
+          else console.log('[OrdoSur] Logged', dRows.length, 'derogation(s) to interaction_logs');
+        }
+      } catch (dErr) {
+        console.error('[OrdoSur] derogation logging failed (non-blocking):', dErr);
+      }
+
       // Sprint 3b — Traçabilité de la confirmation « hors base » (1 ligne par médicament).
       try {
         if (verification.horsBase.length > 0) {
@@ -3818,6 +3936,7 @@ export function DoctorDashboard() {
       }
 
       savedOrdreNumberRef.current = prescriptionOrdreNumber;
+      setDerogationConf(null);
       setSavedOrdreNumber(prescriptionOrdreNumber);
       showToast('Ordonnance enregistrée avec succès', 'success');
       setHorsBaseConfirmedKey(null);
@@ -3978,40 +4097,59 @@ export function DoctorDashboard() {
     setShowPrescriptionForm(false);
     setActiveView('checker');
     scheduleDraftSave();
-    showToast('Médicaments ajoutés à l\'analyse — cliquez sur « Analyser » pour relancer la vérification', 'info');
+    showToast('Médicaments ajoutés à l\'analyse — vérification relancée automatiquement', 'info');
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
   };
 
-  const checkInteractions = async (opts?: { skipFondRefresh?: boolean }) => {
+  // ── Sprint 4d — Analyse automatique ──────────────────────────────────────
+  // À chaque changement de médicaments, de cases du traitement de fond, d'antécédents ou
+  // de patient (clé d'analyse), après ~400 ms : rechargement du fond et des antécédents,
+  // puis verdict sur le run complet le plus récent. Aucune journalisation ici (uniquement
+  // à l'enregistrement de l'ordonnance).
+  useEffect(() => {
+    const pid = selectedPatient?.id;
+    if (!pid || selectedMeds.length === 0) return;
+    setResult(null);
+    verdictWantedRef.current = true;
+    refreshingRef.current = true;
+    const timer = window.setTimeout(async () => {
+      const [fondStatus, antStatus] = await Promise.all([refreshFond(pid), refreshAntecedents(pid)]);
+      if (selectedPatientIdRef.current !== pid) return;
+      refreshingRef.current = false;
+      if (fondStatus === 'changed') showToast('Traitement de fond mis à jour — analyse relancée', 'info');
+      else if (antStatus === 'changed') showToast('Antécédents mis à jour — analyse relancée', 'info');
+      // Liste modifiée → runCheck repart (nouveau run) ; le verdict l'attendra.
+      setVerdictTick(t => t + 1);
+    }, 400);
+    return () => window.clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentAnalysisKey, selectedPatient?.id, selectedMeds.length, rerunTick]);
+
+  // Verdict : uniquement quand le run le plus récent est terminé et que le rechargement
+  // du fond / des antécédents est fait. Calcul synchrone sur l'état de CE rendu.
+  const computeVerdictRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    if (!verdictWantedRef.current || refreshingRef.current || analysisPending || analysisFailed) return;
+    if (alertsRunId !== runSeqRef.current) return;
+    if (!selectedPatient || selectedMeds.length === 0) return;
+    verdictWantedRef.current = false;
+    computeVerdictRef.current();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verdictTick, analysisPending, alertsRunId, analysisFailed, result]);
+
+  const analysisRunning = !!selectedPatient && selectedMeds.length > 0 && !result && !analysisFailed;
+
+  /** « Relancer l'analyse » : run complet forcé (RPC + rechargements + verdict). */
+  const rerunAnalysis = () => {
     if (selectedMeds.length < 1) { showToast('Sélectionnez au moins 1 médicament', 'error'); return; }
     if (!selectedPatient) { showToast('Sélectionnez un patient pour analyser les contre-indications', 'error'); return; }
-    if (fondLoading || antLoading || analysisPending) { showToast('Analyse en cours — réessayez dans un instant', 'info'); return; }
-    setLoading(true);
+    setRerunTick(t => t + 1);
+  };
 
-    // Niveau 3 — traitement de fond rechargé juste avant le verdict. Liste modifiée → runCheck
-    // se relance sur la nouvelle liste et le verdict est calculé à la fin (autoVerdictRef).
-    // (Comparaison stricte : onClick transmet l'événement en 1er argument.)
-    // Sprint 4bc — les antécédents sont rechargés en même temps, selon le même principe.
-    let fondFailed = fondError;
-    let antIncomplete = antecedentsIncomplete;
-    if (opts?.skipFondRefresh !== true) {
-      const [status, antStatus] = await Promise.all([
-        refreshFond(selectedPatient.id),
-        refreshAntecedents(selectedPatient.id),
-      ]);
-      if (status === 'stale' || antStatus === 'stale') { setLoading(false); return; }
-      if (status === 'changed' || antStatus === 'changed') {
-        autoVerdictRef.current = true;
-        showToast(status === 'changed'
-          ? 'Traitement de fond mis à jour — analyse relancée'
-          : 'Antécédents mis à jour — analyse relancée', 'info');
-        return; // loading conservé jusqu'au verdict automatique
-      }
-      fondFailed = status === 'error';
-      antIncomplete = antStatus === 'error'
-        || (!antRulesReady && patientAntecedents.some(a => classifyAntecedent(a) !== null));
-    }
-    await new Promise(r => setTimeout(r, 200));
+  computeVerdictRef.current = () => {
+    // Échecs de chargement : état de ce rendu (rechargés juste avant le verdict).
+    const fondFailed = fondError;
+    const antIncomplete = antecedentsIncomplete;
 
     let overallSeverity: InteractionResult['severity'] = 'safe';
     const reasons: string[] = [];
@@ -4122,22 +4260,15 @@ export function DoctorDashboard() {
       : withFond;
 
     setAnalyzedKey(currentAnalysisKey);
-    setResult({ severity: overallSeverity, title: resultTitle, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
-    setLoading(false);
+    setResult({
+      severity: overallSeverity, title: resultTitle, description, alternatives: [], reasons, medications: [], patientPrecautions: [],
+      // Instantané du run : les cartes affichées sont exactement celles du verdict.
+      runId: alertsRunId, alerts: interactionAlerts, masked: maskedAlerts, nonVerifiables, ageUnknown: ageUnknownWarning,
+    });
   };
 
-  // Niveau 3 (suite) — le fond a changé au clic « Analyser » : verdict calculé automatiquement
-  // dès que runCheck a terminé sur la nouvelle liste (jamais sur les alertes de l'ancienne).
-  const checkInteractionsRef = useRef(checkInteractions);
-  checkInteractionsRef.current = checkInteractions;
-  useEffect(() => {
-    if (!autoVerdictRef.current || analysisPending) return;
-    autoVerdictRef.current = false;
-    checkInteractionsRef.current({ skipFondRefresh: true });
-  }, [interactionAlerts, analysisPending]);
-
   const resetAnalysis = () => {
-    if (autoVerdictRef.current) { autoVerdictRef.current = false; setLoading(false); }
+    verdictWantedRef.current = false;
     setSelectedMeds([]); setMedSearchTerm(''); setInteractionAlerts([]); setResult(null); setNonVerifiables([]); setMedVerifInfo(new Map());
   };
 
@@ -4343,15 +4474,15 @@ export function DoctorDashboard() {
                 <p className="text-sm text-[#0A1628] dark:text-[#E2E8F0]">
                   <span className="font-semibold">Brouillon restauré.</span>{' '}
                   <span className="text-slate-600 dark:text-[#94A3B8]">
-                    Relancez l'analyse des interactions pour reprendre votre ordonnance.
+                    L'analyse est relancée automatiquement ; votre ordonnance se rouvre dès le verdict.
                   </span>
                 </p>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   type="button"
-                  onClick={() => checkInteractions()}
-                  disabled={loading || selectedMeds.length === 0}
+                  onClick={() => rerunAnalysis()}
+                  disabled={analysisRunning || selectedMeds.length === 0}
                   className="px-4 py-2 rounded-xl bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-60 text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2"
                 >
                   Relancer l'analyse
@@ -4440,14 +4571,11 @@ export function DoctorDashboard() {
                 addMedication={addMedication}
                 addManualMedication={addManualMedication}
                 removeMedication={removeMedication}
-                interactionAlerts={interactionAlerts}
-                maskedAlerts={maskedAlerts}
-                ageUnknownWarning={ageUnknownWarning}
-                nonVerifiables={nonVerifiables}
                 medVerifInfo={medVerifInfo}
                 result={result}
-                loading={loading}
-                checkInteractions={checkInteractions}
+                analysisRunning={analysisRunning}
+                analysisFailed={analysisFailed}
+                rerunAnalysis={rerunAnalysis}
                 resetAnalysis={resetAnalysis}
                 resultsRef={resultsRef as React.RefObject<HTMLDivElement>}
                 loadPatientOrdonnances={loadPatientOrdonnances}
@@ -4625,6 +4753,9 @@ export function DoctorDashboard() {
           analysisValid={analysisValid}
           horsBaseConfirmedKey={horsBaseConfirmedKey}
           onConfirmHorsBase={setHorsBaseConfirmedKey}
+          contraindicationAlerts={analysisValid
+            ? derogationAlerts((result?.alerts ?? []).filter(a => a.origin !== 'fond')).map(alertLabel)
+            : []}
           initialForm={formDraftRef.current}
           onFormChange={f => { formDraftRef.current = f; scheduleDraftSave(); }}
           restored={draftRestored}
@@ -4679,6 +4810,26 @@ export function DoctorDashboard() {
           showPatientName={!!doctorProfile?.show_patient_name_on_pdf}
         />
       )}
+
+      {/* Sprint 4d — Prescription contre-indiquée : confirmation motivée avant enregistrement / impression / PDF */}
+      <DerogationModal
+        open={!!derogationRequest}
+        alerts={derogationRequest?.alerts ?? []}
+        signature={derogationRequest?.signature ?? ''}
+        onConfirm={conf => {
+          setDerogationConf(conf);
+          setDerogationRequest(null);
+          derogationResolverRef.current?.(conf);
+          derogationResolverRef.current = null;
+        }}
+        onModify={() => {
+          setDerogationRequest(null);
+          derogationResolverRef.current?.(null);
+          derogationResolverRef.current = null;
+          setShowPrescriptionPreview(false);
+          setShowPrescriptionForm(true);
+        }}
+      />
 
       {selectedPatient && (
         <MedicationHistoryModal
