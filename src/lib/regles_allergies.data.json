@@ -1,0 +1,1240 @@
+{
+  "familles": [
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "molecule",
+      "motif": "*cillin"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "molecule",
+      "motif": "mecillinam"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "betalactamine"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "betalactamines"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "beta lactamine"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "beta lactamines"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "augmentin"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "clamoxyl"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "amoxil"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "oracilline"
+    },
+    {
+      "famille": "penicillines",
+      "label": "pénicillines",
+      "type": "alias",
+      "motif": "extencilline"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefaclor"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefadroxil"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefalexin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cephalexin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefalotin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cephalothin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefazolin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefditoren"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefepim"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefixim"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefotaxim"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefpodoxim"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "ceftazidim"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "ceftobiprol"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "ceftolozan"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "ceftriaxon"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefuroxim"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefoxitin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefprozil"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefdinir"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefradin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cephradin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefamandol"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "ceftarolin"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefoperazon"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "molecule",
+      "motif": "cefotiam"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "alias",
+      "motif": "cephalosporine"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "alias",
+      "motif": "cephalosporines"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "alias",
+      "motif": "betalactamine"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "alias",
+      "motif": "betalactamines"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "alias",
+      "motif": "beta lactamine"
+    },
+    {
+      "famille": "cephalosporines",
+      "label": "céphalosporines",
+      "type": "alias",
+      "motif": "beta lactamines"
+    },
+    {
+      "famille": "carbapenemes",
+      "label": "carbapénèmes",
+      "type": "molecule",
+      "motif": "*penem"
+    },
+    {
+      "famille": "carbapenemes",
+      "label": "carbapénèmes",
+      "type": "alias",
+      "motif": "carbapeneme"
+    },
+    {
+      "famille": "carbapenemes",
+      "label": "carbapénèmes",
+      "type": "alias",
+      "motif": "carbapenemes"
+    },
+    {
+      "famille": "carbapenemes",
+      "label": "carbapénèmes",
+      "type": "alias",
+      "motif": "betalactamine"
+    },
+    {
+      "famille": "carbapenemes",
+      "label": "carbapénèmes",
+      "type": "alias",
+      "motif": "betalactamines"
+    },
+    {
+      "famille": "carbapenemes",
+      "label": "carbapénèmes",
+      "type": "alias",
+      "motif": "beta lactamine"
+    },
+    {
+      "famille": "carbapenemes",
+      "label": "carbapénèmes",
+      "type": "alias",
+      "motif": "beta lactamines"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "sulfamethoxazol"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "sulfadiazin"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "sulfafurazol"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "sulfaguanidin"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "sulfacetamid"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "sulfadoxin"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "sulfamethizol"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "cotrimoxazol"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "molecule",
+      "motif": "co trimoxazol"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "alias",
+      "motif": "sulfamide"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "alias",
+      "motif": "sulfamides"
+    },
+    {
+      "famille": "sulfamides_antibacteriens",
+      "label": "sulfamides antibactériens",
+      "type": "alias",
+      "motif": "bactrim"
+    },
+    {
+      "famille": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "type": "molecule",
+      "motif": "glibenclamid"
+    },
+    {
+      "famille": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "type": "molecule",
+      "motif": "gliclazid"
+    },
+    {
+      "famille": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "type": "molecule",
+      "motif": "glimepirid"
+    },
+    {
+      "famille": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "type": "molecule",
+      "motif": "glipizid"
+    },
+    {
+      "famille": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "type": "molecule",
+      "motif": "gliquidon"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "furosemid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "bumetanid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "torasemid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "piretanid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "hydrochlorothiazid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "indapamid"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "chlortalidon"
+    },
+    {
+      "famille": "diuretiques_sulfamides",
+      "label": "diurétiques sulfamidés",
+      "type": "molecule",
+      "motif": "chlorthalidon"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "ibuprofen"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "ketoprofen"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "dexketoprofen"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "diclofenac"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "aceclofenac"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "naproxen"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "piroxicam"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "meloxicam"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "tenoxicam"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "lornoxicam"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "indometacin"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "indomethacin"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "celecoxib"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "etoricoxib"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "parecoxib"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "flurbiprofen"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "acide niflumique"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "niflumic"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "morniflumat"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "nimesulid"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "etodolac"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "sulindac"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "acide mefenamique"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "mefenamic"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "ketorolac"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "acide tiaprofenique"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "tiaprofenic"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "fenoprofen"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "molecule",
+      "motif": "nabumeton"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "ains"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "anti inflammatoire"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "anti inflammatoires"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "antiinflammatoire"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "antiinflammatoires"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "brufen"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "voltarene"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "profenid"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "advil"
+    },
+    {
+      "famille": "ains",
+      "label": "AINS",
+      "type": "alias",
+      "motif": "nurofen"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "molecule",
+      "motif": "aspirin"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "molecule",
+      "motif": "acetylsalicyl"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "molecule",
+      "motif": "acide acetylsalicylique"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "alias",
+      "motif": "aas"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "alias",
+      "motif": "aspegic"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "alias",
+      "motif": "kardegic"
+    },
+    {
+      "famille": "aspirine",
+      "label": "aspirine",
+      "type": "alias",
+      "motif": "widal"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "molecule",
+      "motif": "azithromycin"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "molecule",
+      "motif": "clarithromycin"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "molecule",
+      "motif": "erythromycin"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "molecule",
+      "motif": "roxithromycin"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "molecule",
+      "motif": "josamycin"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "molecule",
+      "motif": "spiramycin"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "molecule",
+      "motif": "telithromycin"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "molecule",
+      "motif": "midecamycin"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "alias",
+      "motif": "macrolide"
+    },
+    {
+      "famille": "macrolides",
+      "label": "macrolides",
+      "type": "alias",
+      "motif": "macrolides"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "molecule",
+      "motif": "*floxacin"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "molecule",
+      "motif": "acide nalidixique"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "molecule",
+      "motif": "nalidixic"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "molecule",
+      "motif": "acide pipemidique"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "molecule",
+      "motif": "pipemidic"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "molecule",
+      "motif": "flumequin"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "alias",
+      "motif": "quinolone"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "alias",
+      "motif": "quinolones"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "alias",
+      "motif": "fluoroquinolone"
+    },
+    {
+      "famille": "quinolones",
+      "label": "quinolones",
+      "type": "alias",
+      "motif": "fluoroquinolones"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "molecule",
+      "motif": "codein"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "molecule",
+      "motif": "dihydrocodein"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "molecule",
+      "motif": "morphin"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "molecule",
+      "motif": "ethylmorphin"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "molecule",
+      "motif": "hydromorphon"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "molecule",
+      "motif": "oxycodon"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "molecule",
+      "motif": "pholcodin"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "alias",
+      "motif": "opioide"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "alias",
+      "motif": "opioides"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "alias",
+      "motif": "opiace"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "alias",
+      "motif": "opiaces"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "alias",
+      "motif": "morphinique"
+    },
+    {
+      "famille": "opioides",
+      "label": "opioïdes (morphine, codéine et dérivés)",
+      "type": "alias",
+      "motif": "morphiniques"
+    }
+  ],
+  "regles": [
+    {
+      "ordre": 10,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L0",
+      "famille_allergie": "*",
+      "famille_medicament": "*",
+      "severite": "absolue",
+      "titre": "Allergie déclarée à ce principe actif",
+      "conduite": "Ne pas prescrire."
+    },
+    {
+      "ordre": 20,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L2",
+      "famille_allergie": "penicillines",
+      "famille_medicament": "penicillines",
+      "severite": "absolue",
+      "titre": "Allergie aux pénicillines — même famille",
+      "conduite": "Ne pas prescrire. Choisir une alternative hors de cette famille."
+    },
+    {
+      "ordre": 30,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L2",
+      "famille_allergie": "cephalosporines",
+      "famille_medicament": "cephalosporines",
+      "severite": "absolue",
+      "titre": "Allergie aux céphalosporines — même famille",
+      "conduite": "Ne pas prescrire. Choisir une alternative hors de cette famille."
+    },
+    {
+      "ordre": 40,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L2",
+      "famille_allergie": "carbapenemes",
+      "famille_medicament": "carbapenemes",
+      "severite": "absolue",
+      "titre": "Allergie aux carbapénèmes — même famille",
+      "conduite": "Ne pas prescrire. Choisir une alternative hors de cette famille."
+    },
+    {
+      "ordre": 50,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L2",
+      "famille_allergie": "sulfamides_antibacteriens",
+      "famille_medicament": "sulfamides_antibacteriens",
+      "severite": "absolue",
+      "titre": "Allergie aux sulfamides antibactériens — même famille",
+      "conduite": "Ne pas prescrire. Choisir une alternative hors de cette famille."
+    },
+    {
+      "ordre": 60,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L2",
+      "famille_allergie": "macrolides",
+      "famille_medicament": "macrolides",
+      "severite": "absolue",
+      "titre": "Allergie aux macrolides — même famille",
+      "conduite": "Ne pas prescrire. Choisir une alternative hors de cette famille."
+    },
+    {
+      "ordre": 70,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L2",
+      "famille_allergie": "quinolones",
+      "famille_medicament": "quinolones",
+      "severite": "absolue",
+      "titre": "Allergie aux quinolones — même famille",
+      "conduite": "Ne pas prescrire. Choisir une alternative hors de cette famille."
+    },
+    {
+      "ordre": 80,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L2",
+      "famille_allergie": "opioides",
+      "famille_medicament": "opioides",
+      "severite": "absolue",
+      "titre": "Allergie aux opioïdes (morphine, codéine et dérivés) — même famille",
+      "conduite": "Ne pas prescrire. Choisir une alternative hors de cette famille."
+    },
+    {
+      "ordre": 90,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L3",
+      "famille_allergie": "penicillines",
+      "famille_medicament": "cephalosporines",
+      "severite": "a_evaluer",
+      "titre": "Allergie aux pénicillines — réaction croisée possible avec les céphalosporines",
+      "conduite": "Risque de réaction croisée faible mais réel. Contre-indication absolue en cas d'antécédent d'anaphylaxie. Sinon : évaluer le bénéfice/risque, première prise sous surveillance, avis allergologique si doute. Préciser le type de réaction dans le profil."
+    },
+    {
+      "ordre": 100,
+      "criteres": {
+        "anaphylaxie": [
+          "oui"
+        ]
+      },
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L3a",
+      "famille_allergie": "penicillines",
+      "famille_medicament": "cephalosporines",
+      "severite": "absolue",
+      "titre": "Anaphylaxie aux pénicillines — contre-indication des céphalosporines",
+      "conduite": "Antécédent d'anaphylaxie : ne pas prescrire une bêta-lactamine apparentée sans avis allergologique."
+    },
+    {
+      "ordre": 110,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L5",
+      "famille_allergie": "penicillines",
+      "famille_medicament": "carbapenemes",
+      "severite": "a_evaluer",
+      "titre": "Allergie aux pénicillines — réaction croisée possible avec les carbapénèmes",
+      "conduite": "Risque de réaction croisée faible mais réel. Contre-indication absolue en cas d'antécédent d'anaphylaxie. Sinon : évaluer le bénéfice/risque, première prise sous surveillance, avis allergologique si doute. Préciser le type de réaction dans le profil."
+    },
+    {
+      "ordre": 120,
+      "criteres": {
+        "anaphylaxie": [
+          "oui"
+        ]
+      },
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L5a",
+      "famille_allergie": "penicillines",
+      "famille_medicament": "carbapenemes",
+      "severite": "absolue",
+      "titre": "Anaphylaxie aux pénicillines — contre-indication des carbapénèmes",
+      "conduite": "Antécédent d'anaphylaxie : ne pas prescrire une bêta-lactamine apparentée sans avis allergologique."
+    },
+    {
+      "ordre": 130,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L4",
+      "famille_allergie": "cephalosporines",
+      "famille_medicament": "penicillines",
+      "severite": "a_evaluer",
+      "titre": "Allergie aux céphalosporines — réaction croisée possible avec les pénicillines",
+      "conduite": "Risque de réaction croisée faible mais réel. Contre-indication absolue en cas d'antécédent d'anaphylaxie. Sinon : évaluer le bénéfice/risque, première prise sous surveillance, avis allergologique si doute. Préciser le type de réaction dans le profil."
+    },
+    {
+      "ordre": 140,
+      "criteres": {
+        "anaphylaxie": [
+          "oui"
+        ]
+      },
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L4a",
+      "famille_allergie": "cephalosporines",
+      "famille_medicament": "penicillines",
+      "severite": "absolue",
+      "titre": "Anaphylaxie aux céphalosporines — contre-indication des pénicillines",
+      "conduite": "Antécédent d'anaphylaxie : ne pas prescrire une bêta-lactamine apparentée sans avis allergologique."
+    },
+    {
+      "ordre": 150,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L5",
+      "famille_allergie": "cephalosporines",
+      "famille_medicament": "carbapenemes",
+      "severite": "a_evaluer",
+      "titre": "Allergie aux céphalosporines — réaction croisée possible avec les carbapénèmes",
+      "conduite": "Risque de réaction croisée faible mais réel. Contre-indication absolue en cas d'antécédent d'anaphylaxie. Sinon : évaluer le bénéfice/risque, première prise sous surveillance, avis allergologique si doute. Préciser le type de réaction dans le profil."
+    },
+    {
+      "ordre": 160,
+      "criteres": {
+        "anaphylaxie": [
+          "oui"
+        ]
+      },
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L5a",
+      "famille_allergie": "cephalosporines",
+      "famille_medicament": "carbapenemes",
+      "severite": "absolue",
+      "titre": "Anaphylaxie aux céphalosporines — contre-indication des carbapénèmes",
+      "conduite": "Antécédent d'anaphylaxie : ne pas prescrire une bêta-lactamine apparentée sans avis allergologique."
+    },
+    {
+      "ordre": 170,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L5",
+      "famille_allergie": "carbapenemes",
+      "famille_medicament": "penicillines",
+      "severite": "a_evaluer",
+      "titre": "Allergie aux carbapénèmes — réaction croisée possible avec les pénicillines",
+      "conduite": "Risque de réaction croisée faible mais réel. Contre-indication absolue en cas d'antécédent d'anaphylaxie. Sinon : évaluer le bénéfice/risque, première prise sous surveillance, avis allergologique si doute. Préciser le type de réaction dans le profil."
+    },
+    {
+      "ordre": 180,
+      "criteres": {
+        "anaphylaxie": [
+          "oui"
+        ]
+      },
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L5a",
+      "famille_allergie": "carbapenemes",
+      "famille_medicament": "penicillines",
+      "severite": "absolue",
+      "titre": "Anaphylaxie aux carbapénèmes — contre-indication des pénicillines",
+      "conduite": "Antécédent d'anaphylaxie : ne pas prescrire une bêta-lactamine apparentée sans avis allergologique."
+    },
+    {
+      "ordre": 190,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L5",
+      "famille_allergie": "carbapenemes",
+      "famille_medicament": "cephalosporines",
+      "severite": "a_evaluer",
+      "titre": "Allergie aux carbapénèmes — réaction croisée possible avec les céphalosporines",
+      "conduite": "Risque de réaction croisée faible mais réel. Contre-indication absolue en cas d'antécédent d'anaphylaxie. Sinon : évaluer le bénéfice/risque, première prise sous surveillance, avis allergologique si doute. Préciser le type de réaction dans le profil."
+    },
+    {
+      "ordre": 200,
+      "criteres": {
+        "anaphylaxie": [
+          "oui"
+        ]
+      },
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L5a",
+      "famille_allergie": "carbapenemes",
+      "famille_medicament": "cephalosporines",
+      "severite": "absolue",
+      "titre": "Anaphylaxie aux carbapénèmes — contre-indication des céphalosporines",
+      "conduite": "Antécédent d'anaphylaxie : ne pas prescrire une bêta-lactamine apparentée sans avis allergologique."
+    },
+    {
+      "ordre": 210,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L6",
+      "famille_allergie": "aspirine",
+      "famille_medicament": "aspirine",
+      "severite": "absolue",
+      "titre": "Allergie à l'aspirine — même famille",
+      "conduite": "Une intolérance limitée à un seul AINS est possible — avis allergologique avant toute réintroduction."
+    },
+    {
+      "ordre": 220,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L6",
+      "famille_allergie": "aspirine",
+      "famille_medicament": "ains",
+      "severite": "absolue",
+      "titre": "Allergie à l'aspirine — intolérance croisée (AINS)",
+      "conduite": "Une intolérance limitée à un seul AINS est possible — avis allergologique avant toute réintroduction."
+    },
+    {
+      "ordre": 230,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L7",
+      "famille_allergie": "ains",
+      "famille_medicament": "aspirine",
+      "severite": "absolue",
+      "titre": "Allergie à un AINS — intolérance croisée (aspirine)",
+      "conduite": "Une intolérance limitée à un seul AINS est possible — avis allergologique avant toute réintroduction."
+    },
+    {
+      "ordre": 240,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L7",
+      "famille_allergie": "ains",
+      "famille_medicament": "ains",
+      "severite": "absolue",
+      "titre": "Allergie à un AINS — même famille",
+      "conduite": "Une intolérance limitée à un seul AINS est possible — avis allergologique avant toute réintroduction."
+    },
+    {
+      "ordre": 250,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L8",
+      "famille_allergie": "sulfamides_antibacteriens",
+      "famille_medicament": "sulfamides_hypoglycemiants",
+      "severite": "precaution",
+      "titre": "Allergie aux sulfamides antibactériens — sulfamides hypoglycémiants",
+      "conduite": "Réaction croisée discutée et rare. Prescription possible sous surveillance ; arrêt immédiat en cas de réaction cutanée."
+    },
+    {
+      "ordre": 260,
+      "criteres": {},
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "L8",
+      "famille_allergie": "sulfamides_antibacteriens",
+      "famille_medicament": "diuretiques_sulfamides",
+      "severite": "precaution",
+      "titre": "Allergie aux sulfamides antibactériens — diurétiques sulfamidés",
+      "conduite": "Réaction croisée discutée et rare. Prescription possible sous surveillance ; arrêt immédiat en cas de réaction cutanée."
+    }
+  ]
+}

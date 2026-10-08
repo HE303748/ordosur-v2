@@ -59,6 +59,9 @@ export interface Patient {
   // Sprint 4 — { libellé exact de pathologies: année de diagnostic } — affichage seul, jamais lu par le moteur
   pathologies_depuis?: Record<string, number> | null;
   allergies_medicaments?: string[] | null;
+  // Sprint 4e-B — anaphylaxie par allergie médicamenteuse : { libellé exact: oui | non | inconnu }.
+  // Lu par le canal allergies croisées (pénicilline → céphalosporine : CI absolue si « oui »).
+  allergies_reactions?: Record<string, 'oui' | 'non' | 'inconnu'> | null;
   allergies_alimentaires?: string[] | null;
   groupe_sanguin?: string | null;
   antecedents_chirurgicaux?: string | null;

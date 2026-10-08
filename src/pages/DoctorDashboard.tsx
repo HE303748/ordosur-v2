@@ -34,6 +34,10 @@ import { posologieBlockMessage } from '../lib/posologie';
 import { searchMedicamentsMA } from '../lib/medSearch';
 import { medLabel, dosageManquant, ligneLabel, dosageBlockMessage } from '../lib/medLabel';
 import {
+  evaluateAllergies, mergeAllergyAlerts, classifyAllergies,
+  type AllergieFamilleRow, type RegleAllergie, type AllergyClassification, type PatientAllergy,
+} from '../lib/allergyClassEngine';
+import {
   derogationAlerts, ordonnanceSignature, isConfirmationValid, buildDerogationEntries, alertLabel,
   type DerogationConfirmation,
 } from '../lib/derogation';
@@ -140,7 +144,7 @@ interface InteractionAlert {
   // Absent = 'nouveau' (rétrocompatibilité).
   origin?: 'nouveau' | 'mixte' | 'fond';
   // Sprint 4bc — alerte produite par le canal antécédents (src/lib/antecedentEngine.ts).
-  channel?: 'antecedent';
+  channel?: 'antecedent' | 'allergie';
   // Sprint 4bc — source de la règle (affichée dans les détails).
   ruleSource?: string;
   // Sprint 4bc — antécédents absorbés par cette CI existante (« Également : antécédent de … »).
@@ -948,6 +952,9 @@ interface CheckerViewProps {
   antecedentsLoading: boolean;
   antecedentsError: boolean;
   antecedentRulesReady: boolean;
+  // Sprint 4e-B — allergies : familles reconnues / non analysées, règles chargées
+  allergyStatus: AllergyClassification[];
+  allergyRulesReady: boolean;
 }
 
 function CheckerView({
@@ -966,6 +973,7 @@ function CheckerView({
   fondTraitements, fondLoading, fondError, fondExcluded, toggleFond, renewFond, reloadFond,
   analysisPending,
   antecedents, antecedentsLoading, antecedentsError, antecedentRulesReady,
+  allergyStatus, allergyRulesReady,
 }: CheckerViewProps) {
   const [showMasked, setShowMasked] = useState(false);
   // Sprint 4d — cartes, bandeaux et verdict proviennent du MÊME run (instantané du verdict).
@@ -1083,10 +1091,43 @@ function CheckerView({
                       {(selectedPatient.allergies_medicaments?.length ?? 0) > 0 && (
                         <div className="flex flex-wrap gap-1.5">
                           {selectedPatient.allergies_medicaments!.map(a => (
-                            <span key={a} className="px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full font-medium">⚠ {a}</span>
+                            <span key={a} className="px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded-full font-medium">
+                              ⚠ {a}{selectedPatient.allergies_reactions?.[a] === 'oui' ? ' · anaphylaxie' : ''}
+                            </span>
                           ))}
                         </div>
                       )}
+                      {/* Sprint 4e-B — allergies croisées : ce qui est analysé par famille, ce qui ne l'est pas */}
+                      {(selectedPatient.allergies_medicaments?.length ?? 0) > 0 && (() => {
+                        if (!allergyRulesReady) {
+                          return (
+                            <p className="text-[11px] text-amber-800 flex items-start gap-1">
+                              <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-px" />
+                              <span>Règles d'allergies non chargées — allergies croisées non analysées, analyse incomplète.</span>
+                            </p>
+                          );
+                        }
+                        const fams = [...new Set(allergyStatus.filter(x => x.status === 'famille').flatMap(x => x.familles))];
+                        const non = allergyStatus.filter(x => x.status === 'non_reconnue').map(x => x.label);
+                        return (
+                          <>
+                            {fams.length > 0 && (
+                              <p className="text-[11px] text-slate-600 flex items-start gap-1">
+                                <CheckCircle2 className="w-3 h-3 flex-shrink-0 mt-px text-[#00A86B]" />
+                                <span>Allergies analysées par famille : {fams.join(', ')}</span>
+                              </p>
+                            )}
+                            {non.length > 0 && (
+                              <p className="text-[11px] text-amber-800 flex items-start gap-1">
+                                <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-px" />
+                                <span>
+                                  Allergie{non.length > 1 ? 's' : ''} non analysée{non.length > 1 ? 's' : ''} : {non.join(', ')} — hors des familles connues, seul le nom exact du médicament est contrôlé.
+                                </span>
+                              </p>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   )}
 
@@ -3049,6 +3090,56 @@ export function DoctorDashboard() {
     return () => { cancelled = true; };
   }, [user?.id]);
 
+  // ── Sprint 4e-B — Allergies croisées (canal allergies du moteur) ──────────
+  // Familles et règles chargées une fois (fetchAllRows). Échec → les allergies du patient
+  // ne sont pas analysées par famille : signalé, verdict jamais vert.
+  const [allergyFamilles, setAllergyFamilles] = useState<AllergieFamilleRow[]>([]);
+  const [allergyRegles, setAllergyRegles] = useState<RegleAllergie[]>([]);
+  const [allergyRulesReady, setAllergyRulesReady] = useState(false);
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [fams, regles] = await Promise.all([
+          fetchAllRows<AllergieFamilleRow>(
+            (from, to) => supabase.from('allergie_familles').select('famille, label, type, motif').range(from, to),
+            { label: 'allergie_familles' },
+          ),
+          fetchAllRows<RegleAllergie>(
+            (from, to) => supabase.from('regles_allergies').select('*').eq('actif', true).order('ordre').range(from, to),
+            { label: 'regles_allergies' },
+          ),
+        ]);
+        if (cancelled) return;
+        if (fams.length === 0 || regles.length === 0) throw new Error('règles allergies vides');
+        setAllergyFamilles(fams);
+        setAllergyRegles(regles);
+        setAllergyRulesReady(true);
+      } catch (e) {
+        console.error('[OrdoSur] regles_allergies load error:', e);
+        if (!cancelled) setAllergyRulesReady(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  // Allergies médicamenteuses du patient + type de réaction (anaphylaxie) saisi dans la fiche.
+  const patientAllergies = useMemo<PatientAllergy[]>(() => (selectedPatient?.allergies_medicaments ?? [])
+    .filter(Boolean)
+    .map(label => ({ label, anaphylaxie: selectedPatient?.allergies_reactions?.[label] ?? 'inconnu' })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedPatient?.id, (selectedPatient?.allergies_medicaments ?? []).join('|'), JSON.stringify(selectedPatient?.allergies_reactions ?? {})]);
+  const allergySig = patientAllergies.map(a => `${a.label}:${a.anaphylaxie}`).sort().join('|');
+  // Analysée par famille / connue de la base / non reconnue (mention « non analysée »).
+  const allergyStatus = useMemo(() => classifyAllergies(
+    patientAllergies.map(a => a.label),
+    allergyFamilles,
+    allContraindications.filter(c => c.condition_type === 'allergie_med').map(c => c.condition_valeur),
+  ), [patientAllergies, allergyFamilles, allContraindications]);
+  // Patient allergique mais règles non chargées : allergies croisées non analysées.
+  const allergiesIncomplete = patientAllergies.length > 0 && !allergyRulesReady;
+
   // Antécédents digestifs présents mais non analysables (règles ou antécédents non chargés).
   const antecedentsIncomplete = antError
     || (!antRulesReady && patientAntecedents.some(a => classifyAntecedent(a) !== null));
@@ -3066,8 +3157,9 @@ export function DoctorDashboard() {
       .sort().join(',');
     // Sprint 4bc — antécédents analysés : toute modification invalide le verdict.
     const ant = patientAntecedents.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
-    return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}`;
-  }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady]);
+    // Sprint 4e-B — allergies (et type de réaction) : toute modification invalide le verdict.
+    return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}`;
+  }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady]);
   // Sprint 4d — valide seulement si le verdict porte sur l'ensemble actuel ET sur le dernier run.
   const analysisValid = !!result && analyzedKey === currentAnalysisKey && result.runId === alertsRunId;
   useEffect(() => {
@@ -3580,6 +3672,42 @@ export function DoctorDashboard() {
         }
       }
 
+      // ── 5. Sprint 4e-B — Canal allergies croisées (APPEL ADDITIONNEL) ────
+      // Ne modifie aucun des blocs ci-dessus. L'allergie du patient est rattachée à une
+      // famille (pénicillines, AINS…) et comparée à la famille de chaque médicament analysé.
+      // Fusion avec une carte d'allergie existante du même médicament : la sévérité la plus
+      // haute est toujours conservée.
+      if (selectedPatient && patientAllergies.length > 0 && allergyRegles.length > 0) {
+        const allergyAlerts = evaluateAllergies(
+          analysisMeds.map(m => ({ id: m.id, nom: m.nom, dci: m.dci, dci_canonique: m.dci_canonique, ingredients: ingNamesByMedId.get(m.id) })),
+          patientAllergies,
+          allergyFamilles,
+          allergyRegles,
+        );
+        const merged = mergeAllergyAlerts(alerts, allergyAlerts);
+        for (const [idx, lines] of merged.alsoByIndex) {
+          alerts[idx] = { ...alerts[idx], also: [...(alerts[idx].also ?? []), ...lines] };
+        }
+        // Cartes de la base absorbées par une alerte plus sévère du canal (indices décroissants).
+        for (const idx of [...merged.absorbed].sort((a, b) => b - a)) alerts.splice(idx, 1);
+        for (const aa of merged.standalone) {
+          const key = `alg|${aa.medId}|${aa.allergie}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          alerts.push({
+            type: 'contraindication',
+            severite: ANTECEDENT_SEVERITE[aa.severite],
+            description: `${aa.titre}. Conduite à tenir : ${aa.conduite}`,
+            involved: [aa.medNom],
+            condition: aa.conditionLabel,
+            origin: originOfMed(aa.medId),
+            channel: 'allergie',
+            ruleSource: aa.source,
+            also: aa.also,
+          });
+        }
+      }
+
       setInteractionAlerts(alerts);
       setAlertsRunId(runId);
       setAnalysisPending(false);
@@ -3590,7 +3718,7 @@ export function DoctorDashboard() {
       if (!cancelled) { setAnalysisPending(false); setAnalysisFailed(true); }
     });
     return () => { cancelled = true; };
-  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick]);
+  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick, patientAllergies, allergyFamilles, allergyRegles]);
 
   // ── Data loaders ─────────────────────────────────────────────────────────
 
@@ -4027,9 +4155,11 @@ export function DoctorDashboard() {
             medicament_a: alert.involved[0],
             // Sprint 4bc — alerte d'antécédent : medicament_b = NULL (pas de 2e médicament).
             // contraindications only have 1 involved med — duplicate to satisfy NOT NULL
-            medicament_b: alert.channel === 'antecedent' ? null : (alert.involved[1] ?? alert.involved[0]),
+            medicament_b: alert.channel ? null : (alert.involved[1] ?? alert.involved[0]),
             risk_level:   severityToRisk[alert.severite],
-            source:       alert.channel === 'antecedent' ? 'antecedent'
+            // Sprint 4e-B — alerte d'allergie croisée : source dédiée
+            source:       alert.channel === 'allergie' ? 'allergie'
+              : alert.channel === 'antecedent' ? 'antecedent'
               : alert.origin === 'mixte' ? 'avec_traitement_fond' : 'nouveau',
           }));
           const { error: logErr } = await supabase
@@ -4356,7 +4486,7 @@ export function DoctorDashboard() {
       // Volet 2 — pour les CI, afficher la condition_valeur exacte entre le médicament
       // et la description (contexte médical : "HTA sévère non contrôlée" vs juste "Hypertension").
       const prefix = alert.type === 'contraindication'
-        ? `${alert.channel === 'antecedent' ? 'Antécédent' : 'Contre-indication patient'} (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
+        ? `${alert.channel === 'antecedent' ? 'Antécédent' : alert.channel === 'allergie' ? 'Allergie' : 'Contre-indication patient'} (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
         : alert.involved.join(' + ');
       reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
@@ -4379,6 +4509,9 @@ export function DoctorDashboard() {
     // Sprint 4bc — antécédents (ou leurs règles) non chargés : analyse incomplète → jamais vert.
     const antUnavailable = overallSeverity === 'safe' && antIncomplete;
     if (antUnavailable) overallSeverity = 'conditional';
+    // Sprint 4e-B — règles d'allergies non chargées chez un patient allergique : jamais vert.
+    const allergyUnavailable = overallSeverity === 'safe' && allergiesIncomplete;
+    if (allergyUnavailable) overallSeverity = 'conditional';
 
     // Source unique de vérité : même nonVerifiables que le panneau temps réel.
     // allNonVerifiable → pas de bandeau vert, severity forcée à 'attention'.
@@ -4407,6 +4540,8 @@ export function DoctorDashboard() {
             ? 'Traitement de fond non chargé — analyse incomplète'
           : antUnavailable
             ? 'Antécédents non chargés — analyse incomplète'
+          : allergyUnavailable
+            ? 'Allergies croisées non analysées — analyse incomplète'
           : overallSeverity === 'attention'
             ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
             : reasons.length > 0
@@ -4425,9 +4560,13 @@ export function DoctorDashboard() {
       ? `${withPreexisting} · Traitement de fond non chargé — analyse incomplète`
       : withPreexisting;
     // Échec du chargement des antécédents : toujours signalé, quel que soit le verdict.
-    const description = antIncomplete && !antUnavailable
+    const withAnt = antIncomplete && !antUnavailable
       ? `${withFond} · Antécédents non chargés — analyse incomplète`
       : withFond;
+    // Règles d'allergies non chargées : toujours signalé, quel que soit le verdict.
+    const description = allergiesIncomplete && !allergyUnavailable
+      ? `${withAnt} · Allergies croisées non analysées — analyse incomplète`
+      : withAnt;
 
     setAnalyzedKey(currentAnalysisKey);
     setResult({
@@ -4867,6 +5006,8 @@ export function DoctorDashboard() {
                 antecedentsLoading={antLoading}
                 antecedentsError={antError}
                 antecedentRulesReady={antRulesReady}
+                allergyStatus={allergyStatus}
+                allergyRulesReady={allergyRulesReady}
               />
             )}
 

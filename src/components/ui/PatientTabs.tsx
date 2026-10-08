@@ -24,6 +24,7 @@ interface Patient {
   pathologies?: string[];
   pathologies_depuis?: Record<string, number> | null;
   allergies_medicaments?: string[];
+  allergies_reactions?: Record<string, 'oui' | 'non' | 'inconnu'> | null;
   allergies_alimentaires?: string[];
   antecedents_chirurgicaux?: string | null;
   traitements_en_cours?: string | null;
@@ -549,7 +550,7 @@ function ResumeTab({ patient, doctorId, orgId, onTraitementsChanged, onPatientPa
                 <div className="flex flex-wrap gap-1.5">
                   {patient.allergies_medicaments!.map(a => (
                     <span key={a} className="px-2.5 py-1 bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300 text-xs rounded-full font-medium border border-red-200 dark:border-red-500/30">
-                      ⚠ {a}
+                      ⚠ {a}{patient.allergies_reactions?.[a] === 'oui' ? ' · anaphylaxie' : ''}
                     </span>
                   ))}
                 </div>

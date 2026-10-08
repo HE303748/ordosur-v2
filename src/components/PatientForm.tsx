@@ -237,6 +237,8 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
   // Sprint 4 — année de diagnostic par pathologie (saisie texte ; affichage seul, jamais lu par le moteur).
   const [pathoDepuis, setPathoDepuis] = useState<Record<string, string>>({});
   const [depuisError, setDepuisError] = useState<string | null>(null);
+  // Sprint 4e-B — type de réaction par allergie médicamenteuse (anaphylaxie oui / non / ne sait pas).
+  const [allergyReactions, setAllergyReactions] = useState<Record<string, 'oui' | 'non' | 'inconnu'>>({});
 
   useEffect(() => {
     if (patient) {
@@ -261,6 +263,7 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
         if (typeof v === 'number') d[k] = String(v);
       }
       setPathoDepuis(d);
+      setAllergyReactions({ ...(patient.allergies_reactions ?? {}) });
     }
   }, [patient]);
 
@@ -281,6 +284,12 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
       depuis[p] = y;
     }
     setDepuisError(null);
+    // Réactions : seulement pour les allergies encore présentes et renseignées (clés orphelines retirées).
+    const reactions: Record<string, 'oui' | 'non' | 'inconnu'> = {};
+    for (const a of formData.allergies_medicaments) {
+      const r = allergyReactions[a];
+      if (r === 'oui' || r === 'non') reactions[a] = r;
+    }
     onSave({
       prenom: formData.prenom.trim(),
       nom: formData.nom.trim(),
@@ -293,6 +302,7 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
       pathologies: formData.pathologies.length > 0 ? formData.pathologies : null,
       pathologies_depuis: cleanPathologiesDepuis(formData.pathologies, depuis),
       allergies_medicaments: formData.allergies_medicaments.length > 0 ? formData.allergies_medicaments : null,
+      allergies_reactions: Object.keys(reactions).length > 0 ? reactions : null,
       allergies_alimentaires: formData.allergies_alimentaires.length > 0 ? formData.allergies_alimentaires : null,
       groupe_sanguin: formData.groupe_sanguin || null,
       antecedents_chirurgicaux: formData.antecedents_chirurgicaux.trim() || null,
@@ -455,6 +465,39 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
             onChange={v => setFormData(prev => ({ ...prev, allergies_medicaments: v }))}
             placeholder="Ajouter une allergie médicamenteuse..."
           />
+          {/* Sprint 4e-B — type de réaction : affine les allergies croisées (ex. pénicilline → céphalosporine) */}
+          {formData.allergies_medicaments.length > 0 && (
+            <div className="rounded-xl border border-slate-200 dark:border-white/[0.08] p-3 space-y-2">
+              <p className="text-xs font-semibold text-slate-600 dark:text-[#94A3B8]">
+                Réaction anaphylactique ? <span className="font-normal text-slate-400">(œdème de Quincke, choc, détresse respiratoire)</span>
+              </p>
+              {formData.allergies_medicaments.map(a => {
+                const val = allergyReactions[a] ?? 'inconnu';
+                return (
+                  <div key={a} className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+                    <span className="text-sm text-slate-800 dark:text-[#E2E8F0] flex-1 min-w-0 break-words">{a}</span>
+                    <div className="flex gap-1.5 flex-shrink-0" role="group" aria-label={`Réaction anaphylactique pour ${a}`}>
+                      {([['oui', 'Oui'], ['non', 'Non'], ['inconnu', 'Ne sait pas']] as const).map(([id, label]) => (
+                        <button
+                          key={id}
+                          type="button"
+                          aria-pressed={val === id}
+                          onClick={() => setAllergyReactions(prev => ({ ...prev, [a]: id }))}
+                          className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                            val === id
+                              ? (id === 'oui' ? 'bg-[#DC2626] border-[#DC2626] text-white' : 'bg-[#0A1628] border-[#0A1628] text-white')
+                              : 'bg-white dark:bg-white/[0.03] border-slate-200 dark:border-white/[0.1] text-slate-600 dark:text-[#94A3B8] hover:border-slate-400'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Allergies alimentaires */}
           <BadgeSelector
