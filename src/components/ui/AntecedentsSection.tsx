@@ -4,18 +4,24 @@ import {
   FileText, Archive, Pencil, Info, Leaf, Cigarette, Wine, Stethoscope, Scissors, Users, Baby, Heart,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { notifyDataChanged } from '../../lib/dataSync';
+import { classifyAntecedent, needsPrecision, ANALYSED_TYPE_LABELS, type AntecedentEngineType } from '../../lib/antecedentEngine';
 import { resolveDoctorNames, formatDateFrShort } from '../../lib/traitementsChroniques';
 import {
   loadAntecedents, searchPathologiesCurees, findCureeByNom, deriveEnCours, formatPeriode, formatDetails,
   formatDepuis, isActiveMedicalNotInPathologies, cleanPathologiesDepuis, parseYear, currentYear,
   CATEGORIES, QUICK_CHIPS, CANCER_LOCALISATIONS, TABAC_STATUTS, ALCOOL_STATUTS, CANCER_STATUTS,
+  HEMO_NATURES, ULCERE_STATUTS, SOUS_AINS_CHOIX, EPISODES_CHOIX,
   type Antecedent, type AntecedentCategorie, type AntecedentDetails, type DetailsType, type QuickChip,
   type TabacStatut, type AlcoolStatut, type CancerStatut, type PathologiesDepuis,
+  type OuiNonInconnu, type Episodes,
 } from '../../lib/antecedents';
 import { Sheet, FormError } from './TraitementFondSection';
 
 // Sprint 4 — Section « Antécédents » du profil patient + dates des pathologies actives.
-//  • INFORMATION : ni les antécédents ni les dates ne sont lus par le moteur de sécurité.
+//  • Sprint 4bc : hémorragie digestive et ulcère gastroduodénal sont lus par le moteur
+//    (canal antécédents, AINS / aspirine / antithrombotiques). Les autres antécédents et
+//    les dates restent une information.
 //  • Garde-fou F : antécédent médical EN COURS absent de patients.pathologies → bandeau
 //    « non analysé par le moteur » + bouton explicite « Ajouter aux pathologies chroniques ».
 //  • Jamais de suppression : une erreur de saisie s'archive (motif + médecin tracés).
@@ -207,6 +213,12 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
   const [plantes, setPlantes] = useState('');
   const [cancerLoc, setCancerLoc] = useState<string | null>(null);
   const [cancerStatut, setCancerStatut] = useState<CancerStatut | null>(null);
+  // Sprint 4bc — mini-fiches digestives
+  const [hemoNature, setHemoNature] = useState<'hemorragie' | 'perforation'>('hemorragie');
+  const [hemoActif, setHemoActif] = useState(false);
+  const [ulcereStatut, setUlcereStatut] = useState<'evolutif' | 'cicatrise' | 'inconnu'>('inconnu');
+  const [sousAins, setSousAins] = useState<OuiNonInconnu>('inconnu');
+  const [episodes, setEpisodes] = useState<Episodes>('inconnu');
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const searchSeq = useRef(0);
@@ -273,6 +285,8 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
     setTabacStatut(null); setPaquetsAnnees(''); setAnneeSevrage('');
     setAlcoolStatut(null); setConsommation(''); setPlantes('');
     setCancerLoc(null); setCancerStatut(null);
+    setHemoNature('hemorragie'); setHemoActif(false); setUlcereStatut('inconnu');
+    setSousAins('inconnu'); setEpisodes('inconnu');
     setFormError(null);
     cureeSeq.current++;
   };
@@ -296,7 +310,12 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
     setLibelle(a.libelle);
     setCuree(a.pathologie ?? null);
     const d = a.details ?? {};
-    setDetailsType(d.type ?? null);
+    // Sprint 4bc — antécédent digestif saisi sans mini-fiche (avant ce sprint, texte libre) :
+    // la mini-fiche s'ouvre, tous les critères à « Ne sait pas ».
+    const digestive: AntecedentEngineType | null = d.type ? null : classifyAntecedent(a);
+    setDetailsType(d.type ?? digestive);
+    if (digestive === 'hemorragie_digestive') setHemoActif(a.en_cours === true);
+    if (digestive === 'ulcere_gd') setUlcereStatut(a.en_cours === true ? 'evolutif' : a.en_cours === false ? 'cicatrise' : 'inconnu');
     setAnneeDebut(a.date_debut_annee ? String(a.date_debut_annee) : '');
     setDateDebut(a.date_debut ?? '');
     setAnneeFin(a.date_fin_annee ? String(a.date_fin_annee) : '');
@@ -312,6 +331,12 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
       setPlantes(d.plantes ?? '');
     } else if (d.type === 'cancer') {
       setCancerLoc(d.localisation ?? null); setCancerStatut(d.statut ?? null);
+    } else if (d.type === 'hemorragie_digestive') {
+      setHemoNature(d.nature ?? 'hemorragie'); setHemoActif(d.en_cours === true);
+      setSousAins(d.sous_ains ?? 'inconnu'); setEpisodes(d.episodes ?? 'inconnu');
+    } else if (d.type === 'ulcere_gd') {
+      setUlcereStatut(d.statut ?? 'inconnu');
+      setSousAins(d.sous_ains ?? 'inconnu'); setEpisodes(d.episodes ?? 'inconnu');
     }
     setEditorOpen(true);
   };
@@ -342,6 +367,10 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
         return { type: 'phyto', plantes: plantes.trim() || null };
       case 'cancer':
         return { type: 'cancer', localisation: cancerLoc, ...(cancerStatut ? { statut: cancerStatut } : {}) };
+      case 'hemorragie_digestive':
+        return { type: 'hemorragie_digestive', nature: hemoNature, en_cours: hemoActif, sous_ains: sousAins, episodes };
+      case 'ulcere_gd':
+        return { type: 'ulcere_gd', statut: ulcereStatut, sous_ains: sousAins, episodes };
       default:
         return {};
     }
@@ -411,6 +440,7 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
           });
       if (error) throw error;
       setEditorOpen(false);
+      notifyDataChanged('antecedents'); // Vérificateur : antécédents rechargés, verdict invalidé
       await reload();
     } catch (e: unknown) {
       console.error('[Antecedents] save error:', e);
@@ -435,6 +465,7 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
         .eq('id', archiveTarget.id);
       if (error) throw error;
       setArchiveTarget(null);
+      notifyDataChanged('antecedents');
       await reload();
     } catch (e: unknown) {
       console.error('[Antecedents] archive error:', e);
@@ -492,7 +523,7 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
             )}
           </h4>
           <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1 flex items-center gap-1">
-            <Info className="w-3 h-3 flex-shrink-0" /> Information — non analysés par le moteur.
+            <Info className="w-3 h-3 flex-shrink-0" /> Analysés par le moteur : hémorragie digestive, ulcère. Autres antécédents : information.
           </p>
         </div>
         {canWrite && (
@@ -551,6 +582,8 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
                     const periode = formatPeriode(a);
                     const det = formatDetails(a.details ?? {});
                     const notAnalysed = isActiveMedicalNotInPathologies(a, patient.pathologies);
+                    const digestive = classifyAntecedent(a) !== null;
+                    const toPrecise = needsPrecision(a);
                     return (
                       <li key={a.id} className="px-3.5 py-3 rounded-xl bg-[#FAFAF7] dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06]">
                         <div className="flex items-start gap-3">
@@ -575,6 +608,15 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
                               </p>
                             )}
                             {a.notes && <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5 whitespace-pre-wrap break-words">{a.notes}</p>}
+                            {toPrecise && (
+                              canWrite ? (
+                                <button onClick={() => openEdit(a)} className="mt-1 text-[11px] font-semibold text-amber-700 dark:text-amber-300 underline underline-offset-2 hover:text-amber-900">
+                                  Préciser pour une analyse plus fine
+                                </button>
+                              ) : (
+                                <p className="mt-1 text-[11px] text-amber-700 dark:text-amber-300">Détails à préciser pour une analyse plus fine.</p>
+                              )
+                            )}
                           </div>
                           {canWrite && (
                             <div className="flex flex-col sm:flex-row gap-1 flex-shrink-0">
@@ -600,10 +642,11 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
                             <p className="flex-1 text-xs text-amber-800 dark:text-amber-300 flex items-start gap-1.5">
                               <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
                               <span>
-                                Pathologie active non analysée par le moteur
-                                {a.pathologie
-                                  ? ' tant qu’elle ne figure pas dans les pathologies chroniques.'
-                                  : ' : absente du référentiel du moteur, aucune contre-indication ne peut être recherchée.'}
+                                {digestive
+                                  ? 'Analysée pour les AINS, l’aspirine et les antithrombotiques. Les autres contre-indications de la base ne sont recherchées que si elle figure dans les pathologies chroniques.'
+                                  : <>Pathologie active non analysée par le moteur{a.pathologie
+                                    ? ' tant qu’elle ne figure pas dans les pathologies chroniques.'
+                                    : ' : absente du référentiel du moteur, aucune contre-indication ne peut être recherchée.'}</>}
                               </span>
                             </p>
                             {a.pathologie && canWrite && (
@@ -700,7 +743,11 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
 
         <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-100 dark:border-white/[0.06] text-xs text-slate-600 dark:text-[#94A3B8]">
           <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-          <span>Les antécédents sont une information : ils ne sont pas analysés par le moteur de sécurité.</span>
+          <span>
+            {detailsType === 'hemorragie_digestive' || detailsType === 'ulcere_gd'
+              ? 'Analysé par le moteur (AINS, aspirine, antiagrégants, anticoagulants). Plus l’antécédent est précis, plus l’analyse est fine.'
+              : 'Seuls l’hémorragie digestive et l’ulcère gastroduodénal sont analysés par le moteur. Les autres antécédents sont une information.'}
+          </span>
         </div>
 
         {/* Catégorie (fixée pour les types structurés) */}
@@ -842,6 +889,46 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
           </>
         )}
 
+        {/* ── Sprint 4bc — Détails : hémorragie digestive (3 sélecteurs + saignement actif) ── */}
+        {detailsType === 'hemorragie_digestive' && (
+          <>
+            <div>
+              <label className={labelCls}>Nature</label>
+              <div className="flex flex-wrap gap-1.5">
+                {HEMO_NATURES.map(n => (
+                  <button key={n.id} type="button" onClick={() => setHemoNature(n.id)} className={segCls(hemoNature === n.id)} disabled={saving}>{n.label}</button>
+                ))}
+              </div>
+            </div>
+            <DigestiveCriteria sousAins={sousAins} setSousAins={setSousAins} episodes={episodes} setEpisodes={setEpisodes} disabled={saving} />
+            <label className="flex items-start gap-2.5 px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/[0.1] cursor-pointer">
+              <input
+                type="checkbox" checked={hemoActif} onChange={e => setHemoActif(e.target.checked)} disabled={saving}
+                className="w-4 h-4 mt-0.5 rounded border-slate-300 text-[#DC2626] focus:ring-[#DC2626] flex-shrink-0"
+              />
+              <span className="text-sm text-slate-700 dark:text-[#CBD5E1]">
+                Saignement actif actuellement
+                <span className="block text-xs text-slate-500 dark:text-[#94A3B8]">Contre-indication absolue des AINS et antithrombotiques.</span>
+              </span>
+            </label>
+          </>
+        )}
+
+        {/* ── Sprint 4bc — Détails : ulcère gastroduodénal ── */}
+        {detailsType === 'ulcere_gd' && (
+          <>
+            <div>
+              <label className={labelCls}>Statut de l’ulcère</label>
+              <div className="flex flex-wrap gap-1.5">
+                {ULCERE_STATUTS.map(st => (
+                  <button key={st.id} type="button" onClick={() => setUlcereStatut(st.id)} className={segCls(ulcereStatut === st.id)} disabled={saving}>{st.label}</button>
+                ))}
+              </div>
+            </div>
+            <DigestiveCriteria sousAins={sousAins} setSousAins={setSousAins} episodes={episodes} setEpisodes={setEpisodes} disabled={saving} />
+          </>
+        )}
+
         {/* ── Dates ── */}
         {!(detailsType === 'tabac' && tabacStatut === 'jamais') && (
           <div className="grid grid-cols-2 gap-3">
@@ -884,7 +971,11 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
         {categorie === 'medical' && effectiveEnCours === true && (
           <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/20 text-xs text-amber-800 dark:text-amber-300">
             <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-            <span>Une pathologie active n’est analysée par le moteur que si elle figure dans les pathologies chroniques.</span>
+            <span>
+              {detailsType === 'hemorragie_digestive' || detailsType === 'ulcere_gd'
+                ? 'Analysé pour les AINS, l’aspirine et les antithrombotiques. Les autres contre-indications de la base (corticoïdes, ISRS…) ne sont recherchées que si la pathologie figure dans les pathologies chroniques.'
+                : 'Une pathologie active n’est analysée par le moteur que si elle figure dans les pathologies chroniques.'}
+            </span>
           </div>
         )}
 
@@ -935,35 +1026,60 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
   );
 }
 
+// ─── Sprint 4bc — critères communs des mini-fiches digestives ────────────────
+
+function DigestiveCriteria({ sousAins, setSousAins, episodes, setEpisodes, disabled }: {
+  sousAins: OuiNonInconnu;
+  setSousAins: (v: OuiNonInconnu) => void;
+  episodes: Episodes;
+  setEpisodes: (v: Episodes) => void;
+  disabled: boolean;
+}) {
+  return (
+    <>
+      <div>
+        <label className={labelCls}>Survenue sous AINS ?</label>
+        <div className="flex flex-wrap gap-1.5">
+          {SOUS_AINS_CHOIX.map(c => (
+            <button key={c.id} type="button" onClick={() => setSousAins(c.id)} className={segCls(sousAins === c.id)} disabled={disabled}>{c.label}</button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className={labelCls}>Nombre d’épisodes</label>
+        <div className="flex flex-wrap gap-1.5">
+          {EPISODES_CHOIX.map(c => (
+            <button key={c.id} type="button" onClick={() => setEpisodes(c.id)} className={segCls(episodes === c.id)} disabled={disabled}>{c.label}</button>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ─── Vérificateur : résumé compact ───────────────────────────────────────────
 
 /**
- * Résumé des antécédents sous le patient, dans le Vérificateur. TOUT le bloc porte la
- * mention « non analysés par le moteur » (zéro fausse réassurance) ; la phytothérapie
- * a une mention renforcée (aucune base d'interactions plantes–médicaments).
+ * Résumé des antécédents sous le patient, dans le Vérificateur.
+ * Sprint 4bc — alimenté par la MÊME liste que le moteur (chargée par le Vérificateur et
+ * rechargée avant chaque analyse) : deux lignes distinguent les antécédents analysés
+ * (hémorragie digestive, ulcère) des autres, qui restent une information. La phytothérapie
+ * garde sa mention renforcée (aucune base d'interactions plantes–médicaments).
  */
-export function AntecedentsResume({ patientId, pathologies }: { patientId: string; pathologies?: string[] | null }) {
-  const [items, setItems] = useState<Antecedent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(false);
-    loadAntecedents(patientId, false)
-      .then(rows => { if (!cancelled) setItems(rows); })
-      .catch(e => { console.error('[AntecedentsResume] load error:', e); if (!cancelled) setError(true); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, [patientId]);
-
-  if (loading) return null;
+export function AntecedentsResume({ items, loading, error, pathologies, engineReady }: {
+  items: Antecedent[];
+  loading: boolean;
+  error: boolean;
+  pathologies?: string[] | null;
+  /** Règles du canal antécédents chargées. */
+  engineReady: boolean;
+}) {
+  if (loading && items.length === 0) return null;
   if (error) {
     return (
       <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800">
         <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
-        <span>Antécédents indisponibles (erreur de chargement).</span>
+        <span>Antécédents non chargés — analyse incomplète.</span>
       </div>
     );
   }
@@ -973,17 +1089,35 @@ export function AntecedentsResume({ patientId, pathologies }: { patientId: strin
 
   const ordered = CATEGORIES.flatMap(c => shown.filter(a => a.categorie === c.id));
   const hasPhyto = shown.some(a => a.details?.type === 'phyto');
-  const activeNotAnalysed = shown.filter(a => isActiveMedicalNotInPathologies(a, pathologies));
+  const activeNotAnalysed = shown.filter(a => isActiveMedicalNotInPathologies(a, pathologies) && classifyAntecedent(a) === null);
+  const analysedTypes = [...new Set(shown.map(a => classifyAntecedent(a)).filter((t): t is AntecedentEngineType => t !== null))];
+  const notAnalysedLabels = shown.filter(a => classifyAntecedent(a) === null).map(a => a.libelle.toLowerCase());
 
   return (
     <div className="bg-[#FAFAF7] rounded-xl p-3.5 border border-[#E5E5E0] space-y-2">
       <p className="text-[11px] font-bold text-[#0A1628] uppercase tracking-wider flex items-center gap-1.5">
         <ClipboardList className="w-3.5 h-3.5 text-slate-500" /> Antécédents
       </p>
-      <p className="text-[11px] text-slate-500 flex items-start gap-1">
-        <Info className="w-3 h-3 flex-shrink-0 mt-px" />
-        <span>Information — non analysés par le moteur.</span>
-      </p>
+      {engineReady ? (
+        <p className="text-[11px] text-slate-600 flex items-start gap-1">
+          <CheckCircle2 className="w-3 h-3 flex-shrink-0 mt-px text-[#00A86B]" />
+          <span>
+            Analysés par le moteur : {(Object.keys(ANALYSED_TYPE_LABELS) as AntecedentEngineType[]).map(t => ANALYSED_TYPE_LABELS[t]).join(', ')}
+            {analysedTypes.length === 0 && ' (aucun chez ce patient)'}
+          </span>
+        </p>
+      ) : analysedTypes.length > 0 ? (
+        <p className="text-[11px] text-amber-800 flex items-start gap-1">
+          <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-px" />
+          <span>Règles du moteur non chargées — antécédents non analysés, analyse incomplète.</span>
+        </p>
+      ) : null}
+      {notAnalysedLabels.length > 0 && (
+        <p className="text-[11px] text-slate-500 flex items-start gap-1">
+          <Info className="w-3 h-3 flex-shrink-0 mt-px" />
+          <span>Non analysés : {notAnalysedLabels.join(', ')}</span>
+        </p>
+      )}
       <div className="flex flex-wrap gap-1.5">
         {ordered.map(a => {
           const det = formatDetails(a.details ?? {});

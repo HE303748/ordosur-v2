@@ -1,0 +1,673 @@
+{
+  "classes": [
+    {
+      "classe": "ains",
+      "dci_motif": "ibuprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "ketoprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "dexketoprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "diclofenac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "aceclofenac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "naproxene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "piroxicam"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "meloxicam"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "tenoxicam"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "lornoxicam"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "indometacine"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "celecoxib"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "etoricoxib"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "flurbiprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "acide niflumique"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "nimesulide"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "etodolac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "sulindac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "acide mefenamique"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "ketorolac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "acide tiaprofenique"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "morniflumate"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "fenoprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "parecoxib"
+    },
+    {
+      "classe": "aspirine",
+      "dci_motif": "aspirine"
+    },
+    {
+      "classe": "aspirine",
+      "dci_motif": "acetylsalicyl"
+    },
+    {
+      "classe": "antiagregant",
+      "dci_motif": "clopidogrel"
+    },
+    {
+      "classe": "antiagregant",
+      "dci_motif": "prasugrel"
+    },
+    {
+      "classe": "antiagregant",
+      "dci_motif": "ticagrelor"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "acenocoumarol"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "warfarine"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "fluindione"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "rivaroxaban"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "apixaban"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "dabigatran"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "edoxaban"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "enoxaparine"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "tinzaparine"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "nadroparine"
+    },
+    {
+      "classe": "anticoagulant",
+      "dci_motif": "heparine"
+    }
+  ],
+  "regles": [
+    {
+      "code": "R1",
+      "ordre": 10,
+      "classe": "ains",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "oui"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Saignement digestif actif / ulcère évolutif",
+      "conduite": "Lésion susceptible de saigner — ne pas prescrire.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R1",
+      "ordre": 20,
+      "classe": "ains",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "evolutif"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Saignement digestif actif / ulcère évolutif",
+      "conduite": "Lésion susceptible de saigner — ne pas prescrire.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R1",
+      "ordre": 30,
+      "classe": "aspirine",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "oui"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Saignement digestif actif / ulcère évolutif",
+      "conduite": "Lésion susceptible de saigner — ne pas prescrire.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R1",
+      "ordre": 40,
+      "classe": "aspirine",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "evolutif"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Saignement digestif actif / ulcère évolutif",
+      "conduite": "Lésion susceptible de saigner — ne pas prescrire.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R1",
+      "ordre": 50,
+      "classe": "antiagregant",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "oui"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Saignement digestif actif / ulcère évolutif",
+      "conduite": "Lésion susceptible de saigner — ne pas prescrire.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R1",
+      "ordre": 60,
+      "classe": "antiagregant",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "evolutif"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Saignement digestif actif / ulcère évolutif",
+      "conduite": "Lésion susceptible de saigner — ne pas prescrire.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R1",
+      "ordre": 70,
+      "classe": "anticoagulant",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "oui"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Saignement digestif actif / ulcère évolutif",
+      "conduite": "Lésion susceptible de saigner — ne pas prescrire.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R1",
+      "ordre": 80,
+      "classe": "anticoagulant",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "evolutif"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Saignement digestif actif / ulcère évolutif",
+      "conduite": "Lésion susceptible de saigner — ne pas prescrire.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R1b",
+      "ordre": 90,
+      "classe": "ains",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Ulcère gastroduodénal — statut à préciser",
+      "conduite": "CI absolue si l'ulcère est évolutif. Sinon : se référer à la conduite habituelle (dose minimale, IPP, surveillance). Préciser l'antécédent dans le profil.",
+      "source": "Ajout Ordosur (zéro fausse réassurance : critère non renseigné) — à valider"
+    },
+    {
+      "code": "R1b",
+      "ordre": 100,
+      "classe": "aspirine",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Ulcère gastroduodénal — statut à préciser",
+      "conduite": "CI absolue si l'ulcère est évolutif. Sinon : se référer à la conduite habituelle (dose minimale, IPP, surveillance). Préciser l'antécédent dans le profil.",
+      "source": "Ajout Ordosur (zéro fausse réassurance : critère non renseigné) — à valider"
+    },
+    {
+      "code": "R1b",
+      "ordre": 110,
+      "classe": "antiagregant",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Ulcère gastroduodénal — statut à préciser",
+      "conduite": "CI absolue si l'ulcère est évolutif. Sinon : se référer à la conduite habituelle (dose minimale, IPP, surveillance). Préciser l'antécédent dans le profil.",
+      "source": "Ajout Ordosur (zéro fausse réassurance : critère non renseigné) — à valider"
+    },
+    {
+      "code": "R1b",
+      "ordre": 120,
+      "classe": "anticoagulant",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Ulcère gastroduodénal — statut à préciser",
+      "conduite": "CI absolue si l'ulcère est évolutif. Sinon : se référer à la conduite habituelle (dose minimale, IPP, surveillance). Préciser l'antécédent dans le profil.",
+      "source": "Ajout Ordosur (zéro fausse réassurance : critère non renseigné) — à valider"
+    },
+    {
+      "code": "R2",
+      "ordre": 130,
+      "classe": "ains",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "sous_ains": [
+              "oui"
+            ]
+          },
+          {
+            "episodes": [
+              "2+"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Antécédent d’hémorragie / perforation digestive sous AINS ou récidivant",
+      "conduite": "Risque majeur de récidive. Alternative antalgique : paracétamol (Doliprane).",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R3",
+      "ordre": 140,
+      "classe": "ains",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "cicatrise",
+              "inconnu"
+            ],
+            "sous_ains": [
+              "oui"
+            ]
+          },
+          {
+            "statut": [
+              "cicatrise",
+              "inconnu"
+            ],
+            "episodes": [
+              "2+"
+            ]
+          }
+        ]
+      },
+      "severite": "absolue",
+      "titre": "Antécédent d’ulcère gastroduodénal sous AINS ou récidivant",
+      "conduite": "Risque majeur de récidive. Alternative antalgique : paracétamol (Doliprane).",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R4",
+      "ordre": 150,
+      "classe": "ains",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "sous_ains": [
+              "inconnu"
+            ]
+          },
+          {
+            "episodes": [
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Antécédent d’hémorragie / perforation digestive — contexte à préciser",
+      "conduite": "CI absolue si l'épisode est survenu sous AINS ou s'il est récidivant. Sinon : dose minimale, durée courte, IPP (ex. Mopral). Préciser l'antécédent dans le profil.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R4b",
+      "ordre": 160,
+      "classe": "ains",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "cicatrise"
+            ],
+            "sous_ains": [
+              "inconnu"
+            ]
+          },
+          {
+            "statut": [
+              "cicatrise"
+            ],
+            "episodes": [
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Antécédent d’ulcère gastroduodénal — contexte à préciser",
+      "conduite": "CI absolue si l'ulcère est survenu sous AINS ou s'il est récidivant. Sinon : dose minimale, durée courte, IPP (ex. Mopral). Préciser l'antécédent dans le profil.",
+      "source": "Ajout Ordosur (zéro fausse réassurance : critère non renseigné) — à valider"
+    },
+    {
+      "code": "R5",
+      "ordre": 170,
+      "classe": "ains",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "sous_ains": [
+              "non"
+            ],
+            "episodes": [
+              "1"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Antécédent digestif unique, non lié aux AINS",
+      "conduite": "Dose minimale, durée courte, associer un IPP.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R5",
+      "ordre": 180,
+      "classe": "ains",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "cicatrise"
+            ],
+            "sous_ains": [
+              "non"
+            ],
+            "episodes": [
+              "1"
+            ]
+          },
+          {
+            "statut": [
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Antécédent digestif unique, non lié aux AINS",
+      "conduite": "Dose minimale, durée courte, associer un IPP.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R6",
+      "ordre": 190,
+      "classe": "aspirine",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "non"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Antécédent d’hémorragie digestive ou d’ulcère",
+      "conduite": "Risque hémorragique majoré — évaluer bénéfice/risque, discuter un IPP, surveillance.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R6",
+      "ordre": 200,
+      "classe": "aspirine",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "cicatrise",
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Antécédent d’hémorragie digestive ou d’ulcère",
+      "conduite": "Risque hémorragique majoré — évaluer bénéfice/risque, discuter un IPP, surveillance.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R6",
+      "ordre": 210,
+      "classe": "antiagregant",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "non"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Antécédent d’hémorragie digestive ou d’ulcère",
+      "conduite": "Risque hémorragique majoré — évaluer bénéfice/risque, discuter un IPP, surveillance.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R6",
+      "ordre": 220,
+      "classe": "antiagregant",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "cicatrise",
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Antécédent d’hémorragie digestive ou d’ulcère",
+      "conduite": "Risque hémorragique majoré — évaluer bénéfice/risque, discuter un IPP, surveillance.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R6",
+      "ordre": 230,
+      "classe": "anticoagulant",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "non"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Antécédent d’hémorragie digestive ou d’ulcère",
+      "conduite": "Risque hémorragique majoré — évaluer bénéfice/risque, discuter un IPP, surveillance.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "R6",
+      "ordre": 240,
+      "classe": "anticoagulant",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "cicatrise",
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Antécédent d’hémorragie digestive ou d’ulcère",
+      "conduite": "Risque hémorragique majoré — évaluer bénéfice/risque, discuter un IPP, surveillance.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    }
+  ]
+}

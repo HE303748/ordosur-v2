@@ -1,8 +1,11 @@
 import { supabase } from './supabase';
+import type { HemorragieDigestiveDetails, UlcereGdDetails, OuiNonInconnu, Episodes } from './antecedentEngine';
 
 // Sprint 4 — Antécédents structurés (table antecedents) + dates des pathologies actives.
-// INFORMATION UNIQUEMENT : le moteur de sécurité ne lit ni `antecedents` ni
-// `patients.pathologies_depuis`. Les pathologies actives analysées restent patients.pathologies.
+// Sprint 4bc — seuls l'hémorragie digestive et l'ulcère gastroduodénal sont lus par le
+// moteur (canal additionnel src/lib/antecedentEngine.ts) ; les autres antécédents et
+// `patients.pathologies_depuis` restent une information. Les contre-indications de la base
+// continuent de porter sur patients.pathologies.
 // Jamais de suppression physique : une erreur de saisie s'archive.
 
 export type AntecedentCategorie = 'medical' | 'chirurgical' | 'familial' | 'toxique' | 'gyneco_obstetrical';
@@ -23,8 +26,12 @@ export interface TabacDetails  { type: 'tabac';  statut?: TabacStatut; paquets_a
 export interface AlcoolDetails { type: 'alcool'; statut?: AlcoolStatut; consommation?: string | null }
 export interface PhytoDetails  { type: 'phyto';  plantes?: string | null }
 export interface CancerDetails { type: 'cancer'; localisation?: string | null; statut?: CancerStatut }
-export type AntecedentDetails = TabacDetails | AlcoolDetails | PhytoDetails | CancerDetails | { type?: undefined };
-export type DetailsType = 'tabac' | 'alcool' | 'phyto' | 'cancer';
+export type { HemorragieDigestiveDetails, UlcereGdDetails, OuiNonInconnu, Episodes };
+export type AntecedentDetails =
+  | TabacDetails | AlcoolDetails | PhytoDetails | CancerDetails
+  | HemorragieDigestiveDetails | UlcereGdDetails
+  | { type?: undefined };
+export type DetailsType = 'tabac' | 'alcool' | 'phyto' | 'cancer' | 'hemorragie_digestive' | 'ulcere_gd';
 
 export interface Antecedent {
   id: string;
@@ -84,6 +91,7 @@ export async function findCureeByNom(nom: string): Promise<{ id: string; nom_fr:
 // cureeNom : nom_fr EXACT dans pathologies_curees (résolu à l'ouverture ; null → hors référentiel).
 // « Hémorragie digestive » et « Tabagisme » : volontairement SANS lien (absents du référentiel,
 // ajout reporté au sprint de données dédié).
+// Sprint 4bc — hémorragie digestive et ulcère : mini-fiche structurée, lue par le moteur.
 export interface QuickChip {
   key: string;
   label: string;
@@ -98,8 +106,8 @@ export const QUICK_CHIPS: QuickChip[] = [
   { key: 'alcool',    label: 'Alcool',                 categorie: 'toxique',     libelle: 'Consommation d’alcool',  detailsType: 'alcool' },
   { key: 'phyto',     label: 'Phytothérapie',          categorie: 'toxique',     libelle: 'Phytothérapie',          detailsType: 'phyto' },
   { key: 'cancer',    label: 'Cancer',                 categorie: 'medical',     libelle: 'Cancer',                 detailsType: 'cancer' },
-  { key: 'hemo_dig',  label: 'Hémorragie digestive',   categorie: 'medical',     libelle: 'Hémorragie digestive' },
-  { key: 'ulcere',    label: 'Ulcère gastroduodénal',  categorie: 'medical',     libelle: 'Ulcère gastro-duodénal', cureeNom: 'Ulcère gastro-duodénal' },
+  { key: 'hemo_dig',  label: 'Hémorragie digestive',   categorie: 'medical',     libelle: 'Hémorragie digestive',   detailsType: 'hemorragie_digestive' },
+  { key: 'ulcere',    label: 'Ulcère gastroduodénal',  categorie: 'medical',     libelle: 'Ulcère gastro-duodénal', detailsType: 'ulcere_gd', cureeNom: 'Ulcère gastro-duodénal' },
   { key: 'vhb',       label: 'Hépatite B',             categorie: 'medical',     libelle: 'Hépatite virale B',      cureeNom: 'Hépatite virale B' },
   { key: 'vhc',       label: 'Hépatite C',             categorie: 'medical',     libelle: 'Hépatite virale C',      cureeNom: 'Hépatite virale C' },
   { key: 'chir_abdo', label: 'Chirurgie abdominale',   categorie: 'chirurgical', libelle: 'Chirurgie abdominale' },
@@ -129,6 +137,19 @@ export const ALCOOL_STATUTS: { id: AlcoolStatut; label: string }[] = [
 export const CANCER_STATUTS: { id: CancerStatut; label: string }[] = [
   { id: 'traitement', label: 'En traitement' }, { id: 'surveillance', label: 'Surveillance' }, { id: 'remission', label: 'Rémission' },
 ];
+// Sprint 4bc — mini-fiches digestives (« inconnu » = non renseigné).
+export const HEMO_NATURES: { id: 'hemorragie' | 'perforation'; label: string }[] = [
+  { id: 'hemorragie', label: 'Hémorragie' }, { id: 'perforation', label: 'Perforation' },
+];
+export const ULCERE_STATUTS: { id: 'evolutif' | 'cicatrise' | 'inconnu'; label: string }[] = [
+  { id: 'evolutif', label: 'Évolutif' }, { id: 'cicatrise', label: 'Cicatrisé' }, { id: 'inconnu', label: 'Ne sait pas' },
+];
+export const SOUS_AINS_CHOIX: { id: OuiNonInconnu; label: string }[] = [
+  { id: 'oui', label: 'Oui' }, { id: 'non', label: 'Non' }, { id: 'inconnu', label: 'Ne sait pas' },
+];
+export const EPISODES_CHOIX: { id: Episodes; label: string }[] = [
+  { id: '1', label: '1 épisode' }, { id: '2+', label: '2 ou plus' }, { id: 'inconnu', label: 'Ne sait pas' },
+];
 
 /** en_cours dérivé des détails structurés (null = pas de dérivation). */
 export function deriveEnCours(d: AntecedentDetails): boolean | null {
@@ -136,6 +157,8 @@ export function deriveEnCours(d: AntecedentDetails): boolean | null {
     case 'tabac':  return d.statut ? d.statut === 'actif' : null;
     case 'alcool': return d.statut ? d.statut !== 'sevre' : null;
     case 'cancer': return d.statut ? d.statut === 'traitement' : null;
+    case 'hemorragie_digestive': return typeof d.en_cours === 'boolean' ? d.en_cours : null;
+    case 'ulcere_gd': return d.statut === 'evolutif' ? true : d.statut === 'cicatrise' ? false : null;
     default:       return null;
   }
 }
@@ -197,6 +220,22 @@ export function formatDetails(d: AntecedentDetails): string {
       break;
     case 'cancer':
       if (d.statut) parts.push(CANCER_STATUTS.find(s => s.id === d.statut)?.label ?? '');
+      break;
+    case 'hemorragie_digestive':
+      if (d.nature === 'perforation') parts.push('Perforation');
+      if (d.en_cours === true) parts.push('Saignement actif');
+      if (d.sous_ains === 'oui') parts.push('Sous AINS');
+      else if (d.sous_ains === 'non') parts.push('Hors AINS');
+      if (d.episodes === '2+') parts.push('Récidivant');
+      else if (d.episodes === '1') parts.push('1 épisode');
+      break;
+    case 'ulcere_gd':
+      if (d.statut === 'evolutif') parts.push('Évolutif');
+      else if (d.statut === 'cicatrise') parts.push('Cicatrisé');
+      if (d.sous_ains === 'oui') parts.push('Sous AINS');
+      else if (d.sous_ains === 'non') parts.push('Hors AINS');
+      if (d.episodes === '2+') parts.push('Récidivant');
+      else if (d.episodes === '1') parts.push('1 épisode');
       break;
   }
   return parts.filter(Boolean).join(' · ');

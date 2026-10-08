@@ -48,6 +48,11 @@ import { DoctorHomeView, type HomeStats, type HomeAlert, type HomeRdv } from '..
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
 import { PatientTabs } from '../components/ui/PatientTabs';
 import { AntecedentsResume, type PatientPatch } from '../components/ui/AntecedentsSection';
+import { loadAntecedents, type Antecedent } from '../lib/antecedents';
+import {
+  evaluateAntecedents, mergeWithExisting, classifyAntecedent,
+  type RegleAntecedent, type RegleClasse, type RegleSeverite,
+} from '../lib/antecedentEngine';
 import { AgendaView } from '../components/ui/AgendaView';
 import { EncyclopedieView } from '../components/ui/EncyclopedieView';
 import { DocumentsView } from '../components/ui/DocumentsView';
@@ -97,7 +102,9 @@ interface InteractionAlert {
   // Sprint #3.0.7 — Distinctions sémantiques :
   //   non_classee → interaction connue, sévérité non documentée (gris, non-anxiogène)
   //   info        → avertissement qualité de données (DCI manquante) — pas une interaction clinique
-  severite: 'contre_indication' | 'majeure' | 'moderee' | 'mineure' | 'non_classee' | 'info';
+  // Sprint 4bc — canal antécédents : 'a_evaluer' (ambre, verdict ≥ Attention, jamais vert)
+  //             et 'precaution' (ambre). Une CI absolue d'antécédent reste 'contre_indication'.
+  severite: 'contre_indication' | 'a_evaluer' | 'majeure' | 'precaution' | 'moderee' | 'mineure' | 'non_classee' | 'info';
   description: string;
   involved: string[];
   // Volet 2 — condition_valeur exacte (libellé brut, non normalisé) pour les CI pathologie.
@@ -115,7 +122,20 @@ interface InteractionAlert {
   //   fond    → traitement de fond seul (fond × fond, fond × patient) : alerte préexistante
   // Absent = 'nouveau' (rétrocompatibilité).
   origin?: 'nouveau' | 'mixte' | 'fond';
+  // Sprint 4bc — alerte produite par le canal antécédents (src/lib/antecedentEngine.ts).
+  channel?: 'antecedent';
+  // Sprint 4bc — source de la règle (affichée dans les détails).
+  ruleSource?: string;
+  // Sprint 4bc — antécédents absorbés par cette CI existante (« Également : antécédent de … »).
+  also?: string[];
 }
+
+// Sprint 4bc — sévérité d'une règle d'antécédent → sévérité d'alerte.
+const ANTECEDENT_SEVERITE: Record<RegleSeverite, InteractionAlert['severite']> = {
+  absolue: 'contre_indication',
+  a_evaluer: 'a_evaluer',
+  precaution: 'precaution',
+};
 
 // Sprint 3 — Médicament transmis au moteur (prescription en cours ou traitement de fond).
 type CheckerMed = { id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean };
@@ -157,7 +177,9 @@ function normalizeDrugName(s: string): string {
 
 function getSeveriteLabel(s: InteractionAlert['severite']) {
   if (s === 'contre_indication') return '🔴 CONTRE-INDICATION';
+  if (s === 'a_evaluer')         return '🟠 À ÉVALUER';
   if (s === 'majeure')           return '🟠 INTERACTION MAJEURE';
+  if (s === 'precaution')        return '🟡 PRÉCAUTION';
   if (s === 'moderee')           return '🔵 INTERACTION MODÉRÉE';
   if (s === 'mineure')           return '🟡 INTERACTION MINEURE';
   if (s === 'non_classee')       return 'ℹ️ SÉVÉRITÉ NON DOCUMENTÉE';
@@ -559,7 +581,7 @@ function FilterChip({ active, onClick, label }: { active: boolean; onClick: () =
 // ─── Vérificateur : composants d'affichage des alertes (Sprint 3) ────────────
 
 const SEVER_ORDER = {
-  contre_indication: 0, majeure: 1, moderee: 2, mineure: 3, non_classee: 4, info: 5,
+  contre_indication: 0, a_evaluer: 1, majeure: 2, precaution: 3, moderee: 4, mineure: 5, non_classee: 6, info: 7,
 } as const;
 type SeveriteKey = InteractionAlert['severite'];
 
@@ -586,6 +608,8 @@ function dedupClinicalAlerts(alerts: InteractionAlert[]): InteractionAlert[] {
 function SeverityBadge({ s }: { s: SeveriteKey }) {
   const cfg: Record<SeveriteKey, { label: string; cls: string }> = {
     contre_indication: { label: 'Contre-indication',  cls: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30' },
+    a_evaluer:         { label: 'À évaluer',          cls: 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-500/20 dark:text-amber-200 dark:border-amber-500/40' },
+    precaution:        { label: 'Précaution',         cls: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30' },
     majeure:           { label: 'Interaction majeure', cls: 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-500/20 dark:text-orange-300 dark:border-orange-500/30' },
     moderee:           { label: 'Interaction modérée', cls: 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30' },
     mineure:           { label: 'Interaction mineure', cls: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-500/20 dark:text-yellow-300 dark:border-yellow-500/30' },
@@ -612,7 +636,9 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
 
   const borderCls: Record<SeveriteKey, string> = {
     contre_indication: 'border-l-[#DC2626]',
+    a_evaluer:         'border-l-amber-500',
     majeure:           'border-l-orange-500',
+    precaution:        'border-l-amber-400',
     moderee:           'border-l-amber-400',
     mineure:           'border-l-yellow-400',
     non_classee:       'border-l-slate-300 dark:border-l-slate-600',
@@ -638,6 +664,10 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
         </div>
         {/* Ligne 2 : risque (description courte) */}
         <p className="text-sm text-slate-600 dark:text-[#94A3B8] leading-snug line-clamp-2">{shortDesc}</p>
+        {/* Sprint 4bc — antécédents absorbés par cette CI (même thème, sévérité ≥) */}
+        {alert.also && alert.also.length > 0 && (
+          <p className="mt-1 text-xs font-medium text-slate-700 dark:text-[#CBD5E1]">Également : {alert.also.join(' ; ')}</p>
+        )}
         {/* Ligne 3 : conduite à tenir (si extractible depuis la description) */}
         {conduct && (
           <p className="mt-1 text-sm text-slate-700 dark:text-[#CBD5E1]">
@@ -660,6 +690,7 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
               <p><span className="font-semibold text-slate-700 dark:text-slate-300">Condition patient :</span> {alert.condition}</p>
             )}
             <p className="whitespace-pre-wrap leading-relaxed">{desc}</p>
+            {alert.ruleSource && <p className="text-[11px] text-slate-400 dark:text-[#64748B]">Source : {alert.ruleSource}</p>}
           </div>
         )}
       </div>
@@ -882,6 +913,11 @@ interface CheckerViewProps {
   renewFond: (t: TraitementChronique) => void;
   reloadFond: () => void;
   analysisPending: boolean;
+  // Sprint 4bc — antécédents (même liste que le moteur)
+  antecedents: Antecedent[];
+  antecedentsLoading: boolean;
+  antecedentsError: boolean;
+  antecedentRulesReady: boolean;
 }
 
 function CheckerView({
@@ -898,6 +934,7 @@ function CheckerView({
   onAddPatient, setShowPrescriptionForm,
   fondTraitements, fondLoading, fondError, fondExcluded, toggleFond, renewFond, reloadFond,
   analysisPending,
+  antecedents, antecedentsLoading, antecedentsError, antecedentRulesReady,
 }: CheckerViewProps) {
   const [showMasked, setShowMasked] = useState(false);
   // Déduplication calculée une fois pour toute la vue
@@ -1016,8 +1053,14 @@ function CheckerView({
                     </div>
                   )}
 
-                  {/* Sprint 4 — Antécédents : information, non analysés par le moteur */}
-                  <AntecedentsResume patientId={selectedPatient.id} pathologies={selectedPatient.pathologies} />
+                  {/* Sprint 4bc — Antécédents : hémorragie digestive / ulcère analysés, autres = information */}
+                  <AntecedentsResume
+                    items={antecedents}
+                    loading={antecedentsLoading}
+                    error={antecedentsError}
+                    pathologies={selectedPatient.pathologies}
+                    engineReady={antecedentRulesReady}
+                  />
 
                   {/* Sprint 3 — Traitement de fond : inclus dans l'analyse, renouvelable */}
                   <FondPanel
@@ -2747,6 +2790,97 @@ export function DoctorDashboard() {
     if (pid === selectedPatientIdRef.current) refreshFond(pid);
   }, [refreshFond]);
 
+  // ── Sprint 4bc — Antécédents du patient (canal antécédents du moteur) ─────
+  // Même cycle de vie que le traitement de fond : chargés au changement de patient,
+  // rechargés au retour sur le Vérificateur, après une modification dans le profil
+  // (dataSync 'antecedents') et juste avant chaque verdict. Échec → jamais de vert.
+  const [patientAntecedents, setPatientAntecedents] = useState<Antecedent[]>([]);
+  const [antLoading, setAntLoading] = useState(false);
+  const [antError, setAntError] = useState(false);
+  const antSeqRef = useRef(0);
+  const antSigRef = useRef('');
+  const refreshAntecedents = useCallback(async (
+    pid: string, opts: { reset?: boolean } = {},
+  ): Promise<'unchanged' | 'changed' | 'error' | 'stale'> => {
+    const seq = ++antSeqRef.current;
+    setAntLoading(true);
+    if (opts.reset) {
+      antSigRef.current = '';
+      setPatientAntecedents([]);
+      setAntError(false);
+    }
+    try {
+      const rows = await loadAntecedents(pid, false); // filtré par patient, archivés exclus
+      if (seq !== antSeqRef.current || selectedPatientIdRef.current !== pid) return 'stale';
+      setAntError(false);
+      const sig = rows.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
+      if (sig === antSigRef.current) return 'unchanged';
+      antSigRef.current = sig;
+      setPatientAntecedents(rows);
+      return 'changed';
+    } catch (e) {
+      if (seq !== antSeqRef.current || selectedPatientIdRef.current !== pid) return 'stale';
+      console.error('[OrdoSur] antecedents load error:', e);
+      setAntError(true);
+      return 'error';
+    } finally {
+      if (seq === antSeqRef.current) setAntLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const pid = selectedPatient?.id;
+    if (!pid) {
+      antSeqRef.current++;
+      antSigRef.current = '';
+      setPatientAntecedents([]); setAntError(false); setAntLoading(false);
+      return;
+    }
+    refreshAntecedents(pid, { reset: true });
+  }, [selectedPatient?.id, refreshAntecedents]);
+
+  useDataSync(['antecedents'], () => {
+    const pid = selectedPatientIdRef.current;
+    if (pid) refreshAntecedents(pid);
+  }, { onFocus: false });
+
+  // Règles et classes : chargées une fois (fetchAllRows). Échec → antécédents digestifs
+  // non analysés, signalé (bloc Vérificateur + verdict jamais vert).
+  const [antRegles, setAntRegles] = useState<RegleAntecedent[]>([]);
+  const [antClasses, setAntClasses] = useState<RegleClasse[]>([]);
+  const [antRulesReady, setAntRulesReady] = useState(false);
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [regles, classes] = await Promise.all([
+          fetchAllRows<RegleAntecedent>(
+            (from, to) => supabase.from('regles_antecedents').select('*').eq('actif', true).order('ordre').range(from, to),
+            { label: 'regles_antecedents' },
+          ),
+          fetchAllRows<RegleClasse>(
+            (from, to) => supabase.from('regles_antecedents_classes').select('classe, dci_motif').range(from, to),
+            { label: 'regles_antecedents_classes' },
+          ),
+        ]);
+        if (cancelled) return;
+        if (regles.length === 0 || classes.length === 0) throw new Error('règles antécédents vides');
+        setAntRegles(regles);
+        setAntClasses(classes);
+        setAntRulesReady(true);
+      } catch (e) {
+        console.error('[OrdoSur] regles_antecedents load error:', e);
+        if (!cancelled) setAntRulesReady(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  // Antécédents digestifs présents mais non analysables (règles ou antécédents non chargés).
+  const antecedentsIncomplete = antError
+    || (!antRulesReady && patientAntecedents.some(a => classifyAntecedent(a) !== null));
+
   // Sprint 3b — Clé de l'ensemble analysé : médicaments du Vérificateur + traitements de
   // fond inclus. Tout changement (ajout/retrait, case décochée, traitement rechargé)
   // invalide le verdict : il devra être recalculé via « Analyser » (jamais de verdict périmé,
@@ -2758,8 +2892,10 @@ export function DoctorDashboard() {
       .map(t => fondMedId(t))
       .filter(id => !selectedMeds.some(m => m.id === id))
       .sort().join(',');
-    return `${meds}#${fond}`;
-  }, [selectedMeds, fondTraitements, fondExcluded]);
+    // Sprint 4bc — antécédents analysés : toute modification invalide le verdict.
+    const ant = patientAntecedents.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
+    return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}`;
+  }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady]);
   const analysisValid = !!result && analyzedKey === currentAnalysisKey;
   useEffect(() => {
     if (result && analyzedKey !== currentAnalysisKey) setResult(null);
@@ -3227,6 +3363,39 @@ export function DoctorDashboard() {
         setAgeUnknownWarning(false);
       }
 
+      // ── 4. Sprint 4bc — Canal antécédents (APPEL ADDITIONNEL) ────────────
+      // Ne fait qu'AJOUTER des alertes : les blocs ci-dessus ne sont pas modifiés.
+      // Même ensemble analysé (nouveau / renouvelé / fond) et mêmes sources de matching
+      // (dci + nom + dci_canonique + ingrédients). Doublon avec une CI existante du même
+      // thème et de sévérité ≥ → ligne « Également : antécédent de … » sur la carte existante.
+      if (selectedPatient && patientAntecedents.length > 0 && antRegles.length > 0) {
+        const antAlerts = evaluateAntecedents(
+          analysisMeds.map(m => ({ id: m.id, nom: m.nom, dci: m.dci, dci_canonique: m.dci_canonique, ingredients: ingNamesByMedId.get(m.id) })),
+          patientAntecedents,
+          antRegles,
+          antClasses,
+        );
+        const { standalone, alsoByIndex } = mergeWithExisting(alerts, antAlerts);
+        for (const [idx, lines] of alsoByIndex) {
+          alerts[idx] = { ...alerts[idx], also: [...(alerts[idx].also ?? []), ...lines] };
+        }
+        for (const aa of standalone) {
+          const key = `ant|${aa.medId}|${aa.antecedentId}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          alerts.push({
+            type: 'contraindication',
+            severite: ANTECEDENT_SEVERITE[aa.severite],
+            description: `${aa.titre}. Conduite à tenir : ${aa.conduite}`,
+            involved: [aa.medNom],
+            condition: `antécédent de ${aa.conditionLabel}`,
+            origin: originOfMed(aa.medId),
+            channel: 'antecedent',
+            ruleSource: aa.source,
+          });
+        }
+      }
+
       setInteractionAlerts(alerts);
       setAnalysisPending(false);
     };
@@ -3236,7 +3405,7 @@ export function DoctorDashboard() {
       if (!cancelled) setAnalysisPending(false);
     });
     return () => { cancelled = true; };
-  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded]);
+  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses]);
 
   // ── Data loaders ─────────────────────────────────────────────────────────
 
@@ -3594,7 +3763,9 @@ export function DoctorDashboard() {
             'safe' | 'attention' | 'dangerous'
           > = {
             contre_indication: 'dangerous',
+            a_evaluer:         'attention', // Sprint 4bc — antécédents
             majeure:           'dangerous',
+            precaution:        'attention', // Sprint 4bc — antécédents
             moderee:           'attention',
             mineure:           'attention',
             non_classee:       'safe', // never logged (filtered above), but required for type completeness
@@ -3604,10 +3775,12 @@ export function DoctorDashboard() {
             doctor_id:    doctorId,
             patient_id:   selectedPatient.id,
             medicament_a: alert.involved[0],
+            // Sprint 4bc — alerte d'antécédent : medicament_b = NULL (pas de 2e médicament).
             // contraindications only have 1 involved med — duplicate to satisfy NOT NULL
-            medicament_b: alert.involved[1] ?? alert.involved[0],
+            medicament_b: alert.channel === 'antecedent' ? null : (alert.involved[1] ?? alert.involved[0]),
             risk_level:   severityToRisk[alert.severite],
-            source:       alert.origin === 'mixte' ? 'avec_traitement_fond' : 'nouveau',
+            source:       alert.channel === 'antecedent' ? 'antecedent'
+              : alert.origin === 'mixte' ? 'avec_traitement_fond' : 'nouveau',
           }));
           const { error: logErr } = await supabase
             .from('interaction_logs')
@@ -3812,22 +3985,31 @@ export function DoctorDashboard() {
   const checkInteractions = async (opts?: { skipFondRefresh?: boolean }) => {
     if (selectedMeds.length < 1) { showToast('Sélectionnez au moins 1 médicament', 'error'); return; }
     if (!selectedPatient) { showToast('Sélectionnez un patient pour analyser les contre-indications', 'error'); return; }
-    if (fondLoading || analysisPending) { showToast('Analyse en cours — réessayez dans un instant', 'info'); return; }
+    if (fondLoading || antLoading || analysisPending) { showToast('Analyse en cours — réessayez dans un instant', 'info'); return; }
     setLoading(true);
 
     // Niveau 3 — traitement de fond rechargé juste avant le verdict. Liste modifiée → runCheck
     // se relance sur la nouvelle liste et le verdict est calculé à la fin (autoVerdictRef).
     // (Comparaison stricte : onClick transmet l'événement en 1er argument.)
+    // Sprint 4bc — les antécédents sont rechargés en même temps, selon le même principe.
     let fondFailed = fondError;
+    let antIncomplete = antecedentsIncomplete;
     if (opts?.skipFondRefresh !== true) {
-      const status = await refreshFond(selectedPatient.id);
-      if (status === 'stale') { setLoading(false); return; }
-      if (status === 'changed') {
+      const [status, antStatus] = await Promise.all([
+        refreshFond(selectedPatient.id),
+        refreshAntecedents(selectedPatient.id),
+      ]);
+      if (status === 'stale' || antStatus === 'stale') { setLoading(false); return; }
+      if (status === 'changed' || antStatus === 'changed') {
         autoVerdictRef.current = true;
-        showToast('Traitement de fond mis à jour — analyse relancée', 'info');
+        showToast(status === 'changed'
+          ? 'Traitement de fond mis à jour — analyse relancée'
+          : 'Antécédents mis à jour — analyse relancée', 'info');
         return; // loading conservé jusqu'au verdict automatique
       }
       fondFailed = status === 'error';
+      antIncomplete = antStatus === 'error'
+        || (!antRulesReady && patientAntecedents.some(a => classifyAntecedent(a) !== null));
     }
     await new Promise(r => setTimeout(r, 200));
 
@@ -3861,10 +4043,12 @@ export function DoctorDashboard() {
       if (alert.severite === 'contre_indication') overallSeverity = 'dangerous';
       else if (alert.severite === 'majeure' && overallSeverity !== 'dangerous') overallSeverity = 'attention';
       else if (alert.severite === 'moderee' && overallSeverity === 'safe') overallSeverity = 'attention';
+      // Sprint 4bc — « À évaluer » et « Précaution » (antécédents) : alertes réelles, jamais de vert.
+      else if ((alert.severite === 'a_evaluer' || alert.severite === 'precaution') && overallSeverity !== 'dangerous') overallSeverity = 'attention';
       // Volet 2 — pour les CI, afficher la condition_valeur exacte entre le médicament
       // et la description (contexte médical : "HTA sévère non contrôlée" vs juste "Hypertension").
       const prefix = alert.type === 'contraindication'
-        ? `Contre-indication patient (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
+        ? `${alert.channel === 'antecedent' ? 'Antécédent' : 'Contre-indication patient'} (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
         : alert.involved.join(' + ');
       reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
@@ -3872,7 +4056,7 @@ export function DoctorDashboard() {
     const nbCI = firmAlerts.filter(a => a.severite === 'contre_indication').length;
     // Sprint #3.0.8 — Compte TOUTES les vraies interactions cliniques (exclut non_classee + info)
     // pour que "X interaction(s) signalée(s)" corresponde exactement au nombre de cards affichées.
-    const clinicalSeverities: InteractionAlert['severite'][] = ['contre_indication', 'majeure', 'moderee', 'mineure'];
+    const clinicalSeverities: InteractionAlert['severite'][] = ['contre_indication', 'a_evaluer', 'majeure', 'precaution', 'moderee', 'mineure'];
     const nbSignaled = firmAlerts.filter(a => clinicalSeverities.includes(a.severite)).length;
     const pregnancyOnly = overallSeverity === 'safe' && pregnancyCtxCount > 0 && nbSignaled === 0;
     if (pregnancyOnly) overallSeverity = 'conditional';
@@ -3884,6 +4068,9 @@ export function DoctorDashboard() {
     // Sprint 3 — traitement de fond non chargé : vérification croisée non faite → jamais vert.
     const fondUnavailable = overallSeverity === 'safe' && fondFailed;
     if (fondUnavailable) overallSeverity = 'conditional';
+    // Sprint 4bc — antécédents (ou leurs règles) non chargés : analyse incomplète → jamais vert.
+    const antUnavailable = overallSeverity === 'safe' && antIncomplete;
+    if (antUnavailable) overallSeverity = 'conditional';
 
     // Source unique de vérité : même nonVerifiables que le panneau temps réel.
     // allNonVerifiable → pas de bandeau vert, severity forcée à 'attention'.
@@ -3910,6 +4097,8 @@ export function DoctorDashboard() {
             ? preexistingLabel
           : fondUnavailable
             ? 'Traitement de fond non chargé — analyse incomplète'
+          : antUnavailable
+            ? 'Antécédents non chargés — analyse incomplète'
           : overallSeverity === 'attention'
             ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
             : reasons.length > 0
@@ -3924,9 +4113,13 @@ export function DoctorDashboard() {
       ? `${baseDescription} · ${preexistingLabel}`
       : baseDescription;
     // Échec du rechargement du fond : toujours signalé, quel que soit le verdict.
-    const description = fondFailed && !fondUnavailable
+    const withFond = fondFailed && !fondUnavailable
       ? `${withPreexisting} · Traitement de fond non chargé — analyse incomplète`
       : withPreexisting;
+    // Échec du chargement des antécédents : toujours signalé, quel que soit le verdict.
+    const description = antIncomplete && !antUnavailable
+      ? `${withFond} · Antécédents non chargés — analyse incomplète`
+      : withFond;
 
     setAnalyzedKey(currentAnalysisKey);
     setResult({ severity: overallSeverity, title: resultTitle, description, alternatives: [], reasons, medications: [], patientPrecautions: [] });
@@ -4067,7 +4260,7 @@ export function DoctorDashboard() {
   // Niveau 2 — la vue Vérificateur redevient active avec un patient déjà sélectionné.
   useEffect(() => {
     const pid = selectedPatientIdRef.current;
-    if (activeView === 'checker' && pid) refreshFond(pid);
+    if (activeView === 'checker' && pid) { refreshFond(pid); refreshAntecedents(pid); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeView]);
 
@@ -4269,6 +4462,10 @@ export function DoctorDashboard() {
                 renewFond={renewFond}
                 reloadFond={() => { if (selectedPatient) refreshFond(selectedPatient.id); }}
                 analysisPending={analysisPending}
+                antecedents={patientAntecedents}
+                antecedentsLoading={antLoading}
+                antecedentsError={antError}
+                antecedentRulesReady={antRulesReady}
               />
             )}
 
