@@ -1,0 +1,1072 @@
+{
+  "classes": [
+    {
+      "classe": "ipp",
+      "label": "inhibiteurs de la pompe à protons",
+      "motif": "omeprazol"
+    },
+    {
+      "classe": "ipp",
+      "label": "inhibiteurs de la pompe à protons",
+      "motif": "esomeprazol"
+    },
+    {
+      "classe": "ipp",
+      "label": "inhibiteurs de la pompe à protons",
+      "motif": "lansoprazol"
+    },
+    {
+      "classe": "ipp",
+      "label": "inhibiteurs de la pompe à protons",
+      "motif": "dexlansoprazol"
+    },
+    {
+      "classe": "ipp",
+      "label": "inhibiteurs de la pompe à protons",
+      "motif": "pantoprazol"
+    },
+    {
+      "classe": "ipp",
+      "label": "inhibiteurs de la pompe à protons",
+      "motif": "rabeprazol"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "captopril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "enalapril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "lisinopril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "perindopril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "ramipril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "quinapril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "benazepril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "fosinopril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "trandolapril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "zofenopril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "cilazapril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "imidapril"
+    },
+    {
+      "classe": "iec",
+      "label": "IEC",
+      "motif": "moexipril"
+    },
+    {
+      "classe": "ara2",
+      "label": "ARA2 (sartans)",
+      "motif": "losartan"
+    },
+    {
+      "classe": "ara2",
+      "label": "ARA2 (sartans)",
+      "motif": "valsartan"
+    },
+    {
+      "classe": "ara2",
+      "label": "ARA2 (sartans)",
+      "motif": "irbesartan"
+    },
+    {
+      "classe": "ara2",
+      "label": "ARA2 (sartans)",
+      "motif": "candesartan"
+    },
+    {
+      "classe": "ara2",
+      "label": "ARA2 (sartans)",
+      "motif": "telmisartan"
+    },
+    {
+      "classe": "ara2",
+      "label": "ARA2 (sartans)",
+      "motif": "olmesartan"
+    },
+    {
+      "classe": "ara2",
+      "label": "ARA2 (sartans)",
+      "motif": "azilsartan"
+    },
+    {
+      "classe": "ara2",
+      "label": "ARA2 (sartans)",
+      "motif": "eprosartan"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "diazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "alprazolam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "lorazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "bromazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "clonazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "oxazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "prazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "nordazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "clorazepat"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "clobazam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "nitrazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "lormetazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "temazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "midazolam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "tetrazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "loprazolam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "estazolam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "flunitrazepam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "triazolam"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "chlordiazepoxid"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "zolpidem"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "zopiclon"
+    },
+    {
+      "classe": "benzodiazepines",
+      "label": "benzodiazépines et apparentés",
+      "motif": "eszopiclon"
+    },
+    {
+      "classe": "statines",
+      "label": "statines",
+      "motif": "simvastatin"
+    },
+    {
+      "classe": "statines",
+      "label": "statines",
+      "motif": "atorvastatin"
+    },
+    {
+      "classe": "statines",
+      "label": "statines",
+      "motif": "rosuvastatin"
+    },
+    {
+      "classe": "statines",
+      "label": "statines",
+      "motif": "pravastatin"
+    },
+    {
+      "classe": "statines",
+      "label": "statines",
+      "motif": "fluvastatin"
+    },
+    {
+      "classe": "statines",
+      "label": "statines",
+      "motif": "pitavastatin"
+    },
+    {
+      "classe": "statines",
+      "label": "statines",
+      "motif": "lovastatin"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "codein"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "dihydrocodein"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "morphin"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "ethylmorphin"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "tramadol"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "oxycodon"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "hydromorphon"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "fentanyl"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "buprenorphin"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "nalbuphin"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "methadon"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "pethidin"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "tapentadol"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "pholcodin"
+    },
+    {
+      "classe": "opioides",
+      "label": "opioïdes",
+      "motif": "opium"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "fluoxetin"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "paroxetin"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "sertralin"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "citalopram"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "escitalopram"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "fluvoxamin"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "venlafaxin"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "desvenlafaxin"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "duloxetin"
+    },
+    {
+      "classe": "isrs_irsna",
+      "label": "antidépresseurs ISRS / IRSNA",
+      "motif": "milnacipran"
+    },
+    {
+      "classe": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "motif": "glibenclamid"
+    },
+    {
+      "classe": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "motif": "glyburid"
+    },
+    {
+      "classe": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "motif": "gliclazid"
+    },
+    {
+      "classe": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "motif": "glimepirid"
+    },
+    {
+      "classe": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "motif": "glipizid"
+    },
+    {
+      "classe": "sulfamides_hypoglycemiants",
+      "label": "sulfamides hypoglycémiants",
+      "motif": "gliquidon"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "atenolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "bisoprolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "metoprolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "propranolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "carvedilol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "nebivolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "acebutolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "sotalol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "celiprolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "labetalol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "nadolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "betaxolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "pindolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "esmolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "tertatolol"
+    },
+    {
+      "classe": "betabloquants",
+      "label": "bêtabloquants",
+      "motif": "timolol"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "hydroxyzin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "dexchlorpheniramin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "chlorphenamin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "chlorpheniramin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "brompheniramin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "pheniramin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "promethazin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "alimemazin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "oxomemazin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "doxylamin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "diphenhydramin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "mequitazin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "cyproheptadin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "ketotifen"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "triprolidin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "clemastin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "buclizin"
+    },
+    {
+      "classe": "antihistaminiques_h1_sedatifs",
+      "label": "antihistaminiques H1 sédatifs",
+      "motif": "carbinoxamin"
+    }
+  ],
+  "substances": [
+    {
+      "substance": "paracetamol",
+      "label": "paracétamol",
+      "type": "synonyme",
+      "motif": "paracetamol"
+    },
+    {
+      "substance": "paracetamol",
+      "label": "paracétamol",
+      "type": "synonyme",
+      "motif": "acetaminophen"
+    },
+    {
+      "substance": "aspirine",
+      "label": "aspirine",
+      "type": "synonyme",
+      "motif": "aspirin"
+    },
+    {
+      "substance": "aspirine",
+      "label": "aspirine",
+      "type": "synonyme",
+      "motif": "acetylsalicyl"
+    },
+    {
+      "substance": "aspirine",
+      "label": "aspirine",
+      "type": "synonyme",
+      "motif": "acetilsalicyl"
+    },
+    {
+      "substance": "aspirine",
+      "label": "aspirine",
+      "type": "synonyme",
+      "motif": "acide acetylsalicylique"
+    },
+    {
+      "substance": "valproate",
+      "label": "valproate",
+      "type": "synonyme",
+      "motif": "valpro"
+    },
+    {
+      "substance": "valproate",
+      "label": "valproate",
+      "type": "synonyme",
+      "motif": "divalpro"
+    },
+    {
+      "substance": "salbutamol",
+      "label": "salbutamol",
+      "type": "synonyme",
+      "motif": "salbutamol"
+    },
+    {
+      "substance": "salbutamol",
+      "label": "salbutamol",
+      "type": "synonyme",
+      "motif": "albuterol"
+    },
+    {
+      "substance": "adrenaline",
+      "label": "adrénaline",
+      "type": "synonyme",
+      "motif": "adrenalin"
+    },
+    {
+      "substance": "adrenaline",
+      "label": "adrénaline",
+      "type": "synonyme",
+      "motif": "epinephrin"
+    },
+    {
+      "substance": "noradrenaline",
+      "label": "noradrénaline",
+      "type": "synonyme",
+      "motif": "noradrenalin"
+    },
+    {
+      "substance": "noradrenaline",
+      "label": "noradrénaline",
+      "type": "synonyme",
+      "motif": "norepinephrin"
+    },
+    {
+      "substance": "glibenclamide",
+      "label": "glibenclamide",
+      "type": "synonyme",
+      "motif": "glibenclamid"
+    },
+    {
+      "substance": "glibenclamide",
+      "label": "glibenclamide",
+      "type": "synonyme",
+      "motif": "glyburid"
+    },
+    {
+      "substance": "metamizole",
+      "label": "métamizole",
+      "type": "synonyme",
+      "motif": "metamizol"
+    },
+    {
+      "substance": "metamizole",
+      "label": "métamizole",
+      "type": "synonyme",
+      "motif": "dipyron"
+    },
+    {
+      "substance": "metamizole",
+      "label": "métamizole",
+      "type": "synonyme",
+      "motif": "noramidopyrin"
+    },
+    {
+      "substance": "ciclosporine",
+      "label": "ciclosporine",
+      "type": "synonyme",
+      "motif": "ciclosporin"
+    },
+    {
+      "substance": "ciclosporine",
+      "label": "ciclosporine",
+      "type": "synonyme",
+      "motif": "cyclosporin"
+    },
+    {
+      "substance": "rifampicine",
+      "label": "rifampicine",
+      "type": "synonyme",
+      "motif": "rifampicin"
+    },
+    {
+      "substance": "rifampicine",
+      "label": "rifampicine",
+      "type": "synonyme",
+      "motif": "rifampin"
+    },
+    {
+      "substance": "lidocaine",
+      "label": "lidocaïne",
+      "type": "synonyme",
+      "motif": "lidocain"
+    },
+    {
+      "substance": "lidocaine",
+      "label": "lidocaïne",
+      "type": "synonyme",
+      "motif": "lignocain"
+    },
+    {
+      "substance": "furosemide",
+      "label": "furosémide",
+      "type": "synonyme",
+      "motif": "furosemid"
+    },
+    {
+      "substance": "furosemide",
+      "label": "furosémide",
+      "type": "synonyme",
+      "motif": "frusemid"
+    },
+    {
+      "substance": "pethidine",
+      "label": "péthidine",
+      "type": "synonyme",
+      "motif": "pethidin"
+    },
+    {
+      "substance": "pethidine",
+      "label": "péthidine",
+      "type": "synonyme",
+      "motif": "meperidin"
+    },
+    {
+      "substance": "vitamine_d3",
+      "label": "vitamine D3",
+      "type": "synonyme",
+      "motif": "colecalciferol"
+    },
+    {
+      "substance": "vitamine_d3",
+      "label": "vitamine D3",
+      "type": "synonyme",
+      "motif": "cholecalciferol"
+    },
+    {
+      "substance": "vitamine_d3",
+      "label": "vitamine D3",
+      "type": "synonyme",
+      "motif": "vitamine d3"
+    },
+    {
+      "substance": "vitamine_d3",
+      "label": "vitamine D3",
+      "type": "synonyme",
+      "motif": "vitamin d3"
+    },
+    {
+      "substance": "levothyroxine",
+      "label": "lévothyroxine",
+      "type": "synonyme",
+      "motif": "levothyrox"
+    },
+    {
+      "substance": "aciclovir",
+      "label": "aciclovir",
+      "type": "synonyme",
+      "motif": "aciclovir"
+    },
+    {
+      "substance": "aciclovir",
+      "label": "aciclovir",
+      "type": "synonyme",
+      "motif": "acyclovir"
+    },
+    {
+      "substance": "cefalexine",
+      "label": "céfalexine",
+      "type": "synonyme",
+      "motif": "cefalexin"
+    },
+    {
+      "substance": "cefalexine",
+      "label": "céfalexine",
+      "type": "synonyme",
+      "motif": "cephalexin"
+    },
+    {
+      "substance": "acetylcysteine",
+      "label": "acétylcystéine",
+      "type": "synonyme",
+      "motif": "acetylcystein"
+    },
+    {
+      "substance": "acetylcysteine",
+      "label": "acétylcystéine",
+      "type": "synonyme",
+      "motif": "n acetylcystein"
+    },
+    {
+      "substance": "cafeine",
+      "label": "caféine",
+      "type": "adjuvant",
+      "motif": "cafein"
+    },
+    {
+      "substance": "cafeine",
+      "label": "caféine",
+      "type": "adjuvant",
+      "motif": "caffein"
+    },
+    {
+      "substance": "vitamine_c",
+      "label": "vitamine C",
+      "type": "adjuvant",
+      "motif": "acide ascorbique"
+    },
+    {
+      "substance": "vitamine_c",
+      "label": "vitamine C",
+      "type": "adjuvant",
+      "motif": "ascorbic"
+    },
+    {
+      "substance": "vitamine_c",
+      "label": "vitamine C",
+      "type": "adjuvant",
+      "motif": "ascorbique"
+    },
+    {
+      "substance": "vitamine_c",
+      "label": "vitamine C",
+      "type": "adjuvant",
+      "motif": "vitamine c"
+    },
+    {
+      "substance": "vitamine_c",
+      "label": "vitamine C",
+      "type": "adjuvant",
+      "motif": "vitamin c"
+    },
+    {
+      "substance": "menthol",
+      "label": "menthol",
+      "type": "adjuvant",
+      "motif": "menthol"
+    },
+    {
+      "substance": "menthol",
+      "label": "menthol",
+      "type": "adjuvant",
+      "motif": "levomenthol"
+    },
+    {
+      "substance": "camphre",
+      "label": "camphre",
+      "type": "adjuvant",
+      "motif": "camphre"
+    },
+    {
+      "substance": "camphre",
+      "label": "camphre",
+      "type": "adjuvant",
+      "motif": "camphor"
+    },
+    {
+      "substance": "eucalyptus",
+      "label": "eucalyptus",
+      "type": "adjuvant",
+      "motif": "eucalypt"
+    },
+    {
+      "substance": "eucalyptus",
+      "label": "eucalyptus",
+      "type": "adjuvant",
+      "motif": "niaouli"
+    },
+    {
+      "substance": "eucalyptus",
+      "label": "eucalyptus",
+      "type": "adjuvant",
+      "motif": "cineol"
+    }
+  ],
+  "regles": [
+    {
+      "ordre": 10,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D1",
+      "classe_a": "*",
+      "classe_b": "*",
+      "severite": "majeure",
+      "titre": "Même principe actif",
+      "conduite": "Risque de surdosage. Ne garder qu’une seule spécialité, ou vérifier la dose totale journalière."
+    },
+    {
+      "ordre": 20,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D1b",
+      "classe_a": "+",
+      "classe_b": "+",
+      "severite": "attention",
+      "titre": "Même substance d’appoint",
+      "conduite": "Substance présente dans les deux spécialités : vérifier la dose totale."
+    },
+    {
+      "ordre": 30,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "ipp",
+      "classe_b": "ipp",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (inhibiteurs de la pompe à protons)",
+      "conduite": "Association de deux IPP sans bénéfice : n’en garder qu’un."
+    },
+    {
+      "ordre": 40,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "iec",
+      "classe_b": "iec",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (IEC)",
+      "conduite": "Association de deux IEC sans bénéfice : risque d’hypotension, d’hyperkaliémie et d’insuffisance rénale. N’en garder qu’un."
+    },
+    {
+      "ordre": 50,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "ara2",
+      "classe_b": "ara2",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (ARA2 (sartans))",
+      "conduite": "Association de deux sartans sans bénéfice : risque d’hypotension, d’hyperkaliémie et d’insuffisance rénale. N’en garder qu’un."
+    },
+    {
+      "ordre": 60,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "benzodiazepines",
+      "classe_b": "benzodiazepines",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (benzodiazépines et apparentés)",
+      "conduite": "Cumul des effets sédatifs et du risque de dépendance : n’en garder qu’une."
+    },
+    {
+      "ordre": 70,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "statines",
+      "classe_b": "statines",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (statines)",
+      "conduite": "Association de deux statines sans bénéfice : risque musculaire majoré. N’en garder qu’une."
+    },
+    {
+      "ordre": 80,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "opioides",
+      "classe_b": "opioides",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (opioïdes)",
+      "conduite": "Cumul des effets dépresseurs respiratoires et sédatifs : vérifier que l’association est voulue et la dose totale."
+    },
+    {
+      "ordre": 90,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "isrs_irsna",
+      "classe_b": "isrs_irsna",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (antidépresseurs ISRS / IRSNA)",
+      "conduite": "Risque de syndrome sérotoninergique : n’en garder qu’un."
+    },
+    {
+      "ordre": 100,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "sulfamides_hypoglycemiants",
+      "classe_b": "sulfamides_hypoglycemiants",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (sulfamides hypoglycémiants)",
+      "conduite": "Association de deux sulfamides hypoglycémiants : risque d’hypoglycémie. N’en garder qu’un."
+    },
+    {
+      "ordre": 110,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "betabloquants",
+      "classe_b": "betabloquants",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (bêtabloquants)",
+      "conduite": "Association de deux bêtabloquants : risque de bradycardie et de troubles de la conduction. N’en garder qu’un (collyres compris)."
+    },
+    {
+      "ordre": 120,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "antihistaminiques_h1_sedatifs",
+      "classe_b": "antihistaminiques_h1_sedatifs",
+      "severite": "attention",
+      "titre": "Deux médicaments de la même classe (antihistaminiques H1 sédatifs)",
+      "conduite": "Cumul des effets sédatifs et atropiniques : n’en garder qu’un."
+    },
+    {
+      "ordre": 130,
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "code": "D2",
+      "classe_a": "ara2",
+      "classe_b": "iec",
+      "severite": "attention",
+      "titre": "Association IEC + ARA2 (double blocage du système rénine-angiotensine)",
+      "conduite": "Double blocage déconseillé : risque d’hyperkaliémie, d’hypotension et d’insuffisance rénale. Vérifier que l’association est voulue ; surveillance de la kaliémie et de la créatinine."
+    }
+  ]
+}

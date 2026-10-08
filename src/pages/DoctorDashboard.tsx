@@ -38,6 +38,10 @@ import {
   type AllergieFamilleRow, type RegleAllergie, type AllergyClassification, type PatientAllergy,
 } from '../lib/allergyClassEngine';
 import {
+  evaluateDuplicates, mergeDuplicateAlerts, duplicateDescription,
+  type DoublonClasseRow, type DoublonSubstanceRow, type RegleDoublon,
+} from '../lib/duplicateEngine';
+import {
   derogationAlerts, ordonnanceSignature, isConfirmationValid, buildDerogationEntries, alertLabel,
   type DerogationConfirmation,
 } from '../lib/derogation';
@@ -144,7 +148,7 @@ interface InteractionAlert {
   // Absent = 'nouveau' (rétrocompatibilité).
   origin?: 'nouveau' | 'mixte' | 'fond';
   // Sprint 4bc — alerte produite par le canal antécédents (src/lib/antecedentEngine.ts).
-  channel?: 'antecedent' | 'allergie';
+  channel?: 'antecedent' | 'allergie' | 'doublon';
   // Sprint 4bc — source de la règle (affichée dans les détails).
   ruleSource?: string;
   // Sprint 4bc — antécédents absorbés par cette CI existante (« Également : antécédent de … »).
@@ -689,6 +693,11 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
         <div className="flex items-start gap-2 mb-1.5 flex-wrap">
           <SeverityBadge s={alert.severite} />
           <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0] leading-tight">{pairLabel}</span>
+          {alert.channel === 'doublon' && (
+            <span className="inline-flex items-center text-[10px] font-semibold uppercase tracking-wide text-[#0A1628] dark:text-slate-200 bg-[#0A1628]/[0.06] dark:bg-white/[0.08] border border-[#0A1628]/15 dark:border-white/15 rounded px-1.5 py-0.5">
+              Doublon thérapeutique
+            </span>
+          )}
           {alert.origin === 'mixte' && (
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-[#0A1628] dark:text-slate-200 bg-[#0A1628]/[0.06] dark:bg-white/[0.08] border border-[#0A1628]/15 dark:border-white/15 rounded px-1.5 py-0.5">
               <Pill className="w-3 h-3" aria-hidden /> avec traitement de fond
@@ -3140,6 +3149,49 @@ export function DoctorDashboard() {
   // Patient allergique mais règles non chargées : allergies croisées non analysées.
   const allergiesIncomplete = patientAllergies.length > 0 && !allergyRulesReady;
 
+  // ── Sprint 4e-A — Doublons thérapeutiques (canal doublons du moteur) ──────
+  // Classes à risque, synonymes de substances et règles chargés une fois (fetchAllRows).
+  // Échec → doublons non analysés : signalé, verdict jamais vert dès 2 médicaments.
+  const [dupClasses, setDupClasses] = useState<DoublonClasseRow[]>([]);
+  const [dupSubstances, setDupSubstances] = useState<DoublonSubstanceRow[]>([]);
+  const [dupRegles, setDupRegles] = useState<RegleDoublon[]>([]);
+  const [dupRulesReady, setDupRulesReady] = useState(false);
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [cls, subs, regles] = await Promise.all([
+          fetchAllRows<DoublonClasseRow>(
+            (from, to) => supabase.from('doublon_classes').select('classe, label, motif').range(from, to),
+            { label: 'doublon_classes' },
+          ),
+          fetchAllRows<DoublonSubstanceRow>(
+            (from, to) => supabase.from('doublon_substances').select('substance, label, type, motif').range(from, to),
+            { label: 'doublon_substances' },
+          ),
+          fetchAllRows<RegleDoublon>(
+            (from, to) => supabase.from('regles_doublons').select('*').eq('actif', true).order('ordre').range(from, to),
+            { label: 'regles_doublons' },
+          ),
+        ]);
+        if (cancelled) return;
+        if (cls.length === 0 || subs.length === 0 || regles.length === 0) throw new Error('règles doublons vides');
+        setDupClasses(cls);
+        setDupSubstances(subs);
+        setDupRegles(regles);
+        setDupRulesReady(true);
+      } catch (e) {
+        console.error('[OrdoSur] regles_doublons load error:', e);
+        if (!cancelled) setDupRulesReady(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+  // Au moins deux médicaments analysés (prescription + fond inclus) mais règles non chargées.
+  const doublonsIncomplete = !dupRulesReady
+    && (selectedMeds.length + fondTraitements.filter(t => !fondExcluded.has(t.id)).length) >= 2;
+
   // Antécédents digestifs présents mais non analysables (règles ou antécédents non chargés).
   const antecedentsIncomplete = antError
     || (!antRulesReady && patientAntecedents.some(a => classifyAntecedent(a) !== null));
@@ -3158,8 +3210,8 @@ export function DoctorDashboard() {
     // Sprint 4bc — antécédents analysés : toute modification invalide le verdict.
     const ant = patientAntecedents.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
     // Sprint 4e-B — allergies (et type de réaction) : toute modification invalide le verdict.
-    return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}`;
-  }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady]);
+    return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}`;
+  }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady]);
   // Sprint 4d — valide seulement si le verdict porte sur l'ensemble actuel ET sur le dernier run.
   const analysisValid = !!result && analyzedKey === currentAnalysisKey && result.runId === alertsRunId;
   useEffect(() => {
@@ -3377,6 +3429,19 @@ export function DoctorDashboard() {
           }
         }
       }
+      // Sprint 4e-A — nom en base de chaque médicament (la RPC nomme ses paires par
+      // medicaments.nom) : sert à fusionner un doublon avec l'interaction existante de la même
+      // paire. Réutilise la correspondance déjà chargée ; sinon une requête filtrée par UUID.
+      const dbNomById = new Map<string, string>();
+      for (const [nom, ids] of dbNomToIds) for (const id of ids) dbNomById.set(id, nom);
+      if (dbNomById.size === 0 && dbMeds.length >= 2 && dupRegles.length > 0) {
+        const { data: nomRows } = await supabase
+          .from('medicaments')
+          .select('id, nom')
+          .in('id', dbMeds.map(m => m.id));
+        for (const r of (nomRows as Array<{ id: string; nom: string }> | null) ?? []) dbNomById.set(r.id, r.nom);
+      }
+
       // Sprint 4d — run remplacé par un plus récent pendant les requêtes : il n'écrit rien.
       // (La suite de runCheck est synchrone : aucune annulation possible au milieu.)
       if (cancelled) return;
@@ -3708,6 +3773,44 @@ export function DoctorDashboard() {
         }
       }
 
+      // ── 6. Sprint 4e-A — Canal doublons thérapeutiques (APPEL ADDITIONNEL) ──
+      // Ne modifie aucun des blocs ci-dessus ni la RPC. Même principe actif dans deux lignes
+      // (associations fixes comprises) → majeure ; même classe à risque → attention.
+      // Traitement de fond inclus. Fusion avec l'interaction existante de la même paire :
+      // la sévérité la plus haute est toujours conservée.
+      if (analysisMeds.length >= 2 && dupRegles.length > 0) {
+        const dups = evaluateDuplicates(
+          analysisMeds.map(m => ({
+            id: m.id, nom: dbNomById.get(m.id) ?? m.nom, dci: m.dci, dci_canonique: m.dci_canonique,
+            ingredients: ingNamesByMedId.get(m.id), manual: m.manual,
+          })),
+          dupClasses, dupSubstances, dupRegles,
+        );
+        const nomAffiche = new Map(analysisMeds.map(m => [m.id, m.nom]));
+        const namesOf = (id: string) => [dbNomById.get(id), nomAffiche.get(id)].filter((x): x is string => !!x);
+        const mergedDup = mergeDuplicateAlerts(alerts, dups, namesOf);
+        for (const [idx, lines] of mergedDup.alsoByIndex) {
+          alerts[idx] = { ...alerts[idx], also: [...(alerts[idx].also ?? []), ...lines] };
+        }
+        for (const idx of [...mergedDup.absorbed].sort((a, b) => b - a)) alerts.splice(idx, 1);
+        for (const d of mergedDup.standalone) {
+          const key = `dup|${[d.idA, d.idB].sort().join('|')}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          const fa = fondIdSet.has(d.idA), fb = fondIdSet.has(d.idB);
+          alerts.push({
+            type: 'drug_drug',
+            severite: d.severite === 'majeure' ? 'majeure' : 'moderee',
+            description: duplicateDescription(d),
+            involved: [d.nomA, d.nomB],
+            origin: fa && fb ? 'fond' : (fa || fb) ? 'mixte' : 'nouveau',
+            channel: 'doublon',
+            ruleSource: d.source,
+            also: d.also,
+          });
+        }
+      }
+
       setInteractionAlerts(alerts);
       setAlertsRunId(runId);
       setAnalysisPending(false);
@@ -3718,7 +3821,7 @@ export function DoctorDashboard() {
       if (!cancelled) { setAnalysisPending(false); setAnalysisFailed(true); }
     });
     return () => { cancelled = true; };
-  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick, patientAllergies, allergyFamilles, allergyRegles]);
+  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick, patientAllergies, allergyFamilles, allergyRegles, dupClasses, dupSubstances, dupRegles]);
 
   // ── Data loaders ─────────────────────────────────────────────────────────
 
@@ -4155,10 +4258,13 @@ export function DoctorDashboard() {
             medicament_a: alert.involved[0],
             // Sprint 4bc — alerte d'antécédent : medicament_b = NULL (pas de 2e médicament).
             // contraindications only have 1 involved med — duplicate to satisfy NOT NULL
-            medicament_b: alert.channel ? null : (alert.involved[1] ?? alert.involved[0]),
+            medicament_b: (alert.channel === 'antecedent' || alert.channel === 'allergie')
+              ? null : (alert.involved[1] ?? alert.involved[0]),
             risk_level:   severityToRisk[alert.severite],
             // Sprint 4e-B — alerte d'allergie croisée : source dédiée
-            source:       alert.channel === 'allergie' ? 'allergie'
+            // Sprint 4e-A — doublon thérapeutique : source dédiée
+            source:       alert.channel === 'doublon' ? 'doublon'
+              : alert.channel === 'allergie' ? 'allergie'
               : alert.channel === 'antecedent' ? 'antecedent'
               : alert.origin === 'mixte' ? 'avec_traitement_fond' : 'nouveau',
           }));
@@ -4512,6 +4618,9 @@ export function DoctorDashboard() {
     // Sprint 4e-B — règles d'allergies non chargées chez un patient allergique : jamais vert.
     const allergyUnavailable = overallSeverity === 'safe' && allergiesIncomplete;
     if (allergyUnavailable) overallSeverity = 'conditional';
+    // Sprint 4e-A — règles de doublons non chargées avec au moins 2 médicaments : jamais vert.
+    const doublonUnavailable = overallSeverity === 'safe' && doublonsIncomplete;
+    if (doublonUnavailable) overallSeverity = 'conditional';
 
     // Source unique de vérité : même nonVerifiables que le panneau temps réel.
     // allNonVerifiable → pas de bandeau vert, severity forcée à 'attention'.
@@ -4542,6 +4651,8 @@ export function DoctorDashboard() {
             ? 'Antécédents non chargés — analyse incomplète'
           : allergyUnavailable
             ? 'Allergies croisées non analysées — analyse incomplète'
+          : doublonUnavailable
+            ? 'Doublons thérapeutiques non analysés — analyse incomplète'
           : overallSeverity === 'attention'
             ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
             : reasons.length > 0
@@ -4564,9 +4675,13 @@ export function DoctorDashboard() {
       ? `${withFond} · Antécédents non chargés — analyse incomplète`
       : withFond;
     // Règles d'allergies non chargées : toujours signalé, quel que soit le verdict.
-    const description = allergiesIncomplete && !allergyUnavailable
+    const withAllergy = allergiesIncomplete && !allergyUnavailable
       ? `${withAnt} · Allergies croisées non analysées — analyse incomplète`
       : withAnt;
+    // Règles de doublons non chargées : toujours signalé, quel que soit le verdict.
+    const description = doublonsIncomplete && !doublonUnavailable
+      ? `${withAllergy} · Doublons thérapeutiques non analysés — analyse incomplète`
+      : withAllergy;
 
     setAnalyzedKey(currentAnalysisKey);
     setResult({
