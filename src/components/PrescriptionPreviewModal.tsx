@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { ArrowLeft, Save, Printer, Download, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Save, Printer, Download, AlertTriangle, Share2 } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { generateOrdonnancePdf, PdfInteractionAlert } from '../lib/pdfService';
+import { generateOrdonnancePdf, PdfInteractionAlert, type PdfOrdonnanceData } from '../lib/pdfService';
+import type { ExamPage } from '../lib/examDocument';
+import { buildOrdonnanceWithExamsPdf, canSharePdf } from '../lib/examPdf';
+import { outputPdf, type OutputMode } from '../lib/examUi';
+import { ExamPagesPreview } from './exams/ExamPagesPreview';
 import { formatAge } from '../lib/ageUtils';
 import { formatNomPropre, formatDocteur, formatCabinet } from '../lib/formatName';
 import { DocumentSignatureBlock } from './DocumentSignatureBlock';
@@ -64,6 +68,11 @@ interface PrescriptionPreviewModalProps {
   remarks: string;
   nextAppointment?: string;
   interactionAlerts?: PdfInteractionAlert[];
+  /**
+   * Sprint 5 — pages « Examens à réaliser » jointes à l'ordonnance : elles la suivent dans le
+   * même PDF. Impression, PDF et partage passent alors par ce PDF unique.
+   */
+  examPages?: ExamPage[];
 }
 
 export function PrescriptionPreviewModal({
@@ -85,6 +94,7 @@ export function PrescriptionPreviewModal({
   remarks,
   nextAppointment,
   interactionAlerts = [],
+  examPages = [],
 }: PrescriptionPreviewModalProps) {
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -113,14 +123,41 @@ export function PrescriptionPreviewModal({
     try { await onSave(); } finally { setSaving(false); }
   };
 
+  const hasExams = examPages.length > 0;
+  const shareable = hasExams && canSharePdf();
+  const pdfData = (): PdfOrdonnanceData => ({
+    ordreNumber, logo_url, doctor, org, patient, motif, medications, remarks, nextAppointment, date: todayIso, interactionAlerts,
+  });
+  const [outNote, setOutNote] = useState<string | null>(null);
+
+  /** Ordonnance + examens : un seul PDF, imprimé, téléchargé ou partagé. */
+  const outputCombined = async (mode: OutputMode) => {
+    if (blockedReason || busy) return;
+    setPdfError(null);
+    setOutNote(null);
+    if (!(await ensureSaved())) return;
+    setPdfLoading(true);
+    try {
+      const file = await buildOrdonnanceWithExamsPdf(pdfData(), examPages);
+      const msg = await outputPdf(file, mode, `Ordonnance et examens — ${patient.prenom} ${patient.nom}`);
+      if (mode !== 'download') setOutNote(msg);
+    } catch (e: unknown) {
+      setPdfError(e instanceof Error ? e.message : 'Erreur lors de la génération du PDF');
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
   const handlePrint = async () => {
     if (blockedReason || busy) return;
+    if (hasExams) { await outputCombined('print'); return; }
     if (!(await ensureSaved())) return; // échec : toast affiché par onSave, pas d'impression
     window.print();
   };
 
   const handleDownloadPdf = async () => {
     if (blockedReason || busy) return;
+    if (hasExams) { await outputCombined('download'); return; }
     setPdfError(null);
     if (!(await ensureSaved())) return;
     setPdfLoading(true);
@@ -219,6 +256,17 @@ export function PrescriptionPreviewModal({
           <DocumentSignatureBlock date={today} />
         </div>
 
+        {hasExams && (
+          <div className="no-print">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+              Examens à réaliser — {examPages.length} page{examPages.length > 1 ? 's' : ''} à la suite de l’ordonnance
+            </p>
+            <ExamPagesPreview pages={examPages} />
+          </div>
+        )}
+
+        {outNote && <p role="status" className="text-xs text-slate-600 no-print">{outNote}</p>}
+
         {pdfError && (
           <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 no-print">
             <AlertTriangle className="w-4 h-4 flex-shrink-0" />
@@ -247,6 +295,12 @@ export function PrescriptionPreviewModal({
               : <Save className="w-4 h-4 mr-2" />}
             {isSaved ? 'Enregistrée' : saving ? 'Enregistrement…' : 'Enregistrer'}
           </Button>}
+          {shareable && (
+            <Button onClick={() => outputCombined('share')} variant="secondary" disabled={!!blockedReason || busy}>
+              <Share2 className="w-4 h-4 mr-2" />
+              Partager
+            </Button>
+          )}
           <Button onClick={handlePrint} variant="secondary" disabled={!!blockedReason || busy}>
             <Printer className="w-4 h-4 mr-2" />
             Imprimer

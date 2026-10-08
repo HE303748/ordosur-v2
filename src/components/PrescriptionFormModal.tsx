@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, Trash2, Calendar, History, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Calendar, History, AlertTriangle, RefreshCw, FlaskConical, ChevronDown } from 'lucide-react';
 import { formHasContent, type DraftForm } from '../lib/ordonnanceDraft';
 import { medLabel, dosageManquant, linesMissingDosage, hasDosage } from '../lib/medLabel';
-import { type Medicament } from '../lib/supabase';
+import { type Medicament, type Patient } from '../lib/supabase';
+import { emptyExamDraft, validateExamDraft, toIsoDate, type ExamRequestDraft, type EcheanceResult } from '../lib/examRequest';
+import { useExamReferentiel, usePatientDemandes, usePatientExamContext } from '../hooks/useExamData';
+import { ExamRequestEditor } from './exams/ExamRequestEditor';
 import { searchMedicamentsMA } from '../lib/medSearch';
 import {
   computeVerification,
@@ -43,10 +46,7 @@ interface PrescriptionFormModalProps {
   onClose: () => void;
   /** Bouton « Annuler » explicite (abandon de l'ordonnance). Par défaut : onClose. */
   onCancel?: () => void;
-  patient: {
-    prenom: string;
-    nom: string;
-  };
+  patient: Patient;
   // Sprint 3 — posologie : reprise du traitement de fond lors d'un « Renouveler ».
   initialMedications: Array<{ id: string; nom: string; posologie?: string | null; formeHint?: string | null; dosageAPreciser?: boolean }>;
   /** Sprint 4d-bis — médecin connecté (doctors.id) : suggestion « Dernière posologie utilisée ». */
@@ -80,6 +80,8 @@ interface PrescriptionFormModalProps {
     medications: MedicationForm[];
     remarks: string;
     nextAppointment?: string;
+    /** Sprint 5 — demande d'examens jointe à l'ordonnance (null si aucun examen). */
+    examens?: { draft: ExamRequestDraft; echeance: EcheanceResult } | null;
   }) => void;
 }
 
@@ -208,6 +210,10 @@ export function PrescriptionFormModal({
   const [remarks, setRemarks] = useState('');
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
+  // Sprint 5 — section « Examens à réaliser » (repliée par défaut). Indépendante de la
+  // vérification des médicaments : elle ne modifie ni l'analyse ni le blocage 3b.
+  const [examDraft, setExamDraft] = useState<ExamRequestDraft>(emptyExamDraft);
+  const [examOpen, setExamOpen] = useState(false);
 
   // Initialisation à l'OUVERTURE uniquement (auparavant à chaque rendu du parent, ce qui
   // écrasait les posologies saisies). Les lignes suivent la sélection du Vérificateur ;
@@ -240,6 +246,10 @@ export function PrescriptionFormModal({
         setRemarks(initialForm.remarks);
         setAppointmentDate(initialForm.appointmentDate);
         setAppointmentTime(initialForm.appointmentTime);
+        if (initialForm.examens && initialForm.examens.lines.length > 0) {
+          setExamDraft(initialForm.examens);
+          setExamOpen(true);
+        }
       }
       initializedRef.current = true;
     }
@@ -250,9 +260,9 @@ export function PrescriptionFormModal({
   // Remonte chaque modification au parent (sauvegarde du brouillon, debounce côté parent).
   useEffect(() => {
     if (!isOpen || !initializedRef.current) return;
-    onFormChange?.({ motif, medications, remarks, appointmentDate, appointmentTime });
+    onFormChange?.({ motif, medications, remarks, appointmentDate, appointmentTime, examens: examDraft.lines.length > 0 ? examDraft : null });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [motif, medications, remarks, appointmentDate, appointmentTime]);
+  }, [motif, medications, remarks, appointmentDate, appointmentTime, examDraft]);
 
   const handleMedicationChange = (id: string, field: keyof MedicationForm, value: string) => {
     setMedications(prev => prev.map(med => {
@@ -314,14 +324,23 @@ export function PrescriptionFormModal({
   const missingPosologieIds = new Set(linesMissingPosologie(medications).map(l => l.id));
   // Sprint 4d-quater — dosage absent de la fiche : à préciser avant l'aperçu.
   const missingDosageIds = new Set(linesMissingDosage(medications).map(l => l.id));
+  // Sprint 5 — examens : chargés seulement si la section est ouverte ; échéance obligatoire.
+  const examActive = isOpen && (examOpen || examDraft.lines.length > 0);
+  const examRef = useExamReferentiel(examActive);
+  const examDemandes = usePatientDemandes(examActive ? patient.id : null);
+  const examCtx = usePatientExamContext(patient.id, examActive);
+  // Même règle que l'éditeur : le RDV saisi dans l'ordonnance prime s'il est à venir.
+  const examRdvDate = (appointmentDate && appointmentDate >= toIsoDate(new Date()) ? appointmentDate : null) ?? examCtx.nextRdvDate;
+  const examValidation = examDraft.lines.length > 0 ? validateExamDraft(examDraft, new Date(), examRdvDate) : null;
+  const examBlocked = !!examValidation && !examValidation.ok;
   const canPreview =
     verification.status === 'verified' && medications.length > 0 && !medications.some(m => !m.nom.trim())
-    && missingPosologieIds.size === 0 && missingDosageIds.size === 0;
+    && missingPosologieIds.size === 0 && missingDosageIds.size === 0 && !examBlocked;
 
   // Sprint 4d-quater — fermer un formulaire non vide (croix, clic extérieur, Échap, Annuler)
   // demande confirmation ; il n'est jamais fermé sans que le médecin l'ait décidé.
   const [confirmClose, setConfirmClose] = useState(false);
-  const hasContent = formHasContent({ motif, medications, remarks, appointmentDate, appointmentTime });
+  const hasContent = formHasContent({ motif, medications, remarks, appointmentDate, appointmentTime, examens: examDraft });
   const requestClose = () => { if (hasContent) setConfirmClose(true); else onClose(); };
   useEffect(() => { if (!isOpen) setConfirmClose(false); }, [isOpen]);
 
@@ -359,7 +378,8 @@ export function PrescriptionFormModal({
       motif,
       medications,
       remarks,
-      nextAppointment
+      nextAppointment,
+      examens: examValidation?.ok && examValidation.echeance ? { draft: examDraft, echeance: examValidation.echeance } : null,
     });
   };
 
@@ -690,6 +710,46 @@ export function PrescriptionFormModal({
           </div>
         </div>
 
+        {/* Sprint 5 — Examens à réaliser : repliée par défaut, ouverte d'un clic */}
+        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setExamOpen(o => !o)}
+            aria-expanded={examOpen}
+            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B]"
+          >
+            <FlaskConical className="w-4 h-4 text-[#00A86B] flex-shrink-0" aria-hidden />
+            <span className="flex-1 min-w-0">
+              <span className="block text-sm font-semibold text-slate-900">Examens à réaliser</span>
+              <span className="block text-xs text-slate-500">
+                {examDraft.lines.length > 0
+                  ? `${examDraft.lines.length} examen${examDraft.lines.length > 1 ? 's' : ''} — imprimé${examDraft.lines.length > 1 ? 's' : ''} à la suite de l’ordonnance`
+                  : 'Biologie, imagerie, explorations (facultatif)'}
+              </span>
+            </span>
+            <ChevronDown className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${examOpen ? 'rotate-180' : ''}`} aria-hidden />
+          </button>
+          {examOpen && (
+            <div className="px-4 pb-4 pt-1 border-t border-slate-100">
+              <ExamRequestEditor
+                patient={patient}
+                draft={examDraft}
+                onChange={setExamDraft}
+                refs={examRef.refs}
+                packs={examRef.packs}
+                refsLoading={examRef.loading}
+                refsFailed={examRef.failed}
+                onRetryRefs={() => void examRef.reload()}
+                onPacksChanged={() => void examRef.reloadPacks()}
+                demandes={examDemandes.demandes}
+                ctx={examCtx}
+                extraMedicaments={medications.map(m => [m.nom, m.medicament?.dci, m.medicament?.dci_canonique].filter(Boolean).join(' '))}
+                rdvDateOverride={appointmentDate || null}
+              />
+            </div>
+          )}
+        </div>
+
         {/* Sprint 3b — lignes hors base : jamais vérifiables → confirmation explicite, journalisée */}
         {verification.status !== 'stale' && nbHorsBase > 0 && (
           <label className="flex items-start gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer">
@@ -719,6 +779,11 @@ export function PrescriptionFormModal({
           {verification.status === 'verified' && missingPosologieIds.size > 0 && (
             <p role="alert" className="text-xs font-medium text-[#DC2626] sm:mr-auto sm:self-center">
               Aperçu indisponible : posologie manquante sur {missingPosologieIds.size} ligne{missingPosologieIds.size > 1 ? 's' : ''}.
+            </p>
+          )}
+          {examBlocked && verification.status === 'verified' && missingPosologieIds.size === 0 && missingDosageIds.size === 0 && (
+            <p role="alert" className="text-xs font-medium text-[#DC2626] sm:mr-auto sm:self-center">
+              Aperçu indisponible : {examValidation?.errors[0] ?? 'demande d’examens incomplète.'}
             </p>
           )}
           {!canPreview && verification.status !== 'verified' && (

@@ -4,13 +4,15 @@ import {
   Heart, FileText, Syringe, FolderOpen, Activity,
   Phone, Mail, MapPin, Plus, AlertTriangle, User,
   Droplets, Edit, X, Stethoscope, Clock,
-  CheckCircle2, AlertCircle,
+  CheckCircle2, AlertCircle, FlaskConical,
 } from 'lucide-react';
 import { PatientAvatar } from './PatientAvatar';
 import { TraitementFondSection } from './TraitementFondSection';
 import { AntecedentsSection, PathologiesActivesBlock, type PatientPatch } from './AntecedentsSection';
 import { supabase } from '../../lib/supabase';
 import { PregnancyStatusEditor } from '../PregnancyStatusEditor';
+import type { Patient as DbPatient } from '../../lib/supabase';
+import { openExamRequest } from '../../lib/examUi';
 
 interface Patient {
   id: string;
@@ -755,6 +757,16 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
             >
               <Edit className="w-4 h-4" />
             </button>
+            {/* Sprint 5 — demande d'examens autonome (sans médicament, hors blocage 3b) */}
+            {doctorId && orgId && (
+              <button
+                onClick={() => openExamRequest({ patient: patient as unknown as DbPatient })}
+                className="flex-1 lg:flex-none px-3 py-2.5 lg:py-2 bg-white dark:bg-white/[0.05] border border-[#E5E5E0] dark:border-white/[0.12] hover:border-[#00A86B] text-[#0A1628] dark:text-[#E2E8F0] rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+              >
+                <FlaskConical className="w-3.5 h-3.5 text-[#00A86B]" aria-hidden />
+                Examens
+              </button>
+            )}
             <button
               onClick={onNavigateToChecker}
               className="flex-1 lg:flex-none px-3 py-2.5 lg:py-2 bg-[#00A86B] hover:bg-[#006B47] active:bg-[#006B47] text-white rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"

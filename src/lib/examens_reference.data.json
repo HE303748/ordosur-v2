@@ -1,0 +1,3702 @@
+{
+  "empreinte": {
+    "examens": "098f3c1a3cc38564d7c4c0090783616a",
+    "packs": "8dbf768a7743051f2155c678699019f8"
+  },
+  "examens": [
+    {
+      "code": "NFS",
+      "libelle": "NFS (hémogramme)",
+      "type": "biologie",
+      "categorie": "Hématologie",
+      "abreviations": [
+        "nfs",
+        "hb",
+        "hemogramme",
+        "fns",
+        "numeration"
+      ],
+      "synonymes": [
+        "numération formule sanguine",
+        "hémoglobine",
+        "globules blancs",
+        "leucocytes",
+        "hématocrite",
+        "vgm"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [
+        {
+          "parametre": "hémoglobine",
+          "unite_defaut": "g/dL",
+          "unite": "g/L",
+          "facteur": 10
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 10,
+      "actif": true
+    },
+    {
+      "code": "PLAQUETTES",
+      "libelle": "Plaquettes",
+      "type": "biologie",
+      "categorie": "Hématologie",
+      "abreviations": [
+        "plq",
+        "plaquettes"
+      ],
+      "synonymes": [
+        "numération plaquettaire",
+        "thrombocytes"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "G/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 20,
+      "actif": true
+    },
+    {
+      "code": "VS",
+      "libelle": "Vitesse de sédimentation (VS)",
+      "type": "biologie",
+      "categorie": "Hématologie",
+      "abreviations": [
+        "vs"
+      ],
+      "synonymes": [
+        "vitesse de sédimentation"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mm/h",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 30,
+      "actif": true
+    },
+    {
+      "code": "RETICULOCYTES",
+      "libelle": "Réticulocytes",
+      "type": "biologie",
+      "categorie": "Hématologie",
+      "abreviations": [
+        "retic",
+        "reticulocytes"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "G/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 40,
+      "actif": true
+    },
+    {
+      "code": "GROUPE_ABO_RH",
+      "libelle": "Groupe sanguin ABO-Rhésus",
+      "type": "biologie",
+      "categorie": "Hématologie",
+      "abreviations": [
+        "groupe",
+        "gs",
+        "abo",
+        "groupage"
+      ],
+      "synonymes": [
+        "groupe sanguin",
+        "rhésus",
+        "groupage sanguin"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 50,
+      "actif": true
+    },
+    {
+      "code": "RAI",
+      "libelle": "RAI (recherche d'agglutinines irrégulières)",
+      "type": "biologie",
+      "categorie": "Hématologie",
+      "abreviations": [
+        "rai"
+      ],
+      "synonymes": [
+        "agglutinines irrégulières"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 60,
+      "actif": true
+    },
+    {
+      "code": "TP_INR",
+      "libelle": "TP / INR",
+      "type": "biologie",
+      "categorie": "Hémostase",
+      "abreviations": [
+        "tp",
+        "inr",
+        "tp inr"
+      ],
+      "synonymes": [
+        "taux de prothrombine",
+        "temps de quick"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 70,
+      "actif": true
+    },
+    {
+      "code": "TCA",
+      "libelle": "TCA",
+      "type": "biologie",
+      "categorie": "Hémostase",
+      "abreviations": [
+        "tca",
+        "tck"
+      ],
+      "synonymes": [
+        "temps de céphaline activée"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 80,
+      "actif": true
+    },
+    {
+      "code": "FIBRINOGENE",
+      "libelle": "Fibrinogène",
+      "type": "biologie",
+      "categorie": "Hémostase",
+      "abreviations": [
+        "fib",
+        "fibrinogene"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 90,
+      "actif": true
+    },
+    {
+      "code": "D_DIMERES",
+      "libelle": "D-dimères",
+      "type": "biologie",
+      "categorie": "Hémostase",
+      "abreviations": [
+        "ddi",
+        "d dimeres",
+        "ddimeres"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "ng/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 100,
+      "actif": true
+    },
+    {
+      "code": "GLYCEMIE_JEUN",
+      "libelle": "Glycémie à jeun",
+      "type": "biologie",
+      "categorie": "Glycémie",
+      "abreviations": [
+        "gaj",
+        "gly",
+        "glycemie"
+      ],
+      "synonymes": [
+        "glucose",
+        "sucre"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 8,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "facteur": 5.551
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 110,
+      "actif": true
+    },
+    {
+      "code": "GLYCEMIE_PP",
+      "libelle": "Glycémie post-prandiale",
+      "type": "biologie",
+      "categorie": "Glycémie",
+      "abreviations": [
+        "gpp",
+        "gly pp",
+        "glycemie pp"
+      ],
+      "synonymes": [
+        "glycémie 2 h après le repas"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "facteur": 5.551
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 120,
+      "actif": true
+    },
+    {
+      "code": "HBA1C",
+      "libelle": "HbA1c (hémoglobine glyquée)",
+      "type": "biologie",
+      "categorie": "Glycémie",
+      "abreviations": [
+        "hba1c",
+        "hb a1c",
+        "hb",
+        "a1c",
+        "glyquee"
+      ],
+      "synonymes": [
+        "hémoglobine glyquée",
+        "hémoglobine glycosylée",
+        "hémoglobine glyquee"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "%",
+      "unites": [
+        {
+          "unite": "mmol/mol",
+          "formule": "ifcc",
+          "a": 10.929,
+          "b": -2.15
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 130,
+      "actif": true
+    },
+    {
+      "code": "HGPO",
+      "libelle": "HGPO 75 g (hyperglycémie provoquée par voie orale)",
+      "type": "biologie",
+      "categorie": "Glycémie",
+      "abreviations": [
+        "hgpo"
+      ],
+      "synonymes": [
+        "hyperglycémie provoquée",
+        "test o'sullivan"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 8,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "facteur": 5.551
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 140,
+      "actif": true
+    },
+    {
+      "code": "UREE",
+      "libelle": "Urée",
+      "type": "biologie",
+      "categorie": "Bilan rénal",
+      "abreviations": [
+        "uree"
+      ],
+      "synonymes": [
+        "urée sanguine",
+        "azotémie"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "facteur": 16.65
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 150,
+      "actif": true
+    },
+    {
+      "code": "CREATININE",
+      "libelle": "Créatinine",
+      "type": "biologie",
+      "categorie": "Bilan rénal",
+      "abreviations": [
+        "creat",
+        "creatinine"
+      ],
+      "synonymes": [
+        "créatininémie",
+        "fonction rénale"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mg/L",
+      "unites": [
+        {
+          "unite": "µmol/L",
+          "facteur": 8.84
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 160,
+      "actif": true
+    },
+    {
+      "code": "DFG",
+      "libelle": "DFG estimé (CKD-EPI)",
+      "type": "biologie",
+      "categorie": "Bilan rénal",
+      "abreviations": [
+        "dfg",
+        "clairance",
+        "ckd",
+        "mdrd"
+      ],
+      "synonymes": [
+        "débit de filtration glomérulaire",
+        "clairance de la créatinine"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mL/min/1,73 m²",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 170,
+      "actif": true
+    },
+    {
+      "code": "IONOGRAMME",
+      "libelle": "Ionogramme sanguin (Na, K, Cl)",
+      "type": "biologie",
+      "categorie": "Bilan rénal",
+      "abreviations": [
+        "iono",
+        "ionogramme",
+        "nak",
+        "na k",
+        "kaliemie",
+        "natremie"
+      ],
+      "synonymes": [
+        "sodium",
+        "potassium",
+        "chlore",
+        "kaliémie",
+        "natrémie"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mmol/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 180,
+      "actif": true
+    },
+    {
+      "code": "PROTEINURIE_24H",
+      "libelle": "Protéinurie des 24 heures",
+      "type": "biologie",
+      "categorie": "Bilan rénal",
+      "abreviations": [
+        "pu 24",
+        "proteinurie",
+        "pu24"
+      ],
+      "synonymes": [
+        "protéines urinaires"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Recueil des urines de 24 h"
+      ],
+      "question_exemple": null,
+      "unite_defaut": "g/24 h",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 190,
+      "actif": true
+    },
+    {
+      "code": "ALBU_CREAT_U",
+      "libelle": "Rapport albuminurie / créatininurie",
+      "type": "biologie",
+      "categorie": "Bilan rénal",
+      "abreviations": [
+        "rac",
+        "microalb",
+        "microalbuminurie",
+        "albuminurie"
+      ],
+      "synonymes": [
+        "micro-albuminurie",
+        "rapport albumine créatinine urinaire"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Sur échantillon d'urines du matin"
+      ],
+      "question_exemple": null,
+      "unite_defaut": "mg/g",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 200,
+      "actif": true
+    },
+    {
+      "code": "ECBU",
+      "libelle": "ECBU",
+      "type": "biologie",
+      "categorie": "Bilan rénal",
+      "abreviations": [
+        "ecbu"
+      ],
+      "synonymes": [
+        "examen cytobactériologique des urines",
+        "analyse d'urines",
+        "infection urinaire"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Avec antibiogramme"
+      ],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 210,
+      "actif": true
+    },
+    {
+      "code": "ASAT",
+      "libelle": "ASAT (TGO)",
+      "type": "biologie",
+      "categorie": "Bilan hépatique",
+      "abreviations": [
+        "asat",
+        "tgo",
+        "sgot",
+        "transaminases"
+      ],
+      "synonymes": [
+        "aspartate aminotransférase"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 220,
+      "actif": true
+    },
+    {
+      "code": "ALAT",
+      "libelle": "ALAT (TGP)",
+      "type": "biologie",
+      "categorie": "Bilan hépatique",
+      "abreviations": [
+        "alat",
+        "tgp",
+        "sgpt",
+        "transaminases"
+      ],
+      "synonymes": [
+        "alanine aminotransférase"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 230,
+      "actif": true
+    },
+    {
+      "code": "GGT",
+      "libelle": "Gamma-GT (GGT)",
+      "type": "biologie",
+      "categorie": "Bilan hépatique",
+      "abreviations": [
+        "ggt",
+        "gamma gt"
+      ],
+      "synonymes": [
+        "gamma glutamyl transférase"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 240,
+      "actif": true
+    },
+    {
+      "code": "PAL",
+      "libelle": "Phosphatases alcalines (PAL)",
+      "type": "biologie",
+      "categorie": "Bilan hépatique",
+      "abreviations": [
+        "pal"
+      ],
+      "synonymes": [
+        "phosphatases alcalines"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 250,
+      "actif": true
+    },
+    {
+      "code": "BILIRUBINE",
+      "libelle": "Bilirubine totale et conjuguée",
+      "type": "biologie",
+      "categorie": "Bilan hépatique",
+      "abreviations": [
+        "bili",
+        "bilirubine",
+        "bt",
+        "bc"
+      ],
+      "synonymes": [
+        "bilirubine directe",
+        "bilirubine libre"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mg/L",
+      "unites": [
+        {
+          "unite": "µmol/L",
+          "facteur": 1.71
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 260,
+      "actif": true
+    },
+    {
+      "code": "ALBUMINE",
+      "libelle": "Albumine",
+      "type": "biologie",
+      "categorie": "Bilan hépatique",
+      "abreviations": [
+        "alb",
+        "albumine",
+        "albuminemie"
+      ],
+      "synonymes": [
+        "albuminémie"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 270,
+      "actif": true
+    },
+    {
+      "code": "EPP",
+      "libelle": "Électrophorèse des protéines sériques",
+      "type": "biologie",
+      "categorie": "Bilan hépatique",
+      "abreviations": [
+        "epp",
+        "eps",
+        "electrophorese"
+      ],
+      "synonymes": [
+        "protidogramme",
+        "protides totaux"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 280,
+      "actif": true
+    },
+    {
+      "code": "CHOLESTEROL_TOTAL",
+      "libelle": "Cholestérol total",
+      "type": "biologie",
+      "categorie": "Bilan lipidique",
+      "abreviations": [
+        "ct",
+        "chol",
+        "cholesterol"
+      ],
+      "synonymes": [],
+      "a_jeun": true,
+      "delai_jeun_h": 12,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "facteur": 2.586
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 290,
+      "actif": true
+    },
+    {
+      "code": "HDL",
+      "libelle": "HDL-cholestérol",
+      "type": "biologie",
+      "categorie": "Bilan lipidique",
+      "abreviations": [
+        "hdl"
+      ],
+      "synonymes": [
+        "bon cholestérol"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 12,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "facteur": 2.586
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 300,
+      "actif": true
+    },
+    {
+      "code": "LDL",
+      "libelle": "LDL-cholestérol",
+      "type": "biologie",
+      "categorie": "Bilan lipidique",
+      "abreviations": [
+        "ldl"
+      ],
+      "synonymes": [
+        "mauvais cholestérol"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 12,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "facteur": 2.586
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 310,
+      "actif": true
+    },
+    {
+      "code": "TRIGLYCERIDES",
+      "libelle": "Triglycérides",
+      "type": "biologie",
+      "categorie": "Bilan lipidique",
+      "abreviations": [
+        "tg",
+        "trigly",
+        "triglycerides"
+      ],
+      "synonymes": [],
+      "a_jeun": true,
+      "delai_jeun_h": 12,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "g/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "facteur": 1.129
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 320,
+      "actif": true
+    },
+    {
+      "code": "CRP",
+      "libelle": "CRP",
+      "type": "biologie",
+      "categorie": "Inflammation",
+      "abreviations": [
+        "crp"
+      ],
+      "synonymes": [
+        "protéine c réactive"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mg/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 330,
+      "actif": true
+    },
+    {
+      "code": "PROCALCITONINE",
+      "libelle": "Procalcitonine",
+      "type": "biologie",
+      "categorie": "Inflammation",
+      "abreviations": [
+        "pct",
+        "procalcitonine"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "ng/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 340,
+      "actif": true
+    },
+    {
+      "code": "FERRITINE",
+      "libelle": "Ferritine",
+      "type": "biologie",
+      "categorie": "Bilan martial",
+      "abreviations": [
+        "ferritine",
+        "ferr"
+      ],
+      "synonymes": [
+        "ferritinémie",
+        "réserves en fer"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "ng/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 350,
+      "actif": true
+    },
+    {
+      "code": "FER_SERIQUE",
+      "libelle": "Fer sérique",
+      "type": "biologie",
+      "categorie": "Bilan martial",
+      "abreviations": [
+        "fer",
+        "fer serique"
+      ],
+      "synonymes": [
+        "sidérémie"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 8,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "µg/dL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 360,
+      "actif": true
+    },
+    {
+      "code": "CST",
+      "libelle": "Coefficient de saturation de la transferrine (CST)",
+      "type": "biologie",
+      "categorie": "Bilan martial",
+      "abreviations": [
+        "cst",
+        "transferrine"
+      ],
+      "synonymes": [
+        "saturation de la transferrine",
+        "capacité totale de fixation"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 8,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "%",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 370,
+      "actif": true
+    },
+    {
+      "code": "TSH",
+      "libelle": "TSH ultrasensible",
+      "type": "biologie",
+      "categorie": "Thyroïde",
+      "abreviations": [
+        "tsh",
+        "tshus"
+      ],
+      "synonymes": [
+        "thyréostimuline",
+        "thyroïde"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mUI/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 380,
+      "actif": true
+    },
+    {
+      "code": "T4L",
+      "libelle": "T4 libre",
+      "type": "biologie",
+      "categorie": "Thyroïde",
+      "abreviations": [
+        "t4",
+        "t4l",
+        "ft4"
+      ],
+      "synonymes": [
+        "thyroxine libre"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "pmol/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 390,
+      "actif": true
+    },
+    {
+      "code": "T3L",
+      "libelle": "T3 libre",
+      "type": "biologie",
+      "categorie": "Thyroïde",
+      "abreviations": [
+        "t3",
+        "t3l",
+        "ft3"
+      ],
+      "synonymes": [
+        "triiodothyronine libre"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "pmol/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 400,
+      "actif": true
+    },
+    {
+      "code": "LIPASE",
+      "libelle": "Lipase",
+      "type": "biologie",
+      "categorie": "Pancréas",
+      "abreviations": [
+        "lipase",
+        "lipasemie"
+      ],
+      "synonymes": [
+        "lipasémie"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 410,
+      "actif": true
+    },
+    {
+      "code": "AMYLASE",
+      "libelle": "Amylase",
+      "type": "biologie",
+      "categorie": "Pancréas",
+      "abreviations": [
+        "amylase",
+        "amylasemie"
+      ],
+      "synonymes": [
+        "amylasémie"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 420,
+      "actif": true
+    },
+    {
+      "code": "VITAMINE_D",
+      "libelle": "Vitamine D (25-OH)",
+      "type": "biologie",
+      "categorie": "Vitamines et minéraux",
+      "abreviations": [
+        "vit d",
+        "vitd",
+        "25oh",
+        "vitamine d"
+      ],
+      "synonymes": [
+        "25 hydroxy vitamine d",
+        "calcidiol"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "ng/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 430,
+      "actif": true
+    },
+    {
+      "code": "VITAMINE_B12",
+      "libelle": "Vitamine B12",
+      "type": "biologie",
+      "categorie": "Vitamines et minéraux",
+      "abreviations": [
+        "b12",
+        "vit b12",
+        "vitamine b12"
+      ],
+      "synonymes": [
+        "cobalamine"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "pg/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 440,
+      "actif": true
+    },
+    {
+      "code": "FOLATES",
+      "libelle": "Folates (vitamine B9)",
+      "type": "biologie",
+      "categorie": "Vitamines et minéraux",
+      "abreviations": [
+        "b9",
+        "folates",
+        "vit b9"
+      ],
+      "synonymes": [
+        "acide folique"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "ng/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 450,
+      "actif": true
+    },
+    {
+      "code": "CALCIUM",
+      "libelle": "Calcium",
+      "type": "biologie",
+      "categorie": "Vitamines et minéraux",
+      "abreviations": [
+        "ca",
+        "calcemie",
+        "calcium"
+      ],
+      "synonymes": [
+        "calcémie"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mg/L",
+      "unites": [
+        {
+          "unite": "mmol/L",
+          "diviseur": 40.08
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 460,
+      "actif": true
+    },
+    {
+      "code": "PHOSPHORE",
+      "libelle": "Phosphore",
+      "type": "biologie",
+      "categorie": "Vitamines et minéraux",
+      "abreviations": [
+        "phos",
+        "phosphore",
+        "phosphoremie"
+      ],
+      "synonymes": [
+        "phosphorémie",
+        "phosphates"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mg/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 470,
+      "actif": true
+    },
+    {
+      "code": "MAGNESIUM",
+      "libelle": "Magnésium",
+      "type": "biologie",
+      "categorie": "Vitamines et minéraux",
+      "abreviations": [
+        "mg",
+        "magnesium",
+        "magnesemie"
+      ],
+      "synonymes": [
+        "magnésémie"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mg/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 480,
+      "actif": true
+    },
+    {
+      "code": "ACIDE_URIQUE",
+      "libelle": "Acide urique",
+      "type": "biologie",
+      "categorie": "Vitamines et minéraux",
+      "abreviations": [
+        "au",
+        "uricemie",
+        "acide urique"
+      ],
+      "synonymes": [
+        "uricémie",
+        "goutte"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mg/L",
+      "unites": [
+        {
+          "unite": "µmol/L",
+          "facteur": 5.95
+        }
+      ],
+      "code_loinc": null,
+      "ordre": 490,
+      "actif": true
+    },
+    {
+      "code": "CPK",
+      "libelle": "CPK",
+      "type": "biologie",
+      "categorie": "Vitamines et minéraux",
+      "abreviations": [
+        "cpk",
+        "ck"
+      ],
+      "synonymes": [
+        "créatine phosphokinase",
+        "créatine kinase"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/L",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 500,
+      "actif": true
+    },
+    {
+      "code": "BETA_HCG",
+      "libelle": "Bêta-hCG plasmatique",
+      "type": "biologie",
+      "categorie": "Hormonologie",
+      "abreviations": [
+        "bhcg",
+        "hcg",
+        "beta hcg",
+        "b hcg"
+      ],
+      "synonymes": [
+        "test de grossesse sanguin",
+        "grossesse"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "mUI/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 510,
+      "actif": true
+    },
+    {
+      "code": "PSA",
+      "libelle": "PSA total et libre",
+      "type": "biologie",
+      "categorie": "Hormonologie",
+      "abreviations": [
+        "psa"
+      ],
+      "synonymes": [
+        "antigène prostatique spécifique",
+        "prostate"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "ng/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 520,
+      "actif": true
+    },
+    {
+      "code": "AG_HBS",
+      "libelle": "Antigène HBs",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "aghbs",
+        "ag hbs",
+        "hbs",
+        "hepatite b",
+        "vhb"
+      ],
+      "synonymes": [
+        "hépatite b"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 530,
+      "actif": true
+    },
+    {
+      "code": "AC_ANTI_HBS",
+      "libelle": "Anticorps anti-HBs",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "ac hbs",
+        "anti hbs",
+        "achbs",
+        "hepatite b",
+        "vhb"
+      ],
+      "synonymes": [
+        "hépatite b",
+        "immunité vaccinale"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 540,
+      "actif": true
+    },
+    {
+      "code": "AC_ANTI_HBC",
+      "libelle": "Anticorps anti-HBc",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "ac hbc",
+        "anti hbc",
+        "achbc",
+        "hepatite b",
+        "vhb"
+      ],
+      "synonymes": [
+        "hépatite b"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 550,
+      "actif": true
+    },
+    {
+      "code": "CHARGE_VIRALE_VHB",
+      "libelle": "Charge virale VHB (ADN VHB)",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "adn vhb",
+        "cv vhb",
+        "pcr vhb",
+        "vhb"
+      ],
+      "synonymes": [
+        "hépatite b",
+        "adn viral b"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 560,
+      "actif": true
+    },
+    {
+      "code": "AC_ANTI_VHC",
+      "libelle": "Anticorps anti-VHC",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "ac vhc",
+        "anti vhc",
+        "vhc",
+        "hcv",
+        "hepatite c"
+      ],
+      "synonymes": [
+        "hépatite c",
+        "sérologie hépatite c"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 570,
+      "actif": true
+    },
+    {
+      "code": "ARN_VHC",
+      "libelle": "ARN VHC (charge virale)",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "arn vhc",
+        "cv vhc",
+        "pcr vhc",
+        "vhc"
+      ],
+      "synonymes": [
+        "hépatite c",
+        "arn viral c"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "UI/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 580,
+      "actif": true
+    },
+    {
+      "code": "VIH",
+      "libelle": "Sérologie VIH 1 et 2",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "vih",
+        "hiv",
+        "sida"
+      ],
+      "synonymes": [
+        "sérologie hiv"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": true,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 590,
+      "actif": true
+    },
+    {
+      "code": "SYPHILIS",
+      "libelle": "Sérologie syphilis (TPHA-VDRL)",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "tpha",
+        "vdrl",
+        "syphilis",
+        "bw"
+      ],
+      "synonymes": [
+        "tréponème"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 600,
+      "actif": true
+    },
+    {
+      "code": "TOXOPLASMOSE",
+      "libelle": "Sérologie toxoplasmose (IgG, IgM)",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "toxo",
+        "toxoplasmose"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 610,
+      "actif": true
+    },
+    {
+      "code": "RUBEOLE",
+      "libelle": "Sérologie rubéole (IgG)",
+      "type": "biologie",
+      "categorie": "Sérologies",
+      "abreviations": [
+        "rubeole",
+        "rub"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 620,
+      "actif": true
+    },
+    {
+      "code": "AFP",
+      "libelle": "Alpha-fœtoprotéine (AFP)",
+      "type": "biologie",
+      "categorie": "Marqueurs tumoraux",
+      "abreviations": [
+        "afp",
+        "alpha foeto"
+      ],
+      "synonymes": [
+        "alpha foetoprotéine",
+        "alphafoetoprotéine"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "ng/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 630,
+      "actif": true
+    },
+    {
+      "code": "ACE",
+      "libelle": "ACE",
+      "type": "biologie",
+      "categorie": "Marqueurs tumoraux",
+      "abreviations": [
+        "ace"
+      ],
+      "synonymes": [
+        "antigène carcino-embryonnaire"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "ng/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 640,
+      "actif": true
+    },
+    {
+      "code": "CA_19_9",
+      "libelle": "CA 19-9",
+      "type": "biologie",
+      "categorie": "Marqueurs tumoraux",
+      "abreviations": [
+        "ca199",
+        "ca 19 9",
+        "ca19"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "U/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 650,
+      "actif": true
+    },
+    {
+      "code": "CA_125",
+      "libelle": "CA 125",
+      "type": "biologie",
+      "categorie": "Marqueurs tumoraux",
+      "abreviations": [
+        "ca125",
+        "ca 125"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "U/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 660,
+      "actif": true
+    },
+    {
+      "code": "CA_15_3",
+      "libelle": "CA 15-3",
+      "type": "biologie",
+      "categorie": "Marqueurs tumoraux",
+      "abreviations": [
+        "ca153",
+        "ca 15 3",
+        "ca15"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "U/mL",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 670,
+      "actif": true
+    },
+    {
+      "code": "CALPROTECTINE",
+      "libelle": "Calprotectine fécale",
+      "type": "biologie",
+      "categorie": "Examens digestifs",
+      "abreviations": [
+        "calpro",
+        "calprotectine"
+      ],
+      "synonymes": [
+        "mici",
+        "inflammation intestinale"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": "µg/g",
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 680,
+      "actif": true
+    },
+    {
+      "code": "HP_TEST_RESPIRATOIRE",
+      "libelle": "Helicobacter pylori — test respiratoire à l'urée marquée",
+      "type": "biologie",
+      "categorie": "Examens digestifs",
+      "abreviations": [
+        "pyl",
+        "h pylori",
+        "hp",
+        "tru",
+        "helicobacter"
+      ],
+      "synonymes": [
+        "breath test",
+        "test à l'urée"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Arrêt des IPP depuis 2 semaines",
+        "Arrêt des antibiotiques depuis 4 semaines"
+      ],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 690,
+      "actif": true
+    },
+    {
+      "code": "HP_SEROLOGIE",
+      "libelle": "Helicobacter pylori — sérologie",
+      "type": "biologie",
+      "categorie": "Examens digestifs",
+      "abreviations": [
+        "pyl",
+        "h pylori",
+        "hp",
+        "helicobacter"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 700,
+      "actif": true
+    },
+    {
+      "code": "HP_ANTIGENE_FECAL",
+      "libelle": "Helicobacter pylori — antigène fécal",
+      "type": "biologie",
+      "categorie": "Examens digestifs",
+      "abreviations": [
+        "pyl",
+        "h pylori",
+        "hp",
+        "helicobacter"
+      ],
+      "synonymes": [
+        "antigène dans les selles"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 710,
+      "actif": true
+    },
+    {
+      "code": "COPROCULTURE",
+      "libelle": "Coproculture",
+      "type": "biologie",
+      "categorie": "Examens digestifs",
+      "abreviations": [
+        "copro",
+        "coproculture"
+      ],
+      "synonymes": [
+        "culture des selles",
+        "diarrhée"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 720,
+      "actif": true
+    },
+    {
+      "code": "EPS",
+      "libelle": "Examen parasitologique des selles",
+      "type": "biologie",
+      "categorie": "Examens digestifs",
+      "abreviations": [
+        "kop",
+        "parasito",
+        "eps selles",
+        "kaop"
+      ],
+      "synonymes": [
+        "parasitologie des selles",
+        "kystes œufs parasites"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "3 prélèvements à quelques jours d'intervalle"
+      ],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 730,
+      "actif": true
+    },
+    {
+      "code": "SANG_OCCULTE",
+      "libelle": "Recherche de sang occulte dans les selles",
+      "type": "biologie",
+      "categorie": "Examens digestifs",
+      "abreviations": [
+        "hemoccult",
+        "fit",
+        "sang occulte",
+        "rso"
+      ],
+      "synonymes": [
+        "test immunologique fécal",
+        "dépistage colorectal"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": null,
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 740,
+      "actif": true
+    },
+    {
+      "code": "ECHO_ABDOMINALE",
+      "libelle": "Échographie abdominale",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us"
+      ],
+      "synonymes": [],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Recherche de lithiase vésiculaire ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 750,
+      "actif": true
+    },
+    {
+      "code": "ECHO_ABDOMINO_PELVIENNE",
+      "libelle": "Échographie abdomino-pelvienne",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us"
+      ],
+      "synonymes": [],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Vessie pleine"
+      ],
+      "question_exemple": "Recherche d'une cause à des douleurs abdominales ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 760,
+      "actif": true
+    },
+    {
+      "code": "ECHO_HEPATIQUE_DOPPLER",
+      "libelle": "Échographie hépatique avec doppler",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us",
+        "doppler"
+      ],
+      "synonymes": [
+        "écho-doppler hépatique",
+        "foie",
+        "tronc porte"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Signes d'hypertension portale ? Nodule hépatique ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 770,
+      "actif": true
+    },
+    {
+      "code": "ECHO_RENALE_VESICALE",
+      "libelle": "Échographie rénale et vésicale",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us"
+      ],
+      "synonymes": [
+        "arbre urinaire",
+        "reins",
+        "vessie",
+        "prostate"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Vessie pleine",
+        "Avec mesure du résidu post-mictionnel"
+      ],
+      "question_exemple": "Dilatation des cavités ? Lithiase ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 780,
+      "actif": true
+    },
+    {
+      "code": "ECHO_THYROIDIENNE",
+      "libelle": "Échographie thyroïdienne",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us"
+      ],
+      "synonymes": [
+        "cervicale",
+        "thyroïde"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Nodule thyroïdien : classification EU-TIRADS ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 790,
+      "actif": true
+    },
+    {
+      "code": "ECHO_PELVIENNE",
+      "libelle": "Échographie pelvienne",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us"
+      ],
+      "synonymes": [
+        "utérus",
+        "ovaires"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Voie sus-pubienne",
+        "Voie endovaginale",
+        "Vessie pleine"
+      ],
+      "question_exemple": "Recherche d'une pathologie utéro-annexielle ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 800,
+      "actif": true
+    },
+    {
+      "code": "ECHO_OBSTETRICALE",
+      "libelle": "Échographie obstétricale",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us"
+      ],
+      "synonymes": [
+        "grossesse",
+        "datation",
+        "morphologique"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "1er trimestre (datation)",
+        "2e trimestre (morphologie)",
+        "3e trimestre (croissance)"
+      ],
+      "question_exemple": "Datation et vitalité ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 810,
+      "actif": true
+    },
+    {
+      "code": "ECHO_MAMMAIRE",
+      "libelle": "Échographie mammaire",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us"
+      ],
+      "synonymes": [
+        "sein"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Bilatérale",
+        "Sein droit",
+        "Sein gauche"
+      ],
+      "question_exemple": "Caractérisation d'un nodule ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 820,
+      "actif": true
+    },
+    {
+      "code": "ECHO_PARTIES_MOLLES",
+      "libelle": "Échographie des parties molles",
+      "type": "imagerie",
+      "categorie": "Échographie",
+      "abreviations": [
+        "echo",
+        "echographie",
+        "us"
+      ],
+      "synonymes": [
+        "tuméfaction",
+        "paroi"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Localisation à préciser"
+      ],
+      "question_exemple": "Nature d'une tuméfaction ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 830,
+      "actif": true
+    },
+    {
+      "code": "RX_THORAX",
+      "libelle": "Radiographie thoracique (face)",
+      "type": "imagerie",
+      "categorie": "Radiographie",
+      "abreviations": [
+        "rx",
+        "radio",
+        "radiographie",
+        "rp",
+        "thorax"
+      ],
+      "synonymes": [
+        "radio pulmonaire",
+        "radiographie pulmonaire",
+        "poumons"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Face",
+        "Face et profil"
+      ],
+      "question_exemple": "Foyer infectieux ? Épanchement ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 840,
+      "actif": true
+    },
+    {
+      "code": "RX_ASP",
+      "libelle": "ASP (abdomen sans préparation)",
+      "type": "imagerie",
+      "categorie": "Radiographie",
+      "abreviations": [
+        "rx",
+        "radio",
+        "radiographie",
+        "asp"
+      ],
+      "synonymes": [
+        "abdomen sans préparation"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Niveaux hydro-aériques ? Pneumopéritoine ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 850,
+      "actif": true
+    },
+    {
+      "code": "RX_RACHIS",
+      "libelle": "Radiographie du rachis",
+      "type": "imagerie",
+      "categorie": "Radiographie",
+      "abreviations": [
+        "rx",
+        "radio",
+        "radiographie",
+        "rachis"
+      ],
+      "synonymes": [
+        "colonne vertébrale",
+        "lombaire",
+        "cervical",
+        "dorsal"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Cervical",
+        "Dorsal",
+        "Lombaire",
+        "Face et profil"
+      ],
+      "question_exemple": "Lésion osseuse ? Trouble de la statique ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 860,
+      "actif": true
+    },
+    {
+      "code": "RX_MEMBRES",
+      "libelle": "Radiographie d'un membre",
+      "type": "imagerie",
+      "categorie": "Radiographie",
+      "abreviations": [
+        "rx",
+        "radio",
+        "radiographie",
+        "membre"
+      ],
+      "synonymes": [
+        "os",
+        "articulation",
+        "genou",
+        "épaule",
+        "main",
+        "pied",
+        "cheville",
+        "hanche",
+        "bassin",
+        "poignet"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Côté droit",
+        "Côté gauche",
+        "Face et profil",
+        "Segment à préciser"
+      ],
+      "question_exemple": "Fracture ? Arthrose ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 870,
+      "actif": true
+    },
+    {
+      "code": "TDM_CEREBRALE",
+      "libelle": "TDM cérébrale",
+      "type": "imagerie",
+      "categorie": "TDM (scanner)",
+      "abreviations": [
+        "tdm",
+        "scanner",
+        "scan",
+        "ct"
+      ],
+      "synonymes": [
+        "scanner cérébral",
+        "crâne"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": true,
+      "produit_contraste": "iode",
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Lésion ischémique ou hémorragique ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 880,
+      "actif": true
+    },
+    {
+      "code": "TDM_THORACIQUE",
+      "libelle": "TDM thoracique",
+      "type": "imagerie",
+      "categorie": "TDM (scanner)",
+      "abreviations": [
+        "tdm",
+        "scanner",
+        "scan",
+        "ct"
+      ],
+      "synonymes": [
+        "scanner thoracique",
+        "angioscanner"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": true,
+      "produit_contraste": "iode",
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Embolie pulmonaire ? Nodule ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 890,
+      "actif": true
+    },
+    {
+      "code": "TDM_ABDOMINO_PELVIENNE",
+      "libelle": "TDM abdomino-pelvienne",
+      "type": "imagerie",
+      "categorie": "TDM (scanner)",
+      "abreviations": [
+        "tdm",
+        "scanner",
+        "scan",
+        "ct",
+        "tap"
+      ],
+      "synonymes": [
+        "scanner abdominal",
+        "scanner abdomino-pelvien",
+        "uroscanner"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": true,
+      "produit_contraste": "iode",
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Bilan d'extension ? Caractérisation d'une lésion ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 900,
+      "actif": true
+    },
+    {
+      "code": "IRM_CEREBRALE",
+      "libelle": "IRM cérébrale",
+      "type": "imagerie",
+      "categorie": "IRM",
+      "abreviations": [
+        "irm",
+        "mri"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": true,
+      "produit_contraste": "gadolinium",
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Lésion démyélinisante ? Processus expansif ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 910,
+      "actif": true
+    },
+    {
+      "code": "IRM_HEPATIQUE",
+      "libelle": "IRM hépatique",
+      "type": "imagerie",
+      "categorie": "IRM",
+      "abreviations": [
+        "irm",
+        "mri"
+      ],
+      "synonymes": [
+        "foie"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 4,
+      "irradiant": false,
+      "injection_possible": true,
+      "produit_contraste": "gadolinium",
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Caractérisation d'un nodule hépatique ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 920,
+      "actif": true
+    },
+    {
+      "code": "BILI_IRM",
+      "libelle": "Bili-IRM (cholangio-IRM)",
+      "type": "imagerie",
+      "categorie": "IRM",
+      "abreviations": [
+        "irm",
+        "mri",
+        "bili irm",
+        "cholangio"
+      ],
+      "synonymes": [
+        "cholangio-irm",
+        "cprm",
+        "voies biliaires"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Obstacle sur la voie biliaire principale ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 930,
+      "actif": true
+    },
+    {
+      "code": "ENTERO_IRM",
+      "libelle": "Entéro-IRM",
+      "type": "imagerie",
+      "categorie": "IRM",
+      "abreviations": [
+        "irm",
+        "mri",
+        "entero irm"
+      ],
+      "synonymes": [
+        "grêle",
+        "crohn"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": true,
+      "produit_contraste": "gadolinium",
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Activité et étendue d'une maladie de Crohn ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 940,
+      "actif": true
+    },
+    {
+      "code": "IRM_RACHIS",
+      "libelle": "IRM du rachis",
+      "type": "imagerie",
+      "categorie": "IRM",
+      "abreviations": [
+        "irm",
+        "mri",
+        "rachis"
+      ],
+      "synonymes": [
+        "hernie discale",
+        "médullaire",
+        "lombaire",
+        "cervical"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": true,
+      "produit_contraste": "gadolinium",
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Cervical",
+        "Dorsal",
+        "Lombaire"
+      ],
+      "question_exemple": "Conflit disco-radiculaire ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 950,
+      "actif": true
+    },
+    {
+      "code": "MAMMOGRAPHIE",
+      "libelle": "Mammographie",
+      "type": "imagerie",
+      "categorie": "Autres imageries",
+      "abreviations": [
+        "mammo",
+        "mammographie"
+      ],
+      "synonymes": [
+        "sein",
+        "dépistage"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Bilatérale",
+        "Avec échographie complémentaire"
+      ],
+      "question_exemple": "Dépistage ? Caractérisation d'une anomalie ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 960,
+      "actif": true
+    },
+    {
+      "code": "OSTEODENSITOMETRIE",
+      "libelle": "Ostéodensitométrie (DMO)",
+      "type": "imagerie",
+      "categorie": "Autres imageries",
+      "abreviations": [
+        "dmo",
+        "osteo",
+        "dexa",
+        "osteodensitometrie"
+      ],
+      "synonymes": [
+        "densité minérale osseuse",
+        "ostéoporose"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": true,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Ostéoporose ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 970,
+      "actif": true
+    },
+    {
+      "code": "FIBROSCAN",
+      "libelle": "Fibroscan (élastométrie hépatique)",
+      "type": "imagerie",
+      "categorie": "Autres imageries",
+      "abreviations": [
+        "fibroscan",
+        "elasto",
+        "elastometrie"
+      ],
+      "synonymes": [
+        "élastographie",
+        "fibrose hépatique"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 3,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Évaluation de la fibrose hépatique ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 980,
+      "actif": true
+    },
+    {
+      "code": "ECG",
+      "libelle": "ECG",
+      "type": "exploration",
+      "categorie": "Cardiologie",
+      "abreviations": [
+        "ecg"
+      ],
+      "synonymes": [
+        "électrocardiogramme"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Trouble du rythme ou de la conduction ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 990,
+      "actif": true
+    },
+    {
+      "code": "ECHOCARDIOGRAPHIE",
+      "libelle": "Échocardiographie transthoracique",
+      "type": "exploration",
+      "categorie": "Cardiologie",
+      "abreviations": [
+        "ett",
+        "echo coeur",
+        "echocardio",
+        "echo"
+      ],
+      "synonymes": [
+        "échographie cardiaque",
+        "écho-doppler cardiaque"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Fonction ventriculaire gauche ? Valvulopathie ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1000,
+      "actif": true
+    },
+    {
+      "code": "HOLTER_ECG",
+      "libelle": "Holter ECG des 24 heures",
+      "type": "exploration",
+      "categorie": "Cardiologie",
+      "abreviations": [
+        "holter",
+        "holter ecg"
+      ],
+      "synonymes": [
+        "holter rythmique"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Trouble du rythme paroxystique ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1010,
+      "actif": true
+    },
+    {
+      "code": "MAPA",
+      "libelle": "MAPA (mesure ambulatoire de la pression artérielle)",
+      "type": "exploration",
+      "categorie": "Cardiologie",
+      "abreviations": [
+        "mapa",
+        "holter tensionnel"
+      ],
+      "synonymes": [
+        "holter tensionnel"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Confirmation d'une HTA ? Contrôle tensionnel ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1020,
+      "actif": true
+    },
+    {
+      "code": "EPREUVE_EFFORT",
+      "libelle": "Épreuve d'effort",
+      "type": "exploration",
+      "categorie": "Cardiologie",
+      "abreviations": [
+        "ee",
+        "epreuve effort",
+        "test effort"
+      ],
+      "synonymes": [
+        "test d'effort"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Ischémie myocardique d'effort ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1030,
+      "actif": true
+    },
+    {
+      "code": "FOGD",
+      "libelle": "FOGD (fibroscopie œso-gastro-duodénale)",
+      "type": "exploration",
+      "categorie": "Endoscopie digestive",
+      "abreviations": [
+        "fogd",
+        "gastroscopie",
+        "fibro",
+        "endoscopie haute",
+        "fibroscopie"
+      ],
+      "synonymes": [
+        "endoscopie digestive haute",
+        "fibroscopie gastrique"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Avec biopsies",
+        "Sous sédation"
+      ],
+      "question_exemple": "Recherche d'une lésion ulcéreuse ? Helicobacter pylori ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1040,
+      "actif": true
+    },
+    {
+      "code": "COLOSCOPIE",
+      "libelle": "Coloscopie totale",
+      "type": "exploration",
+      "categorie": "Endoscopie digestive",
+      "abreviations": [
+        "colo",
+        "coloscopie"
+      ],
+      "synonymes": [
+        "endoscopie digestive basse"
+      ],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Après préparation colique",
+        "Sous sédation",
+        "Avec biopsies"
+      ],
+      "question_exemple": "Dépistage ? Bilan de rectorragies ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1050,
+      "actif": true
+    },
+    {
+      "code": "RECTOSIGMOIDOSCOPIE",
+      "libelle": "Rectosigmoïdoscopie",
+      "type": "exploration",
+      "categorie": "Endoscopie digestive",
+      "abreviations": [
+        "rss",
+        "recto",
+        "rectosigmoidoscopie"
+      ],
+      "synonymes": [],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Après lavement évacuateur"
+      ],
+      "question_exemple": "Bilan de rectorragies ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1060,
+      "actif": true
+    },
+    {
+      "code": "ECHO_ENDOSCOPIE",
+      "libelle": "Écho-endoscopie",
+      "type": "exploration",
+      "categorie": "Endoscopie digestive",
+      "abreviations": [
+        "ee digestive",
+        "echoendoscopie",
+        "echo endoscopie",
+        "echo"
+      ],
+      "synonymes": [],
+      "a_jeun": true,
+      "delai_jeun_h": 6,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Haute (bilio-pancréatique)",
+        "Basse (rectale)",
+        "Sous sédation"
+      ],
+      "question_exemple": "Lithiase de la voie biliaire ? Lésion pancréatique ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1070,
+      "actif": true
+    },
+    {
+      "code": "EFR",
+      "libelle": "EFR (exploration fonctionnelle respiratoire)",
+      "type": "exploration",
+      "categorie": "Pneumologie",
+      "abreviations": [
+        "efr",
+        "spiro",
+        "spirometrie"
+      ],
+      "synonymes": [
+        "spirométrie",
+        "souffle"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [
+        "Avec test de réversibilité"
+      ],
+      "question_exemple": "Trouble ventilatoire obstructif ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1080,
+      "actif": true
+    },
+    {
+      "code": "FCV",
+      "libelle": "Frottis cervico-vaginal",
+      "type": "exploration",
+      "categorie": "Gynécologie",
+      "abreviations": [
+        "fcv",
+        "frottis"
+      ],
+      "synonymes": [
+        "frottis du col",
+        "dépistage col utérin",
+        "test hpv"
+      ],
+      "a_jeun": false,
+      "delai_jeun_h": null,
+      "irradiant": false,
+      "injection_possible": false,
+      "produit_contraste": null,
+      "consentement_requis": false,
+      "precisions_suggerees": [],
+      "question_exemple": "Dépistage ?",
+      "unite_defaut": null,
+      "unites": [],
+      "code_loinc": null,
+      "ordre": 1090,
+      "actif": true
+    }
+  ],
+  "packs": [
+    {
+      "code": "BILAN_HEPATIQUE",
+      "nom": "Bilan hépatique",
+      "mots_cles": [
+        "hepatique",
+        "foie",
+        "bh",
+        "transaminases"
+      ],
+      "ordre": 10,
+      "lignes": [
+        {
+          "examen_code": "ASAT",
+          "libelle": "ASAT (TGO)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ALAT",
+          "libelle": "ALAT (TGP)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "GGT",
+          "libelle": "Gamma-GT (GGT)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "PAL",
+          "libelle": "Phosphatases alcalines (PAL)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "BILIRUBINE",
+          "libelle": "Bilirubine totale et conjuguée",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ALBUMINE",
+          "libelle": "Albumine",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "TP_INR",
+          "libelle": "TP / INR",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "BILAN_RENAL",
+      "nom": "Bilan rénal",
+      "mots_cles": [
+        "renal",
+        "rein",
+        "fonction renale"
+      ],
+      "ordre": 20,
+      "lignes": [
+        {
+          "examen_code": "UREE",
+          "libelle": "Urée",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "CREATININE",
+          "libelle": "Créatinine",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "DFG",
+          "libelle": "DFG estimé (CKD-EPI)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "IONOGRAMME",
+          "libelle": "Ionogramme sanguin (Na, K, Cl)",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "BILAN_GLYCEMIQUE",
+      "nom": "Bilan glycémique",
+      "mots_cles": [
+        "glycemique",
+        "diabete",
+        "sucre"
+      ],
+      "ordre": 30,
+      "lignes": [
+        {
+          "examen_code": "GLYCEMIE_JEUN",
+          "libelle": "Glycémie à jeun",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "HBA1C",
+          "libelle": "HbA1c (hémoglobine glyquée)",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "BILAN_LIPIDIQUE",
+      "nom": "Bilan lipidique",
+      "mots_cles": [
+        "lipidique",
+        "eal",
+        "cholesterol",
+        "lipides"
+      ],
+      "ordre": 40,
+      "lignes": [
+        {
+          "examen_code": "CHOLESTEROL_TOTAL",
+          "libelle": "Cholestérol total",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "HDL",
+          "libelle": "HDL-cholestérol",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "LDL",
+          "libelle": "LDL-cholestérol",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "TRIGLYCERIDES",
+          "libelle": "Triglycérides",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "BILAN_MARTIAL",
+      "nom": "Bilan martial",
+      "mots_cles": [
+        "martial",
+        "fer",
+        "anemie",
+        "carence"
+      ],
+      "ordre": 50,
+      "lignes": [
+        {
+          "examen_code": "NFS",
+          "libelle": "NFS (hémogramme)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "FERRITINE",
+          "libelle": "Ferritine",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "FER_SERIQUE",
+          "libelle": "Fer sérique",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "CST",
+          "libelle": "Coefficient de saturation de la transferrine (CST)",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "BILAN_THYROIDIEN",
+      "nom": "Bilan thyroïdien",
+      "mots_cles": [
+        "thyroidien",
+        "thyroide"
+      ],
+      "ordre": 60,
+      "lignes": [
+        {
+          "examen_code": "TSH",
+          "libelle": "TSH ultrasensible",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "T4L",
+          "libelle": "T4 libre",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "T3L",
+          "libelle": "T3 libre",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "SEROLOGIES_HEPATITES",
+      "nom": "Sérologies hépatites B et C",
+      "mots_cles": [
+        "hepatite",
+        "vhb",
+        "vhc",
+        "serologies"
+      ],
+      "ordre": 70,
+      "lignes": [
+        {
+          "examen_code": "AG_HBS",
+          "libelle": "Antigène HBs",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "AC_ANTI_HBS",
+          "libelle": "Anticorps anti-HBs",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "AC_ANTI_HBC",
+          "libelle": "Anticorps anti-HBc",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "AC_ANTI_VHC",
+          "libelle": "Anticorps anti-VHC",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "HEPATOPATHIE_CHRONIQUE",
+      "nom": "Bilan d'hépatopathie chronique",
+      "mots_cles": [
+        "hepatopathie",
+        "cirrhose",
+        "foie",
+        "fibrose"
+      ],
+      "ordre": 80,
+      "lignes": [
+        {
+          "examen_code": "NFS",
+          "libelle": "NFS (hémogramme)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "TP_INR",
+          "libelle": "TP / INR",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ALBUMINE",
+          "libelle": "Albumine",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ASAT",
+          "libelle": "ASAT (TGO)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ALAT",
+          "libelle": "ALAT (TGP)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "GGT",
+          "libelle": "Gamma-GT (GGT)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "PAL",
+          "libelle": "Phosphatases alcalines (PAL)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "BILIRUBINE",
+          "libelle": "Bilirubine totale et conjuguée",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "AFP",
+          "libelle": "Alpha-fœtoprotéine (AFP)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ECHO_HEPATIQUE_DOPPLER",
+          "libelle": "Échographie hépatique avec doppler",
+          "type": "imagerie"
+        },
+        {
+          "examen_code": "FIBROSCAN",
+          "libelle": "Fibroscan (élastométrie hépatique)",
+          "type": "imagerie"
+        }
+      ]
+    },
+    {
+      "code": "SUIVI_DIABETE",
+      "nom": "Suivi du diabète",
+      "mots_cles": [
+        "diabete",
+        "suivi",
+        "dt2",
+        "dt1"
+      ],
+      "ordre": 90,
+      "lignes": [
+        {
+          "examen_code": "GLYCEMIE_JEUN",
+          "libelle": "Glycémie à jeun",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "HBA1C",
+          "libelle": "HbA1c (hémoglobine glyquée)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "CREATININE",
+          "libelle": "Créatinine",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "DFG",
+          "libelle": "DFG estimé (CKD-EPI)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ALBU_CREAT_U",
+          "libelle": "Rapport albuminurie / créatininurie",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "CHOLESTEROL_TOTAL",
+          "libelle": "Cholestérol total",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "HDL",
+          "libelle": "HDL-cholestérol",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "LDL",
+          "libelle": "LDL-cholestérol",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "TRIGLYCERIDES",
+          "libelle": "Triglycérides",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "SUIVI_HTA",
+      "nom": "Suivi HTA",
+      "mots_cles": [
+        "hta",
+        "hypertension",
+        "tension",
+        "suivi"
+      ],
+      "ordre": 100,
+      "lignes": [
+        {
+          "examen_code": "CREATININE",
+          "libelle": "Créatinine",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "DFG",
+          "libelle": "DFG estimé (CKD-EPI)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "IONOGRAMME",
+          "libelle": "Ionogramme sanguin (Na, K, Cl)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "CHOLESTEROL_TOTAL",
+          "libelle": "Cholestérol total",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "HDL",
+          "libelle": "HDL-cholestérol",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "LDL",
+          "libelle": "LDL-cholestérol",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "TRIGLYCERIDES",
+          "libelle": "Triglycérides",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "GLYCEMIE_JEUN",
+          "libelle": "Glycémie à jeun",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ECG",
+          "libelle": "ECG",
+          "type": "exploration"
+        }
+      ]
+    },
+    {
+      "code": "PRE_OPERATOIRE",
+      "nom": "Bilan pré-opératoire",
+      "mots_cles": [
+        "preoperatoire",
+        "pre operatoire",
+        "preop",
+        "chirurgie",
+        "anesthesie"
+      ],
+      "ordre": 110,
+      "lignes": [
+        {
+          "examen_code": "NFS",
+          "libelle": "NFS (hémogramme)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "TP_INR",
+          "libelle": "TP / INR",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "TCA",
+          "libelle": "TCA",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "GROUPE_ABO_RH",
+          "libelle": "Groupe sanguin ABO-Rhésus",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "RAI",
+          "libelle": "RAI (recherche d'agglutinines irrégulières)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "IONOGRAMME",
+          "libelle": "Ionogramme sanguin (Na, K, Cl)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "CREATININE",
+          "libelle": "Créatinine",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "GLYCEMIE_JEUN",
+          "libelle": "Glycémie à jeun",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "BILAN_INFLAMMATOIRE",
+      "nom": "Bilan inflammatoire",
+      "mots_cles": [
+        "inflammatoire",
+        "inflammation",
+        "infection"
+      ],
+      "ordre": 120,
+      "lignes": [
+        {
+          "examen_code": "NFS",
+          "libelle": "NFS (hémogramme)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "VS",
+          "libelle": "Vitesse de sédimentation (VS)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "CRP",
+          "libelle": "CRP",
+          "type": "biologie"
+        }
+      ]
+    },
+    {
+      "code": "PRENATAL_T1",
+      "nom": "Bilan prénatal du 1er trimestre",
+      "mots_cles": [
+        "prenatal",
+        "grossesse",
+        "enceinte",
+        "trimestre",
+        "obstetrique"
+      ],
+      "ordre": 130,
+      "lignes": [
+        {
+          "examen_code": "GROUPE_ABO_RH",
+          "libelle": "Groupe sanguin ABO-Rhésus",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "RAI",
+          "libelle": "RAI (recherche d'agglutinines irrégulières)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "NFS",
+          "libelle": "NFS (hémogramme)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "GLYCEMIE_JEUN",
+          "libelle": "Glycémie à jeun",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "TOXOPLASMOSE",
+          "libelle": "Sérologie toxoplasmose (IgG, IgM)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "RUBEOLE",
+          "libelle": "Sérologie rubéole (IgG)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "SYPHILIS",
+          "libelle": "Sérologie syphilis (TPHA-VDRL)",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "VIH",
+          "libelle": "Sérologie VIH 1 et 2",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "AG_HBS",
+          "libelle": "Antigène HBs",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ECBU",
+          "libelle": "ECBU",
+          "type": "biologie"
+        },
+        {
+          "examen_code": "ECHO_OBSTETRICALE",
+          "libelle": "Échographie obstétricale",
+          "type": "imagerie"
+        }
+      ]
+    }
+  ]
+}

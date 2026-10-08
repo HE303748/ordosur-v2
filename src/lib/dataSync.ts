@@ -4,7 +4,7 @@
 
 import { useEffect, useRef } from 'react';
 
-export type SyncTopic = 'ordonnances' | 'rendez_vous' | 'antecedents';
+export type SyncTopic = 'ordonnances' | 'rendez_vous' | 'antecedents' | 'examens';
 
 const bus = new EventTarget();
 

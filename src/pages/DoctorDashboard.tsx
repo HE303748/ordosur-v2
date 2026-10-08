@@ -29,6 +29,13 @@ import {
 import { computeVerification, verificationBlockMessage } from '../lib/ordonnanceVerification';
 import { notifyDataChanged, useDataSync } from '../lib/dataSync';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
+// Sprint 5 — demandes d'examens (indépendantes du moteur de sécurité des médicaments)
+import { newDemandeNumero, toIsoDate } from '../lib/examRequest';
+import { buildExamPages } from '../lib/examDocument';
+import { createDemande, attachOrdonnance, cancelDemande } from '../lib/examensApi';
+import { docInputFromDraft, onOpenExamRequest, type OpenExamRequest } from '../lib/examUi';
+import { ExamRequestModal } from '../components/exams/ExamRequestModal';
+import { PatientExamStrip } from '../components/exams/PatientExamStrip';
 import { DerogationModal } from '../components/DerogationModal';
 import { posologieBlockMessage } from '../lib/posologie';
 import { searchMedicamentsMA } from '../lib/medSearch';
@@ -1108,6 +1115,9 @@ function CheckerView({
 
                   {/* Sprint 4e-C — statut grossesse / allaitement : toute modification relance l'analyse */}
                   <PregnancyStatusEditor patient={selectedPatient} canWrite={canWritePatient} onPatched={onPatientPatched} />
+
+                  {/* Sprint 5 — prochain bilan + demande d'examens (document autonome, hors blocage 3b) */}
+                  <PatientExamStrip patient={selectedPatient} canWrite={canWritePatient} />
 
                   {/* Medical badges */}
                   {((selectedPatient.pathologies?.length ?? 0) > 0 || (selectedPatient.allergies_medicaments?.length ?? 0) > 0) && (
@@ -2879,6 +2889,14 @@ export function DoctorDashboard() {
   // Enregistrement auto à l'impression/PDF : n° d'ordre déjà enregistré (anti-doublon)
   // et enregistrement en cours (partagé entre clics rapprochés).
   const [savedOrdreNumber, setSavedOrdreNumber] = useState<string | null>(null);
+  // Sprint 5 — numéro de la demande d'examens jointe à l'ordonnance en cours d'aperçu, et
+  // demande déjà créée pour cette ordonnance (jamais de doublon si l'enregistrement est relancé).
+  const [prescriptionDemandeNumero, setPrescriptionDemandeNumero] = useState<string | null>(null);
+  const pendingDemandeRef = useRef<{ ordreNumber: string; demandeId: string } | null>(null);
+  // Sprint 5 — modale « Demande d'examens » (document autonome, hors blocage 3b).
+  const [examRequest, setExamRequest] = useState<OpenExamRequest | null>(null);
+  useEffect(() => onOpenExamRequest(setExamRequest), []);
+  const [agendaPrefill, setAgendaPrefill] = useState<{ patient_id: string; patient_nom: string; date: string; motif: string } | null>(null);
   const savedOrdreNumberRef = useRef<string | null>(null);
   const savingOrdonnanceRef = useRef<Promise<boolean> | null>(null);
   // Sprint 4d — dérogation (prescription contre-indiquée) : confirmation liée à la signature
@@ -2930,7 +2948,7 @@ export function DoctorDashboard() {
 
   // La date d'agenda ciblée depuis l'accueil ne vaut que pour cette ouverture.
   useEffect(() => {
-    if (activeView !== 'agenda') setAgendaDate(null);
+    if (activeView !== 'agenda') { setAgendaDate(null); setAgendaPrefill(null); }
   }, [activeView]);
 
   // Scroll to result
@@ -4247,6 +4265,30 @@ export function DoctorDashboard() {
 
     console.log('[OrdoSur] Saving ordonnance payload:', payload);
 
+    // Sprint 5 — Demande d'examens jointe : créée AVANT l'ordonnance, dans une transaction
+    // (RPC). Si elle échoue, rien n'est enregistré : jamais d'ordonnance « à moitié ».
+    const examens = prescriptionData.examens as { draft: import('../lib/examRequest').ExamRequestDraft; echeance: import('../lib/examRequest').EcheanceResult } | null | undefined;
+    let demandeId: string | null = null;
+    if (examens && examens.draft.lines.length > 0) {
+      const pending = pendingDemandeRef.current;
+      if (pending && pending.ordreNumber === prescriptionOrdreNumber) {
+        demandeId = pending.demandeId;
+      } else {
+        try {
+          const created = await createDemande(examens.draft, {
+            patientId: selectedPatient.id, orgId: user.org_id, doctorId,
+            numero: prescriptionDemandeNumero ?? undefined,
+          }, examens.echeance);
+          demandeId = created.id;
+          if (created.numero !== prescriptionDemandeNumero) setPrescriptionDemandeNumero(created.numero);
+        } catch (e: any) {
+          console.error('[OrdoSur] demande d\'examens non enregistrée:', e);
+          showToast(`Rien n'a été enregistré — la demande d'examens a échoué : ${e?.message || 'erreur inconnue'}. Réessayez.`, 'error');
+          return false;
+        }
+      }
+    }
+
     try {
       const { data: ordonnance, error: ordErr } = await supabase
         .from('ordonnances')
@@ -4260,6 +4302,7 @@ export function DoctorDashboard() {
       }
 
       console.log('[OrdoSur] Ordonnance inserted, id:', ordonnance.id);
+      const savedOrdonnanceId: string = ordonnance.id;
 
       const lignes = (prescriptionData.medications ?? []).map((m: any) => ({
         ordonnance_id:  ordonnance.id,
@@ -4379,6 +4422,17 @@ export function DoctorDashboard() {
         console.error('[OrdoSur] hors_base_confirme logging failed (non-blocking):', hbErr);
       }
 
+      // Sprint 5 — rattachement de la demande à l'ordonnance (badge « + examens », réimpression).
+      if (demandeId) {
+        pendingDemandeRef.current = null;
+        try {
+          await attachOrdonnance(demandeId, savedOrdonnanceId);
+        } catch (linkErr) {
+          console.error('[OrdoSur] rattachement demande ↔ ordonnance (non bloquant):', linkErr);
+        }
+        notifyDataChanged('examens');
+      }
+
       savedOrdreNumberRef.current = prescriptionOrdreNumber;
       setDerogationConf(null);
       setSavedOrdreNumber(prescriptionOrdreNumber);
@@ -4395,6 +4449,19 @@ export function DoctorDashboard() {
 
     } catch (e: any) {
       console.error('[OrdoSur] handleSaveOrdonnance error:', e);
+      // Sprint 5 — l'ordonnance n'a pas été enregistrée : la demande d'examens créée juste
+      // avant est annulée (jamais de suppression physique). Si l'annulation échoue aussi
+      // (réseau), elle est réutilisée au prochain essai au lieu d'être créée en double.
+      if (demandeId) {
+        try {
+          await cancelDemande(demandeId, "Ordonnance non enregistrée (erreur technique)");
+          pendingDemandeRef.current = null;
+          notifyDataChanged('examens');
+        } catch (cancelErr) {
+          console.error('[OrdoSur] annulation de la demande orpheline impossible:', cancelErr);
+          pendingDemandeRef.current = { ordreNumber: prescriptionOrdreNumber, demandeId };
+        }
+      }
       showToast(e?.message || "Erreur lors de l'enregistrement de l'ordonnance", 'error');
       return false;
     }
@@ -5246,7 +5313,7 @@ export function DoctorDashboard() {
             )}
 
             {activeView === 'agenda' && (
-              <AgendaView key="agenda" patients={patients} showToast={showToast} initialDate={agendaDate} />
+              <AgendaView key="agenda" patients={patients} showToast={showToast} initialDate={agendaDate} prefill={agendaPrefill} />
             )}
 
             {activeView === 'encyclopedie' && (
@@ -5396,6 +5463,7 @@ export function DoctorDashboard() {
             const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
             setPrescriptionOrdreNumber(`ORD-${dateStr}-${rand}`);
+            setPrescriptionDemandeNumero(data.examens ? newDemandeNumero() : null);
             setShowPrescriptionForm(false);
             setShowPrescriptionPreview(true);
           }}
@@ -5438,6 +5506,31 @@ export function DoctorDashboard() {
           remarks={prescriptionData.remarks ?? ''}
           nextAppointment={prescriptionData.nextAppointment}
           interactionAlerts={interactionAlerts}
+          examPages={prescriptionData.examens && prescriptionDemandeNumero
+            ? buildExamPages(docInputFromDraft(prescriptionData.examens.draft, {
+                numero: prescriptionDemandeNumero, dateIso: toIsoDate(new Date()),
+                echeance: prescriptionData.examens.echeance, patient: selectedPatient,
+              }))
+            : []}
+        />
+      )}
+
+      {/* Sprint 5 — Demande d'examens autonome (profil, Vérificateur, listes) */}
+      {examRequest && (
+        <ExamRequestModal
+          key={`${examRequest.patient.id}:${examRequest.renewFrom?.id ?? 'new'}`}
+          patient={examRequest.patient}
+          renewFrom={examRequest.renewFrom ?? null}
+          currentMedicaments={selectedPatient?.id === examRequest.patient.id
+            ? selectedMeds.map(m => [displayNom(m), m.dci, m.dci_canonique].filter(Boolean).join(' '))
+            : []}
+          onClose={() => setExamRequest(null)}
+          showToast={showToast}
+          onPlanRdv={(p, date) => {
+            setAgendaPrefill({ patient_id: p.id, patient_nom: `${p.prenom} ${p.nom}`, date, motif: 'Contrôle — résultats d\u2019examens' });
+            setAgendaDate(date);
+            setActiveView('agenda');
+          }}
         />
       )}
 

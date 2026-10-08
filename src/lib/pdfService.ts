@@ -254,7 +254,11 @@ export function drawDocumentHeader(doc: jsPDF, h: PdfDocumentHeader, logo: PdfIm
 export const PDF_LAYOUT = { PAGE_W, PAGE_H, MARGIN_L, MARGIN_R, CONTENT_W } as const;
 export const PDF_COLORS = C;
 
-export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
+/**
+ * Sprint 5 — Construit le PDF de l'ordonnance SANS l'enregistrer : les pages « Examens à
+ * réaliser » peuvent ainsi suivre l'ordonnance dans le même fichier (lib/examPdf).
+ */
+export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc: jsPDF; assets: PdfChromeAssets; fileName: string }> {
   // compress: true → flux (texte vectoriel et images) compressés ; indispensable pour le poids.
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
 
@@ -373,9 +377,13 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
     { align: 'center' }
   );
 
-  // ── Save ───────────────────────────────────────────────────────────────────
   const fileName = `ordonnance_${data.patient.nom}_${data.patient.prenom}_${data.date}.pdf`
     .replace(/[^a-zA-Z0-9_.-]/g, '_');
+  return { doc, assets: { logo: logoAsset, watermark: watermarkAsset }, fileName };
+}
+
+export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
+  const { doc, fileName } = await buildOrdonnancePdf(data);
   doc.save(fileName);
 }
 

@@ -84,24 +84,28 @@ interface RdvModalProps {
   onSave: (data: Partial<RendezVous>) => Promise<void>;
   onClose: () => void;
   patients: Array<{ id: string; prenom: string; nom: string }>;
+  /** Sprint 5 — valeurs proposées pour un nouveau RDV (ex. contrôle après des examens). */
+  prefill?: AgendaPrefill | null;
 }
 
-function RdvModal({ rdv, defaultDate, onSave, onClose, patients }: RdvModalProps) {
+export interface AgendaPrefill { patient_id: string; patient_nom: string; date: string; motif: string }
+
+function RdvModal({ rdv, defaultDate, onSave, onClose, patients, prefill = null }: RdvModalProps) {
   const [form, setForm] = useState<Partial<RendezVous>>({
-    patient_nom:  rdv?.patient_nom  || '',
-    patient_id:   rdv?.patient_id   || null,
-    date:         rdv?.date         || defaultDate || fmt(new Date()),
+    patient_nom:  rdv?.patient_nom  || prefill?.patient_nom || '',
+    patient_id:   rdv?.patient_id   || prefill?.patient_id || null,
+    date:         rdv?.date         || prefill?.date || defaultDate || fmt(new Date()),
     heure_debut:  rdv?.heure_debut  || '09:00',
     heure_fin:    rdv?.heure_fin    || '09:30',
-    motif:        rdv?.motif        || '',
-    type:         rdv?.type         || 'consultation',
+    motif:        rdv?.motif        || prefill?.motif || '',
+    type:         rdv?.type         || (prefill ? 'suivi' : 'consultation'),
     statut:       rdv?.statut       || 'confirme',
     notes:        rdv?.notes        || '',
   });
   const [saving, setSaving] = useState(false);
 
   // Patient autocomplete
-  const [patSearch, setPatSearch]     = useState(rdv?.patient_nom || '');
+  const [patSearch, setPatSearch]     = useState(rdv?.patient_nom || prefill?.patient_nom || '');
   const [showPatDrop, setShowPatDrop] = useState(false);
 
   const filteredPats = patSearch.trim().length >= 1
@@ -279,9 +283,11 @@ interface AgendaViewProps {
   showToast: (msg: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
   // Ouverture sur un jour précis (YYYY-MM-DD), en vue Jour.
   initialDate?: string | null;
+  /** Sprint 5 — ouvre le formulaire de RDV pré-rempli (le médecin valide : rien n'est créé seul). */
+  prefill?: AgendaPrefill | null;
 }
 
-export function AgendaView({ patients, showToast, initialDate }: AgendaViewProps) {
+export function AgendaView({ patients, showToast, initialDate, prefill = null }: AgendaViewProps) {
   const { user } = useAuth();
   const [view, setView] = useState<CalView>(initialDate ? 'jour' : 'semaine');
   const [refDate, setRefDate] = useState(() => {
@@ -295,6 +301,15 @@ export function AgendaView({ patients, showToast, initialDate }: AgendaViewProps
   const [showModal, setShowModal] = useState(false);
   const [editingRdv, setEditingRdv] = useState<RendezVous | null>(null);
   const [clickedDate, setClickedDate] = useState<string | undefined>();
+  const [activePrefill, setActivePrefill] = useState<AgendaPrefill | null>(null);
+  useEffect(() => {
+    if (!prefill) return;
+    setEditingRdv(null);
+    setClickedDate(prefill.date);
+    setActivePrefill(prefill);
+    setShowModal(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefill?.patient_id, prefill?.date]);
 
   // Sprint M6 — Détection du breakpoint mobile (< lg = 1024px) pour forcer la vue Jour.
   // Couvre aussi le cas resize : si l'utilisateur réduit la fenêtre depuis vue Semaine/Mois,
@@ -347,7 +362,7 @@ export function AgendaView({ patients, showToast, initialDate }: AgendaViewProps
         : await supabase.from('rendez_vous').insert({ ...formData, org_id: user.org_id, doctor_id: user.id });
       if (error) throw error;
       showToast(editingRdv ? 'Rendez-vous mis à jour' : 'Rendez-vous créé', 'success');
-      setShowModal(false); setEditingRdv(null); load();
+      setShowModal(false); setEditingRdv(null); setActivePrefill(null); load();
       notifyDataChanged('rendez_vous');
     } catch (e) {
       console.error('[AgendaView] save error:', e);
@@ -368,7 +383,7 @@ export function AgendaView({ patients, showToast, initialDate }: AgendaViewProps
     notifyDataChanged('rendez_vous');
   };
 
-  const openNew = (date?: string) => { setEditingRdv(null); setClickedDate(date); setShowModal(true); };
+  const openNew = (date?: string) => { setEditingRdv(null); setActivePrefill(null); setClickedDate(date); setShowModal(true); };
 
   const navigate = (dir: number) => {
     const d = new Date(refDate);
@@ -471,8 +486,9 @@ export function AgendaView({ patients, showToast, initialDate }: AgendaViewProps
             rdv={editingRdv}
             defaultDate={clickedDate}
             onSave={handleSave}
-            onClose={() => { setShowModal(false); setEditingRdv(null); }}
+            onClose={() => { setShowModal(false); setEditingRdv(null); setActivePrefill(null); }}
             patients={patients}
+            prefill={editingRdv ? null : activePrefill}
           />
         )}
       </AnimatePresence>

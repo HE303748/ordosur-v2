@@ -12,6 +12,8 @@
  * sécurité doit toujours être recalculé, jamais réaffiché depuis un cache.
  */
 
+import type { ExamRequestDraft } from './examRequest';
+
 const PREFIX = 'ordosur:draft:';
 const MAX_AGE_MS = 24 * 60 * 60 * 1000;
 const VERSION = 1;
@@ -39,6 +41,8 @@ export interface DraftForm {
   remarks: string;
   appointmentDate: string;
   appointmentTime: string;
+  // Sprint 5 — section « Examens à réaliser » de l'ordonnance (brouillon protégé comme le reste).
+  examens?: ExamRequestDraft | null;
 }
 
 export interface DraftSelectedMed {
@@ -86,7 +90,8 @@ export function draftMedsKey(meds: Array<{ id: string }>): string {
 export function formHasContent(f: DraftForm | null | undefined): boolean {
   if (!f) return false;
   return !!f.motif.trim() || !!f.remarks.trim() || !!f.appointmentDate || !!f.appointmentTime
-    || f.medications.some(m => !!m.nom.trim() || !!m.posologie.trim() || !!m.duree.trim());
+    || f.medications.some(m => !!m.nom.trim() || !!m.posologie.trim() || !!m.duree.trim())
+    || (f.examens?.lines.length ?? 0) > 0;
 }
 
 /** Brouillon qui mérite d'être proposé (au moins un médicament ou une saisie). */
@@ -141,7 +146,8 @@ export function draftLinesForSelection(form: DraftForm | null | undefined, curre
 
 export function isFormEmpty(f: DraftForm | null): boolean {
   if (!f) return true;
-  return !f.motif.trim() && !f.remarks.trim() && !f.appointmentDate && !f.appointmentTime && f.medications.length === 0;
+  return !f.motif.trim() && !f.remarks.trim() && !f.appointmentDate && !f.appointmentTime && f.medications.length === 0
+    && (f.examens?.lines.length ?? 0) === 0;
 }
 
 export function saveDraft(draft: Omit<OrdonnanceDraft, 'v' | 'savedAt'>): void {
