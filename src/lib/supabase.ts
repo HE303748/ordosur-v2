@@ -66,6 +66,11 @@ export interface Patient {
   groupe_sanguin?: string | null;
   antecedents_chirurgicaux?: string | null;
   traitements_en_cours?: string | null;
+  // Sprint 4e-C — statut grossesse / allaitement déclaré (src/lib/pregnancyStatus.ts)
+  grossesse_statut?: 'enceinte' | 'non_enceinte' | 'inconnu' | null;
+  grossesse_ddr?: string | null;
+  allaitement?: boolean | null;
+  grossesse_maj_le?: string | null;
   created_at: string;
 }
 

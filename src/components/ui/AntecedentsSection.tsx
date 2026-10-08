@@ -31,6 +31,11 @@ import { Sheet, FormError } from './TraitementFondSection';
 export interface PatientPatch {
   pathologies?: string[] | null;
   pathologies_depuis?: PathologiesDepuis | null;
+  // Sprint 4e-C — statut grossesse / allaitement
+  grossesse_statut?: 'enceinte' | 'non_enceinte' | 'inconnu' | null;
+  grossesse_ddr?: string | null;
+  allaitement?: boolean | null;
+  grossesse_maj_le?: string | null;
 }
 
 interface PatientLike {

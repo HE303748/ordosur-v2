@@ -71,6 +71,8 @@ import {
   evaluateAntecedents, mergeWithExisting, classifyAntecedent,
   type RegleAntecedent, type RegleClasse, type RegleSeverite,
 } from '../lib/antecedentEngine';
+import { pregnancyContext, classifyPregnancyAlert, isMajorTeratogen, pregnancySummary } from '../lib/pregnancyStatus';
+import { PregnancyStatusEditor } from '../components/PregnancyStatusEditor';
 import { AgendaView } from '../components/ui/AgendaView';
 import { EncyclopedieView } from '../components/ui/EncyclopedieView';
 import { DocumentsView } from '../components/ui/DocumentsView';
@@ -141,6 +143,11 @@ interface InteractionAlert {
   //   pregnancyFirm    → « Grossesse »/« Allaitement » dans les pathologies : alerte ferme, dépliée
   pregnancyContext?: boolean;
   pregnancyFirm?: boolean;
+  // Sprint 4e-C — requalification selon le statut déclaré (src/lib/pregnancyStatus.ts) :
+  //   pregnancyNote      → « Patiente enceinte — terme actuel 30 SA », « Déclarée non enceinte le 12/09 »…
+  //   pregnancyReassured → reste dans le bloc replié mais ne bloque plus le vert
+  pregnancyNote?: string;
+  pregnancyReassured?: boolean;
   // Sprint 3 — provenance des médicaments impliqués :
   //   nouveau → uniquement des médicaments de la prescription en cours
   //   mixte   → nouveau × traitement de fond (badge « avec traitement de fond »)
@@ -706,6 +713,10 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
         </div>
         {/* Ligne 2 : risque (description courte) */}
         <p className="text-sm text-slate-600 dark:text-[#94A3B8] leading-snug line-clamp-2">{shortDesc}</p>
+        {/* Sprint 4e-C — statut grossesse / allaitement déclaré */}
+        {alert.pregnancyNote && (
+          <p className="mt-1 text-xs font-medium text-slate-700 dark:text-[#CBD5E1]">{alert.pregnancyNote}</p>
+        )}
         {/* Sprint 4bc — antécédents absorbés par cette CI (même thème, sévérité ≥) */}
         {alert.also && alert.also.length > 0 && (
           <p className="mt-1 text-xs font-medium text-slate-700 dark:text-[#CBD5E1]">Également : {alert.also.join(' ; ')}</p>
@@ -742,8 +753,10 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
 
 // Sprint 2 — Bloc conditionnel « Grossesse, allaitement, procréation » (patiente).
 // Replié par défaut ; fermé, il affiche la sévérité maximale et le nombre de CI.
-function PregnancyContextBlock({ alerts }: { alerts: InteractionAlert[] }) {
+function PregnancyContextBlock({ alerts, statusLabel }: { alerts: InteractionAlert[]; statusLabel?: string | null }) {
   const [open, setOpen] = useState(false);
+  // Sprint 4e-C — CI écartées par le statut déclaré : toujours visibles, comptées à part.
+  const reassured = alerts.filter(a => a.pregnancyReassured).length;
   const maxSev = alerts.reduce<SeveriteKey>(
     (max, a) => (SEVER_ORDER[a.severite] < SEVER_ORDER[max] ? a.severite : max),
     alerts[0].severite,
@@ -761,7 +774,9 @@ function PregnancyContextBlock({ alerts }: { alerts: InteractionAlert[] }) {
         </span>
         <span className="text-xs text-slate-500 dark:text-[#94A3B8]">
           {alerts.length} contre-indication{alerts.length > 1 ? 's' : ''}
+          {reassured > 0 && ` · ${reassured === alerts.length ? 'sans objet' : `${reassured} sans objet`} d'après le statut déclaré`}
         </span>
+        {statusLabel && <span className="text-xs text-slate-500 dark:text-[#94A3B8] basis-full pl-6">{statusLabel}</span>}
         <span className="ml-auto"><SeverityBadge s={maxSev} /></span>
       </button>
       {open && (
@@ -964,6 +979,9 @@ interface CheckerViewProps {
   // Sprint 4e-B — allergies : familles reconnues / non analysées, règles chargées
   allergyStatus: AllergyClassification[];
   allergyRulesReady: boolean;
+  // Sprint 4e-C — saisie rapide du statut grossesse / allaitement
+  canWritePatient: boolean;
+  onPatientPatched: (patientId: string, patch: PatientPatch) => void;
 }
 
 function CheckerView({
@@ -983,6 +1001,7 @@ function CheckerView({
   analysisPending,
   antecedents, antecedentsLoading, antecedentsError, antecedentRulesReady,
   allergyStatus, allergyRulesReady,
+  canWritePatient, onPatientPatched,
 }: CheckerViewProps) {
   const [showMasked, setShowMasked] = useState(false);
   // Sprint 4d — cartes, bandeaux et verdict proviennent du MÊME run (instantané du verdict).
@@ -1086,6 +1105,9 @@ function CheckerView({
                       </p>
                     </div>
                   </div>
+
+                  {/* Sprint 4e-C — statut grossesse / allaitement : toute modification relance l'analyse */}
+                  <PregnancyStatusEditor patient={selectedPatient} canWrite={canWritePatient} onPatched={onPatientPatched} />
 
                   {/* Medical badges */}
                   {((selectedPatient.pathologies?.length ?? 0) > 0 || (selectedPatient.allergies_medicaments?.length ?? 0) > 0) && (
@@ -1430,7 +1452,12 @@ function CheckerView({
             )}
 
             {/* 3b. Sprint 2 — Bloc conditionnel grossesse / allaitement / procréation */}
-            {pregnancyCtxAlerts.length > 0 && <PregnancyContextBlock alerts={pregnancyCtxAlerts} />}
+            {pregnancyCtxAlerts.length > 0 && (
+              <PregnancyContextBlock
+                alerts={pregnancyCtxAlerts}
+                statusLabel={selectedPatient?.sexe === 'F' ? pregnancySummary(pregnancyContext(selectedPatient)) : null}
+              />
+            )}
 
             {/* 3b'. Sprint 3 — Alertes préexistantes (traitement de fond seul), repliées, jamais masquées */}
             {preexistingAlerts.length > 0 && <PreexistingAlertsBlock alerts={preexistingAlerts} />}
@@ -3192,6 +3219,36 @@ export function DoctorDashboard() {
   const doublonsIncomplete = !dupRulesReady
     && (selectedMeds.length + fondTraitements.filter(t => !fondExcluded.has(t.id)).length) >= 2;
 
+  // ── Sprint 4e-C — Statut grossesse / allaitement ─────────────────────────
+  // Tératogènes majeurs (CI grossesse toujours conditionnelle) chargés une fois. Échec →
+  // aucune CI grossesse n'est écartée par un « non enceinte » (jamais de vert à tort).
+  const [teratogenMotifs, setTeratogenMotifs] = useState<string[]>([]);
+  const [teratogensReady, setTeratogensReady] = useState(false);
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const rows = await fetchAllRows<{ motif: string }>(
+          (from, to) => supabase.from('teratogenes_majeurs').select('motif').range(from, to),
+          { label: 'teratogenes_majeurs' },
+        );
+        if (cancelled) return;
+        if (rows.length === 0) throw new Error('teratogenes_majeurs vide');
+        setTeratogenMotifs(rows.map(r => r.motif));
+        setTeratogensReady(true);
+      } catch (e) {
+        console.error('[OrdoSur] teratogenes_majeurs load error:', e);
+        if (!cancelled) setTeratogensReady(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user?.id]);
+  // Statut déclaré : toute modification (profil ou Vérificateur) invalide le verdict.
+  const pregnancySig = selectedPatient?.sexe === 'F'
+    ? [selectedPatient.grossesse_statut ?? '', selectedPatient.grossesse_ddr ?? '', String(selectedPatient.allaitement ?? ''), selectedPatient.grossesse_maj_le ?? ''].join('|')
+    : '';
+
   // Antécédents digestifs présents mais non analysables (règles ou antécédents non chargés).
   const antecedentsIncomplete = antError
     || (!antRulesReady && patientAntecedents.some(a => classifyAntecedent(a) !== null));
@@ -3210,8 +3267,8 @@ export function DoctorDashboard() {
     // Sprint 4bc — antécédents analysés : toute modification invalide le verdict.
     const ant = patientAntecedents.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
     // Sprint 4e-B — allergies (et type de réaction) : toute modification invalide le verdict.
-    return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}`;
-  }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady]);
+    return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}#${pregnancySig}#${teratogensReady ? 1 : 0}`;
+  }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady, pregnancySig, teratogensReady]);
   // Sprint 4d — valide seulement si le verdict porte sur l'ensemble actuel ET sur le dernier run.
   const analysisValid = !!result && analyzedKey === currentAnalysisKey && result.runId === alertsRunId;
   useEffect(() => {
@@ -4578,10 +4635,38 @@ export function DoctorDashboard() {
     // Sprint 3 — Le verdict est piloté par les alertes impliquant au moins un nouveau
     // médicament (origine 'nouveau' ou 'mixte'). Les alertes préexistantes (fond seul)
     // interdisent tout vert plein : seules, elles donnent « Sécuritaire sous réserve ».
-    const currentAlerts = interactionAlerts.filter(a => a.origin !== 'fond');
-    const preexistingCount = dedupClinicalAlerts(interactionAlerts.filter(a => a.origin === 'fond')).length;
+    // Sprint 4e-C — Statut grossesse / allaitement déclaré : les CI déjà placées dans le bloc
+    // conditionnel par le matching (inchangé) sont requalifiées ici, après coup :
+    //   enceinte → fermes (ou « À évaluer » si le terme de la CI n'est pas atteint) ;
+    //   non enceinte < 3 mois → restent dans le bloc replié mais ne bloquent plus le vert,
+    //   sauf tératogènes majeurs et CI « en âge de procréer » ; inconnu / expiré → inchangé.
+    const pregCtx = pregnancyContext(selectedPatient);
+    const medOfAlert = (nom: string) => {
+      const sel = selectedMeds.find(m => m.nom === nom);
+      if (sel) return { nom: `${sel.nom} ${sel.label ?? ''}`, dci: sel.dci, dci_canonique: sel.dci_canonique };
+      const fond = fondTraitements.find(t => fondDisplayName(t) === nom);
+      return { nom: `${nom} ${fond?.medicament_nom ?? ''}`, dci: fond?.medicament?.dci ?? null, dci_canonique: fond?.medicament?.dci_canonique ?? null };
+    };
+    const verdictAlerts: InteractionAlert[] = interactionAlerts.map(a => {
+      if (!a.pregnancyContext || a.type !== 'contraindication' || selectedPatient?.sexe !== 'F') return a;
+      // Liste des tératogènes non chargée : dans le doute, rien n'est écarté.
+      const teratogene = !teratogensReady || isMajorTeratogen(medOfAlert(a.involved[0]), teratogenMotifs);
+      const d = classifyPregnancyAlert(a.condition, pregCtx, teratogene);
+      const note = d.note ?? undefined;
+      if (d.mode === 'ferme') return { ...a, pregnancyContext: false, pregnancyFirm: true, pregnancyNote: note };
+      if (d.mode === 'a_evaluer') return { ...a, pregnancyContext: false, pregnancyFirm: true, severite: 'a_evaluer', pregnancyNote: note };
+      if (d.mode === 'rassuree') return { ...a, pregnancyReassured: true, pregnancyNote: note };
+      return { ...a, pregnancyNote: note };
+    });
+    const currentAlerts = verdictAlerts.filter(a => a.origin !== 'fond');
+    const preexistingCount = dedupClinicalAlerts(verdictAlerts.filter(a => a.origin === 'fond')).length;
     const firmAlerts = currentAlerts.filter(a => !a.pregnancyContext);
-    const pregnancyCtxCount = currentAlerts.length - firmAlerts.length;
+    // Seules les CI conditionnelles NON écartées interdisent le vert.
+    const pregnancyCtxCount = currentAlerts.filter(a => a.pregnancyContext && !a.pregnancyReassured).length;
+    const pregnancyReassuredCount = currentAlerts.filter(a => a.pregnancyContext && a.pregnancyReassured).length;
+    const pregnancyStale = pregCtx.aConfirmer
+      ? ' — statut « enceinte » à confirmer'
+      : pregCtx.expire ? ' — « non enceinte » déclaré il y a plus de 3 mois' : '';
 
     for (const alert of firmAlerts) {
       if (alert.severite === 'contre_indication') overallSeverity = 'dangerous';
@@ -4642,7 +4727,7 @@ export function DoctorDashboard() {
         : allNonVerifiable
           ? `Aucun des médicaments sélectionnés ne permet la vérification automatique des interactions — vérifiez manuellement`
           : pregnancyOnly
-            ? `Aucune alerte, sauf en cas de grossesse ou d'allaitement (${pregnancyCtxCount} CI)`
+            ? `Aucune alerte, sauf en cas de grossesse ou d'allaitement (${pregnancyCtxCount} CI)${pregnancyStale}`
           : preexistingOnly
             ? preexistingLabel
           : fondUnavailable
@@ -4679,15 +4764,22 @@ export function DoctorDashboard() {
       ? `${withAnt} · Allergies croisées non analysées — analyse incomplète`
       : withAnt;
     // Règles de doublons non chargées : toujours signalé, quel que soit le verdict.
-    const description = doublonsIncomplete && !doublonUnavailable
+    const withDoublons = doublonsIncomplete && !doublonUnavailable
       ? `${withAllergy} · Doublons thérapeutiques non analysés — analyse incomplète`
       : withAllergy;
+    // Sprint 4e-C — CI grossesse / allaitement écartées par le statut déclaré : toujours dites.
+    const withPregnancy = pregnancyReassuredCount > 0
+      ? `${withDoublons} · ${pregnancyReassuredCount} CI grossesse/allaitement sans objet d'après le statut déclaré (${pregnancySummary(pregCtx)})`
+      : withDoublons;
+    const description = !teratogensReady && pregCtx.statut === 'non_enceinte' && pregnancyCtxCount > 0
+      ? `${withPregnancy} · Liste des tératogènes non chargée — statut « non enceinte » non appliqué`
+      : withPregnancy;
 
     setAnalyzedKey(currentAnalysisKey);
     setResult({
       severity: overallSeverity, title: resultTitle, description, alternatives: [], reasons, medications: [], patientPrecautions: [],
       // Instantané du run : les cartes affichées sont exactement celles du verdict.
-      runId: alertsRunId, alerts: interactionAlerts, masked: maskedAlerts, nonVerifiables, ageUnknown: ageUnknownWarning,
+      runId: alertsRunId, alerts: verdictAlerts, masked: maskedAlerts, nonVerifiables, ageUnknown: ageUnknownWarning,
     });
   };
 
@@ -5123,6 +5215,8 @@ export function DoctorDashboard() {
                 antecedentRulesReady={antRulesReady}
                 allergyStatus={allergyStatus}
                 allergyRulesReady={allergyRulesReady}
+                canWritePatient={!!doctorProfile?.id}
+                onPatientPatched={handlePatientPatched}
               />
             )}
 

@@ -10,6 +10,7 @@ import { PatientAvatar } from './PatientAvatar';
 import { TraitementFondSection } from './TraitementFondSection';
 import { AntecedentsSection, PathologiesActivesBlock, type PatientPatch } from './AntecedentsSection';
 import { supabase } from '../../lib/supabase';
+import { PregnancyStatusEditor } from '../PregnancyStatusEditor';
 
 interface Patient {
   id: string;
@@ -28,6 +29,10 @@ interface Patient {
   allergies_alimentaires?: string[];
   antecedents_chirurgicaux?: string | null;
   traitements_en_cours?: string | null;
+  grossesse_statut?: 'enceinte' | 'non_enceinte' | 'inconnu' | null;
+  grossesse_ddr?: string | null;
+  allaitement?: boolean | null;
+  grossesse_maj_le?: string | null;
 }
 
 interface Consultation {
@@ -523,6 +528,9 @@ function ResumeTab({ patient, doctorId, orgId, onTraitementsChanged, onPatientPa
           )}
         </div>
       </div>
+
+      {/* Sprint 4e-C — statut grossesse / allaitement (lu par le Vérificateur) */}
+      <PregnancyStatusEditor patient={patient} canWrite={!!doctorId && !!orgId} onPatched={onPatientPatched} />
 
       {/* Medical info */}
       {hasInfo && (
