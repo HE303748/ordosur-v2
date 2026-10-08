@@ -13,6 +13,8 @@ import { supabase } from '../../lib/supabase';
 import { PregnancyStatusEditor } from '../PregnancyStatusEditor';
 import type { Patient as DbPatient } from '../../lib/supabase';
 import { openExamRequest } from '../../lib/examUi';
+import { ExamensSection } from '../exams/ExamensSection';
+import { ProchainBilanBadge } from '../exams/PatientExamStrip';
 
 interface Patient {
   id: string;
@@ -48,11 +50,12 @@ interface Consultation {
   created_at: string;
 }
 
-type TabId = 'resume' | 'ordonnances' | 'consultations' | 'documents' | 'vaccination';
+type TabId = 'resume' | 'ordonnances' | 'examens' | 'consultations' | 'documents' | 'vaccination';
 
 const TABS: { id: TabId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'resume',       label: 'Résumé',       icon: User       },
   { id: 'ordonnances',  label: 'Ordonnances',  icon: FileText   },
+  { id: 'examens',      label: 'Examens',      icon: FlaskConical },
   { id: 'consultations',label: 'Consultations',icon: Activity   },
   { id: 'documents',    label: 'Documents',    icon: FolderOpen },
   { id: 'vaccination',  label: 'Vaccination',  icon: Syringe    },
@@ -738,6 +741,8 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
                 <span className="text-xs text-slate-400 dark:text-[#475569]">
                   <span className="font-bold text-slate-700 dark:text-[#94A3B8]">{ordonnancesLoading ? '…' : ordonnances.length}</span> ordonnance{!ordonnancesLoading && ordonnances.length === 1 ? '' : 's'}
                 </span>
+                {/* Sprint 5B — « Prochain bilan prévu le JJ/MM » / « Bilan en retard depuis le JJ/MM » */}
+                <ProchainBilanBadge patientId={patient.id} onClick={() => setActiveTab('examens')} />
                 {(patient.allergies_medicaments?.length ?? 0) > 0 && (
                   <span className="text-xs text-red-500 font-semibold">
                     ⚠ {patient.allergies_medicaments!.length} allergie(s) médicamenteuse(s)
@@ -822,6 +827,9 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
             {activeTab === 'ordonnances'   && (ordonnancesLoading
               ? <p className="text-sm text-slate-400 dark:text-[#475569] py-6 text-center">Chargement des ordonnances…</p>
               : <OrdonnancesTab ordonnances={ordonnances} />)}
+            {activeTab === 'examens' && (
+              <ExamensSection patient={patient as unknown as DbPatient} canWrite={!!doctorId && !!orgId} />
+            )}
             {activeTab === 'consultations' && (
               <ConsultationsTab
                 patient={patient}

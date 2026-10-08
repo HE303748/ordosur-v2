@@ -6,7 +6,10 @@ import {
   newDemandeNumero, buildDemandePayload, emptyExamDraft, packLinesFromDraft,
   type DemandeExamens, type DemandeLigne, type ExamLineDraft,
 } from './examRequest';
-import { buildExamPages, fastingLabel, arabicInstructions, patientLine, examFileName, type ExamDocInput } from './examDocument';
+import {
+  buildExamPages, fastingLabel, arabicInstructions, patientLine, examFileName, docInputFromDraft, pagesFromDemande,
+  type ExamDocInput,
+} from './examDocument';
 import type { ExamRef, ExamPack } from './examSearch';
 import data from './examens_reference.data.json';
 
@@ -358,5 +361,67 @@ describe('document : pagination', () => {
     expect(arabicInstructions({ fasting: { hours: 6 }, urgent: true, echeanceDate: '2026-11-08' })).toEqual(['على الريق (6 ساعات)']);
     expect(arabicInstructions({ fasting: null, urgent: true, echeanceDate: '2026-11-08' })).toEqual([]);
     expect(examFileName({ nom: 'El Idrissi', prenom: 'Fatima Zahra' }, 'DEM-20261008-AAAA')).toBe('examens_El_Idrissi_Fatima_Zahra_DEM-20261008-AAAA.pdf');
+  });
+});
+
+describe('boucle fermée : du brouillon et de la demande au document', () => {
+  const patient = { prenom: 'Karim', nom: 'Bennani', sexe: 'M', date_naissance: '1960-01-01' };
+
+  it('brouillon → document : injection et précision réunies, jeûne modifié respecté', () => {
+    const draft = { ...emptyExamDraft(), renseignements: 'HTA.', urgent: true,
+      lines: [L('GLYCEMIE_JEUN', { a_jeun: false }), L('TDM_THORACIQUE', { injection: true, precision: 'temps artériel', question: 'Embolie ?' })] };
+    const input = docInputFromDraft(draft, { numero: 'DEM-20261008-AAAA', dateIso: '2026-10-08', echeance: { date: '2026-10-15', libelle: '1_semaine' }, patient });
+    expect(input.lines[0]).toMatchObject({ a_jeun: false, delai_jeun_h: null });
+    expect(input.lines[1]).toMatchObject({ precision: 'avec injection — temps artériel', question: 'Embolie ?' });
+    const pages = buildExamPages(input);
+    expect(pages.map(p => p.kind)).toEqual(['biologie', 'imagerie']);
+    expect(pages[0].fasting).toBeNull();
+    expect(pages[1].subtitle).toBe('Merci de réaliser les examens suivants EN URGENCE');
+  });
+
+  it('réimpression : les examens annulés ne figurent plus, les réalisés restent', () => {
+    const d = demande({
+      echeance_libelle: 'avant_prochain_rdv', echeance_date: '2026-11-20', renseignements_cliniques: 'Cirrhose.', ald: true,
+      lignes: [
+        ligne('l1', 'NFS', 'realise'),
+        ligne('l2', 'CRP', 'annule'),
+        ligne('l3', 'ECHO_HEPATIQUE_DOPPLER', 'en_attente', { a_jeun: true, delai_jeun_h: 6, question_clinique: 'Nodule ?' }),
+        ligne('l4', 'TDM_ABDOMINO_PELVIENNE', 'en_attente', { injection: false }),
+      ],
+    });
+    const pages = pagesFromDemande(d, patient);
+    expect(pages.map(p => p.kind)).toEqual(['biologie', 'imagerie', 'imagerie']);
+    expect(pages[0].groups.flatMap(g => g.items).map(i => i.libelle)).toEqual([ref('NFS').libelle]);
+    expect(pages[1]).toMatchObject({ fasting: { hours: 6 }, ald: true, numero: 'DEM-20260912-ABCD', dateIso: '2026-09-12' });
+    expect(pages[1].groups[0].items[0].question).toBe('Nodule ?');
+    expect(pages[2].groups[0].items[0].precision).toBe('sans injection');
+    expect(pages[0].subtitle).toBe('Merci de réaliser les examens suivants avant votre prochain rendez-vous du 20/11/2026');
+  });
+
+  it('demande entièrement annulée : aucune page à imprimer', () => {
+    expect(pagesFromDemande(demande({ statut: 'annule', lignes: [ligne('l1', 'NFS', 'annule')] }), patient)).toEqual([]);
+  });
+
+  it('option « regrouper » conservée à la réimpression', () => {
+    const d = demande({ regrouper_imageries: true, lignes: [ligne('l1', 'ECHO_ABDOMINALE', 'en_attente'), ligne('l2', 'ECG', 'en_attente')] });
+    expect(pagesFromDemande(d, patient).map(p => p.kind)).toEqual(['imagerie_groupee']);
+  });
+
+  it('cycle complet des statuts : en attente → partiel → réalisé, retard levé', () => {
+    const lignes = [ligne('l1', 'NFS', 'en_attente'), ligne('l2', 'CRP', 'en_attente')];
+    const d0 = demande({ echeance_date: '2026-10-01', lignes, statut: deriveDemandeStatut(lignes) });
+    expect(d0.statut).toBe('en_attente');
+    expect(joursRetard(d0, TODAY)).toBe(7);
+    expect(prochainBilan([d0], TODAY)?.kind).toBe('retard');
+    const l1 = [{ ...lignes[0], statut: 'realise' as const }, lignes[1]];
+    const d1 = { ...d0, lignes: l1, statut: deriveDemandeStatut(l1) };
+    expect(d1.statut).toBe('partiel');
+    expect(isEnRetard(d1, TODAY)).toBe(true);
+    const l2 = l1.map(l => ({ ...l, statut: 'realise' as const }));
+    const d2 = { ...d0, lignes: l2, statut: deriveDemandeStatut(l2) };
+    expect(d2.statut).toBe('realise');
+    expect(isEnRetard(d2, TODAY)).toBe(false);
+    expect(prochainBilan([d2], TODAY)).toBeNull();
+    expect(findRedondances([L('NFS')], [d2])).toEqual([]);
   });
 });

@@ -5,7 +5,7 @@
 // les imageries sur une page ». Le rendu (PDF, aperçu écran) consomme ces pages telles quelles.
 
 import type { ExamType } from './examSearch';
-import { echeancePhrase, fastingInfo, formatFr } from './examRequest';
+import { echeancePhrase, fastingInfo, formatFr, fullPrecision, type DemandeExamens, type ExamRequestDraft } from './examRequest';
 import { formatAge } from './ageUtils';
 import { formatNomPropre, civilite } from './formatName';
 
@@ -158,4 +158,39 @@ export function arabicInstructions(p: Pick<ExamPage, 'fasting' | 'urgent' | 'ech
 
 export function examFileName(patient: { nom: string; prenom: string }, numero: string): string {
   return `examens_${patient.nom}_${patient.prenom}_${numero}.pdf`.replace(/[^a-zA-Z0-9_.-]/g, '_');
+}
+
+// ─── Du brouillon / de la demande vers le document ───────────────────────────
+
+type DocPatient = ExamDocInput['patient'];
+
+export function docInputFromDraft(
+  draft: ExamRequestDraft, o: { numero: string; dateIso: string; echeance: { date: string; libelle: string }; patient: DocPatient },
+): ExamDocInput {
+  const lines: ExamDocLine[] = draft.lines.map(l => ({
+    libelle: l.libelle, type: l.type, categorie: l.categorie, precision: fullPrecision(l), question: l.question,
+    a_jeun: l.a_jeun, delai_jeun_h: l.a_jeun ? l.delai_jeun_h : null,
+  }));
+  return {
+    numero: o.numero, dateIso: o.dateIso, echeance: o.echeance, urgent: draft.urgent, ald: draft.ald,
+    regrouperImageries: draft.regrouperImageries, renseignements: draft.renseignements, patient: o.patient, lines,
+  };
+}
+
+/** Réimpression : les examens annulés ne figurent plus sur le document. */
+export function docInputFromDemande(d: DemandeExamens, patient: DocPatient): ExamDocInput {
+  const lines: ExamDocLine[] = d.lignes.filter(l => l.statut !== 'annule').map(l => ({
+    libelle: l.libelle, type: l.type, categorie: l.categorie,
+    precision: fullPrecision({ precision: l.precision ?? '', injection: l.injection }),
+    question: l.question_clinique, a_jeun: l.a_jeun, delai_jeun_h: l.delai_jeun_h,
+  }));
+  return {
+    numero: d.numero, dateIso: d.date_demande, echeance: { date: d.echeance_date, libelle: d.echeance_libelle },
+    urgent: d.urgent, ald: d.ald, regrouperImageries: d.regrouper_imageries,
+    renseignements: d.renseignements_cliniques, patient, lines,
+  };
+}
+
+export function pagesFromDemande(d: DemandeExamens, patient: DocPatient): ExamPage[] {
+  return buildExamPages(docInputFromDemande(d, patient));
 }

@@ -157,6 +157,20 @@ export async function setLigneStatut(ligneId: string, statut: DemandeLigne['stat
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Annulation d'UN examen (motif obligatoire) : la ligne passe à « annulé », le motif est
+ * consigné sur la demande. Le statut de la demande est recalculé par le trigger.
+ */
+export async function cancelLigne(ligne: Pick<DemandeLigne, 'id' | 'libelle'>, demande: Pick<DemandeExamens, 'id' | 'motif_annulation'>, motif: string): Promise<void> {
+  const m = motif.trim();
+  if (m.length < 3) throw new Error("Motif d'annulation obligatoire");
+  const { error } = await supabase.from('demande_examen_lignes').update({ statut: 'annule' }).eq('id', ligne.id);
+  if (error) throw new Error(error.message);
+  const note = [demande.motif_annulation, `${ligne.libelle} : ${m}`].filter(Boolean).join(' · ');
+  const { error: e2 } = await supabase.from('demandes_examens').update({ motif_annulation: note }).eq('id', demande.id);
+  if (e2) console.error('[examens] motif d’annulation non consigné :', e2);
+}
+
 /** « Marquer réalisé » sur toute la demande : les examens encore en attente. */
 export async function markDemandeRealisee(demandeId: string, dateRealisation?: string | null): Promise<void> {
   const { error } = await supabase.from('demande_examen_lignes')

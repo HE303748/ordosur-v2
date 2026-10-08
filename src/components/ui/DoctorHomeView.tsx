@@ -8,6 +8,7 @@ import { formatAge } from '../../lib/ageUtils';
 import type { ViewType } from './Sidebar';
 import { PageTransition } from './PageTransition';
 import { PatientAvatar } from './PatientAvatar';
+import { ExamensSuiviCard } from '../exams/ExamensSuiviCard';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -62,6 +63,8 @@ interface DoctorHomeViewProps {
   onOpenAgenda: (date?: string) => void;
   onAddPatient: () => void;
   onNewPrescription: () => void;
+  /** Sprint 5B — « Voir toutes les demandes » d'examens (Documents › Demandes d'examens). */
+  onSeeAllExamens?: () => void;
 }
 
 // ─── Constantes d'affichage ──────────────────────────────────────────────────
@@ -253,7 +256,7 @@ const ROW_BTN = `${ROW_H} ${FOCUS} focus-visible:ring-inset focus-visible:ring-o
 export function DoctorHomeView({
   doctorNom, stats, statsLoading, patients, patientsLoading, recentAlerts,
   todayRdvs, todayRdvsRemaining, onNavigate, onOpenPatient, onOpenAgenda,
-  onAddPatient, onNewPrescription,
+  onAddPatient, onNewPrescription, onSeeAllExamens,
 }: DoctorHomeViewProps) {
   const today = new Date().toLocaleDateString('fr-FR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
@@ -434,6 +437,9 @@ export function DoctorHomeView({
             </div>
           </Block>
         </div>
+
+        {/* Sprint 5B — Examens à suivre (retards, échéances sous 7 jours) : masquée s'il n'y a rien */}
+        <ExamensSuiviCard patients={patients} onOpenPatient={onOpenPatient} onSeeAll={onSeeAllExamens} />
 
         {/* 5. Patients récents + 6. Dernières alertes */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">

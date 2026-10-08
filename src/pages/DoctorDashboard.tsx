@@ -32,8 +32,10 @@ import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal
 // Sprint 5 — demandes d'examens (indépendantes du moteur de sécurité des médicaments)
 import { newDemandeNumero, toIsoDate } from '../lib/examRequest';
 import { buildExamPages } from '../lib/examDocument';
-import { createDemande, attachOrdonnance, cancelDemande } from '../lib/examensApi';
-import { docInputFromDraft, onOpenExamRequest, type OpenExamRequest } from '../lib/examUi';
+import { createDemande, attachOrdonnance, cancelDemande, loadDemandesForOrdonnances } from '../lib/examensApi';
+import { docInputFromDraft, onOpenExamRequest, onPlanRdvRequest, pagesFromDemande, type OpenExamRequest } from '../lib/examUi';
+import type { DemandeExamens } from '../lib/examRequest';
+import { buildOrdonnanceWithExamsPdf, downloadPdf } from '../lib/examPdf';
 import { ExamRequestModal } from '../components/exams/ExamRequestModal';
 import { PatientExamStrip } from '../components/exams/PatientExamStrip';
 import { DerogationModal } from '../components/DerogationModal';
@@ -1608,6 +1610,8 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
   const [viewOrd, setViewOrd] = useState<any | null>(null);     // aperçu en lecture seule
   const ordsRef = useRef<any[]>([]);
   ordsRef.current = ords;
+  // Sprint 5B — demandes d'examens jointes aux ordonnances affichées (badge « + examens »).
+  const [ordDemandes, setOrdDemandes] = useState<Map<string, DemandeExamens>>(() => new Map());
 
   useEffect(() => {
     const t = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 300);
@@ -1622,7 +1626,7 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
   }, [doctorId, debouncedSearch, timeFilter]);
 
   // Ordonnance enregistrée ailleurs (Vérificateur, Imprimer/PDF) ou retour sur l'onglet.
-  useDataSync(['ordonnances'], () => { if (doctorId) fetchOrdonnances(true); });
+  useDataSync(['ordonnances', 'examens'], () => { if (doctorId) fetchOrdonnances(true); });
 
   const fetchOrdonnances = async (reset: boolean) => {
     const seq = ++fetchSeqRef.current;
@@ -1681,7 +1685,7 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
     let rows: any[] = [];
     if (data && data.length > 0) {
       const pIds = [...new Set(data.map((o: any) => o.patient_id).filter(Boolean))];
-      const { data: pats } = await supabase.from('patients').select('id, prenom, nom, date_naissance').in('id', pIds);
+      const { data: pats } = await supabase.from('patients').select('id, prenom, nom, date_naissance, sexe').in('id', pIds);
       if (seq !== fetchSeqRef.current) return;
       const pMap = new Map((pats || []).map((pt: any) => [pt.id, pt]));
       rows = data.map((o: any) => {
@@ -1691,12 +1695,16 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
           patient_prenom: pt?.prenom || '',
           patient_nom_only: pt?.nom || '',
           patient_date_naissance: pt?.date_naissance ?? null,
+          patient_sexe: pt?.sexe ?? null,
           patient_nom: pt ? `${pt.prenom} ${pt.nom}` : 'Patient inconnu',
         };
       });
     }
-    setOrds(reset ? rows : [...ordsRef.current, ...rows]);
+    const shown = reset ? rows : [...ordsRef.current, ...rows];
+    setOrds(shown);
     setMatchCount(count ?? rows.length);
+    // Demandes d'examens jointes (une requête bornée par la page affichée).
+    void loadDemandesForOrdonnances(shown.map((o: any) => o.id)).then(m => { if (seq === fetchSeqRef.current) setOrdDemandes(m); });
 
     // Compteur exact de TOUTES les ordonnances du médecin (head only, aucune ligne chargée).
     if (!q && timeFilter === 'all') {
@@ -1725,7 +1733,7 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
         duree: l.duree || '',
         quantite: l.instructions ? String(l.instructions).replace('Quantité: ', '') : '',
       }));
-      await generateOrdonnancePdf({
+      const pdfData = {
         ordreNumber: ord.ordre_number || ord.id.substring(0, 8).toUpperCase(),
         logo_url: logoUrl ?? null,
         doctor: doctorInfo,
@@ -1733,7 +1741,12 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
         patient: { prenom: ord.patient_prenom, nom: ord.patient_nom_only, date_naissance: ord.patient_date_naissance ?? null },
         medications: meds,
         date: (ord.date || ord.created_at || new Date().toISOString()).split('T')[0],
-      });
+      };
+      // Sprint 5B — la demande d'examens se réimprime avec l'ordonnance (même PDF).
+      const dem = ordDemandes.get(ord.id);
+      const pages = dem ? pagesFromDemande(dem, { ...pdfData.patient, sexe: ord.patient_sexe ?? null }) : [];
+      if (pages.length > 0) downloadPdf(await buildOrdonnanceWithExamsPdf(pdfData, pages));
+      else await generateOrdonnancePdf(pdfData);
     } catch (e) {
       console.error('[OrdoSur] PDF reprint error:', e);
     } finally {
@@ -1860,6 +1873,11 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
                         <p className="text-xs text-slate-400 dark:text-[#475569] mt-0.5">{dateLabel}</p>
                       </div>
                     </div>
+                    {ordDemandes.has(ord.id) && (
+                      <span className="text-[10px] font-bold px-2 py-1 bg-[#0A1628] text-white rounded-lg flex-shrink-0 whitespace-nowrap" title="Une demande d’examens accompagne cette ordonnance">
+                        + examens
+                      </span>
+                    )}
                     {ord.ordre_number && (
                       <span className="text-[10px] font-bold px-2 py-1 bg-[#E6F4EE] dark:bg-[#00A86B]/[0.12] text-[#006B47] dark:text-[#00A86B] border border-[#00A86B]/20 dark:border-[#00A86B]/20 rounded-lg flex-shrink-0 font-mono tracking-wide">
                         {ord.ordre_number}
@@ -1959,6 +1977,12 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
           }))}
           remarks={viewOrd.remarques ?? ''}
           nextAppointment={viewOrd.prochain_rdv ?? undefined}
+          examPages={ordDemandes.get(viewOrd.id)
+            ? pagesFromDemande(ordDemandes.get(viewOrd.id)!, {
+                prenom: viewOrd.patient_prenom, nom: viewOrd.patient_nom_only,
+                sexe: viewOrd.patient_sexe ?? null, date_naissance: viewOrd.patient_date_naissance ?? null,
+              })
+            : []}
         />
       )}
 
@@ -2896,6 +2920,16 @@ export function DoctorDashboard() {
   // Sprint 5 — modale « Demande d'examens » (document autonome, hors blocage 3b).
   const [examRequest, setExamRequest] = useState<OpenExamRequest | null>(null);
   useEffect(() => onOpenExamRequest(setExamRequest), []);
+  const [documentsTab, setDocumentsTab] = useState<'certificats' | 'examens'>('certificats');
+  // Sprint 5B — « Planifier un RDV de contrôle » : l'Agenda s'ouvre pré-rempli, rien n'est créé seul.
+  const planRdvControle = (p: Patient, date: string) => {
+    setAgendaPrefill({ patient_id: p.id, patient_nom: `${p.prenom} ${p.nom}`, date, motif: 'Contrôle — résultats d’examens' });
+    setAgendaDate(date);
+    setActiveView('agenda');
+  };
+  const planRdvRef = useRef(planRdvControle);
+  planRdvRef.current = planRdvControle;
+  useEffect(() => onPlanRdvRequest(({ patient: p, date }) => planRdvRef.current(p, date)), []);
   const [agendaPrefill, setAgendaPrefill] = useState<{ patient_id: string; patient_nom: string; date: string; motif: string } | null>(null);
   const savedOrdreNumberRef = useRef<string | null>(null);
   const savingOrdonnanceRef = useRef<Promise<boolean> | null>(null);
@@ -2949,6 +2983,7 @@ export function DoctorDashboard() {
   // La date d'agenda ciblée depuis l'accueil ne vaut que pour cette ouverture.
   useEffect(() => {
     if (activeView !== 'agenda') { setAgendaDate(null); setAgendaPrefill(null); }
+    if (activeView !== 'documents') setDocumentsTab('certificats');
   }, [activeView]);
 
   // Scroll to result
@@ -5201,6 +5236,7 @@ export function DoctorDashboard() {
                 onOpenAgenda={date => { setAgendaDate(date ?? null); setActiveView('agenda'); }}
                 onAddPatient={openAddPatient}
                 onNewPrescription={() => { resetAnalysis(); setActiveView('checker'); }}
+                onSeeAllExamens={() => { setDocumentsTab('examens'); setActiveView('documents'); }}
               />
             )}
 
@@ -5322,7 +5358,9 @@ export function DoctorDashboard() {
 
             {activeView === 'documents' && (
               <DocumentsView
-                key="documents"
+                key={`documents-${documentsTab}`}
+                initialTab={documentsTab}
+                onOpenPatient={id => { setPendingPatientId(id); setActiveView('patients'); }}
                 patients={patients}
                 showToast={showToast}
                 doctorProfile={doctorProfile}
@@ -5526,11 +5564,7 @@ export function DoctorDashboard() {
             : []}
           onClose={() => setExamRequest(null)}
           showToast={showToast}
-          onPlanRdv={(p, date) => {
-            setAgendaPrefill({ patient_id: p.id, patient_nom: `${p.prenom} ${p.nom}`, date, motif: 'Contrôle — résultats d\u2019examens' });
-            setAgendaDate(date);
-            setActiveView('agenda');
-          }}
+          onPlanRdv={planRdvControle}
         />
       )}
 

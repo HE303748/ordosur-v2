@@ -16,6 +16,7 @@ import {
 } from '../../lib/pdfService';
 import { formatDocteur, formatCabinet, civilite } from '../../lib/formatName';
 import { DocumentSignatureBlock } from '../DocumentSignatureBlock';
+import { ExamensListView } from '../exams/ExamensListView';
 
 /* ── Types ─────────────────────────────────────────────────────────────────── */
 type CertType =
@@ -59,6 +60,9 @@ interface CertRecord {
 }
 
 interface DocumentsViewProps {
+  /** Sprint 5B — onglet ouvert à l'arrivée et lien vers la fiche d'un patient. */
+  initialTab?: 'certificats' | 'examens';
+  onOpenPatient?: (patientId: string) => void;
   patients: Patient[];
   showToast: (msg: string, type?: 'success' | 'error' | 'warning') => void;
   doctorProfile?: {
@@ -389,8 +393,22 @@ async function generateCertificatPdf(params: {
 /* ══════════════════════════════════════════════════════════════════════════════
    Main component
 ══════════════════════════════════════════════════════════════════════════════ */
-export function DocumentsView({ patients, showToast, doctorProfile, org }: DocumentsViewProps) {
+export function DocumentsView({ patients, showToast, doctorProfile, org, initialTab = 'certificats', onOpenPatient }: DocumentsViewProps) {
   const { user } = useAuth();
+  // Sprint 5B — onglets de la page Documents : certificats / demandes d'examens.
+  const [docTab, setDocTab] = useState<'certificats' | 'examens'>(initialTab);
+  const docTabs = (
+    <div className="inline-flex p-1 mb-5 rounded-xl bg-slate-100 dark:bg-white/[0.05]" role="tablist" aria-label="Type de document">
+      {([['certificats', 'Certificats'], ['examens', 'Demandes d’examens']] as const).map(([id, label]) => (
+        <button key={id} type="button" role="tab" aria-selected={docTab === id} onClick={() => setDocTab(id)}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${docTab === id
+            ? 'bg-white dark:bg-[#111827] text-[#0A1628] dark:text-[#E2E8F0] shadow-sm'
+            : 'text-slate-500 dark:text-[#94A3B8] hover:text-[#0A1628] dark:hover:text-[#E2E8F0]'}`}>
+          {label}
+        </button>
+      ))}
+    </div>
+  );
 
   // View mode
   const [view, setView] = useState<'list' | 'create'>('list');
@@ -596,6 +614,22 @@ export function DocumentsView({ patients, showToast, doctorProfile, org }: Docum
     setView('create');
   };
 
+  /* ── Demandes d'examens (Sprint 5B) ────────────────────────────────────────── */
+  if (view === 'list' && docTab === 'examens') {
+    return (
+      <PageTransition>
+        <div className="p-4 lg:p-6 max-w-5xl mx-auto">
+          {docTabs}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-[#E2E8F0]">Demandes d’examens</h1>
+            <p className="text-sm text-slate-500 dark:text-[#94A3B8] mt-0.5">Suivez les examens demandés jusqu’à leur réalisation</p>
+          </div>
+          <ExamensListView patients={patients} onOpenPatient={onOpenPatient} />
+        </div>
+      </PageTransition>
+    );
+  }
+
   /* ── List view ─────────────────────────────────────────────────────────────── */
   if (view === 'list') {
     const filtered = certs.filter(c => {
@@ -607,6 +641,7 @@ export function DocumentsView({ patients, showToast, doctorProfile, org }: Docum
     return (
       <PageTransition>
         <div className="p-4 lg:p-6 max-w-5xl mx-auto">
+          {docTabs}
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>

@@ -3,8 +3,10 @@
 
 import type { Patient } from './supabase';
 import type { DemandeExamens, ExamRequestDraft } from './examRequest';
-import { examDraftHasContent, fullPrecision } from './examRequest';
-import { buildExamPages, examFileName, type ExamDocInput, type ExamDocLine, type ExamPage } from './examDocument';
+import { examDraftHasContent } from './examRequest';
+import { examFileName, pagesFromDemande } from './examDocument';
+
+export { docInputFromDraft, docInputFromDemande, pagesFromDemande } from './examDocument';
 import { buildExamPdf, downloadPdf, printPdf, sharePdf, type ExamPdfHeader, type PdfFile } from './examPdf';
 import { loadDoctorHeader } from './examensApi';
 
@@ -27,6 +29,21 @@ export function onOpenExamRequest(handler: (d: OpenExamRequest) => void): () => 
   const h = (e: Event) => handler((e as CustomEvent<OpenExamRequest>).detail);
   bus.addEventListener(OPEN, h);
   return () => bus.removeEventListener(OPEN, h);
+}
+
+// ─── « Planifier un RDV de contrôle » : l'Agenda s'ouvre pré-rempli (rien n'est créé seul) ──
+
+export interface PlanRdvRequest { patient: Patient; date: string }
+const PLAN = 'plan-rdv-controle';
+
+export function requestPlanRdv(detail: PlanRdvRequest): void {
+  bus.dispatchEvent(new CustomEvent<PlanRdvRequest>(PLAN, { detail }));
+}
+
+export function onPlanRdvRequest(handler: (d: PlanRdvRequest) => void): () => void {
+  const h = (e: Event) => handler((e as CustomEvent<PlanRdvRequest>).detail);
+  bus.addEventListener(PLAN, h);
+  return () => bus.removeEventListener(PLAN, h);
 }
 
 // ─── Brouillon de la demande autonome ────────────────────────────────────────
@@ -64,41 +81,6 @@ export function loadExamDraft(doctorId: string, patientId: string): { draft: Exa
 
 export function clearExamDraft(doctorId: string, patientId: string): void {
   try { window.sessionStorage.removeItem(key(doctorId, patientId)); } catch { /* ignore */ }
-}
-
-// ─── Du brouillon / de la demande vers le document ───────────────────────────
-
-type DocPatient = ExamDocInput['patient'];
-
-export function docInputFromDraft(
-  draft: ExamRequestDraft, o: { numero: string; dateIso: string; echeance: { date: string; libelle: string }; patient: DocPatient },
-): ExamDocInput {
-  const lines: ExamDocLine[] = draft.lines.map(l => ({
-    libelle: l.libelle, type: l.type, categorie: l.categorie, precision: fullPrecision(l), question: l.question,
-    a_jeun: l.a_jeun, delai_jeun_h: l.a_jeun ? l.delai_jeun_h : null,
-  }));
-  return {
-    numero: o.numero, dateIso: o.dateIso, echeance: o.echeance, urgent: draft.urgent, ald: draft.ald,
-    regrouperImageries: draft.regrouperImageries, renseignements: draft.renseignements, patient: o.patient, lines,
-  };
-}
-
-/** Réimpression : les examens annulés ne figurent plus sur le document. */
-export function docInputFromDemande(d: DemandeExamens, patient: DocPatient): ExamDocInput {
-  const lines: ExamDocLine[] = d.lignes.filter(l => l.statut !== 'annule').map(l => ({
-    libelle: l.libelle, type: l.type, categorie: l.categorie,
-    precision: fullPrecision({ precision: l.precision ?? '', injection: l.injection }),
-    question: l.question_clinique, a_jeun: l.a_jeun, delai_jeun_h: l.delai_jeun_h,
-  }));
-  return {
-    numero: d.numero, dateIso: d.date_demande, echeance: { date: d.echeance_date, libelle: d.echeance_libelle },
-    urgent: d.urgent, ald: d.ald, regrouperImageries: d.regrouper_imageries,
-    renseignements: d.renseignements_cliniques, patient, lines,
-  };
-}
-
-export function pagesFromDemande(d: DemandeExamens, patient: DocPatient): ExamPage[] {
-  return buildExamPages(docInputFromDemande(d, patient));
 }
 
 // ─── Sorties ─────────────────────────────────────────────────────────────────

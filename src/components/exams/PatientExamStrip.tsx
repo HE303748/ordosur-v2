@@ -6,11 +6,11 @@ import { openExamRequest } from '../../lib/examUi';
 import { usePatientDemandes } from '../../hooks/useExamData';
 
 /** « Prochain bilan prévu le JJ/MM » / « Bilan en retard depuis le JJ/MM » — pastille seule. */
-export function ProchainBilanBadge({ patientId, className = '' }: { patientId: string; className?: string }) {
+export function ProchainBilanBadge({ patientId, className = '', onClick }: { patientId: string; className?: string; onClick?: () => void }) {
   const { demandes } = usePatientDemandes(patientId);
   const pb = useMemo(() => prochainBilan(demandes, new Date()), [demandes]);
   if (!pb) return null;
-  return pb.kind === 'retard' ? (
+  const badge = pb.kind === 'retard' ? (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-[#FEF2F2] text-[#B91C1C] ring-1 ring-inset ring-[#DC2626]/20 ${className}`}>
       <AlertTriangle className="w-3 h-3" aria-hidden /> {pb.label}
     </span>
@@ -19,6 +19,13 @@ export function ProchainBilanBadge({ patientId, className = '' }: { patientId: s
       <CalendarClock className="w-3 h-3" aria-hidden /> {pb.label}
     </span>
   );
+  // Rien à afficher → aucun élément (jamais de bouton vide dans l'ordre de tabulation).
+  return onClick ? (
+    <button type="button" onClick={onClick} title="Voir les examens demandés"
+      className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B]">
+      {badge}
+    </button>
+  ) : badge;
 }
 
 /**
