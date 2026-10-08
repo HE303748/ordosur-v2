@@ -28,6 +28,7 @@ import { computeVerification, verificationBlockMessage } from '../lib/ordonnance
 import { notifyDataChanged, useDataSync } from '../lib/dataSync';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
 import { DerogationModal } from '../components/DerogationModal';
+import { posologieBlockMessage } from '../lib/posologie';
 import {
   derogationAlerts, ordonnanceSignature, isConfirmationValid, buildDerogationEntries, alertLabel,
   type DerogationConfirmation,
@@ -150,7 +151,11 @@ const ANTECEDENT_SEVERITE: Record<RegleSeverite, InteractionAlert['severite']> =
 };
 
 // Sprint 3 — Médicament transmis au moteur (prescription en cours ou traitement de fond).
-type CheckerMed = { id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean };
+type CheckerMed = { id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean; formeHint?: string | null };
+
+// Sprint 4d-bis — résultat de recherche hors Maroc (RPC search_medicaments_hors_maroc) :
+// `mappe` = au moins un ingrédient en base (sinon non vérifiable par le moteur).
+type ForeignMed = Medicament & { mappe?: boolean | null };
 
 // Sprint 2 — Alerte non applicable au patient (sexe, âge de procréation), masquée mais
 // consultable via « Afficher ». Jamais journalisée.
@@ -892,6 +897,9 @@ interface CheckerViewProps {
   setShowPatientDropdown: (v: boolean) => void;
   filteredPatientsForDropdown: Patient[];
   medSearchResults: Medicament[];
+  // Sprint 4d-bis — hors Maroc : null = non chargé (lien), sinon liste badgée
+  medSearchForeign: ForeignMed[] | null;
+  onShowForeign: () => void;
   selectedMeds: Array<{ id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean }>;
   medSearchTerm: string;
   setMedSearchTerm: (v: string) => void;
@@ -937,6 +945,7 @@ function CheckerView({
   filteredPatientsForDropdown,
   medSearchResults, selectedMeds, medSearchTerm, setMedSearchTerm,
   showMedDropdown, setShowMedDropdown, medSearchLoading, searchMedications,
+  medSearchForeign, onShowForeign,
   addMedication, addManualMedication, removeMedication,
   medVerifInfo, result, analysisRunning, analysisFailed,
   rerunAnalysis, resetAnalysis, resultsRef,
@@ -1158,6 +1167,43 @@ function CheckerView({
                           )}
                         </button>
                       ))}
+                      {/* Sprint 4d-bis — hors Maroc : jamais mêlé aux 🇲🇦. Affiché d'office si aucun
+                          résultat 🇲🇦, sinon via le lien. Badge pays + « Non vérifiable » sans ingrédients. */}
+                      {!medSearchLoading && medSearchForeign === null && medSearchResults.length > 0 && medSearchTerm.trim().length >= 3 && (
+                        <button
+                          onMouseDown={e => { e.preventDefault(); onShowForeign(); }}
+                          className="w-full px-4 py-2 text-left text-xs font-semibold text-slate-500 dark:text-[#94A3B8] hover:text-[#0A1628] dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-t border-slate-100 dark:border-white/[0.06]"
+                        >
+                          Afficher aussi les médicaments hors Maroc
+                        </button>
+                      )}
+                      {!medSearchLoading && medSearchForeign !== null && medSearchForeign.length > 0 && (
+                        <>
+                          <p className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-[#94A3B8] bg-slate-50 dark:bg-white/[0.03] border-y border-slate-100 dark:border-white/[0.06]">
+                            Hors Maroc{medSearchResults.length === 0 ? ' — aucune spécialité marocaine ne correspond' : ''}
+                          </p>
+                          {medSearchForeign.map(med => (
+                            <button
+                              key={med.id}
+                              onMouseDown={e => { e.preventDefault(); addMedication(med); }}
+                              className="w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
+                            >
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-semibold text-slate-800 dark:text-[#E2E8F0] text-sm leading-tight">{med.nom_commercial || med.nom}</span>
+                                <span className="text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 dark:bg-white/[0.06] dark:border-white/[0.1] dark:text-[#94A3B8]">
+                                  {med.pays === 'FR' ? 'France' : med.pays === 'US' ? 'États-Unis' : 'International'}
+                                </span>
+                                {med.mappe === false && (
+                                  <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 dark:bg-amber-500/10 dark:border-amber-500/30 dark:text-amber-300">
+                                    Non vérifiable
+                                  </span>
+                                )}
+                              </div>
+                              {med.dci && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{med.dci}</p>}
+                            </button>
+                          ))}
+                        </>
+                      )}
                       {/* Ajout manuel quand aucun résultat */}
                       {!medSearchLoading && medSearchResults.length === 0 && (
                         <button
@@ -1222,9 +1268,10 @@ function CheckerView({
                   size="lg"
                   loading={analysisRunning || analysisPending}
                   disabled={selectedMeds.length < 1 || !selectedPatient}
-                  className="flex-1"
+                  className="flex-1 whitespace-nowrap"
                 >
-                  <Shield className="w-4 h-4 mr-2" />
+                  {/* Un seul pictogramme : le spinner du bouton remplace le bouclier pendant le calcul */}
+                  {!(analysisRunning || analysisPending) && <Shield className="w-4 h-4 mr-2 flex-shrink-0" />}
                   Relancer l'analyse
                 </Button>
                 <Button onClick={resetAnalysis} variant="ghost" size="lg">
@@ -1451,77 +1498,122 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, s
   const ordsLoadedRef = useRef(false);
   // Seule la dernière requête lancée met à jour la liste (réponses hors d'ordre ignorées).
   const fetchSeqRef = useRef(0);
+  // Sprint 4d-bis — pagination côté serveur : compteur exact, recherche et filtres appliqués
+  // en base (toute la base, pas seulement la page affichée), « Charger plus » par 30.
+  const ORD_PAGE = 30;
+  const [total, setTotal] = useState<number | null>(null);      // toutes les ordonnances du médecin
+  const [matchCount, setMatchCount] = useState(0);              // après recherche / filtres
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [viewOrd, setViewOrd] = useState<any | null>(null);     // aperçu en lecture seule
+  const ordsRef = useRef<any[]>([]);
+  ordsRef.current = ords;
 
-  // Chargement à chaque ouverture de la vue (montage) et quand le profil médecin arrive.
+  useEffect(() => {
+    const t = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 300);
+    return () => window.clearTimeout(t);
+  }, [searchTerm]);
+
+  // (Re)chargement de la 1re page : ouverture de la vue, profil médecin, recherche, filtre.
   useEffect(() => {
     if (!doctorId) return;
-    fetchOrdonnances();
+    fetchOrdonnances(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [doctorId]);
+  }, [doctorId, debouncedSearch, timeFilter]);
 
   // Ordonnance enregistrée ailleurs (Vérificateur, Imprimer/PDF) ou retour sur l'onglet.
-  useDataSync(['ordonnances'], () => { if (doctorId) fetchOrdonnances(); });
+  useDataSync(['ordonnances'], () => { if (doctorId) fetchOrdonnances(true); });
 
-  const fetchOrdonnances = async () => {
+  const fetchOrdonnances = async (reset: boolean) => {
     const seq = ++fetchSeqRef.current;
     // Skeleton uniquement au premier chargement (rechargements ensuite silencieux).
     if (!ordsLoadedRef.current) setLoading(true);
-    const { data, error } = await supabase
+    if (!reset) setLoadingMore(true);
+    const offset = reset ? 0 : ordsRef.current.length;
+    const q = debouncedSearch.replace(/[%,()*\\]/g, ' ').trim();
+
+    // Recherche par patient : identifiants des patients correspondants (requête bornée),
+    // puis filtre en base sur ces patients OU sur le numéro d'ordonnance.
+    let patientIds: string[] = [];
+    if (q) {
+      const first = q.split(/\s+/)[0];
+      const { data: pats } = await supabase
+        .from('patients').select('id, prenom, nom')
+        .or(`prenom.ilike.%${first}%,nom.ilike.%${first}%`)
+        .limit(300);
+      if (seq !== fetchSeqRef.current) return;
+      const ql = q.toLowerCase();
+      patientIds = ((pats as Array<{ id: string; prenom: string; nom: string }> | null) ?? [])
+        .filter(pt => `${pt.prenom} ${pt.nom}`.toLowerCase().includes(ql) || `${pt.nom} ${pt.prenom}`.toLowerCase().includes(ql))
+        .slice(0, 100)
+        .map(pt => pt.id);
+    }
+
+    let query = supabase
       .from('ordonnances')
-      .select('id, date, created_at, statut, patient_id, ordre_number, ordonnance_lignes(medicament_nom, posologie, duree, instructions)')
-      .eq('doctor_id', doctorId)
+      .select('id, date, created_at, statut, patient_id, ordre_number, motif, remarques, prochain_rdv, ordonnance_lignes(id, medicament_nom, posologie, duree, instructions)', { count: 'exact' })
+      .eq('doctor_id', doctorId);
+    if (timeFilter !== 'all') {
+      const now = new Date();
+      const startDate = timeFilter === 'month'
+        ? new Date(now.getFullYear(), now.getMonth(), 1)
+        : new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+      query = query.gte('created_at', startDate.toISOString());
+    }
+    if (q) {
+      query = patientIds.length > 0
+        ? query.or(`ordre_number.ilike.%${q}%,patient_id.in.(${patientIds.join(',')})`)
+        : query.ilike('ordre_number', `%${q}%`);
+    }
+    const { data, error, count } = await query
       .order('created_at', { ascending: false })
-      .limit(100);
+      .range(offset, offset + ORD_PAGE - 1);
     if (seq !== fetchSeqRef.current) return;
     if (error) {
       // Liste conservée telle quelle plutôt que vidée sur une erreur passagère.
       console.error('[OrdonnancesView] fetch error:', error);
       ordsLoadedRef.current = true;
       setLoading(false);
+      setLoadingMore(false);
       return;
     }
 
+    let rows: any[] = [];
     if (data && data.length > 0) {
       const pIds = [...new Set(data.map((o: any) => o.patient_id).filter(Boolean))];
-      const { data: pats } = await supabase.from('patients').select('id, prenom, nom').in('id', pIds);
+      const { data: pats } = await supabase.from('patients').select('id, prenom, nom, date_naissance').in('id', pIds);
       if (seq !== fetchSeqRef.current) return;
-      const pMap = new Map((pats || []).map((p: any) => [p.id, { prenom: p.prenom, nom: p.nom }]));
-      setOrds(data.map((o: any) => {
-        const p = pMap.get(o.patient_id);
+      const pMap = new Map((pats || []).map((pt: any) => [pt.id, pt]));
+      rows = data.map((o: any) => {
+        const pt = pMap.get(o.patient_id);
         return {
           ...o,
-          patient_prenom: p?.prenom || '',
-          patient_nom_only: p?.nom || '',
-          patient_nom: p ? `${p.prenom} ${p.nom}` : 'Patient inconnu',
+          patient_prenom: pt?.prenom || '',
+          patient_nom_only: pt?.nom || '',
+          patient_date_naissance: pt?.date_naissance ?? null,
+          patient_nom: pt ? `${pt.prenom} ${pt.nom}` : 'Patient inconnu',
         };
-      }));
-    } else {
-      setOrds([]);
+      });
+    }
+    setOrds(reset ? rows : [...ordsRef.current, ...rows]);
+    setMatchCount(count ?? rows.length);
+
+    // Compteur exact de TOUTES les ordonnances du médecin (head only, aucune ligne chargée).
+    if (!q && timeFilter === 'all') {
+      setTotal(count ?? rows.length);
+    } else if (reset) {
+      const { count: all } = await supabase
+        .from('ordonnances').select('id', { count: 'exact', head: true }).eq('doctor_id', doctorId);
+      if (seq === fetchSeqRef.current && all != null) setTotal(all);
     }
     ordsLoadedRef.current = true;
     setLoading(false);
+    setLoadingMore(false);
   };
 
-  // Filter logic
-  const filtered = ords.filter(ord => {
-    const q = searchTerm.toLowerCase();
-    const matchesSearch = !searchTerm
-      || (ord.patient_nom || '').toLowerCase().includes(q)
-      || (ord.ordre_number || '').toLowerCase().includes(q);
-    if (!matchesSearch) return false;
-
-    if (timeFilter === 'all') return true;
-    const d = new Date(ord.date || ord.created_at);
-    const now = new Date();
-    if (timeFilter === 'month') {
-      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-    }
-    if (timeFilter === 'quarter') {
-      const qStart = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
-      return d >= qStart;
-    }
-    return true;
-  });
+  // Recherche et filtres sont appliqués en base : la liste affichée est déjà filtrée.
+  const filtered = ords;
+  const isFiltering = !!debouncedSearch || timeFilter !== 'all';
 
   const handleDownloadPdf = async (ord: any) => {
     if (!doctorInfo || !orgInfo) return;
@@ -1569,7 +1661,9 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, s
               Historique des ordonnances
             </h2>
             <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">
-              {loading ? '…' : `${ords.length} ordonnance${ords.length !== 1 ? 's' : ''} au total`}
+              {loading || total === null
+                ? '…'
+                : `${total} ordonnance${total !== 1 ? 's' : ''} au total${isFiltering ? ` · ${matchCount} résultat${matchCount !== 1 ? 's' : ''}` : ''}`}
             </p>
           </div>
           {/* Sprint M5 — bouton header desktop ; sur mobile, remplacé par le "+" flottant en bas */}
@@ -1649,7 +1743,12 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, s
               return (
                 <div
                   key={ord.id}
-                  className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[#00A86B]/20 dark:hover:border-[#00A86B]/30 active:bg-slate-50 dark:active:bg-white/[0.04] transition-all duration-200 p-4 lg:p-5 flex flex-col gap-3"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Ouvrir l'ordonnance de ${ord.patient_nom} du ${dateLabel}`}
+                  onClick={() => setViewOrd(ord)}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setViewOrd(ord); } }}
+                  className="cursor-pointer bg-white dark:bg-[#111827] rounded-2xl border border-slate-100 dark:border-white/[0.06] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-[#00A86B]/20 dark:hover:border-[#00A86B]/30 active:bg-slate-50 dark:active:bg-white/[0.04] transition-all duration-200 p-4 lg:p-5 flex flex-col gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B]"
                 >
                   {/* Patient + badge */}
                   <div className="flex items-start justify-between gap-3">
@@ -1696,7 +1795,7 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, s
                     </span>
                     {doctorInfo && orgInfo && (
                       <button
-                        onClick={() => handleDownloadPdf(ord)}
+                        onClick={e => { e.stopPropagation(); handleDownloadPdf(ord); }}
                         disabled={isLoadingPdf}
                         className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#00A86B] bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border border-[#00A86B]/20 dark:border-[#00A86B]/20 rounded-lg hover:bg-[#d4eee0] dark:hover:bg-[#00A86B]/[0.18] active:bg-[#c6e6d6] transition-colors disabled:opacity-60"
                       >
@@ -1716,7 +1815,54 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, s
             })}
           </div>
         )}
+
+        {/* Sprint 4d-bis — pagination : « Charger plus » (30 par page) */}
+        {!loading && ords.length > 0 && (
+          <div className="mt-5 flex flex-col items-center gap-2">
+            <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
+              {ords.length} affichée{ords.length > 1 ? 's' : ''} sur {matchCount}
+            </p>
+            {ords.length < matchCount && (
+              <button
+                onClick={() => fetchOrdonnances(false)}
+                disabled={loadingMore}
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-[#0A1628] dark:text-[#E2E8F0] bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.1] hover:border-[#00A86B] transition-colors disabled:opacity-60"
+              >
+                {loadingMore ? 'Chargement…' : 'Charger plus'}
+              </button>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Sprint 4d-bis — aperçu en lecture seule : réimpression sans réenregistrer ni dérogation */}
+      {viewOrd && doctorInfo && orgInfo && (
+        <PrescriptionPreviewModal
+          isOpen
+          readOnly
+          isSaved
+          onClose={() => setViewOrd(null)}
+          onBack={() => setViewOrd(null)}
+          onSave={async () => true}
+          date={viewOrd.date || viewOrd.created_at || null}
+          ordreNumber={viewOrd.ordre_number || String(viewOrd.id).substring(0, 8).toUpperCase()}
+          logo_url={logoUrl ?? null}
+          doctor={doctorInfo}
+          org={orgInfo}
+          patient={{ prenom: viewOrd.patient_prenom, nom: viewOrd.patient_nom_only, date_naissance: viewOrd.patient_date_naissance }}
+          motif={viewOrd.motif ?? undefined}
+          medications={(viewOrd.ordonnance_lignes || []).map((l: any, i: number) => ({
+            id: l.id ?? String(i),
+            nom: l.medicament_nom || '',
+            posologie: l.posologie || '',
+            duree: l.duree || '',
+            quantite: l.instructions ? String(l.instructions).replace('Quantité: ', '') : '',
+          }))}
+          remarks={viewOrd.remarques ?? ''}
+          nextAppointment={viewOrd.prochain_rdv ?? undefined}
+          showPatientName={showPatientName}
+        />
+      )}
 
       {/* Sprint M5 — bouton "+" flottant mobile (cohérent avec M2 Patients).
           Au tap → navigue vers le Vérificateur où la création se fait. */}
@@ -2632,7 +2778,9 @@ export function DoctorDashboard() {
 
   // Medications
   const [medSearchResults, setMedSearchResults] = useState<Medicament[]>([]);
-  const [selectedMeds, setSelectedMeds] = useState<Array<{ id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean }>>([]);
+  const [selectedMeds, setSelectedMeds] = useState<CheckerMed[]>([]);
+  // Sprint 4d-bis — entrées hors Maroc : null = non chargées (lien « Afficher aussi… »).
+  const [medSearchForeign, setMedSearchForeign] = useState<ForeignMed[] | null>(null);
   const [medSearchTerm, setMedSearchTerm] = useState('');
   const [showMedDropdown, setShowMedDropdown] = useState(false);
   const [medSearchLoading, setMedSearchLoading] = useState(false);
@@ -3660,6 +3808,7 @@ export function DoctorDashboard() {
   const medSearchSeqRef = useRef(0);
   const searchMedications = async (term: string) => {
     const seq = ++medSearchSeqRef.current;
+    setMedSearchForeign(null);
     if (term.length < 2) { setMedSearchResults([]); setMedSearchLoading(false); return; }
     setMedSearchLoading(true);
     const { data, error } = await supabase.rpc('search_medicaments', {
@@ -3668,8 +3817,24 @@ export function DoctorDashboard() {
     });
     if (seq !== medSearchSeqRef.current) return;
     if (error) console.error('[OrdoSur] search_medicaments error:', error);
-    setMedSearchResults((data as Medicament[]) || []);
+    const maRows = (data as Medicament[]) || [];
+    setMedSearchResults(maRows);
+    // Sprint 4d-bis — aucun résultat 🇲🇦 : les entrées hors Maroc sont proposées d'office.
+    if (maRows.length === 0) await loadForeignMeds(term, seq);
+    if (seq !== medSearchSeqRef.current) return;
     setMedSearchLoading(false);
+  };
+
+  /** Entrées hors Maroc (jamais mêlées aux 🇲🇦) : si aucun résultat 🇲🇦, ou à la demande. */
+  const loadForeignMeds = async (term: string, seq: number = medSearchSeqRef.current) => {
+    if (term.trim().length < 3) { setMedSearchForeign([]); return; }
+    const { data, error } = await supabase.rpc('search_medicaments_hors_maroc', {
+      search_term: term.trim(),
+      limit_count: 10,
+    });
+    if (seq !== medSearchSeqRef.current) return;
+    if (error) console.error('[OrdoSur] search_medicaments_hors_maroc error:', error);
+    setMedSearchForeign((data as ForeignMed[]) || []);
   };
 
   const loadPatientOrdonnances = async (patientId: string) => {
@@ -3773,6 +3938,13 @@ export function DoctorDashboard() {
     const blockMessage = verificationBlockMessage(verification);
     if (blockMessage) {
       showToast(`Enregistrement refusé — ${blockMessage}`, 'error');
+      return false;
+    }
+
+    // Sprint 4d-bis — posologie obligatoire sur chaque ligne (aucune valeur par défaut).
+    const posologieBlock = posologieBlockMessage(prescriptionData.medications ?? []);
+    if (posologieBlock) {
+      showToast(`Enregistrement refusé — ${posologieBlock}`, 'error');
       return false;
     }
 
@@ -4014,8 +4186,12 @@ export function DoctorDashboard() {
     if (!selectedMeds.some(m => m.id === med.id))
       // Phase 2b — transporte dci_canonique (3e source de matching). NULL pour la
       // plupart des médicaments → comportement inchangé.
-      setSelectedMeds([...selectedMeds, { id: med.id, nom: med.nom_commercial || med.nom, dci: med.dci, dci_canonique: med.dci_canonique ?? null }]);
-    setMedSearchTerm(''); setMedSearchResults([]); setShowMedDropdown(false);
+      setSelectedMeds([...selectedMeds, {
+        id: med.id, nom: med.nom_commercial || med.nom, dci: med.dci, dci_canonique: med.dci_canonique ?? null,
+        // Sprint 4d-bis — forme galénique réelle (déduction de l'unité de prise dans l'ordonnance)
+        formeHint: `${med.forme ?? ''} ${med.nom ?? ''}`.trim() || null,
+      }]);
+    setMedSearchTerm(''); setMedSearchResults([]); setMedSearchForeign(null); setShowMedDropdown(false);
   };
 
   const addManualMedication = (nom: string) => {
@@ -4137,7 +4313,9 @@ export function DoctorDashboard() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verdictTick, analysisPending, alertsRunId, analysisFailed, result]);
 
-  const analysisRunning = !!selectedPatient && selectedMeds.length > 0 && !result && !analysisFailed;
+  // Sprint 4d-bis — dérivé de analysisValid (calculé pendant le rendu) : dès que la sélection
+  // change, le verdict précédent disparaît dans le MÊME rendu (plus de flash d'anciennes cartes).
+  const analysisRunning = !!selectedPatient && selectedMeds.length > 0 && !analysisValid && !analysisFailed;
 
   /** « Relancer l'analyse » : run complet forcé (RPC + rechargements + verdict). */
   const rerunAnalysis = () => {
@@ -4561,6 +4739,8 @@ export function DoctorDashboard() {
                 setShowPatientDropdown={setShowPatientDropdown}
                 filteredPatientsForDropdown={filteredPatientsForDropdown}
                 medSearchResults={medSearchResults}
+                medSearchForeign={medSearchForeign}
+                onShowForeign={() => { void loadForeignMeds(medSearchTerm); }}
                 selectedMeds={selectedMeds}
                 medSearchTerm={medSearchTerm}
                 setMedSearchTerm={setMedSearchTerm}
@@ -4572,7 +4752,7 @@ export function DoctorDashboard() {
                 addManualMedication={addManualMedication}
                 removeMedication={removeMedication}
                 medVerifInfo={medVerifInfo}
-                result={result}
+                result={analysisValid ? result : null}
                 analysisRunning={analysisRunning}
                 analysisFailed={analysisFailed}
                 rerunAnalysis={rerunAnalysis}
@@ -4747,12 +4927,14 @@ export function DoctorDashboard() {
             nom: (m as any).nom_commercial || m.nom || '',
             // Sprint 3 — renouvellement : reprise de la posologie du traitement de fond
             posologie: fondTraitements.find(t => fondMedId(t) === m.id)?.posologie ?? null,
+            formeHint: m.formeHint ?? null,
           }))}
           onVerifyUnchecked={handleVerifyFormAdditions}
           selectedMeds={selectedMeds}
           analysisValid={analysisValid}
           horsBaseConfirmedKey={horsBaseConfirmedKey}
           onConfirmHorsBase={setHorsBaseConfirmedKey}
+          doctorId={doctorProfile?.id ?? null}
           contraindicationAlerts={analysisValid
             ? derogationAlerts((result?.alerts ?? []).filter(a => a.origin !== 'fond')).map(alertLabel)
             : []}
@@ -4783,9 +4965,9 @@ export function DoctorDashboard() {
           isSaved={savedOrdreNumber === prescriptionOrdreNumber}
           // Une fois enregistrée (garde-fous passés), l'analyse est réinitialisée :
           // le blocage ne s'applique plus à cette ordonnance figée.
-          blockedReason={savedOrdreNumber === prescriptionOrdreNumber ? null : verificationBlockMessage(
+          blockedReason={savedOrdreNumber === prescriptionOrdreNumber ? null : (verificationBlockMessage(
             computeVerification(prescriptionData.medications ?? [], selectedMeds, analysisValid, horsBaseConfirmedKey),
-          )}
+          ) ?? posologieBlockMessage(prescriptionData.medications ?? []))}
           ordreNumber={prescriptionOrdreNumber}
           logo_url={doctorProfile?.logo_url ?? null}
           doctor={{

@@ -26,6 +26,8 @@ export interface DraftMedicationForm {
   // Sprint 3b — liaison à la base (autocomplete) / saisie libre assumée
   medicament?: { id: string; nom: string; nom_commercial?: string | null; dci?: string | null; dci_canonique?: string | null } | null;
   horsBase?: boolean;
+  // Sprint 4d-bis — forme galénique connue (déduction de l'unité de prise)
+  formeHint?: string | null;
 }
 
 export interface DraftForm {

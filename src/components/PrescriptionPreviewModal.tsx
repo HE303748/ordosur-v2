@@ -27,6 +27,13 @@ interface PrescriptionPreviewModalProps {
   /** Ordonnance déjà enregistrée : Imprimer / PDF ne réenregistrent pas. */
   isSaved?: boolean;
   /**
+   * Sprint 4d-bis — consultation d'une ordonnance existante (page Ordonnances) : lecture
+   * seule, réimpression sans réenregistrer ni redemander de dérogation.
+   */
+  readOnly?: boolean;
+  /** Date de l'ordonnance (ISO) ; par défaut aujourd'hui (ordonnance en cours de création). */
+  date?: string | null;
+  /**
    * Sprint 3b — motif de blocage (vérification périmée / confirmation hors base manquante).
    * Non nul → Enregistrer, Imprimer et Télécharger PDF désactivés : aucune ordonnance ne
    * sort sans vérification.
@@ -66,6 +73,8 @@ export function PrescriptionPreviewModal({
   onBack,
   onSave,
   isSaved = false,
+  readOnly = false,
+  date = null,
   blockedReason = null,
   ordreNumber,
   logo_url,
@@ -82,8 +91,9 @@ export function PrescriptionPreviewModal({
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
 
-  const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  const todayIso = new Date().toISOString().split('T')[0];
+  const docDate = date ? new Date(date) : new Date();
+  const today = docDate.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const todayIso = docDate.toISOString().split('T')[0];
 
   const [saving, setSaving] = useState(false);
   const busy = saving || pdfLoading;
@@ -140,7 +150,7 @@ export function PrescriptionPreviewModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Aperçu de l'ordonnance">
+    <Modal isOpen={isOpen} onClose={onClose} title={readOnly ? 'Ordonnance' : "Aperçu de l'ordonnance"}>
       <div className="space-y-4">
         <div id="prescription-content" className="bg-white border-2 border-blue-600 rounded-lg p-6">
 
@@ -199,7 +209,7 @@ export function PrescriptionPreviewModal({
               <div key={med.id} className="mb-3 pl-4 border-l-2 border-blue-300">
                 <p className="font-medium">{index + 1}. {med.nom}</p>
                 <p className="text-sm text-gray-700">{med.posologie}</p>
-                <p className="text-xs text-gray-600">Durée : {med.duree}</p>
+                {med.duree?.trim() && <p className="text-xs text-gray-600">Durée : {med.duree}</p>}
               </div>
             ))}
           </div>
@@ -237,12 +247,12 @@ export function PrescriptionPreviewModal({
               Modifier
             </Button>
           )}
-          <Button onClick={handleSave} variant="primary" disabled={!!blockedReason || busy || isSaved}>
+          {!readOnly && <Button onClick={handleSave} variant="primary" disabled={!!blockedReason || busy || isSaved}>
             {saving
               ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin mr-2" />
               : <Save className="w-4 h-4 mr-2" />}
             {isSaved ? 'Enregistrée' : saving ? 'Enregistrement…' : 'Enregistrer'}
-          </Button>
+          </Button>}
           <Button onClick={handlePrint} variant="secondary" disabled={!!blockedReason || busy}>
             <Printer className="w-4 h-4 mr-2" />
             Imprimer

@@ -6,6 +6,11 @@ import {
   computeVerification,
   type VerifMedicament, type VerifSelectedMed, type UncheckedLine as VerifUncheckedLine,
 } from '../lib/ordonnanceVerification';
+import {
+  linesMissingPosologie, deduceForme, computeQuantite, lastPosologieFor, medKey,
+  type PastLine,
+} from '../lib/posologie';
+import { fetchPastLines } from '../lib/lastPosologie';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
@@ -21,6 +26,8 @@ export interface MedicationForm {
   medicament?: VerifMedicament | null;
   // Sprint 3b — « Utiliser tel quel » : saisie libre, hors base, jamais vérifiable
   horsBase?: boolean;
+  // Sprint 4d-bis — forme galénique connue (base) : sert à déduire l'unité de prise.
+  formeHint?: string | null;
 }
 
 export type UncheckedLine = VerifUncheckedLine<MedicationForm>;
@@ -35,7 +42,9 @@ interface PrescriptionFormModalProps {
     nom: string;
   };
   // Sprint 3 — posologie : reprise du traitement de fond lors d'un « Renouveler ».
-  initialMedications: Array<{ id: string; nom: string; posologie?: string | null }>;
+  initialMedications: Array<{ id: string; nom: string; posologie?: string | null; formeHint?: string | null }>;
+  /** Sprint 4d-bis — médecin connecté (doctors.id) : suggestion « Dernière posologie utilisée ». */
+  doctorId?: string | null;
   /** État du formulaire à reprendre à l'ouverture (brouillon ou saisie précédente). */
   initialForm?: DraftForm | null;
   onFormChange?: (form: DraftForm) => void;
@@ -156,38 +165,8 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
   );
 }
 
-const getDosageSuggestion = (medName: string): { posologie: string; duree: string } => {
-  const name = medName.toLowerCase();
-
-  if (name.includes('doliprane') || name.includes('paracetamol')) {
-    return { posologie: '1 comprimé 3 fois par jour', duree: '7 jours' };
-  }
-  if (name.includes('ibuprofène') || name.includes('ibuprofen')) {
-    return { posologie: '1 comprimé 2 fois par jour', duree: '5 jours' };
-  }
-  if (name.includes('amoxicilline')) {
-    return { posologie: '1 comprimé matin et soir', duree: '7 jours' };
-  }
-  if (name.includes('metformine')) {
-    return { posologie: '1 comprimé 2 fois par jour', duree: '30 jours' };
-  }
-  if (name.includes('aspirine')) {
-    return { posologie: '1 comprimé par jour', duree: '30 jours' };
-  }
-
-  return { posologie: '1 comprimé 2 fois par jour', duree: '7 jours' };
-};
-
-const calculateQuantity = (posologie: string, duree: string): string => {
-  const daysMatch = duree.match(/(\d+)\s*jour/);
-  const days = daysMatch ? parseInt(daysMatch[1]) : 7;
-
-  const timesMatch = posologie.match(/(\d+)\s*fois/);
-  const timesPerDay = timesMatch ? parseInt(timesMatch[1]) : 2;
-
-  const total = days * timesPerDay;
-  return `${total} comprimés`;
-};
+// Sprint 4d-bis — AUCUNE posologie inventée : le champ est vide et obligatoire. La quantité
+// n'est calculée que si la forme, le rythme et la durée sont connus (lib/posologie).
 
 export function PrescriptionFormModal({
   isOpen,
@@ -205,6 +184,7 @@ export function PrescriptionFormModal({
   horsBaseConfirmedKey,
   onConfirmHorsBase,
   contraindicationAlerts = [],
+  doctorId = null,
   onPreview
 }: PrescriptionFormModalProps) {
   const [motif, setMotif] = useState('');
@@ -225,13 +205,14 @@ export function PrescriptionFormModal({
         const id = `chk-${med.id}`;
         const kept = previous.get(id);
         if (kept) return kept;
-        const suggestion = getDosageSuggestion(med.nom);
+        // Seule donnée réelle reprise ici : la posologie du traitement de fond (Renouveler).
         return {
           id,
           nom: med.nom,
-          posologie: med.posologie?.trim() || suggestion.posologie,
-          duree: suggestion.duree,
-          quantite: calculateQuantity(suggestion.posologie, suggestion.duree)
+          posologie: med.posologie?.trim() || '',
+          duree: '',
+          quantite: '',
+          formeHint: med.formeHint ?? null,
         };
       });
       const addedInForm = (initialForm?.medications ?? []).filter(m => m.addedInForm);
@@ -263,7 +244,9 @@ export function PrescriptionFormModal({
         // re-sélectionnée (ou « Utiliser tel quel ») puis re-vérifiée.
         if (field === 'nom') { updated.medicament = null; updated.horsBase = false; }
         if (field === 'posologie' || field === 'duree') {
-          updated.quantite = calculateQuantity(updated.posologie, updated.duree);
+          // Quantité recalculée seulement si elle est calculable (forme + rythme + durée connus).
+          const q = computeQuantite(updated.posologie, updated.duree, deduceForme(updated.nom, updated.formeHint));
+          if (q) updated.quantite = q;
         }
         return updated;
       }
@@ -275,9 +258,9 @@ export function PrescriptionFormModal({
     setMedications(prev => [...prev, {
       id: `med-${Date.now()}`,
       nom: '',
-      posologie: '1 comprimé 2 fois par jour',
-      duree: '7 jours',
-      quantite: '14 comprimés',
+      posologie: '',
+      duree: '',
+      quantite: '',
       addedInForm: true
     }]);
   };
@@ -292,6 +275,7 @@ export function PrescriptionFormModal({
       nom: m.nom_commercial || m.nom,
       medicament: { id: m.id, nom: m.nom, nom_commercial: m.nom_commercial ?? null, dci: m.dci ?? null, dci_canonique: m.dci_canonique ?? null },
       horsBase: false,
+      formeHint: `${m.forme ?? ''} ${m.nom ?? ''}`.trim() || null,
     } : med));
   };
 
@@ -305,8 +289,35 @@ export function PrescriptionFormModal({
   const uncheckedIds = new Set(uncheckedLines.map(u => u.line.id));
   const horsBaseIds = new Set(verification.horsBase.map(l => l.id));
   const nbHorsBase = verification.horsBase.length;
+  // Sprint 4d-bis — posologie obligatoire sur chaque ligne (jamais de valeur par défaut).
+  const missingPosologieIds = new Set(linesMissingPosologie(medications).map(l => l.id));
   const canPreview =
-    verification.status === 'verified' && medications.length > 0 && !medications.some(m => !m.nom.trim());
+    verification.status === 'verified' && medications.length > 0 && !medications.some(m => !m.nom.trim())
+    && missingPosologieIds.size === 0;
+
+  // Sprint 4d-bis — « Dernière posologie utilisée » par ce médecin pour ces médicaments.
+  const [pastLines, setPastLines] = useState<PastLine[]>([]);
+  const namesKey = [...new Set(medications.map(m => medKey(m.nom)).filter(Boolean))].sort().join('|');
+  const pastSeq = useRef(0);
+  useEffect(() => {
+    if (!isOpen || !doctorId || !namesKey) return;
+    const seq = ++pastSeq.current;
+    const t = window.setTimeout(async () => {
+      const rows = await fetchPastLines(doctorId, medications.map(m => m.nom));
+      if (seq === pastSeq.current) setPastLines(rows);
+    }, 300);
+    return () => window.clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, doctorId, namesKey]);
+
+  const applySuggestion = (id: string, posologie: string, duree: string) => {
+    setMedications(prev => prev.map(med => {
+      if (med.id !== id) return med;
+      const next = { ...med, posologie, duree: med.duree.trim() ? med.duree : duree };
+      const q = computeQuantite(next.posologie, next.duree, deduceForme(next.nom, next.formeHint));
+      return q ? { ...next, quantite: q } : next;
+    }));
+  };
 
   const handlePreview = () => {
     if (!canPreview) return;
@@ -332,15 +343,15 @@ export function PrescriptionFormModal({
     <Modal isOpen={isOpen} onClose={onClose} title="Créer une Ordonnance" size="xl">
       <div className="space-y-6">
         {contraindicationAlerts.length > 0 && (
-          <div role="alert" className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 dark:bg-red-500/[0.08] dark:border-red-500/30">
-            <p className="flex items-center gap-2 text-sm font-semibold text-red-800 dark:text-red-300">
+          <div role="alert" className="px-4 py-3 rounded-xl bg-[#DC2626]/[0.06] border border-[#DC2626]/40 border-l-4 border-l-[#DC2626]">
+            <p className="flex items-center gap-2 text-sm font-bold text-[#0A1628]">
               <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#DC2626]" aria-hidden />
               Cette ordonnance contient {contraindicationAlerts.length} contre-indication{contraindicationAlerts.length > 1 ? 's' : ''}
             </p>
-            <ul className="mt-1.5 ml-6 list-disc space-y-0.5 text-sm text-red-800/90 dark:text-red-300/90">
+            <ul className="mt-1.5 ml-6 list-disc space-y-0.5 text-sm text-[#0A1628] marker:text-[#DC2626]">
               {contraindicationAlerts.map((l, i) => <li key={i} className="break-words">{l}</li>)}
             </ul>
-            <p className="mt-1.5 ml-6 text-xs text-red-700/80 dark:text-red-300/70">
+            <p className="mt-1.5 ml-6 text-xs text-slate-700">
               Une confirmation motivée vous sera demandée à l’enregistrement, à l’impression et au PDF.
             </p>
           </div>
@@ -479,20 +490,49 @@ export function PrescriptionFormModal({
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Posologie suggérée
+                  Posologie <span className="text-[#DC2626]" aria-hidden>*</span>
                 </label>
                 <Input
                   value={med.posologie}
                   onChange={(e) => handleMedicationChange(med.id, 'posologie', e.target.value)}
-                  placeholder="Ex: 1 comprimé 3 fois par jour"
+                  placeholder={(() => {
+                    const u = deduceForme(med.nom, med.formeHint);
+                    return u ? `Ex : 1 ${u.singulier} … fois par jour` : 'Dose, rythme et moment de prise';
+                  })()}
+                  aria-required
+                  aria-invalid={missingPosologieIds.has(med.id)}
                 />
-                <p className="text-xs text-slate-500 mt-1">Modifiable par le médecin</p>
+                {missingPosologieIds.has(med.id) && (
+                  <p role="alert" className="text-xs font-medium text-[#DC2626] mt-1 flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3 flex-shrink-0" aria-hidden />
+                    Posologie obligatoire — aucune valeur n’est pré-remplie.
+                  </p>
+                )}
+                {(() => {
+                  const sug = lastPosologieFor(med.nom, pastLines);
+                  if (!sug || sug.posologie === med.posologie.trim()) return null;
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => applySuggestion(med.id, sug.posologie, sug.duree)}
+                      className="mt-1.5 inline-flex items-start gap-1.5 text-left text-xs text-[#006B47] bg-[#E6F4EE] border border-[#00A86B]/25 rounded-lg px-2.5 py-1.5 hover:bg-[#d7efe3] transition-colors"
+                    >
+                      <History className="w-3.5 h-3.5 flex-shrink-0 mt-px" aria-hidden />
+                      <span>
+                        <span className="font-semibold">Dernière posologie utilisée :</span> {sug.posologie}
+                        {sug.duree && ` · ${sug.duree}`}
+                        {sug.date && ` (${new Date(sug.date).toLocaleDateString('fr-FR')})`}
+                        <span className="underline underline-offset-2 ml-1">Utiliser</span>
+                      </span>
+                    </button>
+                  );
+                })()}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Durée suggérée
+                    Durée
                   </label>
                   <Input
                     value={med.duree}
@@ -502,12 +542,12 @@ export function PrescriptionFormModal({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Quantité (calculée)
+                    Quantité
                   </label>
                   <Input
                     value={med.quantite}
                     onChange={(e) => handleMedicationChange(med.id, 'quantite', e.target.value)}
-                    placeholder="Ex: 21 comprimés"
+                    placeholder="Facultatif"
                   />
                 </div>
               </div>
@@ -585,6 +625,11 @@ export function PrescriptionFormModal({
         )}
 
         <div className="flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-3 pt-4 border-t border-slate-200">
+          {verification.status === 'verified' && missingPosologieIds.size > 0 && (
+            <p role="alert" className="text-xs font-medium text-[#DC2626] sm:mr-auto sm:self-center">
+              Aperçu indisponible : posologie manquante sur {missingPosologieIds.size} ligne{missingPosologieIds.size > 1 ? 's' : ''}.
+            </p>
+          )}
           {!canPreview && verification.status !== 'verified' && (
             <p className="text-xs text-amber-800 sm:mr-auto sm:self-center">
               {verification.status === 'stale'
