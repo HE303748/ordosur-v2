@@ -11,7 +11,7 @@ import { supabase, Patient } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { PageTransition } from './PageTransition';
 import { formatNomPropre } from '../../lib/formatName';
-import { drawSignatureBlock } from '../../lib/pdfService';
+import { drawSignatureBlock, loadPdfImage, PDF_LOGO_MAX_PX } from '../../lib/pdfService';
 import { DocumentSignatureBlock } from '../DocumentSignatureBlock';
 
 /* ── Types ─────────────────────────────────────────────────────────────────── */
@@ -236,7 +236,8 @@ async function generateCertificatPdf(params: {
   const doctorName  = formatNomPropre(`${doctor.prenom} ${doctor.nom}`);
   const patientName = formatNomPropre(`${patient.prenom} ${patient.nom}`);
 
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  // Sprint 4d-ter — même traitement que l'ordonnance : PDF compressé, logo réduit.
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
   const pageW = 210;
   const pageH = 297;
   const mL = 18, mR = 18, mT = 15;
@@ -259,17 +260,11 @@ async function generateCertificatPdf(params: {
   // ── Logo (optional) ───────────────────────────────────────────────────────
   if (inclureLogo && logoUrl) {
     try {
-      const resp = await fetch(logoUrl);
-      const blob = await resp.blob();
-      const format: 'PNG' | 'JPEG' = blob.type.includes('png') ? 'PNG' : 'JPEG';
-      const b64: string = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-      doc.addImage(b64, format, mL, y, 0, 18);
-      y += 22;
+      const logo = await loadPdfImage(logoUrl, PDF_LOGO_MAX_PX);
+      if (logo) {
+        doc.addImage(logo.data, logo.format, mL, y, 0, 18);
+        y += 22;
+      }
     } catch { /* skip logo on error */ }
   }
 

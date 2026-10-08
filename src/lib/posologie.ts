@@ -100,6 +100,18 @@ export interface PosologieSuggestion {
   date: string;
 }
 
+/**
+ * Sprint 4d-ter — Date seuil des posologies FIABLES.
+ *
+ * Avant le Sprint 4d-bis (commit fbe5748, déployé le 08/10/2026 vers 03 h 40 UTC), chaque
+ * ligne d'ordonnance recevait une posologie par défaut automatique (« 1 comprimé 2 fois
+ * par jour · 7 jours »), y compris pour un sachet de Kardegic. Ces lignes ne reflètent pas
+ * une décision du médecin : elles ne sont JAMAIS proposées comme « Dernière posologie
+ * utilisée ». Seules les lignes créées à partir de ce seuil (marge incluse pour la fin du
+ * déploiement) peuvent l'être. Aucune suggestion plutôt qu'une suggestion douteuse.
+ */
+export const POSOLOGIE_FIABLE_DEPUIS = '2026-10-08T04:00:00.000Z';
+
 /** Clé de comparaison d'un nom de médicament (casse, accents et espaces ignorés). */
 export function medKey(nom: string): string {
   return norm(nom);
@@ -107,14 +119,21 @@ export function medKey(nom: string): string {
 
 /**
  * Dernière posologie réellement prescrite par ce médecin pour ce médicament (même nom),
- * ou null. Les lignes sans posologie sont ignorées ; la plus récente gagne.
+ * ou null. Les lignes sans posologie et celles antérieures à POSOLOGIE_FIABLE_DEPUIS sont
+ * ignorées ; la plus récente gagne.
  */
-export function lastPosologieFor(nom: string, past: PastLine[]): PosologieSuggestion | null {
+export function lastPosologieFor(
+  nom: string, past: PastLine[], depuis: string = POSOLOGIE_FIABLE_DEPUIS,
+): PosologieSuggestion | null {
   const key = medKey(nom);
   if (!key) return null;
+  const seuil = Date.parse(depuis);
   let best: PastLine | null = null;
   for (const l of past) {
     if (medKey(l.medicament_nom) !== key || !(l.posologie ?? '').trim()) continue;
+    // Ligne antérieure au seuil, ou sans date exploitable : jamais suggérée.
+    const t = Date.parse(l.created_at);
+    if (!Number.isFinite(t) || t < seuil) continue;
     if (!best || l.created_at > best.created_at) best = l;
   }
   return best ? { posologie: best.posologie!.trim(), duree: (best.duree ?? '').trim(), date: best.created_at } : null;

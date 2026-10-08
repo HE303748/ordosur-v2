@@ -120,19 +120,19 @@ export function DerogationModal({ open, alerts, signature, onConfirm, onModify }
             <textarea value={commentaire} onChange={e => setCommentaire(e.target.value)} rows={2} maxLength={500}
               className="w-full px-3.5 py-2.5 text-sm bg-[#FAFAF7] dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#0A1628]/30" />
           </div>
-
-          <div>
-            <label className="flex items-start gap-2.5 cursor-pointer">
-              <input type="checkbox" checked={confirmed} onChange={e => { setConfirmed(e.target.checked); setTouched(true); }}
-                className="w-4 h-4 mt-0.5 rounded border-slate-300 text-[#DC2626] focus:ring-[#DC2626] flex-shrink-0" />
-              <span className="text-sm font-medium text-slate-800 dark:text-[#E2E8F0]">Je confirme cette prescription en connaissance de cause</span>
-            </label>
-            {touched && caseMissing && <p role="alert" className={`${fieldError} mt-1 ml-6`}>Cochez la case pour confirmer</p>}
-          </div>
         </div>
 
         {/* Pied collé en bas de la feuille (hors zone défilante) : toujours visible, y compris sur mobile */}
         <div className="flex-shrink-0 px-5 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-slate-100 dark:border-white/[0.06] bg-white dark:bg-[#111827] rounded-b-none sm:rounded-b-2xl">
+          {/* Sprint 4d-ter — case de confirmation dans le pied collé : visible sans défilement
+              (desktop et mobile), juste au-dessus des boutons. */}
+          <label className={`flex items-start gap-2.5 cursor-pointer px-3 py-2.5 mb-2 rounded-xl border ${
+            touched && caseMissing ? 'border-[#DC2626]/60 bg-[#DC2626]/[0.04]' : 'border-slate-200 dark:border-white/[0.1]'
+          }`}>
+            <input type="checkbox" checked={confirmed} onChange={e => { setConfirmed(e.target.checked); setTouched(true); }}
+              className="w-4 h-4 mt-0.5 rounded border-slate-300 text-[#DC2626] focus:ring-[#DC2626] flex-shrink-0" />
+            <span className="text-sm font-medium text-slate-800 dark:text-[#E2E8F0]">Je confirme cette prescription en connaissance de cause</span>
+          </label>
           {!canConfirm && (
             <p role="status" className="text-xs text-slate-600 dark:text-[#94A3B8] mb-2">
               Pour confirmer, il manque : <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{missing.join(', ')}</span>.

@@ -5,6 +5,7 @@ import {
   CircleSlash, History, FileText,
 } from 'lucide-react';
 import { supabase, type Medicament } from '../../lib/supabase';
+import { searchMedicamentsMA } from '../../lib/medSearch';
 import {
   loadTraitements, resolveDoctorNames, fondDisplayName, formatDateFrShort, todayIsoDate,
   type TraitementChronique,
@@ -162,9 +163,9 @@ export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: P
     const seq = ++searchSeq.current;
     setSearching(true);
     const t = window.setTimeout(async () => {
-      const { data } = await supabase.rpc('search_medicaments', { search_term: q, limit_count: 12 });
+      const rows = await searchMedicamentsMA(q, 12);
       if (seq !== searchSeq.current) return;
-      setResults((data as Medicament[]) || []);
+      setResults(rows);
       setSearching(false);
     }, 250);
     return () => window.clearTimeout(t);

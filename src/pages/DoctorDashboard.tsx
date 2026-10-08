@@ -29,6 +29,7 @@ import { notifyDataChanged, useDataSync } from '../lib/dataSync';
 import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal';
 import { DerogationModal } from '../components/DerogationModal';
 import { posologieBlockMessage } from '../lib/posologie';
+import { searchMedicamentsMA } from '../lib/medSearch';
 import {
   derogationAlerts, ordonnanceSignature, isConfirmationValid, buildDerogationEntries, alertLabel,
   type DerogationConfirmation,
@@ -1262,17 +1263,18 @@ function CheckerView({
 
               {/* Action buttons */}
               <div className="flex gap-3">
+                {/* Sprint 4d-ter — sans médicament il n'y a rien à relancer : bouton « Analyser » désactivé. */}
                 <Button
                   onClick={() => rerunAnalysis()}
                   variant="primary"
                   size="lg"
-                  loading={analysisRunning || analysisPending}
+                  loading={selectedMeds.length > 0 && (analysisRunning || analysisPending)}
                   disabled={selectedMeds.length < 1 || !selectedPatient}
                   className="flex-1 whitespace-nowrap"
                 >
                   {/* Un seul pictogramme : le spinner du bouton remplace le bouclier pendant le calcul */}
-                  {!(analysisRunning || analysisPending) && <Shield className="w-4 h-4 mr-2 flex-shrink-0" />}
-                  Relancer l'analyse
+                  {!(selectedMeds.length > 0 && (analysisRunning || analysisPending)) && <Shield className="w-4 h-4 mr-2 flex-shrink-0" />}
+                  {selectedMeds.length < 1 ? 'Analyser' : "Relancer l'analyse"}
                 </Button>
                 <Button onClick={resetAnalysis} variant="ghost" size="lg">
                   Réinitialiser
@@ -1486,10 +1488,9 @@ interface OrdonnancesViewProps {
   doctorInfo?: { nom: string; prenom: string; specialite?: string | null; rpps?: string | null; ordre_number?: string | null } | null;
   orgInfo?: { name: string; adresse?: string | null; telephone?: string | null } | null;
   logoUrl?: string | null;
-  showPatientName?: boolean;
 }
 
-function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, showPatientName = false }: OrdonnancesViewProps) {
+function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }: OrdonnancesViewProps) {
   const [ords, setOrds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -1630,10 +1631,9 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, s
         logo_url: logoUrl ?? null,
         doctor: doctorInfo,
         org: orgInfo,
-        patient: { prenom: ord.patient_prenom, nom: ord.patient_nom_only },
+        patient: { prenom: ord.patient_prenom, nom: ord.patient_nom_only, date_naissance: ord.patient_date_naissance ?? null },
         medications: meds,
         date: (ord.date || ord.created_at || new Date().toISOString()).split('T')[0],
-        showPatientName,
       });
     } catch (e) {
       console.error('[OrdoSur] PDF reprint error:', e);
@@ -1860,7 +1860,6 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, s
           }))}
           remarks={viewOrd.remarques ?? ''}
           nextAppointment={viewOrd.prochain_rdv ?? undefined}
-          showPatientName={showPatientName}
         />
       )}
 
@@ -1912,32 +1911,9 @@ function SettingsView({
   const [cabinetSaving, setCabinetSaving] = useState(false);
   const [cabinetMsg, setCabinetMsg]       = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // ── Préférence PDF : identité patient (doctors.show_patient_name_on_pdf) ────
-  const [showPatientOnPdf, setShowPatientOnPdf] = useState<boolean>(!!doctorProfile?.show_patient_name_on_pdf);
-  const [pdfPrefSaving, setPdfPrefSaving]       = useState(false);
-  const [pdfPrefError, setPdfPrefError]         = useState<string | null>(null);
-  useEffect(() => {
-    setShowPatientOnPdf(!!doctorProfile?.show_patient_name_on_pdf);
-  }, [doctorProfile?.show_patient_name_on_pdf]);
-
-  const togglePatientOnPdf = async () => {
-    if (!doctorProfile?.id || pdfPrefSaving) return;
-    const next = !showPatientOnPdf;
-    setShowPatientOnPdf(next); // optimiste
-    setPdfPrefSaving(true);
-    setPdfPrefError(null);
-    const { error } = await supabase
-      .from('doctors')
-      .update({ show_patient_name_on_pdf: next })
-      .eq('id', doctorProfile.id);
-    setPdfPrefSaving(false);
-    if (error) {
-      setShowPatientOnPdf(!next);
-      setPdfPrefError("La préférence n'a pas pu être enregistrée. Réessayez.");
-      return;
-    }
-    onSaved();
-  };
+  // Sprint 4d-ter — la préférence « Afficher le nom du patient sur l'ordonnance » est
+  // supprimée : le patient est toujours imprimé. (La colonne doctors.show_patient_name_on_pdf
+  // reste en base, simplement plus lue.)
 
   useEffect(() => {
     if (!user) return;
@@ -2444,37 +2420,6 @@ function SettingsView({
                     Annuler
                   </button>
                 </div>
-              </div>
-
-              {/* Ordonnance PDF */}
-              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
-                <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Ordonnance PDF</h3>
-                <div className="mt-4 flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p id="pdf-patient-label" className="text-sm font-semibold text-slate-800 dark:text-[#E2E8F0]">
-                      Afficher le nom du patient sur l'ordonnance
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
-                      Ajoute la ligne « Nom du patient : Prénom Nom — âge » sous l'en-tête. Désactivé par défaut.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={showPatientOnPdf}
-                    aria-labelledby="pdf-patient-label"
-                    onClick={togglePatientOnPdf}
-                    disabled={pdfPrefSaving || !doctorProfile?.id}
-                    className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2 disabled:opacity-60 ${
-                      showPatientOnPdf ? 'bg-[#00A86B]' : 'bg-slate-300 dark:bg-white/[0.15]'
-                    }`}
-                  >
-                    <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
-                      showPatientOnPdf ? 'translate-x-6' : 'translate-x-1'
-                    }`} />
-                  </button>
-                </div>
-                {pdfPrefError && <p className="mt-3 text-xs font-medium text-[#DC2626]">{pdfPrefError}</p>}
               </div>
 
               {/* Logo */}
@@ -3811,13 +3756,9 @@ export function DoctorDashboard() {
     setMedSearchForeign(null);
     if (term.length < 2) { setMedSearchResults([]); setMedSearchLoading(false); return; }
     setMedSearchLoading(true);
-    const { data, error } = await supabase.rpc('search_medicaments', {
-      search_term: term,
-      limit_count: 15,
-    });
+    // Sprint 4d-ter — recherche commune : équivalence mg ↔ g (SQL) + doublons masqués à l'affichage.
+    const maRows = await searchMedicamentsMA(term, 15);
     if (seq !== medSearchSeqRef.current) return;
-    if (error) console.error('[OrdoSur] search_medicaments error:', error);
-    const maRows = (data as Medicament[]) || [];
     setMedSearchResults(maRows);
     // Sprint 4d-bis — aucun résultat 🇲🇦 : les entrées hors Maroc sont proposées d'office.
     if (maRows.length === 0) await loadForeignMeds(term, seq);
@@ -4795,7 +4736,6 @@ export function DoctorDashboard() {
                   telephone: clinicProfile.telephone ?? null,
                 } : null}
                 logoUrl={doctorProfile?.logo_url ?? null}
-                showPatientName={!!doctorProfile?.show_patient_name_on_pdf}
               />
             )}
 
@@ -4989,7 +4929,6 @@ export function DoctorDashboard() {
           remarks={prescriptionData.remarks ?? ''}
           nextAppointment={prescriptionData.nextAppointment}
           interactionAlerts={interactionAlerts}
-          showPatientName={!!doctorProfile?.show_patient_name_on_pdf}
         />
       )}
 

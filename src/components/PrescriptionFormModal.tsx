@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Calendar, History, AlertTriangle, RefreshCw } from 'lucide-react';
 import type { DraftForm } from '../lib/ordonnanceDraft';
-import { supabase, type Medicament } from '../lib/supabase';
+import { type Medicament } from '../lib/supabase';
+import { searchMedicamentsMA } from '../lib/medSearch';
 import {
   computeVerification,
   type VerifMedicament, type VerifSelectedMed, type UncheckedLine as VerifUncheckedLine,
@@ -110,9 +111,9 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
     const s = ++seq.current;
     setLoading(true);
     const t = window.setTimeout(async () => {
-      const { data } = await supabase.rpc('search_medicaments', { search_term: q, limit_count: 10 });
+      const rows = await searchMedicamentsMA(q, 10);
       if (s !== seq.current) return;
-      setResults((data as Medicament[]) || []);
+      setResults(rows);
       setLoading(false);
     }, 250);
     return () => window.clearTimeout(t);

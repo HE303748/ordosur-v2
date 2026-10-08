@@ -45,8 +45,6 @@ export interface PdfOrdonnanceData {
   nextAppointment?: string;
   date: string;
   interactionAlerts?: PdfInteractionAlert[];
-  // Préférence médecin (doctors.show_patient_name_on_pdf). Absent/false → identité masquée.
-  showPatientName?: boolean;
 }
 
 function formatDate(dateStr: string): string {
@@ -60,29 +58,70 @@ function formatDate(dateStr: string): string {
 }
 
 
-/** Fetches a public image URL and returns it as a base64 data-URL + detected format for jsPDF. */
-async function urlToBase64(url: string): Promise<{ data: string; format: 'PNG' | 'JPEG' }> {
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error(`Image fetch failed: ${resp.status}`);
-  const blob = await resp.blob();
-  const format: 'PNG' | 'JPEG' = blob.type.includes('png') ? 'PNG' : 'JPEG';
+export interface PdfImage { data: string; format: 'PNG' | 'JPEG' }
+
+function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve({ data: reader.result as string, format });
+    reader.onload = () => resolve(reader.result as string);
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
 }
 
-/** Load a public asset, return null on failure so PDF generation never blocks. */
-async function safeLoad(url: string): Promise<{ data: string; format: 'PNG' | 'JPEG' } | null> {
+/**
+ * Sprint 4d-ter — Image prête pour jsPDF, à la résolution utile à l'impression.
+ *
+ * Avant : le filigrane (PNG 1600×1600 avec transparence) était inséré tel quel dans un PDF
+ * NON compressé → jsPDF stockait les pixels décodés + le masque alpha (≈ 10 Mo par page).
+ * Désormais : l'image est réduite à `maxPx` pixels sur son plus grand côté (canvas), ce qui
+ * correspond à ~150-200 dpi pour sa taille imprimée, et le PDF est compressé (Flate).
+ * Le format d'origine est conservé (PNG : transparence préservée ; JPEG : qualité 0,85).
+ * En cas d'échec de la réduction, l'image d'origine est utilisée (le PDF reste compressé).
+ */
+async function urlToPdfImage(url: string, maxPx: number): Promise<PdfImage> {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`Image fetch failed: ${resp.status}`);
+  const blob = await resp.blob();
+  const format: 'PNG' | 'JPEG' = blob.type.includes('png') ? 'PNG' : 'JPEG';
   try {
-    return await urlToBase64(url);
+    const bitmap = await createImageBitmap(blob);
+    const scale = Math.min(1, maxPx / Math.max(bitmap.width, bitmap.height));
+    if (scale < 1) {
+      const w = Math.max(1, Math.round(bitmap.width * scale));
+      const h = Math.max(1, Math.round(bitmap.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(bitmap, 0, 0, w, h);
+        bitmap.close?.();
+        return { data: canvas.toDataURL(format === 'PNG' ? 'image/png' : 'image/jpeg', 0.85), format };
+      }
+    }
+    bitmap.close?.();
+  } catch (e) {
+    console.warn('[pdfService] réduction d’image impossible, image d’origine utilisée :', e);
+  }
+  return { data: await blobToDataUrl(blob), format };
+}
+
+/** Charge une image (réduite à maxPx) ; null en cas d'échec : le PDF n'est jamais bloqué. */
+export async function loadPdfImage(url: string, maxPx: number): Promise<PdfImage | null> {
+  try {
+    return await urlToPdfImage(url, maxPx);
   } catch (e) {
     console.warn(`[pdfService] Optional asset missing: ${url}`, e);
     return null;
   }
 }
+
+// Résolutions cibles (≈ 150-200 dpi à la taille imprimée) :
+//   filigrane 110 mm → 800 px ; logo de 12 à 18 mm de haut, largeur libre → 600 px.
+export const PDF_WATERMARK_MAX_PX = 800;
+export const PDF_LOGO_MAX_PX = 600;
 
 /* ════════════════════════════════════════════════════════════════════════════
    ORDONNANCE — Sprint #3 brand refresh
@@ -107,12 +146,13 @@ const MARGIN_R = 18;
 const CONTENT_W = PAGE_W - MARGIN_L - MARGIN_R;
 
 export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  // compress: true → flux (texte vectoriel et images) compressés ; indispensable pour le poids.
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
 
   // Load cabinet logo (non-fatal if missing) + optional watermark
   const [logoAsset, watermarkAsset] = await Promise.all([
-    data.logo_url ? safeLoad(data.logo_url) : Promise.resolve(null),
-    safeLoad('/pdf-assets/watermark.png'),
+    data.logo_url ? loadPdfImage(data.logo_url, PDF_LOGO_MAX_PX) : Promise.resolve(null),
+    loadPdfImage('/pdf-assets/watermark.png', PDF_WATERMARK_MAX_PX),
   ]);
 
   // Helper: draw the per-page chrome (green bands + faint watermark)
@@ -175,7 +215,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   if (data.org.telephone) { lhY += 3.5; doc.text(`Tél : ${data.org.telephone}`, MARGIN_L, lhY); }
   lhY += 2;
 
-  // Bloc droit — titre ORDONNANCE + date (sans N° d'ordonnance)
+  // Bloc droit — titre ORDONNANCE + date + N° d'ordonnance (discret)
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(C.INK_NAVY);
@@ -184,8 +224,12 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
   doc.text(formatDate(data.date), PAGE_W - MARGIN_R, headerTop + 12, { align: 'right' });
+  if (data.ordreNumber) {
+    doc.setFontSize(7);
+    doc.text(`N° ${data.ordreNumber}`, PAGE_W - MARGIN_R, headerTop + 16, { align: 'right' });
+  }
 
-  y = Math.max(lhY, headerTop + 16);
+  y = Math.max(lhY, headerTop + 19);
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
   doc.setDrawColor(C.DIVIDER);
@@ -193,20 +237,21 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y);
   y += 7;
 
-  // ── Identité patient (uniquement si le médecin l'a activée) ───────────────
+  // ── Identité patient — TOUJOURS imprimée (Sprint 4d-ter) ──────────────────
+  // Une ordonnance médicamenteuse doit identifier le patient : l'ancienne préférence
+  // « Afficher le nom du patient » (désactivée par défaut) est supprimée.
   // L'adresse du cabinet n'apparaît qu'une fois, dans l'en-tête ; la date est
   // reprise dans le bloc de clôture (drawSignatureBlock).
-  doc.setFontSize(8.5);
+  doc.setFontSize(9.5);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_MUTED);
-  if (data.showPatientName) {
+  doc.setTextColor(C.INK_NAVY);
+  {
     const ageStr = formatAge(data.patient.date_naissance);
-    const patientLine = `Nom du patient : ${formatNomPropre(data.patient.prenom)} ${formatNomPropre(data.patient.nom)}${ageStr ? ` — ${ageStr}` : ''}`;
-    const patientLineWrapped = doc.splitTextToSize(patientLine, CONTENT_W * 0.62);
+    const fullName = `${formatNomPropre(data.patient.prenom)} ${formatNomPropre(data.patient.nom)}`.trim();
+    const patientLine = `Patient : ${fullName || '—'}${ageStr ? ` — ${ageStr}` : ''}`;
+    const patientLineWrapped = doc.splitTextToSize(patientLine, CONTENT_W);
     doc.text(patientLineWrapped, MARGIN_L, y);
-    y += patientLineWrapped.length > 1 ? patientLineWrapped.length * 4 + 2 : 6;
-  } else {
-    y += 6;
+    y += patientLineWrapped.length > 1 ? patientLineWrapped.length * 4.5 + 2 : 6;
   }
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
@@ -286,7 +331,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
   doc.text(
-    `${data.org.name}  ·  ${formatDate(data.date)}`,
+    [data.org.name, formatDate(data.date), data.ordreNumber ? `N° ${data.ordreNumber}` : ''].filter(Boolean).join('  ·  '),
     PAGE_W / 2, PAGE_H - 6,
     { align: 'center' }
   );

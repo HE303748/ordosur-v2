@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { PastLine } from './posologie';
+import { POSOLOGIE_FIABLE_DEPUIS, type PastLine } from './posologie';
 
 // Sprint 4d-bis — Dernières lignes d'ordonnance de CE médecin pour une liste de médicaments
 // (suggestion « Dernière posologie utilisée »). Requête légère : filtrée par médecin et par
@@ -19,6 +19,8 @@ export async function fetchPastLines(doctorId: string, noms: string[]): Promise<
     .from('ordonnance_lignes')
     .select('medicament_nom, posologie, duree, ordonnances!inner(doctor_id, created_at)')
     .eq('ordonnances.doctor_id', doctorId)
+    // Jamais les lignes d'avant le Sprint 4d-bis (posologie par défaut automatique).
+    .gte('ordonnances.created_at', POSOLOGIE_FIABLE_DEPUIS)
     .in('medicament_nom', names);
   let { data, error } = await base().order('ordonnances(created_at)', { ascending: false }).limit(200);
   // Tri par table liée refusé par l'API : même requête sans tri (le plus récent est choisi
