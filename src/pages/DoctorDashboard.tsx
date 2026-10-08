@@ -14,7 +14,9 @@ import { supabase, Patient, Medicament } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
 import { fetchAllRows } from '../lib/fetchAllRows';
 import {
-  saveDraft, loadDraft, clearDraft, getActiveDraftPatientId, type DraftForm,
+  saveDraft, loadDraft, clearDraft, getActiveDraftPatientId,
+  evaluateDraftOffer, isDraftWorthOffering, draftSummary, draftLinesForSelection, formHasContent,
+  type DraftForm, type OrdonnanceDraft,
 } from '../lib/ordonnanceDraft';
 import { SPECIALITES } from '../lib/specialites';
 import { Button } from '../components/Button';
@@ -30,6 +32,7 @@ import { PrescriptionPreviewModal } from '../components/PrescriptionPreviewModal
 import { DerogationModal } from '../components/DerogationModal';
 import { posologieBlockMessage } from '../lib/posologie';
 import { searchMedicamentsMA } from '../lib/medSearch';
+import { medLabel, dosageManquant, ligneLabel, dosageBlockMessage } from '../lib/medLabel';
 import {
   derogationAlerts, ordonnanceSignature, isConfirmationValid, buildDerogationEntries, alertLabel,
   type DerogationConfirmation,
@@ -152,7 +155,13 @@ const ANTECEDENT_SEVERITE: Record<RegleSeverite, InteractionAlert['severite']> =
 };
 
 // Sprint 3 — Médicament transmis au moteur (prescription en cours ou traitement de fond).
-type CheckerMed = { id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean; formeHint?: string | null };
+// `nom` reste l'identité transmise au moteur (inchangée). `label` = libellé affiché et porté
+// sur l'ordonnance : marque + dosage + forme (Sprint 4d-quater).
+type CheckerMed = {
+  id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean;
+  formeHint?: string | null; label?: string | null; dosageManquant?: boolean;
+};
+const displayNom = (m: { nom: string; label?: string | null }) => m.label || m.nom;
 
 // Sprint 4d-bis — résultat de recherche hors Maroc (RPC search_medicaments_hors_maroc) :
 // `mappe` = au moins un ingrédient en base (sinon non vérifiable par le moteur).
@@ -269,6 +278,7 @@ interface PatientsViewProps {
   onDeletePatient: (id: string) => void;
   onNavigateToChecker: () => void;
   patientOrdonnances: any[];
+  patientOrdLoading?: boolean;
   loadPatientOrdonnances: (id: string) => Promise<void>;
   showMedicationHistory: boolean;
   setShowMedicationHistory: (v: boolean) => void;
@@ -286,7 +296,7 @@ interface PatientsViewProps {
 function PatientsView({
   patients, selectedPatient, setSelectedPatient,
   onAddPatient, onImportPatients, onEditPatient, onDeletePatient, onNavigateToChecker,
-  patientOrdonnances, loadPatientOrdonnances,
+  patientOrdonnances, patientOrdLoading = false, loadPatientOrdonnances,
   showMedicationHistory, setShowMedicationHistory, resetAnalysis,
   doctorId, orgId, initialPatientId, onInitialPatientHandled, onTraitementsChanged, onPatientPatched,
 }: PatientsViewProps) {
@@ -523,6 +533,7 @@ function PatientsView({
             <PatientTabs
               patient={selectedPatient}
               ordonnances={patientOrdonnances}
+              ordonnancesLoading={patientOrdLoading}
               onEdit={() => onEditPatient(selectedPatient)}
               onNavigateToChecker={onNavigateToChecker}
               doctorId={doctorId ?? null}
@@ -901,7 +912,7 @@ interface CheckerViewProps {
   // Sprint 4d-bis — hors Maroc : null = non chargé (lien), sinon liste badgée
   medSearchForeign: ForeignMed[] | null;
   onShowForeign: () => void;
-  selectedMeds: Array<{ id: string; nom: string; dci?: string | null; dci_canonique?: string | null; manual?: boolean }>;
+  selectedMeds: CheckerMed[];
   medSearchTerm: string;
   setMedSearchTerm: (v: string) => void;
   showMedDropdown: boolean;
@@ -1144,20 +1155,18 @@ function CheckerView({
                           {/* Ligne 1 : nom commercial. Sprint Quick Fixes A — Bug #2 :
                               badge 🇲🇦 MAR retiré (polluait visuellement la recherche méd). */}
                           <div className="flex items-center gap-2 flex-wrap">
+                            {/* Sprint 4d-quater — libellé propre : marque + dosage + forme */}
                             <span className="font-bold text-slate-900 dark:text-[#E2E8F0] text-sm leading-tight">
-                              {med.nom_commercial || med.nom}
+                              {medLabel(med)}
                             </span>
+                            {dosageManquant(med) && (
+                              <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">Dosage à préciser</span>
+                            )}
                           </div>
-                          {/* Ligne 2 : DCI + dosage + forme */}
+                          {/* Ligne 2 : DCI */}
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap pl-0.5">
                             {med.dci && (
                               <span className="text-xs text-slate-500 dark:text-slate-400">{med.dci}</span>
-                            )}
-                            {med.dosage && (
-                              <span className="text-xs text-violet-600 dark:text-violet-400 font-medium">· {med.dosage}</span>
-                            )}
-                            {med.forme && (
-                              <span className="text-xs text-slate-400 dark:text-slate-500 italic">· {med.forme}</span>
                             )}
                           </div>
                           {/* Ligne 3 : laboratoire */}
@@ -1190,7 +1199,7 @@ function CheckerView({
                               className="w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                             >
                               <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-semibold text-slate-800 dark:text-[#E2E8F0] text-sm leading-tight">{med.nom_commercial || med.nom}</span>
+                                <span className="font-semibold text-slate-800 dark:text-[#E2E8F0] text-sm leading-tight">{medLabel(med)}</span>
                                 <span className="text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 dark:bg-white/[0.06] dark:border-white/[0.1] dark:text-[#94A3B8]">
                                   {med.pays === 'FR' ? 'France' : med.pays === 'US' ? 'États-Unis' : 'International'}
                                 </span>
@@ -1234,7 +1243,10 @@ function CheckerView({
                         <span className="w-6 h-6 rounded-full bg-violet-500 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                           {idx + 1}
                         </span>
-                        <span className="flex-1 font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm truncate">{med.nom}</span>
+                        <span className="flex-1 font-semibold text-slate-900 dark:text-[#E2E8F0] text-sm truncate" title={displayNom(med)}>{displayNom(med)}</span>
+                        {med.dosageManquant && (
+                          <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Dosage à préciser</span>
+                        )}
                         {med.manual && (
                           <span title="Saisie manuelle — pas de vérification d'interaction" className="text-xs text-slate-400 dark:text-slate-500 flex-shrink-0">✏️</span>
                         )}
@@ -2724,6 +2736,9 @@ export function DoctorDashboard() {
   // Medications
   const [medSearchResults, setMedSearchResults] = useState<Medicament[]>([]);
   const [selectedMeds, setSelectedMeds] = useState<CheckerMed[]>([]);
+  // Sprint 4d-quater — même sélection, vue par le formulaire et la vérification Sprint 3b :
+  // le nom comparé aux lignes de l'ordonnance est le LIBELLÉ (marque + dosage + forme).
+  const verifMeds = useMemo(() => selectedMeds.map(m => ({ ...m, nom: displayNom(m) })), [selectedMeds]);
   // Sprint 4d-bis — entrées hors Maroc : null = non chargées (lien « Afficher aussi… »).
   const [medSearchForeign, setMedSearchForeign] = useState<ForeignMed[] | null>(null);
   const [medSearchTerm, setMedSearchTerm] = useState('');
@@ -2796,6 +2811,9 @@ export function DoctorDashboard() {
   const derogationResolverRef = useRef<((c: DerogationConfirmation | null) => void) | null>(null);
   const [showMedicationHistory, setShowMedicationHistory] = useState(false);
   const [patientOrdonnances, setPatientOrdonnances] = useState<any[]>([]);
+  // Sprint 4d-quater — tant que les ordonnances du patient affiché ne sont pas chargées, le
+  // compteur (en-tête et onglet) affiche « … » au lieu du nombre d'un autre patient ou de 0.
+  const [patientOrdLoading, setPatientOrdLoading] = useState(false);
 
   // Stats
   const [stats, setStats] = useState<HomeStats>({
@@ -3785,7 +3803,7 @@ export function DoctorDashboard() {
         .eq('patient_id', patientId).order('created_at', { ascending: false });
       // Patient changé entre-temps : la réponse ne le concerne plus.
       if (selectedPatientIdRef.current && selectedPatientIdRef.current !== patientId) return;
-      if (error || !data || data.length === 0) { setPatientOrdonnances([]); return; }
+      if (error || !data || data.length === 0) { setPatientOrdonnances([]); setPatientOrdLoading(false); return; }
 
       const doctorIds = [...new Set(data.map((o: any) => o.doctor_id))].filter(Boolean);
       let doctorMap = new Map();
@@ -3814,8 +3832,20 @@ export function DoctorDashboard() {
           })),
         };
       }));
-    } catch { setPatientOrdonnances([]); }
+      setPatientOrdLoading(false);
+    } catch { setPatientOrdonnances([]); setPatientOrdLoading(false); }
   };
+
+  // Changement de patient (quelle que soit la vue) : la liste de l'ancien patient est vidée
+  // tout de suite, puis celle du nouveau est chargée. Compteurs cohérents dès l'ouverture.
+  useEffect(() => {
+    const pid = selectedPatient?.id;
+    setPatientOrdonnances([]);
+    if (!pid) { setPatientOrdLoading(false); return; }
+    setPatientOrdLoading(true);
+    loadPatientOrdonnances(pid);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPatient?.id]);
 
   // ── Synchronisation entre vues (src/lib/dataSync.ts) ───────────────────────
   // Ordonnance enregistrée → compteurs/alertes de l'Accueil + ordonnances du profil patient.
@@ -3874,11 +3904,18 @@ export function DoctorDashboard() {
     // n'a pas été analysée sur la sélection actuelle, ou si des lignes hors base n'ont pas
     // été explicitement confirmées. Même calcul que le formulaire et l'aperçu.
     const verification = computeVerification(
-      prescriptionData.medications ?? [], selectedMeds, analysisValid, horsBaseConfirmedKey,
+      prescriptionData.medications ?? [], verifMeds, analysisValid, horsBaseConfirmedKey,
     );
     const blockMessage = verificationBlockMessage(verification);
     if (blockMessage) {
       showToast(`Enregistrement refusé — ${blockMessage}`, 'error');
+      return false;
+    }
+
+    // Sprint 4d-quater — dosage absent de la fiche : à préciser avant tout enregistrement.
+    const dosageBlock = dosageBlockMessage(prescriptionData.medications ?? []);
+    if (dosageBlock) {
+      showToast(`Enregistrement refusé — ${dosageBlock}`, 'error');
       return false;
     }
 
@@ -3938,7 +3975,8 @@ export function DoctorDashboard() {
 
       const lignes = (prescriptionData.medications ?? []).map((m: any) => ({
         ordonnance_id:  ordonnance.id,
-        medicament_nom: m.nom,
+        // Sprint 4d-quater — marque + dosage + forme (+ dosage précisé par le médecin)
+        medicament_nom: ligneLabel(m),
         posologie:      m.posologie ?? '',
         duree:          m.duree ?? '',
         instructions:   m.quantite ? `Quantité: ${m.quantite}` : null,
@@ -4131,6 +4169,9 @@ export function DoctorDashboard() {
         id: med.id, nom: med.nom_commercial || med.nom, dci: med.dci, dci_canonique: med.dci_canonique ?? null,
         // Sprint 4d-bis — forme galénique réelle (déduction de l'unité de prise dans l'ordonnance)
         formeHint: `${med.forme ?? ''} ${med.nom ?? ''}`.trim() || null,
+        // Sprint 4d-quater — libellé de la ligne d'ordonnance : marque + dosage + forme
+        label: medLabel(med) || null,
+        dosageManquant: dosageManquant(med),
       }]);
     setMedSearchTerm(''); setMedSearchResults([]); setMedSearchForeign(null); setShowMedDropdown(false);
   };
@@ -4160,7 +4201,13 @@ export function DoctorDashboard() {
     setSelectedMeds(prev => prev.some(m => m.id === id) ? prev : [
       ...prev,
       t.medicament
-        ? { id, nom: fondDisplayName(t), dci: t.medicament.dci ?? null, dci_canonique: t.medicament.dci_canonique ?? null }
+        ? {
+            id, nom: fondDisplayName(t), dci: t.medicament.dci ?? null, dci_canonique: t.medicament.dci_canonique ?? null,
+            // Sprint 4d-quater — la ligne renouvelée porte marque + dosage + forme
+            label: medLabel(t.medicament) || null,
+            dosageManquant: dosageManquant(t.medicament),
+            formeHint: `${t.medicament.forme ?? ''} ${t.medicament.nom ?? ''}`.trim() || null,
+          }
         : { id, nom: t.medicament_nom, dci: null, manual: true },
     ]);
     setResult(null);
@@ -4186,10 +4233,14 @@ export function DoctorDashboard() {
       const med = line.medicament;
       const existing = med
         ? nextSel.find(m => m.id === med.id)
-        : nextSel.find(m => normalizeDrugName(m.nom) === normalizeDrugName(nom));
+        : nextSel.find(m => normalizeDrugName(displayNom(m)) === normalizeDrugName(nom));
       if (existing) { lineIdMap.set(line.id, null); continue; }
       if (med) {
-        nextSel.push({ id: med.id, nom, dci: med.dci ?? null, dci_canonique: med.dci_canonique ?? null });
+        nextSel.push({
+          id: med.id, nom: med.nom_commercial || med.nom, label: nom,
+          dci: med.dci ?? null, dci_canonique: med.dci_canonique ?? null,
+          formeHint: line.formeHint ?? null, dosageManquant: !!line.dosageAPreciser,
+        });
         lineIdMap.set(line.id, med.id);
         continue;
       }
@@ -4388,6 +4439,7 @@ export function DoctorDashboard() {
 
   const resetAnalysis = () => {
     verdictWantedRef.current = false;
+    formDraftRef.current = null;
     setSelectedMeds([]); setMedSearchTerm(''); setInteractionAlerts([]); setResult(null); setNonVerifiables([]); setMedVerifInfo(new Map());
   };
 
@@ -4413,10 +4465,16 @@ export function DoctorDashboard() {
     if (draftTimerRef.current !== null) { window.clearTimeout(draftTimerRef.current); draftTimerRef.current = null; }
     const st = draftStateRef.current;
     if (!draftRestoreDoneRef.current || !st.doctorId || !st.patientId) return;
+    // Sprint 4d-quater — un brouillon enregistré attend la décision du médecin (Reprendre /
+    // Supprimer) : l'état en cours ne l'écrase pas.
+    if (pendingDraftRef.current?.patientId === st.patientId) return;
     saveDraft({
       doctorId: st.doctorId,
       patientId: st.patientId,
-      selectedMeds: st.selectedMeds.map(m => ({ id: m.id, nom: m.nom, dci: m.dci ?? null, dci_canonique: m.dci_canonique ?? null, manual: m.manual })),
+      selectedMeds: st.selectedMeds.map(m => ({
+        id: m.id, nom: m.nom, dci: m.dci ?? null, dci_canonique: m.dci_canonique ?? null, manual: m.manual,
+        label: m.label ?? null, formeHint: m.formeHint ?? null, dosageManquant: m.dosageManquant,
+      })),
       form: formDraftRef.current,
       formOpen: st.formOpen,
     });
@@ -4440,22 +4498,33 @@ export function DoctorDashboard() {
     };
   }, [flushDraft]);
 
-  // Changement de patient : le brouillon de l'ancien patient est abandonné (resetAnalysis
-  // a déjà vidé la sélection) — aucune donnée ne passe d'un patient à l'autre.
+  // Sprint 4d-quater — Changement OU désélection de patient : la saisie en mémoire ne suit
+  // jamais (c'était l'origine du « brouillon fantôme » : après une désélection, le formulaire
+  // resté « ouvert » se remontait avec l'ancienne saisie). Le formulaire est fermé, et le
+  // brouillon ENREGISTRÉ du nouveau patient est seulement PROPOSÉ (bandeau), jamais appliqué.
+  const [pendingDraft, setPendingDraft] = useState<OrdonnanceDraft | null>(null);
+  const pendingDraftRef = useRef<OrdonnanceDraft | null>(null);
+  pendingDraftRef.current = pendingDraft;
   useEffect(() => {
     const next = selectedPatient?.id ?? null;
     const prev = prevDraftPatientIdRef.current;
-    if (next === null || next === prev) return;
-    if (prev && doctorProfile?.id) clearDraft(doctorProfile.id, prev);
+    if (next === prev) return;
+    prevDraftPatientIdRef.current = next;
     formDraftRef.current = null;
     setHorsBaseConfirmedKey(null);
     reopenFormAfterCheckRef.current = false;
     setDraftRestored(false);
-    prevDraftPatientIdRef.current = next;
+    setShowPrescriptionForm(false);
+    setShowPrescriptionPreview(false);
+    setFormResetKey(k => k + 1);
+    if (next === null || !doctorProfile?.id) return;
+    const stored = loadDraft(doctorProfile.id, next);
+    setPendingDraft(isDraftWorthOffering(stored) ? stored : null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPatient?.id]);
 
-  // Restauration au chargement — uniquement le brouillon du patient exact.
+  // Au chargement : le dernier brouillon est PROPOSÉ (bandeau du Vérificateur), jamais
+  // restauré d'office — ni patient sélectionné, ni formulaire rouvert.
   useEffect(() => {
     if (draftRestoreDoneRef.current) return;
     const doctorId = doctorProfile?.id;
@@ -4465,17 +4534,45 @@ export function DoctorDashboard() {
     if (!pid) return;
     const draft = loadDraft(doctorId, pid);
     const patient = draft ? patients.find(p => p.id === pid) : undefined;
-    if (!draft || !patient || draft.patientId !== patient.id) { clearDraft(doctorId, pid); return; }
-    prevDraftPatientIdRef.current = patient.id;
-    formDraftRef.current = draft.form;
-    reopenFormAfterCheckRef.current = draft.formOpen;
-    setSelectedPatient(patient);
-    setSelectedMeds(draft.selectedMeds);
-    setResult(null);
-    setDraftRestored(true);
-    setActiveView('checker');
+    if (!isDraftWorthOffering(draft) || !patient) { clearDraft(doctorId, pid); return; }
+    if (!selectedPatientIdRef.current || selectedPatientIdRef.current === pid) setPendingDraft(draft);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorProfile?.id, dataLoading, patients]);
+
+  const pendingDraftPatient = pendingDraft ? patients.find(p => p.id === pendingDraft.patientId) ?? null : null;
+  // Proposition face à l'état actuel : une sélection différente n'est jamais écrasée.
+  const draftOffer = evaluateDraftOffer(pendingDraft, selectedPatient?.id ?? null, selectedMeds);
+
+  /** « Reprendre » : applique le brouillon ; l'analyse repart, le formulaire se rouvre après le verdict. */
+  const resumePendingDraft = () => {
+    const d = pendingDraft;
+    if (!d || !pendingDraftPatient) return;
+    if (evaluateDraftOffer(d, selectedPatient?.id ?? null, selectedMeds) !== 'resume') return;
+    pendingDraftRef.current = null;
+    setPendingDraft(null);
+    prevDraftPatientIdRef.current = pendingDraftPatient.id;
+    if (selectedPatient?.id !== pendingDraftPatient.id) {
+      setSelectedPatient(pendingDraftPatient);
+      setPatientSearchTerm(`${pendingDraftPatient.prenom} ${pendingDraftPatient.nom}`);
+      loadPatientOrdonnances(pendingDraftPatient.id);
+    }
+    // Seules les lignes de la sélection du brouillon (et celles ajoutées à la main) reviennent.
+    formDraftRef.current = d.form ? { ...d.form, medications: draftLinesForSelection(d.form, d.selectedMeds) } : null;
+    setSelectedMeds(d.selectedMeds);
+    setResult(null);
+    setFormResetKey(k => k + 1);
+    reopenFormAfterCheckRef.current = formHasContent(d.form);
+    setDraftRestored(true);
+    setActiveView('checker');
+  };
+
+  /** « Supprimer » : le brouillon enregistré est effacé, rien d'autre ne change. */
+  const deletePendingDraft = () => {
+    const d = pendingDraft;
+    if (d && doctorProfile?.id) clearDraft(doctorProfile.id, d.patientId);
+    pendingDraftRef.current = null;
+    setPendingDraft(null);
+  };
 
   // Formulaire ouvert au moment du F5 → rouvert seulement APRÈS une analyse relancée.
   useEffect(() => {
@@ -4484,6 +4581,20 @@ export function DoctorDashboard() {
       setShowPrescriptionForm(true);
     }
   }, [result, selectedPatient]);
+
+  /**
+   * Sprint 4d-quater — « Abandonner » (formulaire) : la saisie est supprimée ; le patient,
+   * la sélection du Vérificateur et l'analyse restent en place.
+   */
+  const abandonOrdonnanceForm = () => {
+    formDraftRef.current = null;
+    reopenFormAfterCheckRef.current = false;
+    setHorsBaseConfirmedKey(null);
+    setDraftRestored(false);
+    setShowPrescriptionForm(false);
+    setFormResetKey(k => k + 1);
+    scheduleDraftSave(); // le brouillon enregistré ne garde que la sélection
+  };
 
   /** Purge du brouillon courant + remise à zéro (enregistrement, annulation, « Repartir de zéro »). */
   const discardOrdonnanceDraft = () => {
@@ -4520,16 +4631,19 @@ export function DoctorDashboard() {
   };
 
   // ── Keyboard shortcuts (Escape only — Ctrl+K handled in TopBar) ──────────
+  // Sprint 4d-quater — Échap ne ferme que l'élément le plus haut. Il ne désélectionne le
+  // patient que dans la vue Patients (fermeture du panneau de détail), jamais dans le
+  // Vérificateur, et jamais quand une modale (formulaire, aperçu, dérogation…) est ouverte.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setSelectedPatient(null);
-        setShowAIChat(false);
-      }
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      if (showPrescriptionForm || showPrescriptionPreview || derogationRequest || showPatientModal) return;
+      if (showAIChat) { setShowAIChat(false); return; }
+      if (activeView === 'patients') setSelectedPatient(null);
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [showPrescriptionForm, showPrescriptionPreview, derogationRequest, showPatientModal, showAIChat, activeView]);
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -4583,6 +4697,43 @@ export function DoctorDashboard() {
         )}
 
         <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0">
+          {activeView === 'checker' && pendingDraft && pendingDraftPatient && draftOffer !== 'none' && (
+            <div
+              role="status"
+              className="mx-4 mt-4 lg:mx-6 lg:mt-6 flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.1] border-l-4 border-l-[#0A1628] dark:border-l-slate-300"
+            >
+              <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                <Clock className="w-4 h-4 mt-0.5 text-[#0A1628] dark:text-slate-300 flex-shrink-0" aria-hidden />
+                <p className="text-sm text-[#0A1628] dark:text-[#E2E8F0]">
+                  <span className="font-semibold">Brouillon du {draftSummary(pendingDraft)}</span>
+                  {!selectedPatient && <> — {pendingDraftPatient.prenom} {pendingDraftPatient.nom}</>}
+                  {draftOffer === 'conflict' && (
+                    <span className="block text-xs text-slate-600 dark:text-[#94A3B8] mt-0.5">
+                      Il ne correspond pas à la sélection actuelle et ne la remplacera pas. Videz la sélection pour le reprendre, ou supprimez-le.
+                    </span>
+                  )}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {draftOffer === 'resume' && (
+                  <button
+                    type="button"
+                    onClick={resumePendingDraft}
+                    className="px-4 py-2 rounded-xl bg-[#00A86B] hover:bg-[#006B47] text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2"
+                  >
+                    Reprendre
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={deletePendingDraft}
+                  className="px-3 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                >
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          )}
           {draftRestored && activeView === 'checker' && !result && (
             <div
               role="status"
@@ -4655,6 +4806,7 @@ export function DoctorDashboard() {
                 }}
                 onNavigateToChecker={navigateToChecker}
                 patientOrdonnances={patientOrdonnances}
+                patientOrdLoading={patientOrdLoading}
                 loadPatientOrdonnances={loadPatientOrdonnances}
                 showMedicationHistory={showMedicationHistory}
                 setShowMedicationHistory={setShowMedicationHistory}
@@ -4752,7 +4904,13 @@ export function DoctorDashboard() {
             )}
 
             {activeView === 'documents' && (
-              <DocumentsView key="documents" patients={patients} showToast={showToast} doctorProfile={doctorProfile} />
+              <DocumentsView
+                key="documents"
+                patients={patients}
+                showToast={showToast}
+                doctorProfile={doctorProfile}
+                org={clinicProfile ? { name: clinicProfile.name ?? '', adresse: clinicProfile.adresse ?? null, telephone: clinicProfile.telephone ?? null } : null}
+              />
             )}
 
             {activeView === 'settings' && (
@@ -4860,17 +5018,18 @@ export function DoctorDashboard() {
           key={`${selectedPatient.id}:${formResetKey}`}
           isOpen={showPrescriptionForm}
           onClose={() => setShowPrescriptionForm(false)}
-          onCancel={discardOrdonnanceDraft}
+          onCancel={abandonOrdonnanceForm}
           patient={selectedPatient}
           initialMedications={selectedMeds.map(m => ({
             id: m.id,
-            nom: (m as any).nom_commercial || m.nom || '',
+            nom: displayNom(m) || '',
+            dosageAPreciser: !!m.dosageManquant,
             // Sprint 3 — renouvellement : reprise de la posologie du traitement de fond
             posologie: fondTraitements.find(t => fondMedId(t) === m.id)?.posologie ?? null,
             formeHint: m.formeHint ?? null,
           }))}
           onVerifyUnchecked={handleVerifyFormAdditions}
-          selectedMeds={selectedMeds}
+          selectedMeds={verifMeds}
           analysisValid={analysisValid}
           horsBaseConfirmedKey={horsBaseConfirmedKey}
           onConfirmHorsBase={setHorsBaseConfirmedKey}
@@ -4906,8 +5065,8 @@ export function DoctorDashboard() {
           // Une fois enregistrée (garde-fous passés), l'analyse est réinitialisée :
           // le blocage ne s'applique plus à cette ordonnance figée.
           blockedReason={savedOrdreNumber === prescriptionOrdreNumber ? null : (verificationBlockMessage(
-            computeVerification(prescriptionData.medications ?? [], selectedMeds, analysisValid, horsBaseConfirmedKey),
-          ) ?? posologieBlockMessage(prescriptionData.medications ?? []))}
+            computeVerification(prescriptionData.medications ?? [], verifMeds, analysisValid, horsBaseConfirmedKey),
+          ) ?? dosageBlockMessage(prescriptionData.medications ?? []) ?? posologieBlockMessage(prescriptionData.medications ?? []))}
           ordreNumber={prescriptionOrdreNumber}
           logo_url={doctorProfile?.logo_url ?? null}
           doctor={{
@@ -4925,7 +5084,7 @@ export function DoctorDashboard() {
           }}
           patient={selectedPatient}
           motif={prescriptionData.motif}
-          medications={prescriptionData.medications ?? []}
+          medications={(prescriptionData.medications ?? []).map((m: any) => ({ ...m, nom: ligneLabel(m) }))}
           remarks={prescriptionData.remarks ?? ''}
           nextAppointment={prescriptionData.nextAppointment}
           interactionAlerts={interactionAlerts}

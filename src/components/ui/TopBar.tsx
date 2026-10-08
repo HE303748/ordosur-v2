@@ -12,6 +12,8 @@ const LABELS: Record<string, string> = {
   ordonnances: 'Ordonnances',
   stats:       'Statistiques',
   agenda:      'Agenda',
+  encyclopedie: 'Encyclopédie',
+  documents:   'Documents',
   settings:    'Paramètres',
   // Clinic admin views
   medecins:      'Gestion des médecins',

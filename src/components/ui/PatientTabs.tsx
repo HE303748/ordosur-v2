@@ -671,6 +671,8 @@ function PlaceholderTab({ icon: Icon, title, desc }: { icon: any; title: string;
 interface PatientTabsProps {
   patient: Patient;
   ordonnances: any[];
+  /** Sprint 4d-quater — liste en cours de chargement : compteurs « … » plutôt qu'un nombre faux. */
+  ordonnancesLoading?: boolean;
   onEdit: () => void;
   onNavigateToChecker: () => void;
   // Sprint Consultations — doctor_id (doctors.id PK, pas auth.uid) + org_id
@@ -682,7 +684,7 @@ interface PatientTabsProps {
   onPatientPatched?: (patientId: string, patch: PatientPatch) => void;
 }
 
-export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker, doctorId, orgId, onTraitementsChanged, onPatientPatched }: PatientTabsProps) {
+export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, onEdit, onNavigateToChecker, doctorId, orgId, onTraitementsChanged, onPatientPatched }: PatientTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('resume');
 
   return (
@@ -723,7 +725,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker,
               </div>
               <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
                 <span className="text-xs text-slate-400 dark:text-[#475569]">
-                  <span className="font-bold text-slate-700 dark:text-[#94A3B8]">{ordonnances.length}</span> ordonnances
+                  <span className="font-bold text-slate-700 dark:text-[#94A3B8]">{ordonnancesLoading ? '…' : ordonnances.length}</span> ordonnance{!ordonnancesLoading && ordonnances.length === 1 ? '' : 's'}
                 </span>
                 {(patient.allergies_medicaments?.length ?? 0) > 0 && (
                   <span className="text-xs text-red-500 font-semibold">
@@ -770,7 +772,7 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker,
               >
                 <Icon className="w-3.5 h-3.5" />
                 {tab.label}
-                {tab.id === 'ordonnances' && ordonnances.length > 0 && (
+                {tab.id === 'ordonnances' && !ordonnancesLoading && ordonnances.length > 0 && (
                   <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                     isActive
                       ? 'bg-[#E6F4EE] text-[#006B47]'
@@ -796,7 +798,9 @@ export function PatientTabs({ patient, ordonnances, onEdit, onNavigateToChecker,
             transition={{ duration: 0.15 }}
           >
             {activeTab === 'resume'        && <ResumeTab patient={patient} doctorId={doctorId ?? null} orgId={orgId ?? null} onTraitementsChanged={onTraitementsChanged} onPatientPatched={onPatientPatched} />}
-            {activeTab === 'ordonnances'   && <OrdonnancesTab ordonnances={ordonnances} />}
+            {activeTab === 'ordonnances'   && (ordonnancesLoading
+              ? <p className="text-sm text-slate-400 dark:text-[#475569] py-6 text-center">Chargement des ordonnances…</p>
+              : <OrdonnancesTab ordonnances={ordonnances} />)}
             {activeTab === 'consultations' && (
               <ConsultationsTab
                 patient={patient}

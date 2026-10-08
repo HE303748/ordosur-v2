@@ -9,6 +9,9 @@ export interface TraitementMedicament {
   nom_commercial?: string | null;
   dci?: string | null;
   dci_canonique?: string | null;
+  // Sprint 4d-quater — pour le libellé de la ligne d'ordonnance (marque + dosage + forme)
+  forme?: string | null;
+  dosage?: string | null;
 }
 
 export interface TraitementChronique {
@@ -30,7 +33,7 @@ export interface TraitementChronique {
   medicament?: TraitementMedicament | null;
 }
 
-const SELECT_COLS = '*, medicament:medicaments(id, nom, nom_commercial, dci, dci_canonique)';
+const SELECT_COLS = '*, medicament:medicaments(id, nom, nom_commercial, dci, dci_canonique, forme, dosage)';
 
 /** Traitements d'un patient (actifs d'abord). Borné par patient → jamais volumineux. */
 export async function loadTraitements(patientId: string, onlyActive = false): Promise<TraitementChronique[]> {

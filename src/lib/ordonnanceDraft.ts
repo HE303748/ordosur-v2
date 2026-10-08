@@ -28,6 +28,9 @@ export interface DraftMedicationForm {
   horsBase?: boolean;
   // Sprint 4d-bis — forme galénique connue (déduction de l'unité de prise)
   formeHint?: string | null;
+  // Sprint 4d-quater — dosage absent de la fiche : à préciser par le médecin
+  dosageAPreciser?: boolean;
+  dosagePrecise?: string;
 }
 
 export interface DraftForm {
@@ -44,6 +47,10 @@ export interface DraftSelectedMed {
   dci?: string | null;
   dci_canonique?: string | null;
   manual?: boolean;
+  // Sprint 4d-bis / 4d-quater — libellé affiché (marque + dosage + forme), forme, dosage manquant
+  label?: string | null;
+  formeHint?: string | null;
+  dosageManquant?: boolean;
 }
 
 export interface OrdonnanceDraft {
@@ -61,6 +68,75 @@ const activeKey = (doctorId: string) => `${PREFIX}ordonnance:${doctorId}:active`
 
 function storage(): Storage | null {
   try { return window.sessionStorage; } catch { return null; }
+}
+
+// ─── Sprint 4d-quater — reprise du brouillon : jamais automatique ─────────────
+//
+// Un brouillon enregistré n'est JAMAIS rouvert ni appliqué tout seul (ni au chargement,
+// ni à la sélection du patient) : un bandeau propose « Reprendre / Supprimer ».
+// Il est lié au patient ET à la sélection de médicaments du Vérificateur : il n'écrase
+// jamais une sélection en cours différente de la sienne.
+
+/** Signature de la sélection du Vérificateur (ordre indifférent). */
+export function draftMedsKey(meds: Array<{ id: string }>): string {
+  return meds.map(m => m.id).sort().join(',');
+}
+
+/** Le formulaire contient une saisie du médecin (au-delà des lignes vides). */
+export function formHasContent(f: DraftForm | null | undefined): boolean {
+  if (!f) return false;
+  return !!f.motif.trim() || !!f.remarks.trim() || !!f.appointmentDate || !!f.appointmentTime
+    || f.medications.some(m => !!m.nom.trim() || !!m.posologie.trim() || !!m.duree.trim());
+}
+
+/** Brouillon qui mérite d'être proposé (au moins un médicament ou une saisie). */
+export function isDraftWorthOffering(d: OrdonnanceDraft | null | undefined): d is OrdonnanceDraft {
+  return !!d && (d.selectedMeds.length > 0 || formHasContent(d.form));
+}
+
+export type DraftOffer =
+  | 'none'      // rien à proposer (pas de brouillon, autre patient, ou identique à l'état en cours)
+  | 'resume'    // « Reprendre / Supprimer »
+  | 'conflict'; // la sélection en cours diffère : reprise impossible sans la vider (jamais d'écrasement)
+
+/**
+ * Que proposer pour un brouillon enregistré, face à l'état actuel du Vérificateur ?
+ *   • autre patient, brouillon vide → rien ;
+ *   • sélection en cours vide → reprise possible ;
+ *   • sélection identique à celle du brouillon → reprise possible (seul le formulaire est repris) ;
+ *   • sélection différente et non vide → conflit : le brouillon n'écrase jamais la sélection.
+ * `liveFormHasContent` : une saisie est déjà en cours dans le formulaire → conflit également.
+ */
+export function evaluateDraftOffer(
+  draft: OrdonnanceDraft | null | undefined,
+  patientId: string | null,
+  currentMeds: Array<{ id: string }>,
+  liveFormHasContent = false,
+): DraftOffer {
+  if (!isDraftWorthOffering(draft)) return 'none';
+  if (patientId !== null && draft.patientId !== patientId) return 'none';
+  if (liveFormHasContent) return 'conflict';
+  if (currentMeds.length === 0) return 'resume';
+  return draftMedsKey(currentMeds) === draftMedsKey(draft.selectedMeds) ? 'resume' : 'conflict';
+}
+
+/** « 08/10 14:32 (2 médicaments) » */
+export function draftSummary(d: OrdonnanceDraft): string {
+  const dt = new Date(d.savedAt);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const n = Math.max(d.selectedMeds.length, d.form?.medications.filter(m => m.nom.trim()).length ?? 0);
+  return `${pad(dt.getDate())}/${pad(dt.getMonth() + 1)} ${pad(dt.getHours())}:${pad(dt.getMinutes())} (${n} médicament${n > 1 ? 's' : ''})`;
+}
+
+/**
+ * Lignes du formulaire à reprendre pour la sélection ACTUELLE : seules les lignes dont le
+ * médicament est encore sélectionné (id `chk-<id>`) et les lignes ajoutées dans le formulaire
+ * sont conservées. Une ligne d'un médicament retiré de la sélection ne revient jamais.
+ */
+export function draftLinesForSelection(form: DraftForm | null | undefined, currentMeds: Array<{ id: string }>): DraftMedicationForm[] {
+  if (!form) return [];
+  const ids = new Set(currentMeds.map(m => `chk-${m.id}`));
+  return form.medications.filter(m => m.addedInForm || ids.has(m.id));
 }
 
 export function isFormEmpty(f: DraftForm | null): boolean {

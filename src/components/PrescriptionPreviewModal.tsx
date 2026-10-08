@@ -4,7 +4,7 @@ import { Modal } from './Modal';
 import { Button } from './Button';
 import { generateOrdonnancePdf, PdfInteractionAlert } from '../lib/pdfService';
 import { formatAge } from '../lib/ageUtils';
-import { formatNomPropre } from '../lib/formatName';
+import { formatNomPropre, formatDocteur, formatCabinet } from '../lib/formatName';
 import { DocumentSignatureBlock } from './DocumentSignatureBlock';
 
 interface MedicationForm {
@@ -157,7 +157,7 @@ export function PrescriptionPreviewModal({
               <div>
                 {logo_url
                   ? <img src={logo_url} alt="Logo cabinet" className="max-h-14 max-w-[160px] object-contain mb-1" />
-                  : <h2 className="text-lg font-bold text-blue-700">{org.name}</h2>
+                  : <h2 className="text-lg font-bold text-blue-700">{formatCabinet(org.name)}</h2>
                 }
                 {org.adresse && <p className="text-sm text-gray-600">{org.adresse}</p>}
                 {org.telephone && <p className="text-sm text-gray-600">Tél : {org.telephone}</p>}
@@ -171,7 +171,7 @@ export function PrescriptionPreviewModal({
 
           {/* Médecin */}
           <div className="mb-4">
-            <p className="text-xl font-bold text-blue-700">Dr. {formatNomPropre(doctor.prenom)} {formatNomPropre(doctor.nom)}</p>
+            <p className="text-xl font-bold text-blue-700">{formatDocteur(doctor.prenom, doctor.nom)}</p>
             {doctor.specialite && <p className="text-sm text-gray-600">{doctor.specialite}</p>}
             {doctor.rpps && <p className="text-sm text-gray-600">N° INPE : {doctor.rpps}</p>}
             {doctor.ordre_number && <p className="text-sm text-gray-600">N° Ordre : {doctor.ordre_number}</p>}

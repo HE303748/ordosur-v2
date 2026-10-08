@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { supabase, type Medicament } from '../../lib/supabase';
 import { searchMedicamentsMA } from '../../lib/medSearch';
+import { medLabel } from '../../lib/medLabel';
 import {
   loadTraitements, resolveDoctorNames, fondDisplayName, formatDateFrShort, todayIsoDate,
   type TraitementChronique,
@@ -183,7 +184,7 @@ export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: P
 
   const handleAdd = async () => {
     if (!doctorId || !orgId) { setFormError('Profil médecin non chargé — rechargez la page.'); return; }
-    const nom = picked ? (picked.nom_commercial || picked.nom) : (manualName ?? '').trim();
+    const nom = picked ? (medLabel(picked) || picked.nom) : (manualName ?? '').trim();
     if (!nom) { setFormError('Sélectionnez un médicament ou saisissez son nom.'); return; }
     if (picked && active.some(a => a.medicament_id === picked.id)) {
       setFormError(`${nom} figure déjà dans le traitement de fond actif.`);
@@ -401,7 +402,7 @@ export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: P
                   <>
                     <p className="text-sm font-semibold text-[#0A1628] dark:text-[#E2E8F0]">
                       {picked.pays === 'MA' && <span className="mr-1" aria-label="Maroc">🇲🇦</span>}
-                      {picked.nom_commercial || picked.nom}
+                      {medLabel(picked) || picked.nom}
                     </p>
                     <p className="text-xs text-slate-600 dark:text-[#94A3B8]">
                       {[picked.dci, picked.dosage, picked.forme].filter(Boolean).join(' · ')}
@@ -451,7 +452,7 @@ export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: P
                     >
                       <p className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">
                         {m.pays === 'MA' && <span className="mr-1" aria-label="Maroc">🇲🇦</span>}
-                        {m.nom_commercial || m.nom}
+                        {medLabel(m) || m.nom}
                       </p>
                       <p className="text-xs text-slate-500 dark:text-[#94A3B8]">
                         {[m.dci, m.dosage, m.forme].filter(Boolean).join(' · ')}

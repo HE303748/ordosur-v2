@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Plus, Trash2, Calendar, History, AlertTriangle, RefreshCw } from 'lucide-react';
-import type { DraftForm } from '../lib/ordonnanceDraft';
+import { formHasContent, type DraftForm } from '../lib/ordonnanceDraft';
+import { medLabel, dosageManquant, linesMissingDosage, hasDosage } from '../lib/medLabel';
 import { type Medicament } from '../lib/supabase';
 import { searchMedicamentsMA } from '../lib/medSearch';
 import {
@@ -29,6 +30,10 @@ export interface MedicationForm {
   horsBase?: boolean;
   // Sprint 4d-bis — forme galénique connue (base) : sert à déduire l'unité de prise.
   formeHint?: string | null;
+  // Sprint 4d-quater — le dosage n'existe nulle part dans la fiche : « Dosage à préciser »
+  // (obligatoire avant l'aperçu). Saisi à part pour ne pas délier la ligne de l'analyse.
+  dosageAPreciser?: boolean;
+  dosagePrecise?: string;
 }
 
 export type UncheckedLine = VerifUncheckedLine<MedicationForm>;
@@ -43,7 +48,7 @@ interface PrescriptionFormModalProps {
     nom: string;
   };
   // Sprint 3 — posologie : reprise du traitement de fond lors d'un « Renouveler ».
-  initialMedications: Array<{ id: string; nom: string; posologie?: string | null; formeHint?: string | null }>;
+  initialMedications: Array<{ id: string; nom: string; posologie?: string | null; formeHint?: string | null; dosageAPreciser?: boolean }>;
   /** Sprint 4d-bis — médecin connecté (doctors.id) : suggestion « Dernière posologie utilisée ». */
   doctorId?: string | null;
   /** État du formulaire à reprendre à l'ouverture (brouillon ou saisie précédente). */
@@ -128,6 +133,16 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
         onChange={(e) => { setDirty(true); setOpen(true); onChange(e.target.value); }}
         onFocus={() => setOpen(true)}
         onBlur={() => window.setTimeout(() => setOpen(false), 200)}
+        onKeyDown={(e) => {
+          // Sprint 4d-quater — Échap ferme UNIQUEMENT la liste de suggestions (l'élément le
+          // plus haut) : l'événement ne remonte ni au formulaire ni au tableau de bord.
+          if (e.key === 'Escape' && show) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
+            setOpen(false);
+          }
+        }}
         placeholder="Rechercher un médicament (ex : Brufen, Glucophage…)"
         autoComplete="off"
       />
@@ -143,9 +158,9 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
             >
               <p className="text-sm font-semibold text-slate-900">
                 {m.pays === 'MA' && <span className="mr-1" aria-label="Maroc">🇲🇦</span>}
-                {m.nom_commercial || m.nom}
+                {medLabel(m)}
               </p>
-              <p className="text-xs text-slate-500">{[m.dci, m.dosage, m.forme].filter(Boolean).join(' · ')}</p>
+              <p className="text-xs text-slate-500">{[m.dci, m.laboratoire].filter(Boolean).join(' · ')}</p>
             </button>
           ))}
           {!loading && (
@@ -214,6 +229,8 @@ export function PrescriptionFormModal({
           duree: '',
           quantite: '',
           formeHint: med.formeHint ?? null,
+          dosageAPreciser: !!med.dosageAPreciser,
+          dosagePrecise: '',
         };
       });
       const addedInForm = (initialForm?.medications ?? []).filter(m => m.addedInForm);
@@ -273,7 +290,10 @@ export function PrescriptionFormModal({
   const handlePickMedicament = (id: string, m: Medicament) => {
     setMedications(prev => prev.map(med => med.id === id ? {
       ...med,
-      nom: m.nom_commercial || m.nom,
+      // Sprint 4d-quater — libellé complet : marque + dosage + forme (jamais « BRUFEN » seul).
+      nom: medLabel(m),
+      dosageAPreciser: dosageManquant(m),
+      dosagePrecise: '',
       medicament: { id: m.id, nom: m.nom, nom_commercial: m.nom_commercial ?? null, dci: m.dci ?? null, dci_canonique: m.dci_canonique ?? null },
       horsBase: false,
       formeHint: `${m.forme ?? ''} ${m.nom ?? ''}`.trim() || null,
@@ -292,9 +312,18 @@ export function PrescriptionFormModal({
   const nbHorsBase = verification.horsBase.length;
   // Sprint 4d-bis — posologie obligatoire sur chaque ligne (jamais de valeur par défaut).
   const missingPosologieIds = new Set(linesMissingPosologie(medications).map(l => l.id));
+  // Sprint 4d-quater — dosage absent de la fiche : à préciser avant l'aperçu.
+  const missingDosageIds = new Set(linesMissingDosage(medications).map(l => l.id));
   const canPreview =
     verification.status === 'verified' && medications.length > 0 && !medications.some(m => !m.nom.trim())
-    && missingPosologieIds.size === 0;
+    && missingPosologieIds.size === 0 && missingDosageIds.size === 0;
+
+  // Sprint 4d-quater — fermer un formulaire non vide (croix, clic extérieur, Échap, Annuler)
+  // demande confirmation ; il n'est jamais fermé sans que le médecin l'ait décidé.
+  const [confirmClose, setConfirmClose] = useState(false);
+  const hasContent = formHasContent({ motif, medications, remarks, appointmentDate, appointmentTime });
+  const requestClose = () => { if (hasContent) setConfirmClose(true); else onClose(); };
+  useEffect(() => { if (!isOpen) setConfirmClose(false); }, [isOpen]);
 
   // Sprint 4d-bis — « Dernière posologie utilisée » par ce médecin pour ces médicaments.
   const [pastLines, setPastLines] = useState<PastLine[]>([]);
@@ -341,8 +370,45 @@ export function PrescriptionFormModal({
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Créer une Ordonnance" size="xl">
-      <div className="space-y-6">
+    <Modal isOpen={isOpen} onClose={requestClose} title="Créer une Ordonnance" size="xl">
+      <div
+        className="space-y-6"
+        onKeyDown={(e) => {
+          // Échap dans le formulaire : demande de confirmation, jamais de fermeture directe.
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            e.nativeEvent.stopImmediatePropagation();
+            if (confirmClose) setConfirmClose(false); else requestClose();
+          }
+        }}
+      >
+        {confirmClose && (
+          <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:p-4" role="alertdialog" aria-modal="true" aria-labelledby="abandon-title">
+            <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmClose(false)} />
+            <div className="relative w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl p-5">
+              <h3 id="abandon-title" className="text-base font-bold text-[#0A1628]">Abandonner cette ordonnance ?</h3>
+              <p className="text-sm text-slate-600 mt-1.5">
+                La saisie en cours ({medications.filter(m => m.nom.trim()).length} médicament{medications.filter(m => m.nom.trim()).length > 1 ? 's' : ''}) sera supprimée.
+                Le patient et l’analyse restent en place.
+              </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <button type="button" autoFocus onClick={() => setConfirmClose(false)}
+                  className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#00A86B] hover:bg-[#006B47] transition-colors">
+                  Continuer la saisie
+                </button>
+                <button type="button" onClick={() => { setConfirmClose(false); onClose(); }}
+                  className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-[#0A1628] border border-slate-200 hover:bg-slate-50 transition-colors">
+                  Fermer et garder le brouillon
+                </button>
+                <button type="button" onClick={() => { setConfirmClose(false); (onCancel ?? onClose)(); }}
+                  className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-[#DC2626] border border-[#DC2626]/40 hover:bg-[#DC2626]/[0.06] transition-colors">
+                  Abandonner
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {contraindicationAlerts.length > 0 && (
           <div role="alert" className="px-4 py-3 rounded-xl bg-[#DC2626]/[0.06] border border-[#DC2626]/40 border-l-4 border-l-[#DC2626]">
             <p className="flex items-center gap-2 text-sm font-bold text-[#0A1628]">
@@ -482,6 +548,25 @@ export function PrescriptionFormModal({
                   onPick={(m) => handlePickMedicament(med.id, m)}
                   onUseAsIs={() => handleUseAsIs(med.id)}
                 />
+                {med.dosageAPreciser && !hasDosage(med.nom) && (
+                  <div className="mt-2">
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 mb-1">
+                      <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden />
+                      Dosage à préciser <span className="text-[#DC2626]" aria-hidden>*</span>
+                      <span className="font-normal text-slate-500">— absent de la fiche du médicament</span>
+                    </label>
+                    <Input
+                      value={med.dosagePrecise ?? ''}
+                      onChange={(e) => setMedications(prev => prev.map(x => x.id === med.id ? { ...x, dosagePrecise: e.target.value } : x))}
+                      placeholder="Ex : 300 mg"
+                      aria-required
+                      aria-invalid={missingDosageIds.has(med.id)}
+                    />
+                    {missingDosageIds.has(med.id) && (
+                      <p role="alert" className="text-xs font-medium text-[#DC2626] mt-1">Dosage obligatoire avant l’aperçu.</p>
+                    )}
+                  </div>
+                )}
                 {uncheckedIds.has(med.id) && med.medicament && (
                   <p className="text-xs text-slate-500 mt-1">
                     {[med.medicament.dci, 'relié à la base — à vérifier'].filter(Boolean).join(' · ')}
@@ -626,6 +711,11 @@ export function PrescriptionFormModal({
         )}
 
         <div className="flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-3 pt-4 border-t border-slate-200">
+          {verification.status === 'verified' && missingPosologieIds.size === 0 && missingDosageIds.size > 0 && (
+            <p role="alert" className="text-xs font-medium text-[#DC2626] sm:mr-auto sm:self-center">
+              Aperçu indisponible : dosage à préciser sur {missingDosageIds.size} ligne{missingDosageIds.size > 1 ? 's' : ''}.
+            </p>
+          )}
           {verification.status === 'verified' && missingPosologieIds.size > 0 && (
             <p role="alert" className="text-xs font-medium text-[#DC2626] sm:mr-auto sm:self-center">
               Aperçu indisponible : posologie manquante sur {missingPosologieIds.size} ligne{missingPosologieIds.size > 1 ? 's' : ''}.
@@ -638,7 +728,7 @@ export function PrescriptionFormModal({
                 : 'Aperçu indisponible : confirmation requise.'}
             </p>
           )}
-          <Button onClick={onCancel ?? onClose} variant="secondary">
+          <Button onClick={requestClose} variant="secondary">
             Annuler
           </Button>
           <Button

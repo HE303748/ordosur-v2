@@ -46,6 +46,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* Liens directs : /doctor/patients, /doctor/checker, /doctor/ordonnances… (vue lue par useViewState) */}
+          <Route
+            path="/doctor/:vue"
+            element={
+              <ProtectedRoute requiredRole="doctor">
+                <DoctorDashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={

@@ -6,7 +6,7 @@ import { dedupeMedicaments, duplicateIds } from './medDedupe';
 // SQL) + dédoublonnage À L'AFFICHAGE (rien n'est modifié en base).
 
 /** Marge demandée en plus à la RPC pour compenser les doublons retirés. */
-const DEDUP_MARGIN = 10;
+const DEDUP_MARGIN = 30;
 
 export async function searchMedicamentsMA(term: string, limit: number): Promise<Medicament[]> {
   const { data, error } = await supabase.rpc('search_medicaments', {

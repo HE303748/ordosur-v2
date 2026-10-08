@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import { formatAge } from './ageUtils';
-import { formatNomPropre } from './formatName';
+import { formatNomPropre, formatDocteur, formatCabinet } from './formatName';
 
 interface MedicationLine {
   nom: string;
@@ -145,91 +145,128 @@ const MARGIN_L = 18;
 const MARGIN_R = 18;
 const CONTENT_W = PAGE_W - MARGIN_L - MARGIN_R;
 
-export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
-  // compress: true → flux (texte vectoriel et images) compressés ; indispensable pour le poids.
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+/* ════════════════════════════════════════════════════════════════════════════
+   EN-TÊTE PARTAGÉ — ordonnance et certificats (Sprint 4d-quater)
+   Même habillage (bandes vertes, filigrane) et même bloc d'identité : médecin,
+   spécialité, N° d'Ordre, INPE, cabinet, adresse, téléphone.
+   ════════════════════════════════════════════════════════════════════════════ */
 
-  // Load cabinet logo (non-fatal if missing) + optional watermark
-  const [logoAsset, watermarkAsset] = await Promise.all([
-    data.logo_url ? loadPdfImage(data.logo_url, PDF_LOGO_MAX_PX) : Promise.resolve(null),
+export interface PdfDocumentHeader {
+  doctor: { prenom: string; nom: string; specialite?: string | null; rpps?: string | null; ordre_number?: string | null };
+  org: { name: string; adresse?: string | null; telephone?: string | null };
+  /** Titre du bloc droit : « ORDONNANCE », « CERTIFICAT MÉDICAL »… */
+  title: string;
+  dateIso: string;
+  /** Numéro du document, imprimé discrètement sous la date. */
+  numero?: string | null;
+}
+
+export interface PdfChromeAssets { logo: PdfImage | null; watermark: PdfImage | null }
+
+/** Logo du cabinet (facultatif) + filigrane, réduits à la résolution d'impression. */
+export async function loadPdfChromeAssets(logoUrl?: string | null): Promise<PdfChromeAssets> {
+  const [logo, watermark] = await Promise.all([
+    logoUrl ? loadPdfImage(logoUrl, PDF_LOGO_MAX_PX) : Promise.resolve(null),
     loadPdfImage('/pdf-assets/watermark.png', PDF_WATERMARK_MAX_PX),
   ]);
+  return { logo, watermark };
+}
 
-  // Helper: draw the per-page chrome (green bands + faint watermark)
-  const decoratePage = () => {
-    // Top green band — 4mm
-    doc.setFillColor(C.GREEN);
-    doc.rect(0, 0, PAGE_W, 4, 'F');
-    // Bottom green band — 2mm
-    doc.rect(0, PAGE_H - 2, PAGE_W, 2, 'F');
+/** Habillage de page : bandes vertes haut / bas + filigrane centré à 6 % d'opacité. */
+export function drawPageChrome(doc: jsPDF, watermark: PdfImage | null): void {
+  // Top green band — 4mm
+  doc.setFillColor(C.GREEN);
+  doc.rect(0, 0, PAGE_W, 4, 'F');
+  // Bottom green band — 2mm
+  doc.rect(0, PAGE_H - 2, PAGE_W, 2, 'F');
 
-    // Watermark centered at 6% opacity
-    if (watermarkAsset) {
-      try {
-        const wSize = 110;
-        const gs = (doc as unknown as { GState: (opts: { opacity: number }) => unknown }).GState({ opacity: 0.06 });
-        // @ts-expect-error setGState exists at runtime in jsPDF v4
-        doc.setGState(gs);
-        doc.addImage(watermarkAsset.data, watermarkAsset.format, (PAGE_W - wSize) / 2, (PAGE_H - wSize) / 2, wSize, wSize);
-        const gsReset = (doc as unknown as { GState: (opts: { opacity: number }) => unknown }).GState({ opacity: 1 });
-        // @ts-expect-error setGState exists at runtime in jsPDF v4
-        doc.setGState(gsReset);
-      } catch {
-        /* opacity API unsupported — skip watermark silently */
-      }
+  // Watermark centered at 6% opacity
+  if (watermark) {
+    try {
+      const wSize = 110;
+      const gs = (doc as unknown as { GState: (opts: { opacity: number }) => unknown }).GState({ opacity: 0.06 });
+      // @ts-expect-error setGState exists at runtime in jsPDF v4
+      doc.setGState(gs);
+      doc.addImage(watermark.data, watermark.format, (PAGE_W - wSize) / 2, (PAGE_H - wSize) / 2, wSize, wSize);
+      const gsReset = (doc as unknown as { GState: (opts: { opacity: number }) => unknown }).GState({ opacity: 1 });
+      // @ts-expect-error setGState exists at runtime in jsPDF v4
+      doc.setGState(gsReset);
+    } catch {
+      /* opacity API unsupported — skip watermark silently */
     }
-  };
+  }
+}
 
-  decoratePage();
-  let y = 16;
-
-  // ── En-tête : identité médicale (gauche) + ORDONNANCE / date (droite) ───────
-  const headerTop = y;
+/**
+ * En-tête : identité médicale (gauche) + titre / date / numéro (droite).
+ * Renvoie le y (mm) où tracer le séparateur qui suit.
+ */
+export function drawDocumentHeader(doc: jsPDF, h: PdfDocumentHeader, logo: PdfImage | null): number {
+  const headerTop = 16;
   let lhY = headerTop;
 
-  if (logoAsset) {
-    doc.addImage(logoAsset.data, logoAsset.format, MARGIN_L, lhY, 0, 12);
+  if (logo) {
+    doc.addImage(logo.data, logo.format, MARGIN_L, lhY, 0, 12);
     lhY += 14;
   }
 
-  // Identité du médecin prescripteur
+  // Identité du médecin prescripteur — « Dr Prénom Nom »
   doc.setFontSize(11);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(C.INK_NAVY);
   lhY += 5;
-  doc.text(`Dr. ${formatNomPropre(data.doctor.prenom)} ${formatNomPropre(data.doctor.nom)}`, MARGIN_L, lhY);
+  doc.text(formatDocteur(h.doctor.prenom, h.doctor.nom), MARGIN_L, lhY);
 
   doc.setFontSize(8.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_MUTED);
-  if (data.doctor.specialite)   { lhY += 4.5; doc.text(data.doctor.specialite, MARGIN_L, lhY); }
-  if (data.doctor.ordre_number) { lhY += 4;   doc.text(`N° Ordre : ${data.doctor.ordre_number}`, MARGIN_L, lhY); }
-  if (data.doctor.rpps)         { lhY += 4;   doc.text(`INPE : ${data.doctor.rpps}`, MARGIN_L, lhY); }
+  if (h.doctor.specialite)   { lhY += 4.5; doc.text(h.doctor.specialite, MARGIN_L, lhY); }
+  if (h.doctor.ordre_number) { lhY += 4;   doc.text(`N° Ordre : ${h.doctor.ordre_number}`, MARGIN_L, lhY); }
+  if (h.doctor.rpps)         { lhY += 4;   doc.text(`INPE : ${h.doctor.rpps}`, MARGIN_L, lhY); }
 
   // Coordonnées du cabinet (taille réduite, estompées)
   lhY += 2.5;
   doc.setFontSize(7.5);
   doc.setTextColor(C.INK_FAINT);
-  lhY += 3.5; doc.text(data.org.name, MARGIN_L, lhY);
-  if (data.org.adresse)   { lhY += 3.5; doc.text(data.org.adresse, MARGIN_L, lhY); }
-  if (data.org.telephone) { lhY += 3.5; doc.text(`Tél : ${data.org.telephone}`, MARGIN_L, lhY); }
+  if (h.org.name)      { lhY += 3.5; doc.text(formatCabinet(h.org.name), MARGIN_L, lhY); }
+  if (h.org.adresse)   { lhY += 3.5; doc.text(h.org.adresse, MARGIN_L, lhY); }
+  if (h.org.telephone) { lhY += 3.5; doc.text(`Tél : ${h.org.telephone}`, MARGIN_L, lhY); }
   lhY += 2;
 
-  // Bloc droit — titre ORDONNANCE + date + N° d'ordonnance (discret)
+  // Bloc droit — titre + date + numéro (discret)
   doc.setFontSize(18);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(C.INK_NAVY);
-  doc.text('ORDONNANCE', PAGE_W - MARGIN_R, headerTop + 6, { align: 'right' });
+  doc.text(h.title, PAGE_W - MARGIN_R, headerTop + 6, { align: 'right' });
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
-  doc.text(formatDate(data.date), PAGE_W - MARGIN_R, headerTop + 12, { align: 'right' });
-  if (data.ordreNumber) {
+  doc.text(formatDate(h.dateIso), PAGE_W - MARGIN_R, headerTop + 12, { align: 'right' });
+  if (h.numero) {
     doc.setFontSize(7);
-    doc.text(`N° ${data.ordreNumber}`, PAGE_W - MARGIN_R, headerTop + 16, { align: 'right' });
+    doc.text(`N° ${h.numero}`, PAGE_W - MARGIN_R, headerTop + 16, { align: 'right' });
   }
 
-  y = Math.max(lhY, headerTop + 19);
+  return Math.max(lhY, headerTop + 19);
+}
+
+/** Géométrie commune (mm) pour les documents qui partagent l'en-tête. */
+export const PDF_LAYOUT = { PAGE_W, PAGE_H, MARGIN_L, MARGIN_R, CONTENT_W } as const;
+export const PDF_COLORS = C;
+
+export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
+  // compress: true → flux (texte vectoriel et images) compressés ; indispensable pour le poids.
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+
+  // Load cabinet logo (non-fatal if missing) + optional watermark
+  const { logo: logoAsset, watermark: watermarkAsset } = await loadPdfChromeAssets(data.logo_url);
+  const decoratePage = () => drawPageChrome(doc, watermarkAsset);
+
+  decoratePage();
+  // ── En-tête partagé avec les certificats ───────────────────────────────────
+  let y = drawDocumentHeader(doc, {
+    doctor: data.doctor, org: data.org, title: 'ORDONNANCE', dateIso: data.date, numero: data.ordreNumber,
+  }, logoAsset);
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
   doc.setDrawColor(C.DIVIDER);
@@ -331,7 +368,7 @@ export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<vo
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
   doc.text(
-    [data.org.name, formatDate(data.date), data.ordreNumber ? `N° ${data.ordreNumber}` : ''].filter(Boolean).join('  ·  '),
+    [formatCabinet(data.org.name), formatDate(data.date), data.ordreNumber ? `N° ${data.ordreNumber}` : ''].filter(Boolean).join('  ·  '),
     PAGE_W / 2, PAGE_H - 6,
     { align: 'center' }
   );
