@@ -52,6 +52,7 @@ import {
 } from '../lib/duplicateEngine';
 import {
   derogationAlerts, ordonnanceSignature, isConfirmationValid, buildDerogationEntries, alertLabel,
+  alertVerdictLevel, derogationSummary,
   type DerogationConfirmation,
 } from '../lib/derogation';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
@@ -80,7 +81,12 @@ import {
   evaluateAntecedents, mergeWithExisting, classifyAntecedent,
   type RegleAntecedent, type RegleClasse, type RegleSeverite,
 } from '../lib/antecedentEngine';
-import { pregnancyContext, classifyPregnancyAlert, isMajorTeratogen, pregnancySummary } from '../lib/pregnancyStatus';
+import { pregnancyContext, classifyPregnancyAlert, isMajorTeratogen, pregnancySummary, isContraceptionRequirement } from '../lib/pregnancyStatus';
+// Sprint 4f — garde-fous (exclusion du fond, identité patient, journalisation)
+import {
+  excludedFond, fondExclusionLabel, verdictWithFondExclusion, patientFieldLabel, patientMismatchMessage,
+  buildInteractionLogRows, applyMergedLines, type MergedChannel,
+} from '../lib/safetyGuards';
 import { PregnancyStatusEditor } from '../components/PregnancyStatusEditor';
 import { AgendaView } from '../components/ui/AgendaView';
 import { EncyclopedieView } from '../components/ui/EncyclopedieView';
@@ -169,6 +175,10 @@ interface InteractionAlert {
   ruleSource?: string;
   // Sprint 4bc — antécédents absorbés par cette CI existante (« Également : antécédent de … »).
   also?: string[];
+  // Sprint 4f — canaux fusionnés dans cette carte : journalisés chacun avec sa source.
+  alsoChannels?: MergedChannel[];
+  // Sprint 4f — tératogène majeur : exigence de contraception, alerte ferme + dérogation.
+  preventionGrossesse?: boolean;
 }
 
 // Sprint 4bc — sévérité d'une règle d'antécédent → sévérité d'alerte.
@@ -977,6 +987,10 @@ interface CheckerViewProps {
   fondError: boolean;
   fondExcluded: Set<string>;
   toggleFond: (id: string) => void;
+  /** Sprint 4f — « Réinclure » : toutes les exclusions sont levées. */
+  reincludeFond: () => void;
+  /** Sprint 4f — sortie du champ patient : le texte revient au patient sélectionné. */
+  onPatientFieldBlur: () => void;
   renewFond: (t: TraitementChronique) => void;
   reloadFond: () => void;
   analysisPending: boolean;
@@ -1007,6 +1021,7 @@ function CheckerView({
   loadPatientOrdonnances, patientOrdonnances,
   onAddPatient, setShowPrescriptionForm,
   fondTraitements, fondLoading, fondError, fondExcluded, toggleFond, renewFond, reloadFond,
+  reincludeFond, onPatientFieldBlur,
   analysisPending,
   antecedents, antecedentsLoading, antecedentsError, antecedentRulesReady,
   allergyStatus, allergyRulesReady,
@@ -1059,7 +1074,7 @@ function CheckerView({
                     value={patientSearchTerm}
                     onChange={e => { setPatientSearchTerm(e.target.value); setShowPatientDropdown(true); }}
                     onFocus={() => setShowPatientDropdown(true)}
-                    onBlur={() => setTimeout(() => setShowPatientDropdown(false), 300)}
+                    onBlur={onPatientFieldBlur}
                     placeholder="Rechercher un patient..."
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 focus:border-[#00A86B] dark:focus:border-[#00A86B]/40 transition-all"
                   />
@@ -1412,6 +1427,24 @@ function CheckerView({
                 </div>
               </div>
             )}
+
+            {/* Sprint 4f — exclusion active : bandeau ambre persistant au-dessus du verdict */}
+            {(() => {
+              const exclus = excludedFond(fondTraitements, fondExcluded).filter(t => !selectedMedIds.has(fondMedId(t)));
+              if (!selectedPatient || exclus.length === 0) return null;
+              return (
+                <div role="alert" className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 px-4 py-3 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30">
+                  <p className="flex items-start gap-2 flex-1 min-w-0 text-sm text-amber-900 dark:text-amber-200">
+                    <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-amber-600" aria-hidden />
+                    <span className="break-words font-semibold">{fondExclusionLabel(exclus.map(fondDisplayName))}</span>
+                  </p>
+                  <button type="button" onClick={reincludeFond}
+                    className="self-start sm:self-auto px-3 py-2 rounded-lg bg-white dark:bg-transparent border border-amber-300 dark:border-amber-500/40 text-sm font-semibold text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 transition-colors whitespace-nowrap">
+                    Réinclure
+                  </button>
+                </div>
+              );
+            })()}
 
             {/* 1. Bandeau verdict */}
             {result && (
@@ -2878,6 +2911,23 @@ export function DoctorDashboard() {
   const fondSeqRef = useRef(0);
   const fondSigRef = useRef('');
   const selectedPatientIdRef = useRef<string | null>(null);
+  // Sprint 4f — une seule source de vérité : le champ de recherche patient affiche TOUJOURS le
+  // patient réellement sélectionné (profil → « Prescrire », reprise de brouillon, suppression…).
+  const selectedPatientRef = useRef<Patient | null>(null);
+  selectedPatientRef.current = selectedPatient;
+  useEffect(() => {
+    setPatientSearchTerm(patientFieldLabel(selectedPatient));
+    setShowPatientDropdown(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPatient?.id, selectedPatient?.prenom, selectedPatient?.nom]);
+  /** Sortie du champ sans choisir : le texte revient au patient sélectionné (lu au moment T). */
+  const handlePatientFieldBlur = useCallback(() => {
+    window.setTimeout(() => {
+      setShowPatientDropdown(false);
+      setPatientSearchTerm(patientFieldLabel(selectedPatientRef.current));
+    }, 300);
+  }, []);
+  const reincludeFond = useCallback(() => setFondExcluded(prev => (prev.size === 0 ? prev : new Set())), []);
   // runCheck en cours : le verdict attend la fin du calcul des alertes.
   const [analysisPending, setAnalysisPending] = useState(false);
   // Sprint 4d — analyse automatique, un seul run affiché :
@@ -3320,8 +3370,9 @@ export function DoctorDashboard() {
     // Sprint 4bc — antécédents analysés : toute modification invalide le verdict.
     const ant = patientAntecedents.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
     // Sprint 4e-B — allergies (et type de réaction) : toute modification invalide le verdict.
-    return `${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}#${pregnancySig}#${teratogensReady ? 1 : 0}`;
-  }, [selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady, pregnancySig, teratogensReady]);
+    // Sprint 4f — le patient fait partie de la clé : un verdict ne vaut jamais pour un autre patient.
+    return `${selectedPatient?.id ?? ''}#${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}#${pregnancySig}#${teratogensReady ? 1 : 0}`;
+  }, [selectedPatient?.id, selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady, pregnancySig, teratogensReady]);
   // Sprint 4d — valide seulement si le verdict porte sur l'ensemble actuel ET sur le dernier run.
   const analysisValid = !!result && analyzedKey === currentAnalysisKey && result.runId === alertsRunId;
   useEffect(() => {
@@ -3827,9 +3878,8 @@ export function DoctorDashboard() {
           antClasses,
         );
         const { standalone, alsoByIndex } = mergeWithExisting(alerts, antAlerts);
-        for (const [idx, lines] of alsoByIndex) {
-          alerts[idx] = { ...alerts[idx], also: [...(alerts[idx].also ?? []), ...lines] };
-        }
+        // Sprint 4f — lignes « Également » + canal mémorisé pour la journalisation (lib/safetyGuards).
+        applyMergedLines(alerts, alsoByIndex, 'antecedent');
         for (const aa of standalone) {
           const key = `ant|${aa.medId}|${aa.antecedentId}`;
           if (seen.has(key)) continue;
@@ -3860,9 +3910,8 @@ export function DoctorDashboard() {
           allergyRegles,
         );
         const merged = mergeAllergyAlerts(alerts, allergyAlerts);
-        for (const [idx, lines] of merged.alsoByIndex) {
-          alerts[idx] = { ...alerts[idx], also: [...(alerts[idx].also ?? []), ...lines] };
-        }
+        // Sprint 4f — lignes « Également » + canal mémorisé pour la journalisation (lib/safetyGuards).
+        applyMergedLines(alerts, merged.alsoByIndex, 'allergie');
         // Cartes de la base absorbées par une alerte plus sévère du canal (indices décroissants).
         for (const idx of [...merged.absorbed].sort((a, b) => b - a)) alerts.splice(idx, 1);
         for (const aa of merged.standalone) {
@@ -3899,9 +3948,8 @@ export function DoctorDashboard() {
         const nomAffiche = new Map(analysisMeds.map(m => [m.id, m.nom]));
         const namesOf = (id: string) => [dbNomById.get(id), nomAffiche.get(id)].filter((x): x is string => !!x);
         const mergedDup = mergeDuplicateAlerts(alerts, dups, namesOf);
-        for (const [idx, lines] of mergedDup.alsoByIndex) {
-          alerts[idx] = { ...alerts[idx], also: [...(alerts[idx].also ?? []), ...lines] };
-        }
+        // Sprint 4f — lignes « Également » + canal mémorisé pour la journalisation (lib/safetyGuards).
+        applyMergedLines(alerts, mergedDup.alsoByIndex, 'doublon');
         for (const idx of [...mergedDup.absorbed].sort((a, b) => b - a)) alerts.splice(idx, 1);
         for (const d of mergedDup.standalone) {
           const key = `dup|${[d.idA, d.idB].sort().join('|')}`;
@@ -4232,6 +4280,13 @@ export function DoctorDashboard() {
       return false;
     }
 
+    // Sprint 4f — l'ordonnance préparée doit porter sur le patient affiché.
+    const mismatch = patientMismatchMessage(prescriptionData.patientId, selectedPatient.id);
+    if (mismatch) {
+      showToast(`Enregistrement refusé — ${mismatch}`, 'error');
+      return false;
+    }
+
     // BUG FIX: doctor_id must be doctors.id (PK), NOT user.id (auth UUID).
     // The ordonnances table has a FK ordonnances.doctor_id → doctors.id,
     // and the RLS INSERT policy checks doctor_id = (SELECT doctors.id FROM doctors WHERE user_id = auth.uid()).
@@ -4370,39 +4425,13 @@ export function DoctorDashboard() {
       try {
         // Sprint 3 — alertes préexistantes (traitement de fond seul) non journalisées :
         // elles ne concernent pas la prescription enregistrée.
-        const loggableAlerts = (interactionAlerts || []).filter(
-          a => a.severite !== 'non_classee' && a.severite !== 'info' && a.origin !== 'fond'
+        // Sprint 4f — lignes construites par une fonction pure et testée (lib/safetyGuards) :
+        // une ligne par alerte ET par canal fusionné dans la carte (une allergie absorbée par
+        // une CI de la base est bien tracée source = 'allergie'). Alertes du verdict affiché.
+        const interactionRows = buildInteractionLogRows(
+          result?.alerts ?? interactionAlerts, { doctorId, patientId: selectedPatient.id },
         );
-        if (loggableAlerts.length > 0) {
-          const severityToRisk: Record<
-            InteractionAlert['severite'],
-            'safe' | 'attention' | 'dangerous'
-          > = {
-            contre_indication: 'dangerous',
-            a_evaluer:         'attention', // Sprint 4bc — antécédents
-            majeure:           'dangerous',
-            precaution:        'attention', // Sprint 4bc — antécédents
-            moderee:           'attention',
-            mineure:           'attention',
-            non_classee:       'safe', // never logged (filtered above), but required for type completeness
-            info:              'safe', // never logged (filtered above), but required for type completeness
-          };
-          const interactionRows = loggableAlerts.map(alert => ({
-            doctor_id:    doctorId,
-            patient_id:   selectedPatient.id,
-            medicament_a: alert.involved[0],
-            // Sprint 4bc — alerte d'antécédent : medicament_b = NULL (pas de 2e médicament).
-            // contraindications only have 1 involved med — duplicate to satisfy NOT NULL
-            medicament_b: (alert.channel === 'antecedent' || alert.channel === 'allergie')
-              ? null : (alert.involved[1] ?? alert.involved[0]),
-            risk_level:   severityToRisk[alert.severite],
-            // Sprint 4e-B — alerte d'allergie croisée : source dédiée
-            // Sprint 4e-A — doublon thérapeutique : source dédiée
-            source:       alert.channel === 'doublon' ? 'doublon'
-              : alert.channel === 'allergie' ? 'allergie'
-              : alert.channel === 'antecedent' ? 'antecedent'
-              : alert.origin === 'mixte' ? 'avec_traitement_fond' : 'nouveau',
-          }));
+        if (interactionRows.length > 0) {
           const { error: logErr } = await supabase
             .from('interaction_logs')
             .insert(interactionRows);
@@ -4752,9 +4781,15 @@ export function DoctorDashboard() {
     const verdictAlerts: InteractionAlert[] = interactionAlerts.map(a => {
       if (!a.pregnancyContext || a.type !== 'contraindication' || selectedPatient?.sexe !== 'F') return a;
       // Liste des tératogènes non chargée : dans le doute, rien n'est écarté.
-      const teratogene = !teratogensReady || isMajorTeratogen(medOfAlert(a.involved[0]), teratogenMotifs);
-      const d = classifyPregnancyAlert(a.condition, pregCtx, teratogene);
+      // Sprint 4f — tératogène AVÉRÉ (liste chargée et motif reconnu) : l'exigence de contraception
+      // sort du bloc replié et devient une alerte ferme, quel que soit le statut déclaré.
+      const avere = teratogensReady && isMajorTeratogen(medOfAlert(a.involved[0]), teratogenMotifs);
+      const teratogene = !teratogensReady || avere;
+      const d = classifyPregnancyAlert(a.condition, pregCtx, teratogene, avere);
       const note = d.note ?? undefined;
+      if (d.mode === 'ferme' && avere && isContraceptionRequirement(a.condition)) {
+        return { ...a, pregnancyContext: false, pregnancyFirm: true, preventionGrossesse: true, pregnancyNote: note };
+      }
       if (d.mode === 'ferme') return { ...a, pregnancyContext: false, pregnancyFirm: true, pregnancyNote: note };
       if (d.mode === 'a_evaluer') return { ...a, pregnancyContext: false, pregnancyFirm: true, severite: 'a_evaluer', pregnancyNote: note };
       if (d.mode === 'rassuree') return { ...a, pregnancyReassured: true, pregnancyNote: note };
@@ -4771,11 +4806,13 @@ export function DoctorDashboard() {
       : pregCtx.expire ? ' — « non enceinte » déclaré il y a plus de 3 mois' : '';
 
     for (const alert of firmAlerts) {
-      if (alert.severite === 'contre_indication') overallSeverity = 'dangerous';
-      else if (alert.severite === 'majeure' && overallSeverity !== 'dangerous') overallSeverity = 'attention';
-      else if (alert.severite === 'moderee' && overallSeverity === 'safe') overallSeverity = 'attention';
-      // Sprint 4bc — « À évaluer » et « Précaution » (antécédents) : alertes réelles, jamais de vert.
-      else if ((alert.severite === 'a_evaluer' || alert.severite === 'precaution') && overallSeverity !== 'dangerous') overallSeverity = 'attention';
+      // Sprint 4f — niveau décidé par la MÊME fonction que la dérogation (lib/derogation) : une
+      // alerte qui exige la dérogation (CI, interaction majeure, doublon de même principe actif,
+      // exigence de contraception) impose « Prescription à risque ». Les autres alertes réelles
+      // (CI relative, « À évaluer », « Précaution », modérée) donnent « Attention », jamais vert.
+      const level = alertVerdictLevel(alert);
+      if (level === 'dangerous') overallSeverity = 'dangerous';
+      else if (level === 'attention' && overallSeverity !== 'dangerous') overallSeverity = 'attention';
       // Volet 2 — pour les CI, afficher la condition_valeur exacte entre le médicament
       // et la description (contexte médical : "HTA sévère non contrôlée" vs juste "Hypertension").
       const prefix = alert.type === 'contraindication'
@@ -4808,6 +4845,11 @@ export function DoctorDashboard() {
     // Sprint 4e-A — règles de doublons non chargées avec au moins 2 médicaments : jamais vert.
     const doublonUnavailable = overallSeverity === 'safe' && doublonsIncomplete;
     if (doublonUnavailable) overallSeverity = 'conditional';
+    // Sprint 4f — traitement de fond exclu de l'analyse (et non renouvelé) : jamais de vert sans réserve.
+    const fondExclus = excludedFond(fondTraitements, fondExcluded).filter(t => !selectedMeds.some(m => m.id === fondMedId(t)));
+    const fondExclusLabel = fondExclusionLabel(fondExclus.map(fondDisplayName));
+    const fondExcluOnly = overallSeverity === 'safe' && fondExclus.length > 0;
+    overallSeverity = verdictWithFondExclusion(overallSeverity, fondExclus.length);
 
     // Source unique de vérité : même nonVerifiables que le panneau temps réel.
     // allNonVerifiable → pas de bandeau vert, severity forcée à 'attention'.
@@ -4825,7 +4867,7 @@ export function DoctorDashboard() {
     const preexistingLabel = `Alertes préexistantes dans le traitement de fond (${preexistingCount})`;
     const baseDescription =
       overallSeverity === 'dangerous'
-        ? `${nbCI} contre-indication(s) détectée(s) — Prescription à risque élevé`
+        ? `${derogationSummary(firmAlerts) || (nbCI > 0 ? `${nbCI} contre-indication(s)` : 'Médicament prescrit en double')} — Prescription à risque élevé`
         : allNonVerifiable
           ? `Aucun des médicaments sélectionnés ne permet la vérification automatique des interactions — vérifiez manuellement`
           : pregnancyOnly
@@ -4870,9 +4912,13 @@ export function DoctorDashboard() {
       ? `${withAllergy} · Doublons thérapeutiques non analysés — analyse incomplète`
       : withAllergy;
     // Sprint 4e-C — CI grossesse / allaitement écartées par le statut déclaré : toujours dites.
+    // Sprint 4f — exclusion du fond : toujours dite, quel que soit le verdict.
+    const withExclusion = fondExclus.length === 0 ? withDoublons
+      : fondExcluOnly ? `Aucune alerte sur les médicaments analysés · ${fondExclusLabel}`
+        : `${withDoublons} · ${fondExclusLabel}`;
     const withPregnancy = pregnancyReassuredCount > 0
-      ? `${withDoublons} · ${pregnancyReassuredCount} CI grossesse/allaitement sans objet d'après le statut déclaré (${pregnancySummary(pregCtx)})`
-      : withDoublons;
+      ? `${withExclusion} · ${pregnancyReassuredCount} CI grossesse/allaitement sans objet d'après le statut déclaré (${pregnancySummary(pregCtx)})`
+      : withExclusion;
     const description = !teratogensReady && pregCtx.statut === 'non_enceinte' && pregnancyCtxCount > 0
       ? `${withPregnancy} · Liste des tératogènes non chargée — statut « non enceinte » non appliqué`
       : withPregnancy;
@@ -4959,6 +5005,12 @@ export function DoctorDashboard() {
     if (next === prev) return;
     prevDraftPatientIdRef.current = next;
     formDraftRef.current = null;
+    // Sprint 4f — filet de sécurité : rien de l'ancien patient ne reste affiché (recherche,
+    // résultats, sélection, verdict, aperçu). La reprise de brouillon ne passe pas ici.
+    verdictWantedRef.current = false;
+    setSelectedMeds([]); setMedSearchTerm(''); setMedSearchResults([]); setMedSearchForeign(null); setShowMedDropdown(false);
+    setInteractionAlerts([]); setResult(null); setNonVerifiables([]); setMedVerifInfo(new Map());
+    setPrescriptionData(null);
     setHorsBaseConfirmedKey(null);
     reopenFormAfterCheckRef.current = false;
     setDraftRestored(false);
@@ -5069,6 +5121,9 @@ export function DoctorDashboard() {
   // Niveau 2 — la vue Vérificateur redevient active avec un patient déjà sélectionné.
   useEffect(() => {
     const pid = selectedPatientIdRef.current;
+    // Sprint 4f — chaque nouvelle ouverture du Vérificateur repart de « tout inclus » : une
+    // exclusion décidée plus tôt ne survit jamais en silence (faux négatif).
+    if (activeView === 'checker') setFondExcluded(prev => (prev.size === 0 ? prev : new Set()));
     if (activeView === 'checker' && pid) { refreshFond(pid); refreshAntecedents(pid); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeView]);
@@ -5309,6 +5364,8 @@ export function DoctorDashboard() {
                 fondError={fondError}
                 fondExcluded={fondExcluded}
                 toggleFond={toggleFond}
+                reincludeFond={reincludeFond}
+                onPatientFieldBlur={handlePatientFieldBlur}
                 renewFond={renewFond}
                 reloadFond={() => { if (selectedPatient) refreshFond(selectedPatient.id); }}
                 analysisPending={analysisPending}
@@ -5492,12 +5549,14 @@ export function DoctorDashboard() {
           contraindicationAlerts={analysisValid
             ? derogationAlerts((result?.alerts ?? []).filter(a => a.origin !== 'fond')).map(alertLabel)
             : []}
+          contraindicationSummary={analysisValid ? derogationSummary((result?.alerts ?? []).filter(a => a.origin !== 'fond')) : ''}
           initialForm={formDraftRef.current}
           onFormChange={f => { formDraftRef.current = f; scheduleDraftSave(); }}
           restored={draftRestored}
           onDiscardDraft={discardOrdonnanceDraft}
           onPreview={(data) => {
-            setPrescriptionData(data);
+            // Sprint 4f — le patient de l'ordonnance est figé à l'aperçu (garde-fou à l'enregistrement).
+            setPrescriptionData({ ...data, patientId: selectedPatient.id });
             const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
             setPrescriptionOrdreNumber(`ORD-${dateStr}-${rand}`);

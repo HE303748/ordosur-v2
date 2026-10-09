@@ -75,6 +75,8 @@ interface PrescriptionFormModalProps {
    * l'enregistrement, à l'impression et au PDF.
    */
   contraindicationAlerts?: string[];
+  /** Sprint 4f — « 1 contre-indication et 1 doublon thérapeutique » (libellé adapté au type). */
+  contraindicationSummary?: string;
   onPreview: (data: {
     motif: string;
     medications: MedicationForm[];
@@ -202,6 +204,7 @@ export function PrescriptionFormModal({
   horsBaseConfirmedKey,
   onConfirmHorsBase,
   contraindicationAlerts = [],
+  contraindicationSummary = '',
   doctorId = null,
   onPreview
 }: PrescriptionFormModalProps) {
@@ -433,7 +436,7 @@ export function PrescriptionFormModal({
           <div role="alert" className="px-4 py-3 rounded-xl bg-[#DC2626]/[0.06] border border-[#DC2626]/40 border-l-4 border-l-[#DC2626]">
             <p className="flex items-center gap-2 text-sm font-bold text-[#0A1628]">
               <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#DC2626]" aria-hidden />
-              Cette ordonnance contient {contraindicationAlerts.length} contre-indication{contraindicationAlerts.length > 1 ? 's' : ''}
+              Cette ordonnance contient {contraindicationSummary || `${contraindicationAlerts.length} alerte${contraindicationAlerts.length > 1 ? 's' : ''} de niveau maximal`}
             </p>
             <ul className="mt-1.5 ml-6 list-disc space-y-0.5 text-sm text-[#0A1628] marker:text-[#DC2626]">
               {contraindicationAlerts.map((l, i) => <li key={i} className="break-words">{l}</li>)}

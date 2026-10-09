@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ShieldAlert, X } from 'lucide-react';
 import {
-  DEROGATION_MOTIFS, alertLabel, validateDerogationForm,
+  derogationMotifsFor, derogationTitle, alertLabel, validateDerogationForm,
   type DerogationAlertLike, type DerogationMotifId, type DerogationConfirmation,
 } from '../lib/derogation';
 
@@ -67,7 +67,7 @@ export function DerogationModal({ open, alerts, signature, onConfirm, onModify }
             <ShieldAlert className="w-5 h-5 text-[#DC2626]" aria-hidden />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 id="derogation-title" className="text-base font-bold text-[#0A1628] dark:text-[#E2E8F0]">Prescription contre-indiquée</h2>
+            <h2 id="derogation-title" className="text-base font-bold text-[#0A1628] dark:text-[#E2E8F0]">{derogationTitle(alerts)}</h2>
             <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
               {n} alerte{n > 1 ? 's' : ''} de niveau maximal — votre décision sera tracée (non imprimée sur l’ordonnance).
             </p>
@@ -93,7 +93,7 @@ export function DerogationModal({ open, alerts, signature, onConfirm, onModify }
               {touched && motifMissing && <span role="alert" className={fieldError}>Choisissez un motif</span>}
             </p>
             <div className="space-y-1.5">
-              {DEROGATION_MOTIFS.map(m => (
+              {derogationMotifsFor(alerts).map(m => (
                 <label key={m.id} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border cursor-pointer transition-colors ${
                   motif === m.id ? 'border-[#0A1628] bg-[#0A1628]/[0.04] dark:border-slate-300 dark:bg-white/[0.04]' : 'border-slate-200 dark:border-white/[0.1]'
                 }`}>

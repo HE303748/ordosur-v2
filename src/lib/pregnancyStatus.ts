@@ -179,6 +179,13 @@ export function pregnancyKinds(condition: string | null | undefined): PregnancyK
 
 const RANK: Record<PregnancyMode, number> = { ferme: 4, a_evaluer: 3, conditionnelle: 2, rassuree: 1 };
 
+export const PREVENTION_NOTE = 'Tératogène majeur — contraception efficace exigée (programme de prévention de la grossesse)';
+
+/** CI « en âge de procréer » / « sans contraception » (et non une CI de grossesse en cours). */
+export function isContraceptionRequirement(condition: string | null | undefined): boolean {
+  return /procre|contracep/.test(norm(condition));
+}
+
 const jjmm = (isoDate: string | null) => {
   const m = (isoDate ?? '').match(/^\d{4}-(\d{2})-(\d{2})/);
   return m ? `${m[2]}/${m[1]}` : '';
@@ -193,7 +200,15 @@ export function classifyPregnancyAlert(
   condition: string | null | undefined,
   ctx: PregnancyContext,
   teratogene: boolean,
+  /** Sprint 4f — le médicament est un tératogène majeur AVÉRÉ (liste chargée et motif reconnu). */
+  teratogeneAvere = false,
 ): PregnancyDecision {
+  // Sprint 4f — Programme de prévention de la grossesse : chez une patiente en âge de procréer
+  // (le matching ne place ici que les patientes de 12 à 55 ans ou d'âge inconnu), l'exigence de
+  // contraception d'un tératogène majeur est une alerte FERME, quel que soit le statut déclaré.
+  if (teratogeneAvere && isContraceptionRequirement(condition)) {
+    return { mode: 'ferme', note: PREVENTION_NOTE };
+  }
   const kinds = pregnancyKinds(condition);
   if (kinds.length === 0 || kinds[0] === 'procreation') return { mode: 'conditionnelle', note: null };
 
