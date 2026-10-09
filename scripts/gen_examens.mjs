@@ -14,8 +14,9 @@ import { createHash } from 'node:crypto';
 // ── Unités et conversions standard (Sprint 6). valeur_autre = valeur_defaut × facteur,
 //    ou ÷ diviseur, ou formule nommée. ──
 const U = {
-  glycemie:    { d: 'g/L',  alt: [{ unite: 'mmol/L', facteur: 5.551 }] },
-  creatinine:  { d: 'mg/L', alt: [{ unite: 'µmol/L', facteur: 8.84 }] },
+  // Sprint 6B — mg/dL ajouté : glycémie g/L × 100 ; créatinine mg/L ÷ 10 (soit µmol/L ÷ 88,4).
+  glycemie:    { d: 'g/L',  alt: [{ unite: 'mmol/L', facteur: 5.551 }, { unite: 'mg/dL', facteur: 100 }] },
+  creatinine:  { d: 'mg/L', alt: [{ unite: 'µmol/L', facteur: 8.84 }, { unite: 'mg/dL', diviseur: 10 }] },
   uree:        { d: 'g/L',  alt: [{ unite: 'mmol/L', facteur: 16.65 }] },
   cholesterol: { d: 'g/L',  alt: [{ unite: 'mmol/L', facteur: 2.586 }] },
   triglyc:     { d: 'g/L',  alt: [{ unite: 'mmol/L', facteur: 1.129 }] },

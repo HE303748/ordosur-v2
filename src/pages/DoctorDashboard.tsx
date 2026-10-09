@@ -89,6 +89,10 @@ import {
   buildInteractionLogRows, applyMergedLines, type MergedChannel,
   reconcileVerdictWithDisplay, isUndocumentedSeverity, verdictTitle, greenLineAllowed,
 } from '../lib/safetyGuards';
+// Sprint 6B — canal fonction rénale (module pur lib/renalEngine, chargeur dédié hooks/useRenal)
+import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, type RenalReserve, type RenalStatus } from '../lib/renalEngine';
+import { useRenalChannel } from '../hooks/useRenal';
+import { RenalStrip } from '../components/bilans/RenalStrip';
 import { PregnancyStatusEditor } from '../components/PregnancyStatusEditor';
 import { AnalysisIndicator, analysisIndicatorState } from '../components/AnalysisIndicator';
 
@@ -170,7 +174,8 @@ interface InteractionAlert {
   // Absent = 'nouveau' (rétrocompatibilité).
   origin?: 'nouveau' | 'mixte' | 'fond';
   // Sprint 4bc — alerte produite par le canal antécédents (src/lib/antecedentEngine.ts).
-  channel?: 'antecedent' | 'allergie' | 'doublon';
+  // Sprint 6B — 'renal' : canal fonction rénale (src/lib/renalEngine.ts).
+  channel?: 'antecedent' | 'allergie' | 'doublon' | 'renal';
   // Sprint 4bc — source de la règle (affichée dans les détails).
   ruleSource?: string;
   // Sprint 4bc — antécédents absorbés par cette CI existante (« Également : antécédent de … »).
@@ -1002,6 +1007,8 @@ interface CheckerViewProps {
   // Sprint 4e-B — allergies : familles reconnues / non analysées, règles chargées
   allergyStatus: AllergyClassification[];
   allergyRulesReady: boolean;
+  // Sprint 6B — fonction rénale utilisée par le moteur (affichée sous le patient)
+  renalStatus: RenalStatus;
   // Sprint 4e-C — saisie rapide du statut grossesse / allaitement
   canWritePatient: boolean;
   onPatientPatched: (patientId: string, patch: PatientPatch) => void;
@@ -1024,7 +1031,7 @@ function CheckerView({
   reincludeFond, onPatientFieldBlur,
   analysisPending,
   antecedents, antecedentsLoading, antecedentsError, antecedentRulesReady,
-  allergyStatus, allergyRulesReady,
+  allergyStatus, allergyRulesReady, renalStatus,
   canWritePatient, onPatientPatched,
 }: CheckerViewProps) {
   const [showMasked, setShowMasked] = useState(false);
@@ -1152,6 +1159,10 @@ function CheckerView({
 
                   {/* Sprint 5 — prochain bilan + demande d'examens (document autonome, hors blocage 3b) */}
                   <PatientExamStrip patient={selectedPatient} canWrite={canWritePatient} />
+
+                  {/* Sprint 6B — DFG / Cockcroft utilisés par le moteur + poids (le modifier relance l'analyse) */}
+                  <RenalStrip patient={selectedPatient} status={renalStatus} canWrite={canWritePatient}
+                    onPatched={(id, patch) => { onPatientPatched(id, patch); focusMedSearchIfPointer(); }} />
 
                   {/* Medical badges */}
                   {((selectedPatient.pathologies?.length ?? 0) > 0 || (selectedPatient.allergies_medicaments?.length ?? 0) > 0) && (
@@ -3372,6 +3383,13 @@ export function DoctorDashboard() {
     return () => { cancelled = true; };
   }, [user?.id]);
 
+  // ── Sprint 6B — Fonction rénale (canal rénal du moteur) ───────────────────
+  // Dernière créatinine relue EN BASE (jamais le cache de vue) : au changement de patient, à
+  // chaque résultat saisi et avant chaque verdict. DFG inconnu → réserve, jamais de vert à tort.
+  const renal = useRenalChannel(selectedPatient, user?.id);
+  // Médicaments à règle « contre-indication » dont la fonction rénale n'a pas pu être vérifiée.
+  const [renalReserves, setRenalReserves] = useState<RenalReserve[]>([]);
+
   // ── Sprint 4e-B — Allergies croisées (canal allergies du moteur) ──────────
   // Familles et règles chargées une fois (fetchAllRows). Échec → les allergies du patient
   // ne sont pas analysées par famille : signalé, verdict jamais vert.
@@ -3514,8 +3532,9 @@ export function DoctorDashboard() {
     const ant = patientAntecedents.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
     // Sprint 4e-B — allergies (et type de réaction) : toute modification invalide le verdict.
     // Sprint 4f — le patient fait partie de la clé : un verdict ne vaut jamais pour un autre patient.
-    return `${selectedPatient?.id ?? ''}#${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}#${pregnancySig}#${teratogensReady ? 1 : 0}`;
-  }, [selectedPatient?.id, selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady, pregnancySig, teratogensReady]);
+    return `${selectedPatient?.id ?? ''}#${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}#${pregnancySig}#${teratogensReady ? 1 : 0}#${renal.status.sig}#${renal.rulesReady ? 1 : 0}`;
+  // Sprint 6B — créatinine, poids ou date du poids modifiés : le verdict est invalidé (renal.status.sig).
+  }, [selectedPatient?.id, selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady, pregnancySig, teratogensReady, renal.status.sig, renal.rulesReady]);
   // Sprint 4d — valide seulement si le verdict porte sur l'ensemble actuel ET sur le dernier run.
   const analysisValid = !!result && analyzedKey === currentAnalysisKey && result.runId === alertsRunId;
   useEffect(() => {
@@ -4112,6 +4131,42 @@ export function DoctorDashboard() {
         }
       }
 
+      // ── 7. Sprint 6B — Canal fonction rénale (APPEL ADDITIONNEL) ──────────
+      // Ne modifie aucun des blocs ci-dessus. Le DFG (CKD-EPI 2021) et la clairance de Cockcroft
+      // du patient sont comparés aux seuils des CI rénales DÉJÀ en base (lus dans leur libellé)
+      // et aux règles regles_renales. Fusion avec une CI rénale déclenchée par les pathologies :
+      // carte de plus haute sévérité, jamais de carte en double. Rien n'est masqué : une CI
+      // « IRC » affichée alors que le DFG est normal reçoit seulement « DFG actuel … ».
+      let reserves: RenalReserve[] = [];
+      if (selectedPatient && renal.regles.length > 0) {
+        const r = evaluateRenal(
+          analysisMeds.map(m => ({ id: m.id, nom: m.nom, dci: m.dci, dci_canonique: m.dci_canonique, ingredients: ingNamesByMedId.get(m.id) })),
+          renal.status, allContraindications, renal.regles, renal.classes,
+        );
+        const mergedRenal = mergeRenalWithExisting(alerts, r.alerts, renal.status);
+        applyMergedLines(alerts, mergedRenal.alsoByIndex, 'renal');
+        applyInfoLines(alerts, mergedRenal.infoByIndex);
+        for (const idx of [...mergedRenal.absorbed].sort((a, b) => b - a)) alerts.splice(idx, 1);
+        for (const ra of mergedRenal.standalone) {
+          const key = `ren|${ra.medId}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          alerts.push({
+            type: 'contraindication',
+            severite: ra.severite,
+            description: ra.description,
+            involved: [ra.medNom],
+            condition: ra.condition,
+            origin: originOfMed(ra.medId),
+            channel: 'renal',
+            ruleSource: ra.source,
+            also: ra.also.length > 0 ? ra.also : undefined,
+          });
+        }
+        reserves = r.reserves;
+      }
+      setRenalReserves(reserves);
+
       setInteractionAlerts(alerts);
       setAlertsRunId(runId);
       setAnalysisPending(false);
@@ -4122,7 +4177,7 @@ export function DoctorDashboard() {
       if (!cancelled) { setAnalysisPending(false); setAnalysisFailed(true); }
     });
     return () => { cancelled = true; };
-  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick, patientAllergies, allergyFamilles, allergyRegles, dupClasses, dupSubstances, dupRegles]);
+  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick, patientAllergies, allergyFamilles, allergyRegles, dupClasses, dupSubstances, dupRegles, renal.status, renal.regles, renal.classes]);
 
   // ── Data loaders ─────────────────────────────────────────────────────────
 
@@ -4846,7 +4901,8 @@ export function DoctorDashboard() {
     verdictWantedRef.current = true;
     refreshingRef.current = true;
     const timer = window.setTimeout(async () => {
-      const [fondStatus, antStatus] = await Promise.all([refreshFond(pid), refreshAntecedents(pid)]);
+      // Sprint 6B — la dernière créatinine est relue en base avant chaque verdict.
+      const [fondStatus, antStatus] = await Promise.all([refreshFond(pid), refreshAntecedents(pid), renal.refresh(pid)]);
       if (selectedPatientIdRef.current !== pid) return;
       refreshingRef.current = false;
       if (fondStatus === 'changed') showToast('Traitement de fond mis à jour — analyse relancée', 'info');
@@ -4957,7 +5013,7 @@ export function DoctorDashboard() {
       // Volet 2 — pour les CI, afficher la condition_valeur exacte entre le médicament
       // et la description (contexte médical : "HTA sévère non contrôlée" vs juste "Hypertension").
       const prefix = alert.type === 'contraindication'
-        ? `${alert.channel === 'antecedent' ? 'Antécédent' : alert.channel === 'allergie' ? 'Allergie' : 'Contre-indication patient'} (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
+        ? `${alert.channel === 'antecedent' ? 'Antécédent' : alert.channel === 'allergie' ? 'Allergie' : alert.channel === 'renal' ? 'Fonction rénale' : 'Contre-indication patient'} (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
         : alert.involved.join(' + ');
       reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
@@ -4997,6 +5053,13 @@ export function DoctorDashboard() {
     // Sprint 4e-A — règles de doublons non chargées avec au moins 2 médicaments : jamais vert.
     const doublonUnavailable = overallSeverity === 'safe' && doublonsIncomplete;
     if (doublonUnavailable) overallSeverity = 'conditional';
+    // Sprint 6B — fonction rénale non disponible pour un médicament concerné par une règle de
+    // niveau contre-indication (ou règles rénales non chargées) : jamais de vert sans réserve.
+    const renalLabel = reservesLabel(renalReserves, renal.status);
+    const renalNote = !renal.rulesReady ? 'Fonction rénale non analysée — analyse incomplète'
+      : renalLabel ? renalLabel[0].toUpperCase() + renalLabel.slice(1) : '';
+    const renalUnavailable = overallSeverity === 'safe' && renalNote !== '';
+    if (renalUnavailable) overallSeverity = 'conditional';
     // Sprint 4f — traitement de fond exclu de l'analyse (et non renouvelé) : jamais de vert sans réserve.
     const fondExclus = excludedFond(fondTraitements, fondExcluded).filter(t => !selectedMeds.some(m => m.id === fondMedId(t)));
     const fondExclusLabel = fondExclusionLabel(fondExclus.map(fondDisplayName));
@@ -5036,6 +5099,8 @@ export function DoctorDashboard() {
             ? 'Allergies croisées non analysées — analyse incomplète'
           : doublonUnavailable
             ? 'Doublons thérapeutiques non analysés — analyse incomplète'
+          : renalUnavailable
+            ? renalNote
           : overallSeverity === 'attention'
             ? `${nbSignaled} interaction(s) signalée(s) — Précautions requises`
             : reasons.length > 0
@@ -5068,7 +5133,9 @@ export function DoctorDashboard() {
     // Sprint 4e-C — CI grossesse / allaitement écartées par le statut déclaré : toujours dites.
     // Sprint 4f — exclusion du fond : toujours dite, quel que soit le verdict.
     // Sprint 4g — sévérité non documentée : toujours dite, quel que soit le verdict.
-    const withUndocumented = display.note && !display.lowered ? `${withDoublons} · ${display.note}` : withDoublons;
+    // Sprint 6B — réserve rénale : toujours dite, quel que soit le verdict.
+    const withRenal = renalNote !== '' && !renalUnavailable ? `${withDoublons} · ${renalNote}` : withDoublons;
+    const withUndocumented = display.note && !display.lowered ? `${withRenal} · ${display.note}` : withRenal;
     const withExclusion = fondExclus.length === 0 ? withUndocumented
       : fondExcluOnly ? `Aucune alerte sur les médicaments analysés · ${fondExclusLabel}`
         : `${withUndocumented} · ${fondExclusLabel}`;
@@ -5287,7 +5354,7 @@ export function DoctorDashboard() {
     // Sprint 4f — chaque nouvelle ouverture du Vérificateur repart de « tout inclus » : une
     // exclusion décidée plus tôt ne survit jamais en silence (faux négatif).
     if (activeView === 'checker') setFondExcluded(prev => (prev.size === 0 ? prev : new Set()));
-    if (activeView === 'checker' && pid) { refreshFond(pid); refreshAntecedents(pid); }
+    if (activeView === 'checker' && pid) { refreshFond(pid); refreshAntecedents(pid); void renal.refresh(pid); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeView]);
 
@@ -5551,6 +5618,7 @@ export function DoctorDashboard() {
                 antecedentRulesReady={antRulesReady}
                 allergyStatus={allergyStatus}
                 allergyRulesReady={allergyRulesReady}
+                renalStatus={renal.status}
                 canWritePatient={!!doctorProfile?.id}
                 onPatientPatched={handlePatientPatched}
               />

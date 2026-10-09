@@ -36,6 +36,9 @@ export interface PatientPatch {
   grossesse_ddr?: string | null;
   allaitement?: boolean | null;
   grossesse_maj_le?: string | null;
+  // Sprint 6B — poids (clairance de Cockcroft-Gault)
+  poids_kg?: number | null;
+  poids_date?: string | null;
 }
 
 interface PatientLike {

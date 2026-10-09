@@ -17,6 +17,7 @@ import { ExamensSection } from '../exams/ExamensSection';
 import { ProchainBilanBadge } from '../exams/PatientExamStrip';
 import { BilansSection } from '../bilans/BilansSection';
 import { ARevoirBadge } from '../bilans/BilanWidgets';
+import { PoidsEditor } from '../bilans/RenalStrip';
 
 interface Patient {
   id: string;
@@ -39,6 +40,8 @@ interface Patient {
   grossesse_ddr?: string | null;
   allaitement?: boolean | null;
   grossesse_maj_le?: string | null;
+  poids_kg?: number | null;
+  poids_date?: string | null;
 }
 
 interface Consultation {
@@ -757,6 +760,8 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
                 <ProchainBilanBadge patientId={patient.id} onClick={() => setActiveTab('examens')} />
                 {/* Sprint 6A — résultats Bas / Haut / Anormal / positifs non encore vus */}
                 <ARevoirBadge patientId={patient.id} onClick={() => setActiveTab('bilans')} />
+                {/* Sprint 6B — poids (clairance de Cockcroft) : saisie rapide, relance l'analyse */}
+                <PoidsEditor patient={patient} canWrite={!!doctorId && !!orgId} onPatched={onPatientPatched} />
                 {(patient.allergies_medicaments?.length ?? 0) > 0 && (
                   <span className="text-xs text-red-500 font-semibold">
                     ⚠ {patient.allergies_medicaments!.length} allergie(s) médicamenteuse(s)

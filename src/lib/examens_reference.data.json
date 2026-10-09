@@ -1,6 +1,6 @@
 {
   "empreinte": {
-    "examens": "098f3c1a3cc38564d7c4c0090783616a",
+    "examens": "86950639dc35155c0ae105b9fb06a114",
     "packs": "8dbf768a7743051f2155c678699019f8"
   },
   "examens": [
@@ -306,6 +306,10 @@
         {
           "unite": "mmol/L",
           "facteur": 5.551
+        },
+        {
+          "unite": "mg/dL",
+          "facteur": 100
         }
       ],
       "code_loinc": null,
@@ -338,6 +342,10 @@
         {
           "unite": "mmol/L",
           "facteur": 5.551
+        },
+        {
+          "unite": "mg/dL",
+          "facteur": 100
         }
       ],
       "code_loinc": null,
@@ -407,6 +415,10 @@
         {
           "unite": "mmol/L",
           "facteur": 5.551
+        },
+        {
+          "unite": "mg/dL",
+          "facteur": 100
         }
       ],
       "code_loinc": null,
@@ -470,6 +482,10 @@
         {
           "unite": "µmol/L",
           "facteur": 8.84
+        },
+        {
+          "unite": "mg/dL",
+          "diviseur": 10
         }
       ],
       "code_loinc": null,

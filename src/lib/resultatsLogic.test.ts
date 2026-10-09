@@ -113,9 +113,14 @@ describe('2. conversions — uniquement celles du référentiel', () => {
 
   it('aucune conversion inventée : unité hors référentiel → pas de valeur de référence', () => {
     const creat = examMesure(ref('CREATININE'));
-    expect(matchUnite('mg/dL', creat)).toBeNull();
-    expect(toRef(1.2, 'mg/dL', creat)).toBeNull();
-    expect(convertir(1.2, 'mg/dL', 'mg/L', creat)).toBeNull();
+    expect(matchUnite('nmol/L', creat)).toBeNull();
+    expect(toRef(1.2, 'nmol/L', creat)).toBeNull();
+    expect(convertir(1.2, 'nmol/L', 'mg/L', creat)).toBeNull();
+    // Sprint 6B — mg/dL fait partie du référentiel (créatinine ÷ 10, glycémie × 100).
+    expect(convertir(1.2, 'mg/dL', 'mg/L', creat)).toBeCloseTo(12, 6);
+    expect(convertir(1.2, 'mg/dL', 'µmol/L', creat)).toBeCloseTo(106.08, 2);
+    expect(convertir(1.1, 'g/L', 'mg/dL', examMesure(ref('GLYCEMIE_JEUN')))).toBeCloseTo(110, 6);
+    expect(matchUnite('mg', creat)).toBeNull(); // préfixe ambigu (mg/L ou mg/dL) : jamais deviné
     // Examen sans conversion : seule son unité de référence est connue.
     const tsh = examMesure(ref('TSH'));
     expect(tsh.unites.map(u => u.unite)).toEqual(['mUI/L']);
@@ -228,7 +233,7 @@ describe('4. contrôle de cohérence (delta check)', () => {
     expect(deltaCheck({ valeur: 40, decimales: 0, unite: 'mg/L' }, null, creat)).toBeNull();
     expect(deltaCheck({ valeur: 40, decimales: 0, unite: 'mg/L' }, R('VIH', { valeur_texte: 'negatif' }), creat)).toBeNull();
     // Unité hors référentiel, différente de la précédente : non comparable.
-    expect(deltaCheck({ valeur: 9, decimales: 0, unite: 'mg/dL' }, prec, creat)).toBeNull();
+    expect(deltaCheck({ valeur: 9, decimales: 0, unite: 'nmol/L' }, prec, creat)).toBeNull();
     // Même unité hors référentiel des deux côtés : comparaison brute.
     const libre = R(null, { libelle: 'Zinc', valeur_num: 10, unite_saisie: 'µmol/L' });
     expect(deltaCheck({ valeur: 45, decimales: 0, unite: 'µmol/l' }, libre, examMesure(null))?.kind).toBe('ecart');
@@ -328,7 +333,7 @@ describe('5. saisie libre', () => {
     const creat = examMesure(ref('CREATININE'));
     expect(defaultUnite(creat, null)).toBe('mg/L');
     expect(defaultUnite(creat, 'µmol/L')).toBe('µmol/L');
-    expect(defaultUnite(creat, 'mg/dL')).toBe('mg/L'); // unité inconnue du référentiel : ignorée
+    expect(defaultUnite(creat, 'nmol/L')).toBe('mg/L'); // unité inconnue du référentiel : ignorée
     const rows = [
       R('CREATININE', { valeur_num: 100, unite_saisie: 'µmol/L' }),
       R('CREATININE', { valeur_num: 12, unite_saisie: 'mg/L' }),
@@ -364,8 +369,8 @@ describe('6. résultat à enregistrer', () => {
     expect(p).toMatchObject({ examen_code: 'NFS', parametre: 'hémoglobine', unite_saisie: 'g/L', valeur_ref: 13.5, unite_ref: 'g/dL' });
   });
   it('unité hors référentiel : conservée telle quelle, sans valeur de référence', () => {
-    const p = buildResultatPayload(D({ exam: ref('CREATININE'), nombre: { valeur: 1.2, decimales: 1 }, unite: 'mg/dL' }), commun);
-    expect(p).toMatchObject({ unite_saisie: 'mg/dL', valeur_ref: null, unite_ref: null });
+    const p = buildResultatPayload(D({ exam: ref('CREATININE'), nombre: { valeur: 1.2, decimales: 1 }, unite: 'nmol/L' }), commun);
+    expect(p).toMatchObject({ unite_saisie: 'nmol/L', valeur_ref: null, unite_ref: null });
   });
   it('qualitatif canonique ; compte rendu + case « Anormal »', () => {
     expect(buildResultatPayload(D({ exam: ref('VIH'), texte: 'Positif' }), commun)).toMatchObject({ valeur_texte: 'positif', valeur_num: null, interpretation: null });
@@ -483,7 +488,7 @@ describe('9. suivi : séries, tendance, derniers bilans, courbe, récapitulatif'
     expect(S('NFS').tendance).toBeNull(); // un seul résultat
     expect(tendance(R('TSH', { valeur_num: 4, unite_saisie: 'mUI/L' }), R('TSH', { valeur_num: 2, unite_saisie: 'mUI/L' }))).toBe('hausse');
     // Unités non comparables : pas de flèche.
-    expect(tendance(R('CREATININE', { valeur_num: 1.2, unite_saisie: 'mg/dL' }), c2)).toBeNull();
+    expect(tendance(R('CREATININE', { valeur_num: 1.2, unite_saisie: 'nmol/L' }), c2)).toBeNull();
     expect(tendance(vih, vih)).toBeNull();
   });
   it('catégories dans l’ordre du référentiel', () => {
@@ -527,10 +532,10 @@ describe('9. suivi : séries, tendance, derniers bilans, courbe, récapitulatif'
     expect(cr.bande).toBeNull(); // pas de bornes saisies : pas de bande
   });
   it('courbe : un résultat en unité hors référentiel n’est tracé que dans son unité', () => {
-    const horsRef = R('CREATININE', { valeur_num: 1.2, unite_saisie: 'mg/dL', date_prelevement: '2026-10-01' });
+    const horsRef = R('CREATININE', { valeur_num: 1.2, unite_saisie: 'nmol/L', date_prelevement: '2026-10-01' });
     const s = buildSeries([c2, horsRef], refs)[0], m = examMesure(ref('CREATININE'));
     expect(chartSerie(s, m, 'mg/L').points).toHaveLength(1);
-    expect(chartSerie(s, m, 'mg/dL').points.map(p => p.valeur)).toEqual([1.2]);
+    expect(chartSerie(s, m, 'nmol/L').points.map(p => p.valeur)).toEqual([1.2]);
     const z = S(null);
     expect(unitesCourbe(z, examMesure(null))).toEqual(['µmol/L']);
     expect(chartSerie(z, examMesure(null), 'µmol/L').points).toHaveLength(1);

@@ -1,0 +1,374 @@
+{
+  "empreinte": {
+    "regles": "75e7074c8bef1073e15afb5bbcf442d6",
+    "classes": "f36bcdd7b74eb7fa092345dd278d49c4"
+  },
+  "classes": [
+    {
+      "classe": "metformine",
+      "dci_motif": "metformin"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "ibuprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "ketoprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "dexketoprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "diclofenac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "aceclofenac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "naproxene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "piroxicam"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "meloxicam"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "tenoxicam"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "lornoxicam"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "indometacine"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "celecoxib"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "etoricoxib"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "flurbiprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "acide niflumique"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "nimesulide"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "etodolac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "sulindac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "acide mefenamique"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "ketorolac"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "acide tiaprofenique"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "morniflumate"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "fenoprofene"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "parecoxib"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "tiaprofeni"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "niflumi"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "mefenami"
+    },
+    {
+      "classe": "ains",
+      "dci_motif": "phenylbutazone"
+    },
+    {
+      "classe": "dabigatran",
+      "dci_motif": "dabigatran"
+    },
+    {
+      "classe": "rivaroxaban",
+      "dci_motif": "rivaroxaban"
+    },
+    {
+      "classe": "apixaban",
+      "dci_motif": "apixaban"
+    },
+    {
+      "classe": "edoxaban",
+      "dci_motif": "edoxaban"
+    },
+    {
+      "classe": "spironolactone",
+      "dci_motif": "spironolactone"
+    },
+    {
+      "classe": "nitrofurantoine",
+      "dci_motif": "nitrofurantoin"
+    }
+  ],
+  "regles": [
+    {
+      "code": "METFORMINE_DFG_30",
+      "ordre": 10,
+      "classe": "metformine",
+      "mesure": "dfg",
+      "seuil": 30,
+      "seuil_min": null,
+      "inclut_dialyse": false,
+      "severite": "absolue",
+      "titre": "Metformine contre-indiquée — DFG < 30 mL/min",
+      "conduite": "ne pas prescrire (risque d’acidose lactique) ; choisir une alternative",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "METFORMINE_DFG_30_44",
+      "ordre": 20,
+      "classe": "metformine",
+      "mesure": "dfg",
+      "seuil": 45,
+      "seuil_min": 30,
+      "inclut_dialyse": false,
+      "severite": "a_evaluer",
+      "titre": "Metformine — DFG 30-44 mL/min : dose à réduire",
+      "conduite": "ne pas initier ; dose maximale 1 000 mg/j en 2 prises ; contrôler la fonction rénale tous les 3 mois",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "AINS_DFG_30",
+      "ordre": 30,
+      "classe": "ains",
+      "mesure": "dfg",
+      "seuil": 30,
+      "seuil_min": null,
+      "inclut_dialyse": false,
+      "severite": "absolue",
+      "titre": "AINS contre-indiqué — insuffisance rénale sévère (DFG < 30 mL/min)",
+      "conduite": "ne pas prescrire ; préférer le paracétamol",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "AINS_DFG_30_59",
+      "ordre": 40,
+      "classe": "ains",
+      "mesure": "dfg",
+      "seuil": 60,
+      "seuil_min": 30,
+      "inclut_dialyse": false,
+      "severite": "a_evaluer",
+      "titre": "AINS — DFG 30-59 mL/min : risque d’insuffisance rénale aiguë fonctionnelle",
+      "conduite": "éviter si possible ; sinon dose minimale, durée la plus courte, contrôle de la créatinine — surtout avec IEC, ARA II ou diurétique",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "DABIGATRAN_CG_30",
+      "ordre": 50,
+      "classe": "dabigatran",
+      "mesure": "cockcroft",
+      "seuil": 30,
+      "seuil_min": null,
+      "inclut_dialyse": false,
+      "severite": "absolue",
+      "titre": "Dabigatran contre-indiqué — clairance de la créatinine < 30 mL/min",
+      "conduite": "ne pas prescrire ; discuter un autre anticoagulant",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "DABIGATRAN_CG_30_50",
+      "ordre": 60,
+      "classe": "dabigatran",
+      "mesure": "cockcroft",
+      "seuil": 51,
+      "seuil_min": 30,
+      "inclut_dialyse": false,
+      "severite": "a_evaluer",
+      "titre": "Dabigatran — clairance 30-50 mL/min : posologie à adapter",
+      "conduite": "réduction de dose à discuter selon l’indication et le risque hémorragique ; contrôler la fonction rénale au moins une fois par an",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "RIVAROXABAN_CG_15",
+      "ordre": 70,
+      "classe": "rivaroxaban",
+      "mesure": "cockcroft",
+      "seuil": 15,
+      "seuil_min": null,
+      "inclut_dialyse": true,
+      "severite": "absolue",
+      "titre": "Non recommandé (RCP) — insuffisance rénale terminale",
+      "conduite": "rivaroxaban non recommandé si clairance < 15 mL/min ou en dialyse ; discuter une alternative avec le néphrologue",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "RIVAROXABAN_CG_15_49",
+      "ordre": 80,
+      "classe": "rivaroxaban",
+      "mesure": "cockcroft",
+      "seuil": 50,
+      "seuil_min": 15,
+      "inclut_dialyse": false,
+      "severite": "a_evaluer",
+      "titre": "Rivaroxaban — clairance 15-49 mL/min : posologie à adapter",
+      "conduite": "adapter la dose selon l’indication ; prudence particulière entre 15 et 29 mL/min",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "APIXABAN_CG_15",
+      "ordre": 90,
+      "classe": "apixaban",
+      "mesure": "cockcroft",
+      "seuil": 15,
+      "seuil_min": null,
+      "inclut_dialyse": true,
+      "severite": "absolue",
+      "titre": "Non recommandé (RCP) — insuffisance rénale terminale",
+      "conduite": "apixaban non recommandé si clairance < 15 mL/min ou en dialyse ; discuter une alternative avec le néphrologue",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "APIXABAN_CG_15_29",
+      "ordre": 100,
+      "classe": "apixaban",
+      "mesure": "cockcroft",
+      "seuil": 30,
+      "seuil_min": 15,
+      "inclut_dialyse": false,
+      "severite": "a_evaluer",
+      "titre": "Apixaban — clairance 15-29 mL/min : prudence, dose à adapter",
+      "conduite": "réduire la dose selon l’indication ; surveiller le risque hémorragique",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "EDOXABAN_CG_15",
+      "ordre": 110,
+      "classe": "edoxaban",
+      "mesure": "cockcroft",
+      "seuil": 15,
+      "seuil_min": null,
+      "inclut_dialyse": true,
+      "severite": "absolue",
+      "titre": "Non recommandé (RCP) — insuffisance rénale terminale",
+      "conduite": "édoxaban non recommandé si clairance < 15 mL/min ou en dialyse ; discuter une alternative avec le néphrologue",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "EDOXABAN_CG_15_29",
+      "ordre": 120,
+      "classe": "edoxaban",
+      "mesure": "cockcroft",
+      "seuil": 30,
+      "seuil_min": 15,
+      "inclut_dialyse": false,
+      "severite": "a_evaluer",
+      "titre": "Édoxaban — clairance 15-29 mL/min : prudence, dose à adapter",
+      "conduite": "réduire la dose selon l’indication ; surveiller le risque hémorragique",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "SPIRONOLACTONE_DFG_30",
+      "ordre": 130,
+      "classe": "spironolactone",
+      "mesure": "dfg",
+      "seuil": 30,
+      "seuil_min": null,
+      "inclut_dialyse": false,
+      "severite": "absolue",
+      "titre": "Spironolactone contre-indiquée — insuffisance rénale sévère (DFG < 30 mL/min)",
+      "conduite": "ne pas prescrire (risque d’hyperkaliémie)",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "SPIRONOLACTONE_DFG_30_59",
+      "ordre": 140,
+      "classe": "spironolactone",
+      "mesure": "dfg",
+      "seuil": 60,
+      "seuil_min": 30,
+      "inclut_dialyse": false,
+      "severite": "a_evaluer",
+      "titre": "Spironolactone — DFG 30-59 mL/min : risque d’hyperkaliémie",
+      "conduite": "dose réduite ; contrôler kaliémie et créatinine à l’instauration puis régulièrement — surtout avec IEC ou ARA II",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "NITROFURANTOINE_DFG_30",
+      "ordre": 150,
+      "classe": "nitrofurantoine",
+      "mesure": "dfg",
+      "seuil": 30,
+      "seuil_min": null,
+      "inclut_dialyse": false,
+      "severite": "absolue",
+      "titre": "Nitrofurantoïne contre-indiquée — DFG < 30 mL/min",
+      "conduite": "ne pas prescrire (inefficacité urinaire et toxicité accrue) ; choisir un autre antibiotique",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    },
+    {
+      "code": "NITROFURANTOINE_DFG_30_59",
+      "ordre": 160,
+      "classe": "nitrofurantoine",
+      "mesure": "dfg",
+      "seuil": 60,
+      "seuil_min": 30,
+      "inclut_dialyse": false,
+      "severite": "a_evaluer",
+      "titre": "Nitrofurantoïne — DFG 30-59 mL/min : contre-indication possible selon le RCP",
+      "conduite": "seuil du RCP à vérifier (45 ou 60 mL/min selon la version) ; préférer un autre antibiotique",
+      "source": "Proposition Ordosur d'après RCP — à valider",
+      "actif": true
+    }
+  ]
+}

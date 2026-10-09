@@ -71,6 +71,9 @@ export interface Patient {
   grossesse_ddr?: string | null;
   allaitement?: boolean | null;
   grossesse_maj_le?: string | null;
+  // Sprint 6B — poids et date de pesée (clairance de Cockcroft-Gault, src/lib/renalEngine.ts)
+  poids_kg?: number | null;
+  poids_date?: string | null;
   created_at: string;
 }
 

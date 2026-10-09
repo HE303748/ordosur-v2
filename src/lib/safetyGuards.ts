@@ -57,8 +57,8 @@ export function patientMismatchMessage(
 
 // ─── 5. Journalisation (interaction_logs) ────────────────────────────────────
 
-export type MergedChannel = 'antecedent' | 'allergie' | 'doublon';
-export type LogSource = 'nouveau' | 'avec_traitement_fond' | 'antecedent' | 'allergie' | 'doublon' | 'grossesse';
+export type MergedChannel = 'antecedent' | 'allergie' | 'doublon' | 'renal';
+export type LogSource = 'nouveau' | 'avec_traitement_fond' | 'antecedent' | 'allergie' | 'doublon' | 'grossesse' | 'renal';
 
 export interface LoggableAlert {
   type: 'drug_drug' | 'contraindication' | 'info';
@@ -135,8 +135,8 @@ export function buildInteractionLogRows(
   for (const a of alerts) {
     if (!isLoggable(a)) continue;
     for (const source of alertLogSources(a)) {
-      // Antécédent / allergie : alerte « médicament × patient », pas de second médicament.
-      const single = source === 'antecedent' || source === 'allergie';
+      // Antécédent / allergie / fonction rénale : alerte « médicament × patient », pas de second médicament.
+      const single = source === 'antecedent' || source === 'allergie' || source === 'renal';
       rows.push({
         doctor_id: ids.doctorId,
         patient_id: ids.patientId,
