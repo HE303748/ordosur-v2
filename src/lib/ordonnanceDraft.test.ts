@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   evaluateDraftOffer, draftMedsKey, isDraftWorthOffering, formHasContent, draftLinesForSelection, draftSummary,
+  draftBelongsTo, draftResumeBlockReason, draftBannerLabel, draftMedsLabel,
   type OrdonnanceDraft, type DraftForm,
 } from './ordonnanceDraft';
 
@@ -85,5 +86,57 @@ describe('brouillon fantôme', () => {
   it('libellé du bandeau : date, heure et nombre de médicaments', () => {
     expect(draftSummary(draft())).toBe('08/10 14:32 (1 médicament)');
     expect(draftSummary(draft({ selectedMeds: [{ id: 'a', nom: 'A' }, { id: 'b', nom: 'B' }] }))).toBe('08/10 14:32 (2 médicaments)');
+  });
+});
+
+// ─── Sprint 4g — brouillon d'un autre patient : jamais proposé ni repris ─────
+describe('un brouillon n’appartient qu’à son patient', () => {
+  const WALID = 'walid';
+  const ASMA = 'asma';
+  const deWalid = draft({ patientId: WALID, savedAt: new Date(2026, 9, 9, 3, 0).getTime() });
+
+  it('jamais PROPOSÉ sous un autre patient, quelle que soit la sélection en cours', () => {
+    for (const meds of [[], [{ id: 'doliprane' }], [{ id: 'brufen' }], [{ id: 'doliprane' }, { id: 'brufen' }]]) {
+      for (const formEnCours of [false, true]) {
+        expect(evaluateDraftOffer(deWalid, ASMA, meds, formEnCours)).toBe('none');
+      }
+    }
+    expect(draftBelongsTo(deWalid, ASMA)).toBe(false);
+  });
+  it('proposé pour son propre patient', () => {
+    expect(draftBelongsTo(deWalid, WALID)).toBe(true);
+    expect(evaluateDraftOffer(deWalid, WALID, [])).toBe('resume');
+    expect(evaluateDraftOffer(deWalid, WALID, [{ id: 'doliprane' }])).toBe('resume');
+    expect(evaluateDraftOffer(deWalid, WALID, [{ id: 'brufen' }])).toBe('conflict');
+  });
+  it('un identifiant absent ne correspond jamais', () => {
+    expect(draftBelongsTo(deWalid, null)).toBe(false);
+    expect(draftBelongsTo(deWalid, undefined)).toBe(false);
+    expect(draftBelongsTo(null, WALID)).toBe(false);
+    expect(draftBelongsTo(draft({ patientId: '' }), '')).toBe(false);
+  });
+  it('jamais REPRIS si le patient sélectionné n’est pas celui du brouillon (garde-fou de la reprise)', () => {
+    expect(draftResumeBlockReason(deWalid, ASMA, WALID)).toMatch(/autre patient/);
+    expect(draftResumeBlockReason(deWalid, WALID, WALID)).toBeNull();
+  });
+  it('aucun patient sélectionné : reprise permise (elle sélectionne le patient du brouillon)', () => {
+    expect(draftResumeBlockReason(deWalid, null, WALID)).toBeNull();
+  });
+  it('patient du brouillon introuvable ou incohérent, brouillon absent → refus', () => {
+    expect(draftResumeBlockReason(deWalid, null, null)).toMatch(/introuvable/);
+    expect(draftResumeBlockReason(deWalid, null, ASMA)).toMatch(/introuvable/);
+    expect(draftResumeBlockReason(deWalid, ASMA, ASMA)).not.toBeNull();
+    expect(draftResumeBlockReason(null, WALID, WALID)).not.toBeNull();
+  });
+  it('le bandeau nomme toujours le patient et les médicaments', () => {
+    expect(draftBannerLabel(deWalid, { prenom: 'Walid', nom: 'Idrissi' })).toBe('Brouillon pour Walid Idrissi du 09/10 03:00 — DOLIPRANE 1 G');
+    const libelle = draft({ patientId: WALID, savedAt: new Date(2026, 9, 9, 3, 0).getTime(), selectedMeds: [{ id: 'd', nom: 'DOLIPRANE', label: 'Doliprane 1 G' }] });
+    expect(draftBannerLabel(libelle, { prenom: 'Walid', nom: 'Idrissi' })).toBe('Brouillon pour Walid Idrissi du 09/10 03:00 — Doliprane 1 G');
+  });
+  it('médicaments : sélection ou lignes du formulaire, abrégés au-delà de 3', () => {
+    const many = draft({ selectedMeds: ['A', 'B', 'C', 'D', 'E'].map(n => ({ id: n, nom: n })) });
+    expect(draftMedsLabel(many)).toBe('A, B, C +2');
+    expect(draftMedsLabel(draft({ selectedMeds: [], form: form([line('m1', 'Brufen 400 mg'), line('m2', '  ')]) }))).toBe('Brufen 400 mg');
+    expect(draftMedsLabel(draft({ selectedMeds: [], form: null }))).toBe('aucun médicament');
   });
 });

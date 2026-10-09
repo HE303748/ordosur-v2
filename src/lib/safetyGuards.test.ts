@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   excludedFond, fondExclusionLabel, verdictWithFondExclusion, patientFieldLabel, patientMismatchMessage,
   applyMergedLines, alertLogSources, buildInteractionLogRows, countBySource, isLoggable,
+  reconcileVerdictWithDisplay, isUndocumentedSeverity, undocumentedLabel, verdictTitle, greenLineAllowed, VERDICT_TITLES,
+  type VerdictSeverity,
   type LoggableAlert, type MergedChannel,
 } from './safetyGuards';
 import {
@@ -297,5 +299,86 @@ describe('5. toute alerte affichée est journalisée avec sa source', () => {
     expect(risk('contre_indication')).toBe('dangerous');
     expect(risk('majeure')).toBe('dangerous');
     for (const s of ['a_evaluer', 'precaution', 'moderee', 'mineure']) expect(risk(s)).toBe('attention');
+  });
+});
+
+// ─── Sprint 4g — titre du verdict cohérent avec la liste affichée ────────────
+describe('4g. le titre du verdict ne contredit jamais la liste', () => {
+  const SEVERITIES: VerdictSeverity[] = ['safe', 'conditional', 'attention', 'dangerous'];
+  const RANK: Record<VerdictSeverity, number> = { safe: 0, conditional: 1, attention: 2, dangerous: 3 };
+  const VERT = VERDICT_TITLES.safe;
+
+  it('cas de la production : INALER + Doliprane, interaction « non documentée » listée', () => {
+    const r = reconcileVerdictWithDisplay('safe', { cartes: 1, nonDocumentees: 1, mineures: 0, infos: 0 });
+    expect(r).toEqual({ severity: 'conditional', lowered: true, note: '1 interaction de sévérité non documentée — à évaluer' });
+    expect(verdictTitle(r.severity)).toBe('Sécuritaire sous réserve');
+    expect(undocumentedLabel(2)).toBe('2 interactions de sévérité non documentée — à évaluer');
+  });
+
+  it('toutes les combinaisons : « Aucune interaction détectée » ⇔ verdict vert ET rien d’affiché', () => {
+    let verts = 0;
+    for (const severity of SEVERITIES)
+      for (const nonDocumentees of [0, 1, 3]) for (const mineures of [0, 1, 2]) for (const autres of [0, 1, 4]) for (const infos of [0, 1]) {
+        const cartes = nonDocumentees + mineures + autres;
+        const r = reconcileVerdictWithDisplay(severity, { cartes, nonDocumentees, mineures, infos });
+        const titre = verdictTitle(r.severity);
+        // 1. le titre vert n'existe que si la liste affichée est réellement vide
+        if (titre === VERT) {
+          verts++;
+          expect(severity).toBe('safe');
+          expect(cartes).toBe(0);
+          expect(infos).toBe(0);
+        }
+        if (severity === 'safe' && cartes === 0 && infos === 0) expect(titre).toBe(VERT);
+        // 2. un verdict n'est jamais atténué
+        expect(RANK[r.severity]).toBeGreaterThanOrEqual(RANK[severity]);
+        // 3. une sévérité non documentée est toujours dite, et donne au minimum « sous réserve »
+        if (nonDocumentees > 0) {
+          expect(r.note).toBe(undocumentedLabel(nonDocumentees));
+          expect(RANK[r.severity]).toBeGreaterThanOrEqual(RANK.conditional);
+        }
+        // 4. un verdict vert abaissé porte toujours sa raison
+        if (r.lowered) { expect(severity).toBe('safe'); expect(r.severity).toBe('conditional'); expect(r.note).toBeTruthy(); }
+      }
+    expect(verts).toBe(1);
+  });
+
+  it('raison affichée selon ce qui est listé', () => {
+    const note = (s: Partial<{ cartes: number; nonDocumentees: number; mineures: number; infos: number }>) =>
+      reconcileVerdictWithDisplay('safe', { cartes: 0, nonDocumentees: 0, mineures: 0, infos: 0, ...s }).note;
+    expect(note({ cartes: 2, mineures: 2 })).toBe('2 interactions mineures signalées');
+    expect(note({ cartes: 1 })).toBe('1 alerte affichée — à évaluer');
+    expect(note({ infos: 1 })).toBe('1 médicament sans DCI rattachée — vérification limitée');
+    expect(note({})).toBeNull();
+    // Verdict déjà sévère : seule la sévérité non documentée est ajoutée.
+    expect(reconcileVerdictWithDisplay('attention', { cartes: 3, nonDocumentees: 1, mineures: 1, infos: 0 }))
+      .toEqual({ severity: 'attention', lowered: false, note: '1 interaction de sévérité non documentée — à évaluer' });
+    expect(reconcileVerdictWithDisplay('dangerous', { cartes: 2, nonDocumentees: 0, mineures: 1, infos: 0 }).note).toBeNull();
+  });
+
+  it('sévérité non documentée ou inconnue', () => {
+    expect(isUndocumentedSeverity('non_classee')).toBe(true);
+    expect(isUndocumentedSeverity('inconnue')).toBe(true);
+    expect(isUndocumentedSeverity('')).toBe(true);
+    expect(isUndocumentedSeverity(null)).toBe(true);
+    for (const s of ['contre_indication', 'a_evaluer', 'majeure', 'precaution', 'moderee', 'mineure', 'info']) {
+      expect(isUndocumentedSeverity(s)).toBe(false);
+    }
+  });
+
+  it('titre particulier (« Vérification impossible ») conservé, sans pictogramme', () => {
+    expect(verdictTitle('attention', '⚠ Vérification impossible')).toBe('Vérification impossible');
+    expect(verdictTitle('safe', undefined)).toBe(VERT);
+    expect(verdictTitle('dangerous')).toBe('Prescription à risque');
+  });
+
+  it('ligne verte : jamais avec une carte, un bandeau d’exclusion ou une réserve — toutes combinaisons', () => {
+    let affichee = 0;
+    for (const severity of SEVERITIES) for (const cartes of [0, 1]) for (const fondExclus of [0, 1]) for (const reserves of [0, 2]) {
+      const ok = greenLineAllowed({ severity, cartes, fondExclus, reserves });
+      expect(ok).toBe(severity === 'safe' && cartes === 0 && fondExclus === 0 && reserves === 0);
+      if (ok) affichee++;
+    }
+    expect(affichee).toBe(1);
   });
 });

@@ -125,6 +125,49 @@ export function evaluateDraftOffer(
   return draftMedsKey(currentMeds) === draftMedsKey(draft.selectedMeds) ? 'resume' : 'conflict';
 }
 
+// ─── Sprint 4g — Un brouillon n'appartient qu'à SON patient ──────────────────
+
+/** Le brouillon est celui de ce patient (un identifiant absent ne correspond jamais). */
+export function draftBelongsTo(draft: Pick<OrdonnanceDraft, 'patientId'> | null | undefined, patientId: string | null | undefined): boolean {
+  return !!draft && !!patientId && draft.patientId === patientId;
+}
+
+/**
+ * Garde-fou de la REPRISE (dans la fonction de reprise, pas seulement dans l'interface) :
+ * message de refus si le patient sélectionné n'est pas celui du brouillon, sinon null.
+ * Aucun patient sélectionné : la reprise est permise, elle sélectionne le patient du brouillon.
+ */
+export function draftResumeBlockReason(
+  draft: Pick<OrdonnanceDraft, 'patientId'> | null | undefined,
+  selectedPatientId: string | null | undefined,
+  draftPatientId: string | null | undefined,
+): string | null {
+  if (!draft) return 'Brouillon introuvable.';
+  if (!draftPatientId || draft.patientId !== draftPatientId) return 'Le patient de ce brouillon est introuvable : il ne peut pas être repris.';
+  if (selectedPatientId && selectedPatientId !== draft.patientId) {
+    return 'Ce brouillon appartient à un autre patient que celui sélectionné : il n’a pas été repris.';
+  }
+  return null;
+}
+
+/** Médicaments du brouillon, tels qu'affichés (« Doliprane 1 G, Brufen 400 mg +2 »). */
+export function draftMedsLabel(d: Pick<OrdonnanceDraft, 'selectedMeds' | 'form'>, max = 3): string {
+  const fromSel = d.selectedMeds.map(m => (m.label || m.nom || '').trim()).filter(Boolean);
+  const fromForm = (d.form?.medications ?? []).map(m => m.nom.trim()).filter(Boolean);
+  const noms = fromSel.length >= fromForm.length ? fromSel : fromForm;
+  if (noms.length === 0) return 'aucun médicament';
+  const head = noms.slice(0, max).join(', ');
+  return noms.length > max ? `${head} +${noms.length - max}` : head;
+}
+
+/** « Brouillon pour Walid Idrissi du 09/10 03:00 — Doliprane 1 G » : patient ET médicaments, toujours. */
+export function draftBannerLabel(d: OrdonnanceDraft, patient: { prenom: string; nom: string }): string {
+  const dt = new Date(d.savedAt);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const quand = `${pad(dt.getDate())}/${pad(dt.getMonth() + 1)} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+  return `Brouillon pour ${`${patient.prenom} ${patient.nom}`.trim()} du ${quand} — ${draftMedsLabel(d)}`;
+}
+
 /** « 08/10 14:32 (2 médicaments) » */
 export function draftSummary(d: OrdonnanceDraft): string {
   const dt = new Date(d.savedAt);

@@ -15,7 +15,7 @@ import { PUBLIC_URL } from '../lib/config';
 import { fetchAllRows } from '../lib/fetchAllRows';
 import {
   saveDraft, loadDraft, clearDraft, getActiveDraftPatientId,
-  evaluateDraftOffer, isDraftWorthOffering, draftSummary, draftLinesForSelection, formHasContent,
+  evaluateDraftOffer, isDraftWorthOffering, draftBannerLabel, draftResumeBlockReason, draftBelongsTo, draftLinesForSelection, formHasContent,
   type DraftForm, type OrdonnanceDraft,
 } from '../lib/ordonnanceDraft';
 import { SPECIALITES } from '../lib/specialites';
@@ -87,6 +87,7 @@ import { pregnancyContext, classifyPregnancyAlert, isMajorTeratogen, pregnancySu
 import {
   excludedFond, fondExclusionLabel, verdictWithFondExclusion, patientFieldLabel, patientMismatchMessage,
   buildInteractionLogRows, applyMergedLines, type MergedChannel,
+  reconcileVerdictWithDisplay, isUndocumentedSeverity, verdictTitle, greenLineAllowed,
 } from '../lib/safetyGuards';
 import { PregnancyStatusEditor } from '../components/PregnancyStatusEditor';
 import { AgendaView } from '../components/ui/AgendaView';
@@ -1467,11 +1468,7 @@ function CheckerView({
                     {result.severity === 'dangerous' && <X             className="w-8 h-8 lg:w-10 lg:h-10 text-white flex-shrink-0" />}
                     <div className="min-w-0 flex-1">
                       <h3 className={`text-xl lg:text-2xl font-black uppercase tracking-tight ${result.severity === 'conditional' ? 'text-[#0A1628] dark:text-[#E2E8F0]' : 'text-white'}`}>
-                        {(result.title ?? (
-                          result.severity === 'safe'        ? 'Aucune interaction détectée' :
-                          result.severity === 'conditional' ? 'Sécuritaire sous réserve'    :
-                          result.severity === 'attention' ? 'Attention'                   : 'Prescription à risque'
-                        )).replace(/^[⚠✓]\s+/, '')}
+                        {verdictTitle(result.severity, result.title)}
                       </h3>
                       <p className={`mt-0.5 text-xs lg:text-sm break-words ${result.severity === 'conditional' ? 'text-[#0A1628]/80 dark:text-[#94A3B8]' : 'text-white/90'}`}>{result.description}</p>
                     </div>
@@ -1530,7 +1527,12 @@ function CheckerView({
             )}
 
             {/* Aucune alerte après analyse */}
-            {result && dedupAlerts.length === 0 && nonVerifiables.length < selectedMeds.length && (
+            {result && dedupAlerts.length === 0 && nonVerifiables.length < selectedMeds.length && greenLineAllowed({
+              severity: result.severity,
+              cartes: dedupAlerts.length,
+              fondExclus: excludedFond(fondTraitements, fondExcluded).filter(t => !selectedMedIds.has(fondMedId(t))).length,
+              reserves: infoAlerts.length + nonVerifiables.length,
+            }) && (
               <div className="flex items-start gap-2.5 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl dark:bg-emerald-500/[0.08] dark:border-emerald-500/20">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5 dark:text-emerald-400" />
                 <span className="text-sm text-emerald-800 font-medium dark:text-emerald-300">
@@ -4857,6 +4859,17 @@ export function DoctorDashboard() {
     if (pregnancyOnly) overallSeverity = 'conditional';
     // Alerte ferme mineure + bloc conditionnel : jamais de vert.
     else if (overallSeverity === 'safe' && pregnancyCtxCount > 0) overallSeverity = 'attention';
+    // Sprint 4g — le titre ne contredit jamais la liste : une carte affichée (interaction de
+    // sévérité non documentée, mineure…) interdit « Aucune interaction détectée ». Mêmes
+    // cartes que l'écran (dédoublonnées, hors informations).
+    const shownFirm = dedupClinicalAlerts(firmAlerts);
+    const display = reconcileVerdictWithDisplay(overallSeverity, {
+      cartes: shownFirm.length,
+      nonDocumentees: shownFirm.filter(a => isUndocumentedSeverity(a.severite)).length,
+      mineures: shownFirm.filter(a => a.severite === 'mineure').length,
+      infos: currentAlerts.filter(a => a.severite === 'info').length,
+    });
+    overallSeverity = display.severity;
     // Sprint 3 — seules des alertes préexistantes : « Sécuritaire sous réserve », jamais vert.
     const preexistingOnly = overallSeverity === 'safe' && preexistingCount > 0;
     if (preexistingOnly) overallSeverity = 'conditional';
@@ -4899,6 +4912,8 @@ export function DoctorDashboard() {
           ? `Aucun des médicaments sélectionnés ne permet la vérification automatique des interactions — vérifiez manuellement`
           : pregnancyOnly
             ? `Aucune alerte, sauf en cas de grossesse ou d'allaitement (${pregnancyCtxCount} CI)${pregnancyStale}`
+          : display.lowered
+            ? display.note!
           : preexistingOnly
             ? preexistingLabel
           : fondUnavailable
@@ -4940,9 +4955,11 @@ export function DoctorDashboard() {
       : withAllergy;
     // Sprint 4e-C — CI grossesse / allaitement écartées par le statut déclaré : toujours dites.
     // Sprint 4f — exclusion du fond : toujours dite, quel que soit le verdict.
-    const withExclusion = fondExclus.length === 0 ? withDoublons
+    // Sprint 4g — sévérité non documentée : toujours dite, quel que soit le verdict.
+    const withUndocumented = display.note && !display.lowered ? `${withDoublons} · ${display.note}` : withDoublons;
+    const withExclusion = fondExclus.length === 0 ? withUndocumented
       : fondExcluOnly ? `Aucune alerte sur les médicaments analysés · ${fondExclusLabel}`
-        : `${withDoublons} · ${fondExclusLabel}`;
+        : `${withUndocumented} · ${fondExclusLabel}`;
     const withPregnancy = pregnancyReassuredCount > 0
       ? `${withExclusion} · ${pregnancyReassuredCount} CI grossesse/allaitement sans objet d'après le statut déclaré (${pregnancySummary(pregCtx)})`
       : withExclusion;
@@ -5068,12 +5085,19 @@ export function DoctorDashboard() {
 
   const pendingDraftPatient = pendingDraft ? patients.find(p => p.id === pendingDraft.patientId) ?? null : null;
   // Proposition face à l'état actuel : une sélection différente n'est jamais écrasée.
-  const draftOffer = evaluateDraftOffer(pendingDraft, selectedPatient?.id ?? null, selectedMeds);
+  // Sprint 4g — un brouillon n'est proposé QUE pour son propre patient (ou sans patient sélectionné,
+  // en le nommant) : jamais sous un autre patient.
+  const draftOffer = selectedPatient && !draftBelongsTo(pendingDraft, selectedPatient.id)
+    ? 'none' as const
+    : evaluateDraftOffer(pendingDraft, selectedPatient?.id ?? null, selectedMeds);
 
   /** « Reprendre » : applique le brouillon ; l'analyse repart, le formulaire se rouvre après le verdict. */
   const resumePendingDraft = () => {
     const d = pendingDraft;
     if (!d || !pendingDraftPatient) return;
+    // Sprint 4g — garde-fou dans la fonction elle-même : jamais de reprise pour un autre patient.
+    const refus = draftResumeBlockReason(d, selectedPatient?.id ?? null, pendingDraftPatient.id);
+    if (refus) { showToast(refus, 'error'); return; }
     if (evaluateDraftOffer(d, selectedPatient?.id ?? null, selectedMeds) !== 'resume') return;
     pendingDraftRef.current = null;
     setPendingDraft(null);
@@ -5231,37 +5255,43 @@ export function DoctorDashboard() {
           onScroll={e => { scrollMemRef.current[scrollViewRef.current] = e.currentTarget.scrollTop; }}
           className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0"
         >
+          {/* Sprint 4g — bandeau du brouillon : patient et médicaments toujours nommés ; hauteur
+              FIXE (aucun décalage de la page quand la sélection change pendant la saisie). */}
           {activeView === 'checker' && pendingDraft && pendingDraftPatient && draftOffer !== 'none' && (
             <div
               role="status"
-              className="mx-4 mt-4 lg:mx-6 lg:mt-6 flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.1] border-l-4 border-l-[#0A1628] dark:border-l-slate-300"
+              className="mx-4 mt-4 lg:mx-6 lg:mt-6 h-[96px] sm:h-[60px] flex flex-col sm:flex-row sm:items-center justify-center gap-2 sm:gap-3 px-4 rounded-2xl overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.1] border-l-4 border-l-[#0A1628] dark:border-l-slate-300"
             >
-              <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                <Clock className="w-4 h-4 mt-0.5 text-[#0A1628] dark:text-slate-300 flex-shrink-0" aria-hidden />
-                <p className="text-sm text-[#0A1628] dark:text-[#E2E8F0]">
-                  <span className="font-semibold">Brouillon du {draftSummary(pendingDraft)}</span>
-                  {!selectedPatient && <> — {pendingDraftPatient.prenom} {pendingDraftPatient.nom}</>}
-                  {draftOffer === 'conflict' && (
-                    <span className="block text-xs text-slate-600 dark:text-[#94A3B8] mt-0.5">
-                      Il ne correspond pas à la sélection actuelle et ne la remplacera pas. Videz la sélection pour le reprendre, ou supprimez-le.
-                    </span>
-                  )}
+              <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                <Clock className="w-4 h-4 text-[#0A1628] dark:text-slate-300 flex-shrink-0" aria-hidden />
+                <p
+                  className="text-sm font-semibold text-[#0A1628] dark:text-[#E2E8F0] truncate"
+                  title={`${draftBannerLabel(pendingDraft, pendingDraftPatient)}${draftOffer === 'conflict' ? ' — il ne correspond pas à la sélection actuelle et ne la remplacera pas. Videz la sélection pour le reprendre, ou supprimez-le.' : ''}`}
+                >
+                  {draftBannerLabel(pendingDraft, pendingDraftPatient)}
                 </p>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
-                {draftOffer === 'resume' && (
+                {draftOffer === 'resume' ? (
                   <button
                     type="button"
                     onClick={resumePendingDraft}
-                    className="px-4 py-2 rounded-xl bg-[#00A86B] hover:bg-[#006B47] text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2"
+                    className="h-9 px-4 rounded-xl bg-[#00A86B] hover:bg-[#006B47] text-white text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2"
                   >
                     Reprendre
                   </button>
+                ) : (
+                  <span
+                    className="h-9 inline-flex items-center px-3 rounded-xl text-xs font-semibold text-slate-500 dark:text-[#94A3B8] bg-slate-100 dark:bg-white/[0.05] whitespace-nowrap"
+                    title="Le brouillon ne correspond pas à la sélection actuelle et ne la remplacera pas. Videz la sélection pour le reprendre."
+                  >
+                    Sélection différente
+                  </span>
                 )}
                 <button
                   type="button"
                   onClick={deletePendingDraft}
-                  className="px-3 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                  className="h-9 px-3 rounded-xl text-sm font-semibold text-slate-600 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
                 >
                   Supprimer
                 </button>
