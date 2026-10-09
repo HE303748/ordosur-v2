@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { createActionLock } from '../../lib/viewCache';
 import {
-  Check, X, Printer, Download, Share2, RotateCcw, CalendarPlus, Undo2, AlertTriangle, FileText, Clock,
+  Check, X, Printer, Download, Share2, RotateCcw, CalendarPlus, Undo2, AlertTriangle, FileText, Clock, ClipboardCheck,
 } from 'lucide-react';
 import type { Patient } from '../../lib/supabase';
 import { notifyDataChanged } from '../../lib/dataSync';
@@ -12,6 +12,10 @@ import {
 import { cancelDemande, cancelLigne, markDemandeRealisee, setLigneStatut } from '../../lib/examensApi';
 import { openExamRequest, outputDemande, requestPlanRdv, type OutputMode, type PrintContext } from '../../lib/examUi';
 import { canSharePdf } from '../../lib/examPdf';
+import { lignesASaisir } from '../../lib/resultatsLogic';
+
+// Sprint 6A — formulaire de saisie des résultats, chargé à l'ouverture.
+const ResultatsDemandeForm = lazy(() => import('../bilans/ResultatsDemandeForm').then(m => ({ default: m.ResultatsDemandeForm })));
 
 const STATUT_LABEL: Record<DemandeExamens['statut'], { label: string; cls: string }> = {
   en_attente: { label: 'En attente', cls: 'bg-slate-100 text-slate-700 dark:bg-white/[0.07] dark:text-[#CBD5E1]' },
@@ -62,6 +66,9 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
   const realisees = lignes.filter(l => l.statut === 'realise').length;
   const st = STATUT_LABEL[d.statut];
   const shareable = canSharePdf();
+  // Sprint 6A — examens de la demande qui attendent encore un résultat.
+  const aSaisir = d.statut === 'annule' ? 0 : lignesASaisir(d.lignes).length;
+  const [showResults, setShowResults] = useState(false);
 
   // Sprint P — double clic : une seule écriture / un seul PDF (verrou synchrone).
   const lock = useRef(createActionLock()).current;
@@ -214,7 +221,7 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
                       <p className="text-xs text-slate-500 dark:text-[#94A3B8] break-words">{[prec, l.question_clinique ? `Question : ${l.question_clinique}` : ''].filter(Boolean).join(' · ')}</p>
                     )}
                     <p className="text-[11px] text-slate-400 dark:text-[#64748B] mt-0.5">
-                      {l.statut === 'realise' ? `Réalisé le ${formatFr(l.date_realisation)} — résultat à saisir` : l.statut === 'annule' ? 'Annulé' : 'En attente de résultat'}
+                      {l.statut === 'realise' ? `Réalisé le ${formatFr(l.date_realisation)} — ${l.resultat_id ? 'résultat saisi' : 'résultat à saisir'}` : l.statut === 'annule' ? 'Annulé' : 'En attente de résultat'}
                     </p>
                   </div>
                   {canWrite && l.statut === 'en_attente' && (
@@ -260,8 +267,13 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
 
           {!pending && (
             <div className="mt-3 flex flex-wrap gap-2">
+              {canWrite && patient && aSaisir > 0 && (
+                <button type="button" onClick={() => { setMessage(null); setShowResults(true); }} className={btnPrimary}>
+                  <ClipboardCheck className="w-3.5 h-3.5" aria-hidden /> Saisir les résultats
+                </button>
+              )}
               {canWrite && open && attente.length > 0 && (
-                <button type="button" onClick={() => { setDate(todayIso); setPending({ kind: 'realise', ligne: null }); setMessage(null); }} className={btnPrimary}>
+                <button type="button" onClick={() => { setDate(todayIso); setPending({ kind: 'realise', ligne: null }); setMessage(null); }} className={patient && aSaisir > 0 ? btnNeutral : btnPrimary}>
                   <Check className="w-3.5 h-3.5" aria-hidden /> {attente.length > 1 ? 'Tout marquer réalisé' : 'Marquer réalisé'}
                 </button>
               )}
@@ -302,6 +314,12 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
             </div>
           )}
         </div>
+      )}
+      {showResults && patient && (
+        <Suspense fallback={null}>
+          <ResultatsDemandeForm demande={d} patientName={`${patient.prenom} ${patient.nom}`} onClose={() => setShowResults(false)}
+            onSaved={n => { setShowResults(false); setMessage({ type: 'ok', text: `${n} résultat${n > 1 ? 's' : ''} enregistré${n > 1 ? 's' : ''}` }); }} />
+        </Suspense>
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import type { Patient } from '../../lib/supabase';
 import { prochainBilan } from '../../lib/examRequest';
 import { openExamRequest } from '../../lib/examUi';
 import { usePatientDemandes } from '../../hooks/useExamData';
+import { DerniersBilansLine } from '../bilans/BilanWidgets';
 
 /** « Prochain bilan prévu le JJ/MM » / « Bilan en retard depuis le JJ/MM » — pastille seule. */
 export function ProchainBilanBadge({ patientId, className = '', onClick }: { patientId: string; className?: string; onClick?: () => void }) {
@@ -48,6 +49,8 @@ export function PatientExamStrip({ patient, canWrite }: { patient: Patient; canW
           Demande d’examens
         </button>
       )}
+      {/* Sprint 6A — derniers résultats (information ; le moteur ne les lit pas) */}
+      <DerniersBilansLine patient={patient} />
     </div>
   );
 }

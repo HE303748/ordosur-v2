@@ -34,6 +34,9 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
 ## Base de données (Supabase yxzvukryngvlzjgaydqj)
 - Tables clés : medicaments 52 802 (colonne `dci_canonique`) · drug_interactions 163 124 ·
   pathologies 48 041 · pathologies_curees 372 · contraindications 1 421 · allergies_reference 71.
+- Bilans (Sprint 6A) : `resultats_examens` (valeurs figées ; correction = archivage avec motif + nouvelle ligne ;
+  interprétation calculée en base UNIQUEMENT d'après les bornes du labo saisies ; RPC `enregistrer_resultats_examens`).
+  Règles pures : `src/lib/resultatsLogic.ts`. Conversions d'unités : uniquement `examens_reference.unites`.
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).

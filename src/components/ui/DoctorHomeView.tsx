@@ -9,6 +9,7 @@ import type { ViewType } from './Sidebar';
 import { PageTransition } from './PageTransition';
 import { PatientAvatar } from './PatientAvatar';
 import { ExamensSuiviCard } from '../exams/ExamensSuiviCard';
+import { ResultatsARevoirCard } from '../bilans/BilanWidgets';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -440,6 +441,9 @@ export function DoctorHomeView({
 
         {/* Sprint 5B — Examens à suivre (retards, échéances sous 7 jours) : masquée s'il n'y a rien */}
         <ExamensSuiviCard patients={patients} onOpenPatient={onOpenPatient} onSeeAll={onSeeAllExamens} />
+
+        {/* Sprint 6A — Résultats à revoir (Bas, Haut, Anormal, positifs non vus) : masquée s'il n'y en a pas */}
+        <ResultatsARevoirCard patients={patients} onOpenPatient={onOpenPatient} />
 
         {/* 5. Patients récents + 6. Dernières alertes */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">

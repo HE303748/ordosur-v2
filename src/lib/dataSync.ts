@@ -5,7 +5,7 @@
 import { useEffect, useRef } from 'react';
 import { viewCache } from './viewCache';
 
-export type SyncTopic = 'ordonnances' | 'rendez_vous' | 'antecedents' | 'examens';
+export type SyncTopic = 'ordonnances' | 'rendez_vous' | 'antecedents' | 'examens' | 'bilans';
 
 const bus = new EventTarget();
 

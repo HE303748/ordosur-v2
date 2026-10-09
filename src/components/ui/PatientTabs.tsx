@@ -4,7 +4,7 @@ import {
   Heart, FileText, Syringe, FolderOpen, Activity,
   Phone, Mail, MapPin, Plus, AlertTriangle, User,
   Droplets, Edit, X, Stethoscope, Clock,
-  CheckCircle2, AlertCircle, FlaskConical,
+  CheckCircle2, AlertCircle, FlaskConical, LineChart,
 } from 'lucide-react';
 import { PatientAvatar } from './PatientAvatar';
 import { TraitementFondSection } from './TraitementFondSection';
@@ -15,6 +15,8 @@ import type { Patient as DbPatient } from '../../lib/supabase';
 import { openExamRequest, consumePatientTab, onPatientTabRequest } from '../../lib/examUi';
 import { ExamensSection } from '../exams/ExamensSection';
 import { ProchainBilanBadge } from '../exams/PatientExamStrip';
+import { BilansSection } from '../bilans/BilansSection';
+import { ARevoirBadge } from '../bilans/BilanWidgets';
 
 interface Patient {
   id: string;
@@ -50,12 +52,13 @@ interface Consultation {
   created_at: string;
 }
 
-type TabId = 'resume' | 'ordonnances' | 'examens' | 'consultations' | 'documents' | 'vaccination';
+type TabId = 'resume' | 'ordonnances' | 'examens' | 'bilans' | 'consultations' | 'documents' | 'vaccination';
 
 const TABS: { id: TabId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'resume',       label: 'Résumé',       icon: User       },
   { id: 'ordonnances',  label: 'Ordonnances',  icon: FileText   },
   { id: 'examens',      label: 'Examens',      icon: FlaskConical },
+  { id: 'bilans',       label: 'Bilans',       icon: LineChart  },
   { id: 'consultations',label: 'Consultations',icon: Activity   },
   { id: 'documents',    label: 'Documents',    icon: FolderOpen },
   { id: 'vaccination',  label: 'Vaccination',  icon: Syringe    },
@@ -752,6 +755,8 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
                 </span>
                 {/* Sprint 5B — « Prochain bilan prévu le JJ/MM » / « Bilan en retard depuis le JJ/MM » */}
                 <ProchainBilanBadge patientId={patient.id} onClick={() => setActiveTab('examens')} />
+                {/* Sprint 6A — résultats Bas / Haut / Anormal / positifs non encore vus */}
+                <ARevoirBadge patientId={patient.id} onClick={() => setActiveTab('bilans')} />
                 {(patient.allergies_medicaments?.length ?? 0) > 0 && (
                   <span className="text-xs text-red-500 font-semibold">
                     ⚠ {patient.allergies_medicaments!.length} allergie(s) médicamenteuse(s)
@@ -816,6 +821,7 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
                     {ordonnances.length}
                   </span>
                 )}
+                {tab.id === 'bilans' && <ARevoirBadge patientId={patient.id} compact />}
               </button>
             );
           })}
@@ -838,6 +844,9 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
               : <OrdonnancesTab ordonnances={ordonnances} />)}
             {activeTab === 'examens' && (
               <ExamensSection patient={patient as unknown as DbPatient} canWrite={!!doctorId && !!orgId} />
+            )}
+            {activeTab === 'bilans' && (
+              <BilansSection patient={patient as unknown as DbPatient} canWrite={!!doctorId && !!orgId} />
             )}
             {activeTab === 'consultations' && (
               <ConsultationsTab
