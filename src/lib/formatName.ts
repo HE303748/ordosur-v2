@@ -45,6 +45,31 @@ export function formatCabinet(name: string | null | undefined): string {
   return `${m[1]}Dr ${formatNomPropre(m[2])}`.replace(/\s+/g, ' ').trim();
 }
 
+const nameTokens = (x: string | null | undefined): string[] =>
+  (x ?? '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+
+// Mots qui ne nomment personne : « Cabinet médical du Dr … ».
+const CABINET_GENERIC = new Set(['cabinet', 'medical', 'dr', 'docteur', 'du', 'de', 'des', 'd', 'le', 'la', 'l']);
+
+/**
+ * Nom du cabinet à imprimer, ou '' s'il ne fait que répéter le nom du médecin : celui-ci
+ * figure déjà dans l'en-tête (« Dr Prénom Nom ») et ne doit apparaître qu'UNE fois.
+ * Comparaison sans casse, sans accents, sans « Dr » ni mots génériques :
+ *   cabinetDistinct('Cabinet Dr Oussama AJMIL', 'Oussama', 'Ajmil') → ''
+ *   cabinetDistinct('Cabinet du Docteur Ajmil', 'Oussama', 'Ajmil') → ''
+ *   cabinetDistinct('Centre médical Al Amal', 'Oussama', 'Ajmil')   → 'Centre médical Al Amal'
+ */
+export function cabinetDistinct(
+  orgName: string | null | undefined, prenom: string | null | undefined, nom: string | null | undefined,
+): string {
+  const label = formatCabinet(orgName);
+  if (!label) return '';
+  const doctor = new Set([...nameTokens(prenom), ...nameTokens(nom)]);
+  const propres = nameTokens(label).filter(t => !CABINET_GENERIC.has(t));
+  const repete = propres.length > 0 && propres.every(t => doctor.has(t));
+  return repete ? '' : label;
+}
+
 /** « M. » ou « Mme » selon le sexe du patient ; « M./Mme » seulement si le sexe est inconnu. */
 export function civilite(sexe: string | null | undefined): 'M.' | 'Mme' | 'M./Mme' {
   const x = (sexe ?? '').trim().toLowerCase();

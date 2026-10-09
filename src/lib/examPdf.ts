@@ -9,10 +9,9 @@ import {
   buildOrdonnancePdf, drawDocumentHeader, drawPageChrome, drawSignatureBlock, loadPdfChromeAssets, stampPageNumbers,
   PDF_COLORS as C, PDF_LAYOUT, type PdfChromeAssets, type PdfDocumentHeader, type PdfImage, type PdfOrdonnanceData,
 } from './pdfService';
-import { formatCabinet } from './formatName';
 import { arabicInstructions, fastingLabel, type ExamPage } from './examDocument';
 
-const { PAGE_W, PAGE_H, MARGIN_L, MARGIN_R, CONTENT_W } = PDF_LAYOUT;
+const { PAGE_W, MARGIN_L, MARGIN_R, CONTENT_W } = PDF_LAYOUT;
 const AMBER = '#B45309';
 const BOTTOM_LIMIT = 236; // au-delà : nouvelle page (place pour la signature et le pied)
 
@@ -60,15 +59,6 @@ export function renderArabicLine(text: string, heightMm = 5): ArabicImage | null
   }
 }
 
-function drawFooter(doc: jsPDF, header: ExamPdfHeader): void {
-  doc.setFontSize(6.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_FAINT);
-  // Cabinet seul : la date est dans l'en-tête, le numéro de demande n'est plus imprimé.
-  // Numéro de page : posé à la fin sur TOUT le document (stampPageNumbers), ordonnance comprise.
-  doc.text(formatCabinet(header.org.name), PAGE_W / 2, PAGE_H - 6, { align: 'center' });
-}
-
 function drawExamPage(doc: jsPDF, page: ExamPage, header: ExamPdfHeader, assets: PdfChromeAssets, bilingual: boolean): void {
   const chrome = () => drawPageChrome(doc, assets.watermark);
   chrome();
@@ -79,7 +69,6 @@ function drawExamPage(doc: jsPDF, page: ExamPage, header: ExamPdfHeader, assets:
   const rule = () => { doc.setDrawColor(C.DIVIDER); doc.setLineWidth(0.4); doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y); };
   const ensure = (need: number) => {
     if (y + need <= BOTTOM_LIMIT) return;
-    drawFooter(doc, header);
     doc.addPage();
     chrome();
     y = 22;
@@ -268,7 +257,6 @@ function drawExamPage(doc: jsPDF, page: ExamPage, header: ExamPdfHeader, assets:
         cont = b.label === null && !!b.group; // groupe coupé : son titre est rappelé « (suite) »
         if (col === 0) { col = 1; colLimit = BOTTOM_LIMIT; cy = startY; }
         else {
-          drawFooter(doc, header);
           doc.addPage();
           chrome();
           startY = 22; col = 0; cy = startY; colLimit = BOTTOM_LIMIT; maxY = startY;
@@ -299,8 +287,9 @@ function drawExamPage(doc: jsPDF, page: ExamPage, header: ExamPdfHeader, assets:
     y += 7;
   }
 
+  // Pied de page : aucune mention (nom, date, numéro) ; « Page x/N » est posé à la fin sur
+  // TOUT le document (stampPageNumbers), ordonnance comprise.
   drawSignatureBlock(doc, Math.max(y + 8, 232));
-  drawFooter(doc, header);
 }
 
 /** Ajoute les pages d'examens à un document existant (après l'ordonnance) ou vide. */

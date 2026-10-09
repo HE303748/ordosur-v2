@@ -9,7 +9,7 @@ import { buildOrdonnanceWithExamsPdf, canSharePdf } from '../lib/examPdf';
 import { outputPdf, type OutputMode } from '../lib/examUi';
 import { ExamPagesPreview } from './exams/ExamPagesPreview';
 import { formatAge } from '../lib/ageUtils';
-import { formatNomPropre, formatDocteur, formatCabinet, civilite } from '../lib/formatName';
+import { formatNomPropre, formatDocteur, cabinetDistinct, civilite } from '../lib/formatName';
 import { DocumentSignatureBlock } from './DocumentSignatureBlock';
 
 interface MedicationForm {
@@ -135,6 +135,8 @@ export function PrescriptionPreviewModal({
     try { await onSave({ keepPreview: true }); } finally { setSaving(false); }
   };
 
+  // Nom du cabinet : masqué s'il ne fait que répéter le nom du médecin (imprimé une seule fois).
+  const cabinetName = cabinetDistinct(org.name, doctor.prenom, doctor.nom);
   const hasExams = examPages.length > 0;
   // Sprint 5c — partage natif (mobile) pour l'ordonnance seule comme pour l'ordonnance + examens.
   const shareable = canSharePdf();
@@ -209,7 +211,7 @@ export function PrescriptionPreviewModal({
               <div>
                 {logo_url
                   ? <img src={logo_url} alt="Logo cabinet" className="max-h-14 max-w-[160px] object-contain mb-1" />
-                  : <h2 className="text-lg font-bold text-blue-700">{formatCabinet(org.name)}</h2>
+                  : cabinetName && <h2 className="text-lg font-bold text-blue-700">{cabinetName}</h2>
                 }
                 {org.adresse && <p className="text-sm text-gray-600">{org.adresse}</p>}
                 {org.telephone && <p className="text-sm text-gray-600">Tél : {org.telephone}</p>}

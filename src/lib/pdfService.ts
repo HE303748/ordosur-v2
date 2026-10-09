@@ -1,7 +1,7 @@
 // Sprint P — jsPDF (≈ 390 Ko) n'est plus dans le bundle initial : importé au premier PDF.
 import type { jsPDF } from 'jspdf';
 import { formatAge } from './ageUtils';
-import { formatNomPropre, formatDocteur, formatCabinet, civilite } from './formatName';
+import { formatNomPropre, formatDocteur, cabinetDistinct, civilite } from './formatName';
 import { printedPosologie } from './posologie';
 
 interface MedicationLine {
@@ -170,7 +170,8 @@ const CONTENT_W = PAGE_W - MARGIN_L - MARGIN_R;
 /* ════════════════════════════════════════════════════════════════════════════
    EN-TÊTE PARTAGÉ — ordonnance et certificats (Sprint 4d-quater)
    Même habillage (bandes vertes, filigrane) et même bloc d'identité : médecin,
-   spécialité, N° d'Ordre, INPE, cabinet, adresse, téléphone.
+   spécialité, N° d'Ordre, INPE, cabinet (si distinct du médecin), adresse, téléphone.
+   Le nom du médecin n'est imprimé qu'ICI : ni bloc signature, ni pied de page.
    ════════════════════════════════════════════════════════════════════════════ */
 
 export interface PdfDocumentHeader {
@@ -254,7 +255,9 @@ export function drawDocumentHeader(doc: jsPDF, h: PdfDocumentHeader, logo: PdfIm
   lhY += 2.5;
   doc.setFontSize(7.5);
   doc.setTextColor(C.INK_FAINT);
-  if (h.org.name)      { lhY += 3.5; doc.text(formatCabinet(h.org.name), MARGIN_L, lhY); }
+  // Nom du cabinet : seulement s'il diffère du nom du médecin (imprimé UNE fois, ci-dessus).
+  const cabinet = cabinetDistinct(h.org.name, h.doctor.prenom, h.doctor.nom);
+  if (cabinet)         { lhY += 3.5; doc.text(cabinet, MARGIN_L, lhY); }
   if (h.org.adresse)   { lhY += 3.5; doc.text(h.org.adresse, MARGIN_L, lhY); }
   if (h.org.telephone) { lhY += 3.5; doc.text(`Tél : ${h.org.telephone}`, MARGIN_L, lhY); }
   lhY += 2;
@@ -394,11 +397,8 @@ export async function buildOrdonnancePdf(
   // ── Signature / cachet (la date est dans l'en-tête) ───────────────────────
   drawSignatureBlock(doc, Math.max(y + 10, 232));
 
-  // ── Pied de page neutre : cabinet seul (ni date, ni numéro d'ordonnance) ──
-  doc.setFontSize(6.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_FAINT);
-  doc.text(formatCabinet(data.org.name), PAGE_W / 2, PAGE_H - 6, { align: 'center' });
+  // ── Pied de page : aucune mention (ni nom du médecin ou du cabinet, ni date, ni numéro).
+  //    Seul « Page x/N » y est posé quand le document a plusieurs pages (stampPageNumbers).
 
   const fileName = `ordonnance_${data.patient.nom}_${data.patient.prenom}_${data.date}.pdf`
     .replace(/[^a-zA-Z0-9_.-]/g, '_');

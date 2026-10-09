@@ -14,7 +14,7 @@ import { formatNomPropre } from '../../lib/formatName';
 import {
   drawSignatureBlock, loadPdfChromeAssets, drawPageChrome, drawDocumentHeader, PDF_LAYOUT, PDF_COLORS,
 } from '../../lib/pdfService';
-import { formatDocteur, formatCabinet, civilite } from '../../lib/formatName';
+import { formatDocteur, formatCabinet, cabinetDistinct, civilite } from '../../lib/formatName';
 import { DocumentSignatureBlock } from '../DocumentSignatureBlock';
 import { ExamensListView } from '../exams/ExamensListView';
 
@@ -383,10 +383,8 @@ async function generateCertificatPdf(params: {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.5);
   doc.setTextColor(160, 160, 160);
-  doc.text(
-    [formatCabinet(doctor.orgName), `N° ${numero}`].filter(Boolean).join('  ·  '),
-    pageW / 2, pageH - 8, { align: 'center' }
-  );
+  // Pied de page : numéro du certificat seul — aucune mention du médecin ni du cabinet.
+  doc.text(`N° ${numero}`, pageW / 2, pageH - 8, { align: 'center' });
 
   doc.save(`certificat-${type}-${numero}.pdf`);
 }
@@ -1069,7 +1067,10 @@ export function DocumentsView({ patients, showToast, doctorProfile, org, initial
                         {doctorInfo.specialite && <p className="text-xs text-slate-500">{doctorInfo.specialite}</p>}
                         {doctorInfo.ordre && <p className="text-xs text-slate-500">N° Ordre : {doctorInfo.ordre}</p>}
                         {doctorInfo.inpe && <p className="text-xs text-slate-500">INPE : {doctorInfo.inpe}</p>}
-                        <p className="text-xs text-slate-400 mt-1">{formatCabinet(doctorInfo.orgName)}</p>
+                        {/* Cabinet : masqué s'il ne fait que répéter le nom du médecin */}
+                        {cabinetDistinct(doctorInfo.orgName, doctorInfo.prenom, doctorInfo.nom) && (
+                          <p className="text-xs text-slate-400 mt-1">{cabinetDistinct(doctorInfo.orgName, doctorInfo.prenom, doctorInfo.nom)}</p>
+                        )}
                         {doctorInfo.adresse && <p className="text-xs text-slate-400">{doctorInfo.adresse}</p>}
                         {doctorInfo.telephone && <p className="text-xs text-slate-400">Tél : {doctorInfo.telephone}</p>}
                       </div>
@@ -1104,7 +1105,7 @@ export function DocumentsView({ patients, showToast, doctorProfile, org, initial
 
                     {/* Footer */}
                     <p className="text-center text-xs text-slate-300 mt-6">
-                      {formatCabinet(doctorInfo.orgName)} · N° {certNumero}
+                      N° {certNumero}
                     </p>
                   </div>
                 </div>
