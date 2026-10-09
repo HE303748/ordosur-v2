@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useDataSync } from '../lib/dataSync';
+import { viewCache } from '../lib/viewCache';
 import type { ExamRef, ExamPack } from '../lib/examSearch';
 import type { DemandeExamens } from '../lib/examRequest';
 import { loadExamRefs, loadPacks, loadPackUsage, loadPatientDemandes, loadNextRdvDate } from '../lib/examensApi';
@@ -10,19 +11,24 @@ import type { PrintContext } from '../lib/examUi';
 
 /** Demandes d'examens d'un patient, rechargées à chaque changement publié (« examens »). */
 export function usePatientDemandes(patientId: string | null | undefined) {
-  const [demandes, setDemandes] = useState<DemandeExamens[]>([]);
+  const key = patientId ? `demandes:${patientId}` : null;
+  const [demandes, setDemandes] = useState<DemandeExamens[]>(() => (key ? viewCache.peek<DemandeExamens[]>(key) ?? [] : []));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const seq = useRef(0);
 
-  const reload = useCallback(async () => {
-    if (!patientId) { setDemandes([]); return; }
+  // Sprint P — cache de vue : contenu immédiat au retour sur le profil, rafraîchi en arrière-plan.
+  // Plusieurs composants abonnés au même patient (en-tête, onglet, Vérificateur) partagent UNE
+  // requête : plus de double appel après « Marquer réalisé ».
+  const reload = useCallback(async (force = false) => {
+    if (!patientId || !key) { setDemandes([]); return; }
     const s = ++seq.current;
     try {
-      const rows = await loadPatientDemandes(patientId);
-      if (s !== seq.current) return;
-      setDemandes(rows);
-      setError(null);
+      await viewCache.swr<DemandeExamens[]>(
+        key, () => loadPatientDemandes(patientId),
+        rows => { if (s === seq.current) { setDemandes(rows); setError(null); setLoading(false); } },
+        { topics: ['examens'], maxAgeMs: 30_000, force },
+      );
     } catch (e) {
       if (s !== seq.current) return;
       console.error('[examens] chargement des demandes :', e);
@@ -30,19 +36,21 @@ export function usePatientDemandes(patientId: string | null | undefined) {
     } finally {
       if (s === seq.current) setLoading(false);
     }
-  }, [patientId]);
+  }, [patientId, key]);
 
   useEffect(() => {
-    setDemandes([]);
+    const cached = key ? viewCache.peek<DemandeExamens[]>(key) : undefined;
+    setDemandes(cached ?? []);
     setError(null);
     if (!patientId) { setLoading(false); return; }
-    setLoading(true);
+    setLoading(!cached);
     void reload();
-  }, [patientId, reload]);
+  }, [patientId, key, reload]);
 
+  // Le sujet « examens » a déjà périmé le cache (notifyDataChanged) : simple revalidation.
   useDataSync(['examens'], () => { void reload(); });
 
-  return { demandes, loading, error, reload };
+  return { demandes, loading, error, reload: () => reload(true) };
 }
 
 /** Référentiel + packs (triés par usage de CE médecin). Référentiel mis en cache par session. */

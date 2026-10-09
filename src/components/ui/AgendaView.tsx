@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { notifyDataChanged, useDataSync } from '../../lib/dataSync';
+import { viewCache } from '../../lib/viewCache';
 import { useAuth } from '../../contexts/AuthContext';
 import { PageTransition } from './PageTransition';
 
@@ -338,12 +339,17 @@ export function AgendaView({ patients, showToast, initialDate, prefill = null }:
     if (!loadedRef.current) setLoading(true);
     const start = fmt(weekDays[0]);
     const end = fmt(weekDays[6]);
+    // Sprint P — semaine déjà vue : affichée tout de suite, rafraîchie en arrière-plan.
+    const cacheKey = `agenda:${user.org_id}:${start}:${end}`;
+    const cached = viewCache.peek<RendezVous[]>(cacheKey);
+    if (cached) { setRdvs(cached); loadedRef.current = true; setLoading(false); }
     const { data } = await supabase
       .from('rendez_vous').select('*')
       .eq('org_id', user.org_id)
       .gte('date', start).lte('date', end)
       .order('heure_debut');
     setRdvs(data || []);
+    if (data) viewCache.set(cacheKey, data as RendezVous[], ['rendez_vous']);
     loadedRef.current = true;
     setLoading(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps

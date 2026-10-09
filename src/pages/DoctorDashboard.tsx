@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
@@ -37,7 +37,14 @@ import { docInputFromDraft, onOpenExamRequest, onPlanRdvRequest, pagesFromDemand
 import type { DemandeExamens } from '../lib/examRequest';
 import { buildOrdonnanceWithExamsPdf, downloadPdf } from '../lib/examPdf';
 import { scrollTargetOnViewChange } from '../lib/uiPlacement';
-import { ExamRequestModal } from '../components/exams/ExamRequestModal';
+// Sprint P — vues et librairies lourdes chargées à la demande (jsPDF, Recharts, SheetJS)
+import {
+  AgendaView, DocumentsView, EncyclopedieView, AIChat, PatientImportModal, ExamRequestModal,
+  MonthlyInteractionsChart, RiskDistributionChart, TopMedicationsSection, RecentActivityTimeline, AllMedicationsHistory,
+  ViewSkeleton, preloadLikelyViews,
+} from '../lib/viewChunks';
+import { viewCache, createActionLock } from '../lib/viewCache';
+import { resolveDoctorInfos } from '../lib/doctorNames';
 import { PatientExamStrip } from '../components/exams/PatientExamStrip';
 import { DerogationModal } from '../components/DerogationModal';
 import { posologieBlockMessage } from '../lib/posologie';
@@ -57,11 +64,6 @@ import {
   type DerogationConfirmation,
 } from '../lib/derogation';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
-import { PatientImportModal } from '../components/PatientImportModal';
-import {
-  MonthlyInteractionsChart, RiskDistributionChart,
-  TopMedicationsSection, RecentActivityTimeline, AllMedicationsHistory,
-} from '../components/DoctorAnalytics';
 import { EmailVerificationBanner } from '../components/EmailVerificationBanner';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 
@@ -69,7 +71,6 @@ import { Sidebar, type ViewType } from '../components/ui/Sidebar';
 import { useViewState } from '../hooks/useViewState';
 import { MobileBottomNav } from '../components/ui/MobileBottomNav';
 import { TopBar } from '../components/ui/TopBar';
-import { AIChat } from '../components/ui/AIChat';
 import { PatientAvatar } from '../components/ui/PatientAvatar';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PageTransition } from '../components/ui/PageTransition';
@@ -90,9 +91,6 @@ import {
   reconcileVerdictWithDisplay, isUndocumentedSeverity, verdictTitle, greenLineAllowed,
 } from '../lib/safetyGuards';
 import { PregnancyStatusEditor } from '../components/PregnancyStatusEditor';
-import { AgendaView } from '../components/ui/AgendaView';
-import { EncyclopedieView } from '../components/ui/EncyclopedieView';
-import { DocumentsView } from '../components/ui/DocumentsView';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -1625,9 +1623,14 @@ interface OrdonnancesViewProps {
   doctorInfo?: { nom: string; prenom: string; specialite?: string | null; rpps?: string | null; ordre_number?: string | null } | null;
   orgInfo?: { name: string; adresse?: string | null; telephone?: string | null } | null;
   logoUrl?: string | null;
+  /** Sprint P — patients déjà chargés par le tableau de bord (noms sans requête supplémentaire). */
+  patients: Patient[];
 }
 
-function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }: OrdonnancesViewProps) {
+function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, patients }: OrdonnancesViewProps) {
+  const patientsRef = useRef(patients);
+  patientsRef.current = patients;
+  const pdfLock = useRef(createActionLock()).current;
   const [ords, setOrds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -1666,6 +1669,17 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
 
   const fetchOrdonnances = async (reset: boolean) => {
     const seq = ++fetchSeqRef.current;
+    // Sprint P — clé de cache : uniquement sans recherche (jamais de texte libre dans une clé).
+    const cacheKey = debouncedSearch ? null : `ordonnances:${doctorId}:${timeFilter}`;
+    if (reset && cacheKey && !ordsLoadedRef.current) {
+      const c = viewCache.peek<{ rows: any[]; matchCount: number; total: number | null; demandes: Map<string, DemandeExamens> }>(cacheKey);
+      if (c) {
+        setOrds(c.rows); setMatchCount(c.matchCount); setOrdDemandes(c.demandes);
+        if (c.total !== null) setTotal(c.total);
+        ordsLoadedRef.current = true;
+        setLoading(false);
+      }
+    }
     // Skeleton uniquement au premier chargement (rechargements ensuite silencieux).
     if (!ordsLoadedRef.current) setLoading(true);
     if (!reset) setLoadingMore(true);
@@ -1720,10 +1734,16 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
 
     let rows: any[] = [];
     if (data && data.length > 0) {
-      const pIds = [...new Set(data.map((o: any) => o.patient_id).filter(Boolean))];
-      const { data: pats } = await supabase.from('patients').select('id, prenom, nom, date_naissance, sexe').in('id', pIds);
-      if (seq !== fetchSeqRef.current) return;
-      const pMap = new Map((pats || []).map((pt: any) => [pt.id, pt]));
+      const pIds = [...new Set(data.map((o: any) => o.patient_id).filter(Boolean))] as string[];
+      // Sprint P — les patients sont déjà en mémoire : plus d'aller-retour en série. Seuls ceux
+      // qui manqueraient (liste pas encore chargée) sont demandés.
+      const pMap = new Map<string, any>(patientsRef.current.map(pt => [pt.id, pt]));
+      const missing = pIds.filter(id => !pMap.has(id));
+      if (missing.length > 0) {
+        const { data: pats } = await supabase.from('patients').select('id, prenom, nom, date_naissance, sexe').in('id', missing);
+        if (seq !== fetchSeqRef.current) return;
+        (pats || []).forEach((pt: any) => pMap.set(pt.id, pt));
+      }
       rows = data.map((o: any) => {
         const pt = pMap.get(o.patient_id);
         return {
@@ -1739,12 +1759,19 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
     const shown = reset ? rows : [...ordsRef.current, ...rows];
     setOrds(shown);
     setMatchCount(count ?? rows.length);
+    // Sprint P — 1re page mémorisée (sans recherche) : contenu immédiat au retour sur la vue.
+    const snapshot = { rows: shown, matchCount: count ?? rows.length, total: null as number | null, demandes: new Map<string, DemandeExamens>() };
+    if (cacheKey && reset) viewCache.set(cacheKey, snapshot, ['ordonnances', 'examens']);
     // Demandes d'examens jointes (une requête bornée par la page affichée).
-    void loadDemandesForOrdonnances(shown.map((o: any) => o.id)).then(m => { if (seq === fetchSeqRef.current) setOrdDemandes(m); });
+    void loadDemandesForOrdonnances(shown.map((o: any) => o.id)).then(m => {
+      snapshot.demandes = m;
+      if (seq === fetchSeqRef.current) setOrdDemandes(m);
+    });
 
     // Compteur exact de TOUTES les ordonnances du médecin (head only, aucune ligne chargée).
     if (!q && timeFilter === 'all') {
       setTotal(count ?? rows.length);
+      snapshot.total = count ?? rows.length;
     } else if (reset) {
       const { count: all } = await supabase
         .from('ordonnances').select('id', { count: 'exact', head: true }).eq('doctor_id', doctorId);
@@ -1759,7 +1786,9 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
   const filtered = ords;
   const isFiltering = !!debouncedSearch || timeFilter !== 'all';
 
-  const handleDownloadPdf = async (ord: any) => {
+  // Sprint P — double clic : un seul PDF (verrou synchrone, l'état React arrive trop tard).
+  const handleDownloadPdf = (ord: any) => pdfLock.run(`pdf:${ord.id}`, () => downloadOrdonnancePdf(ord));
+  const downloadOrdonnancePdf = async (ord: any) => {
     if (!doctorInfo || !orgInfo) return;
     setPdfLoadingId(ord.id);
     try {
@@ -2973,6 +3002,7 @@ export function DoctorDashboard() {
   // Sprint 5 — modale « Demande d'examens » (document autonome, hors blocage 3b).
   const [examRequest, setExamRequest] = useState<OpenExamRequest | null>(null);
   useEffect(() => onOpenExamRequest(setExamRequest), []);
+  useEffect(() => { preloadLikelyViews(); }, []);
   const [documentsTab, setDocumentsTab] = useState<'certificats' | 'examens'>('certificats');
   // Sprint 5c — position de défilement : chaque vue s'ouvre en haut de page ; le bouton
   // « Précédent » du navigateur restaure la position mémorisée de la vue retrouvée.
@@ -4213,53 +4243,53 @@ export function DoctorDashboard() {
     setMedSearchForeign((data as ForeignMed[]) || []);
   };
 
+  // Sprint P — ordonnances du patient : servies tout de suite depuis le cache de vue, puis
+  // rafraîchies ; les noms des médecins sont mémorisés pour la session (2 allers-retours en
+  // série évités à chaque ouverture de profil). Affichage seul : rien ici n'alimente le moteur.
   const loadPatientOrdonnances = async (patientId: string) => {
+    const cacheKey = `patient_ordonnances:${patientId}`;
+    const stillCurrent = () => !selectedPatientIdRef.current || selectedPatientIdRef.current === patientId;
+    const cached = viewCache.peek<any[]>(cacheKey);
+    if (cached && stillCurrent()) { setPatientOrdonnances(cached); setPatientOrdLoading(false); }
     try {
-      const { data, error } = await supabase.from('ordonnances')
-        .select(`id, date, statut, doctor_id, created_at, ordonnance_lignes(id, medicament_nom, posologie, duree, instructions)`)
-        .eq('patient_id', patientId).order('created_at', { ascending: false });
+      const rows = await viewCache.fetch<any[]>(cacheKey, async () => {
+        const { data, error } = await supabase.from('ordonnances')
+          .select(`id, date, statut, doctor_id, created_at, ordonnance_lignes(id, medicament_nom, posologie, duree, instructions)`)
+          .eq('patient_id', patientId).order('created_at', { ascending: false });
+        if (error) throw error;
+        if (!data || data.length === 0) return [];
+        const doctorMap = await resolveDoctorInfos(data.map((o: any) => o.doctor_id));
+        return data.map((ord: any) => {
+          const di = doctorMap.get(ord.doctor_id) || { name: 'Dr. Médecin', specialty: '' };
+          return {
+            ...ord,
+            doctor_name: di.name,
+            doctor_specialty: di.specialty,
+            medications: (ord.ordonnance_lignes || []).map((l: any) => ({
+              nom: l.medicament_nom, posologie: l.posologie || '', duree: l.duree || '', quantite: l.instructions || '',
+            })),
+          };
+        });
+      }, ['ordonnances']);
       // Patient changé entre-temps : la réponse ne le concerne plus.
-      if (selectedPatientIdRef.current && selectedPatientIdRef.current !== patientId) return;
-      if (error || !data || data.length === 0) { setPatientOrdonnances([]); setPatientOrdLoading(false); return; }
-
-      const doctorIds = [...new Set(data.map((o: any) => o.doctor_id))].filter(Boolean);
-      let doctorMap = new Map();
-      if (doctorIds.length > 0) {
-        const { data: doctorsData } = await supabase.from('doctors')
-          .select('id, user_id, specialite').in('id', doctorIds);
-        if (doctorsData) {
-          const userIds = doctorsData.map((d: any) => d.user_id).filter(Boolean);
-          const { data: profilesData } = await supabase.from('user_profiles')
-            .select('user_id, prenom, nom').in('user_id', userIds);
-          doctorsData.forEach((doctor: any) => {
-            const profile = profilesData?.find((p: any) => p.user_id === doctor.user_id);
-            doctorMap.set(doctor.id, { name: profile ? `Dr. ${profile.prenom} ${profile.nom}` : 'Dr. Médecin', specialty: doctor.specialite || '' });
-          });
-        }
-      }
-
-      setPatientOrdonnances(data.map((ord: any) => {
-        const di = doctorMap.get(ord.doctor_id) || { name: 'Dr. Médecin', specialty: '' };
-        return {
-          ...ord,
-          doctor_name: di.name,
-          doctor_specialty: di.specialty,
-          medications: (ord.ordonnance_lignes || []).map((l: any) => ({
-            nom: l.medicament_nom, posologie: l.posologie || '', duree: l.duree || '', quantite: l.instructions || '',
-          })),
-        };
-      }));
+      if (!stillCurrent()) return;
+      setPatientOrdonnances(rows);
       setPatientOrdLoading(false);
-    } catch { setPatientOrdonnances([]); setPatientOrdLoading(false); }
+    } catch {
+      if (!stillCurrent()) return;
+      if (!cached) setPatientOrdonnances([]);
+      setPatientOrdLoading(false);
+    }
   };
 
   // Changement de patient (quelle que soit la vue) : la liste de l'ancien patient est vidée
   // tout de suite, puis celle du nouveau est chargée. Compteurs cohérents dès l'ouverture.
   useEffect(() => {
     const pid = selectedPatient?.id;
-    setPatientOrdonnances([]);
+    const cachedOrd = pid ? viewCache.peek<any[]>(`patient_ordonnances:${pid}`) : undefined;
+    setPatientOrdonnances(cachedOrd ?? []);
     if (!pid) { setPatientOrdLoading(false); return; }
-    setPatientOrdLoading(true);
+    setPatientOrdLoading(!cachedOrd);
     loadPatientOrdonnances(pid);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPatient?.id]);
@@ -4529,7 +4559,9 @@ export function DoctorDashboard() {
       savedOrdreNumberRef.current = prescriptionOrdreNumber;
       setDerogationConf(null);
       setSavedOrdreNumber(prescriptionOrdreNumber);
-      showToast('Ordonnance enregistrée avec succès', 'success');
+      // Sprint P — pas de notification quand l'écran « Ordonnance enregistrée » est affiché
+      // (elle recouvrait le ✕ de cet écran).
+      if (!keepPreview) showToast('Ordonnance enregistrée avec succès', 'success');
       setHorsBaseConfirmedKey(null);
       if (!keepPreview) {
         setShowPrescriptionPreview(false);
@@ -5335,7 +5367,10 @@ export function DoctorDashboard() {
             fallbackTitle="Cette vue a rencontré un problème"
             resetKey={activeView}
           >
-          <AnimatePresence mode="wait">
+          {/* Sprint P — la vue demandée remplace l'ancienne IMMÉDIATEMENT (plus d'attente de la fin
+              d'une animation de sortie) : aucun clic ne peut s'appliquer à une page quittée. Les vues
+              chargées à la demande affichent un squelette pendant le téléchargement de leur code. */}
+          <Suspense fallback={<ViewSkeleton />}>
             {activeView === 'home' && (
               <DoctorHomeView
                 key="home"
@@ -5444,6 +5479,7 @@ export function DoctorDashboard() {
             {activeView === 'ordonnances' && (
               <OrdonnancesView
                 key="ordonnances"
+                patients={patients}
                 onNavigate={setActiveView}
                 doctorId={doctorProfile?.id || user?.id || ''}
                 doctorInfo={user ? {
@@ -5497,7 +5533,7 @@ export function DoctorDashboard() {
                 onSaved={refreshProfile}
               />
             )}
-          </AnimatePresence>
+          </Suspense>
           </ErrorBoundary>
         </main>
       </div>
@@ -5512,12 +5548,13 @@ export function DoctorDashboard() {
       {/* AI Chat panel */}
       <AnimatePresence>
         {showAIChat && (
+          <Suspense fallback={null} key="ai-chat">
           <AIChat
-            key="ai-chat"
             onClose={() => setShowAIChat(false)}
             selectedPatient={selectedPatient}
             patients={patients}
           />
+          </Suspense>
         )}
       </AnimatePresence>
 
@@ -5539,7 +5576,8 @@ export function DoctorDashboard() {
       </Modal>
 
       {/* Sprint #3.1.0 — Import patients depuis Excel */}
-      {user?.org_id && (
+      {user?.org_id && showImportPatientsModal && (
+        <Suspense fallback={null}>
         <PatientImportModal
           isOpen={showImportPatientsModal}
           onClose={() => setShowImportPatientsModal(false)}
@@ -5550,6 +5588,7 @@ export function DoctorDashboard() {
             loadPatients();
           }}
         />
+        </Suspense>
       )}
 
       {/* Modale de confirmation suppression patient */}
@@ -5680,6 +5719,7 @@ export function DoctorDashboard() {
 
       {/* Sprint 5 — Demande d'examens autonome (profil, Vérificateur, listes) */}
       {examRequest && (
+        <Suspense fallback={null}>
         <ExamRequestModal
           key={`${examRequest.patient.id}:${examRequest.renewFrom?.id ?? 'new'}`}
           patient={examRequest.patient}
@@ -5691,6 +5731,7 @@ export function DoctorDashboard() {
           showToast={showToast}
           onPlanRdv={planRdvControle}
         />
+        </Suspense>
       )}
 
       {/* Sprint 4d — Prescription contre-indiquée : confirmation motivée avant enregistrement / impression / PDF */}

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -11,20 +12,24 @@ import { AuthCallbackPage } from './pages/AuthCallbackPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { MandatoryPasswordResetPage } from './pages/MandatoryPasswordResetPage';
 import { AcceptInvitationPage } from './pages/AcceptInvitationPage';
-import { DoctorDashboard } from './pages/DoctorDashboard';
-import DoctorProfilePage from './pages/DoctorProfilePage';
-import { ClinicAdminDashboard } from './pages/clinic/ClinicAdminDashboard';
-import { DoctorManagementPage } from './pages/clinic/DoctorManagementPage';
-import { ClinicStatsPage } from './pages/clinic/ClinicStatsPage';
-import { ClinicSettingsPage } from './pages/clinic/ClinicSettingsPage';
-import { SecretaireDashboard } from './pages/SecretaireDashboard';
-import { AdminDashboard } from './pages/AdminDashboard';
+
+// Sprint P — tableaux de bord chargés à la demande : la page de connexion ne télécharge plus
+// l'application entière.
+const DoctorDashboard = lazy(() => import('./pages/DoctorDashboard').then(m => ({ default: m.DoctorDashboard })));
+const DoctorProfilePage = lazy(() => import('./pages/DoctorProfilePage'));
+const ClinicAdminDashboard = lazy(() => import('./pages/clinic/ClinicAdminDashboard').then(m => ({ default: m.ClinicAdminDashboard })));
+const DoctorManagementPage = lazy(() => import('./pages/clinic/DoctorManagementPage').then(m => ({ default: m.DoctorManagementPage })));
+const ClinicStatsPage = lazy(() => import('./pages/clinic/ClinicStatsPage').then(m => ({ default: m.ClinicStatsPage })));
+const ClinicSettingsPage = lazy(() => import('./pages/clinic/ClinicSettingsPage').then(m => ({ default: m.ClinicSettingsPage })));
+const SecretaireDashboard = lazy(() => import('./pages/SecretaireDashboard').then(m => ({ default: m.SecretaireDashboard })));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
 
 function App() {
   return (
     <ThemeProvider>
     <BrowserRouter>
       <AuthProvider>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAFAF7]" role="status" aria-label="Chargement"><div className="w-8 h-8 border-2 border-[#00A86B]/30 border-t-[#00A86B] rounded-full animate-spin" /></div>}>
         <Routes>
           {/* Routes publiques */}
           <Route path="/" element={<LoginPage />} />
@@ -121,6 +126,7 @@ function App() {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
       </AuthProvider>
     </BrowserRouter>
     </ThemeProvider>

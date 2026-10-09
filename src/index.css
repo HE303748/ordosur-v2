@@ -163,3 +163,14 @@
     color: inherit;
   }
 }
+
+/* Sprint P — entrée de vue : courte, purement décorative. Si le navigateur n'anime pas,
+   la vue est tout de même visible et utilisable (opacité de départ élevée). */
+@keyframes view-enter {
+  from { opacity: 0.65; transform: translateY(4px); }
+  to   { opacity: 1;    transform: none; }
+}
+.view-enter { animation: view-enter 150ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .view-enter { animation: none; }
+}

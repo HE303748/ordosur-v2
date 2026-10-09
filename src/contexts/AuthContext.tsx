@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect, useRef, ReactNode } fro
 import { supabase } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
 import { clearAllDrafts } from '../lib/ordonnanceDraft';
+import { viewCache } from '../lib/viewCache';
+import { clearDoctorInfos } from '../lib/doctorNames';
 import type { Organization, Doctor } from '../lib/supabase';
 
 // ─── TYPES EXPORTÉS ──────────────────────────────────────────────────────────
@@ -80,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // pour le même utilisateur. Recharger le profil recréait user/doctorProfile → toutes les
       // vues relançaient leurs requêtes (flash de skeletons). On ne recharge que si l'id change.
       if (event === 'SIGNED_OUT') {
-        clearAllDrafts(); // aucun brouillon d'ordonnance ne survit à la session
+        clearAllDrafts(); viewCache.clear(); clearDoctorInfos(); // aucun brouillon d'ordonnance ne survit à la session
         loadedUserIdRef.current = null;
         setUser(null);
         setDoctorProfile(null);
@@ -278,7 +280,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ─── DÉCONNEXION ───────────────────────────────────────────────────────────
 
   const signOut = async () => {
-    clearAllDrafts();
+    clearAllDrafts(); viewCache.clear(); clearDoctorInfos();
     await supabase.auth.signOut();
     loadedUserIdRef.current = null;
     setUser(null);

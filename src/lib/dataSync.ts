@@ -3,6 +3,7 @@
 // chaque vue garde ses propres requêtes, on ne fait que dire « c'est périmé ».
 
 import { useEffect, useRef } from 'react';
+import { viewCache } from './viewCache';
 
 export type SyncTopic = 'ordonnances' | 'rendez_vous' | 'antecedents' | 'examens';
 
@@ -10,6 +11,8 @@ const bus = new EventTarget();
 
 /** À appeler après une écriture réussie en base. */
 export function notifyDataChanged(topic: SyncTopic): void {
+  // Sprint P — le cache de vue est périmé AVANT que les vues abonnées ne rechargent.
+  viewCache.invalidateTopic(topic);
   bus.dispatchEvent(new Event(topic));
 }
 

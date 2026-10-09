@@ -4,7 +4,7 @@
 // la fonction pure buildExamPages : ce module ne décide de rien, il dessine.
 // Poids : texte vectoriel + un filigrane réduit, partagé par toutes les pages (< 500 Ko).
 
-import jsPDF from 'jspdf';
+import type { jsPDF } from 'jspdf';
 import {
   buildOrdonnancePdf, drawDocumentHeader, drawPageChrome, drawSignatureBlock, loadPdfChromeAssets, stampPageNumbers,
   PDF_COLORS as C, PDF_LAYOUT, type PdfChromeAssets, type PdfDocumentHeader, type PdfImage, type PdfOrdonnanceData,
@@ -323,7 +323,8 @@ export interface PdfFile { blob: Blob; fileName: string }
 export async function buildExamPdf(
   pages: ExamPage[], header: ExamPdfHeader, opts: { logoUrl?: string | null; fileName: string; assets?: PdfChromeAssets; bilingual?: boolean },
 ): Promise<PdfFile> {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+  const { jsPDF: JsPDF } = await import('jspdf');
+  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
   const assets = opts.assets ?? await loadPdfChromeAssets(opts.logoUrl);
   appendExamPages(doc, pages, header, assets, { startOnNewPage: false, bilingual: opts.bilingual });
   stampPageNumbers(doc);

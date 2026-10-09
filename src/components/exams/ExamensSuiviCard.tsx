@@ -6,6 +6,7 @@ import { useDataSync } from '../../lib/dataSync';
 import { echeanceRelative, formatFrShort, pendingExamsLabel, suiviVisible } from '../../lib/examRequest';
 import { loadSuivi, type SuiviData } from '../../lib/examensApi';
 import { requestPatientTab } from '../../lib/examUi';
+import { viewCache } from '../../lib/viewCache';
 
 const CARD = 'bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm';
 
@@ -22,15 +23,16 @@ export function ExamensSuiviCard({ patients, onOpenPatient, onSeeAll }: {
 }) {
   const { doctorProfile } = useAuth();
   const doctorId = doctorProfile?.id ?? null;
-  const [data, setData] = useState<SuiviData | null>(null);
+  const [data, setData] = useState<SuiviData | null>(() => (doctorId ? viewCache.peek<SuiviData>(`suivi:${doctorId}`) ?? null : null));
   const seq = useRef(0);
 
   const load = useCallback(async () => {
     if (!doctorId) return;
     const s = ++seq.current;
     try {
-      const d = await loadSuivi(doctorId);
-      if (s === seq.current) setData(d);
+      // Sprint P — carte affichée tout de suite au retour sur l'Accueil, rafraîchie en arrière-plan.
+      await viewCache.swr<SuiviData>(`suivi:${doctorId}`, () => loadSuivi(doctorId),
+        d => { if (s === seq.current) setData(d); }, { topics: ['examens'], maxAgeMs: 30_000 });
     } catch (e) {
       console.error('[examens] suivi :', e);
     }

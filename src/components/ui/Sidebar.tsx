@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { preloadView } from '../../lib/viewChunks';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, Shield, FileText,
@@ -263,13 +264,14 @@ export function Sidebar({
         {collapsed && <div className="h-4" />}
 
         {toolsNav.map(item => (
-          <NavButton
-            key={item.id}
-            item={item}
-            isActive={activeView === item.id}
-            onClick={() => onNavigate(item.id)}
-            collapsed={collapsed}
-          />
+          <div key={item.id} onMouseEnter={() => preloadView(item.id)} onFocus={() => preloadView(item.id)} onTouchStart={() => preloadView(item.id)}>
+            <NavButton
+              item={item}
+              isActive={activeView === item.id}
+              onClick={() => onNavigate(item.id)}
+              collapsed={collapsed}
+            />
+          </div>
         ))}
       </nav>
 

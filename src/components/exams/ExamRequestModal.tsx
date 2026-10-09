@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createActionLock } from '../../lib/viewCache';
 import { X, FlaskConical, Printer, Download, Share2, CalendarPlus, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
 import type { Patient } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -101,7 +102,10 @@ export function ExamRequestModal({ patient, renewFrom = null, currentMedicaments
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [confirmClose, hasContent, saved, saving]);
 
-  const handleSave = async () => {
+  // Sprint P — double clic : une seule demande créée, un seul PDF (verrou synchrone).
+  const lock = useRef(createActionLock()).current;
+  const handleSave = () => lock.run('save', doSave);
+  const doSave = async () => {
     if (saving || saved) return;
     if (!doctorId || !orgId) { setError('Profil médecin non chargé — rechargez la page.'); return; }
     if (!validation.ok || !validation.echeance) { setError(validation.errors[0] ?? 'Demande incomplète.'); return; }
@@ -127,7 +131,8 @@ export function ExamRequestModal({ patient, renewFrom = null, currentMedicaments
     ? buildExamPages(docInputFromDraft(saved.draft, { numero: saved.numero, dateIso: saved.dateIso, echeance: saved.echeance, patient, sousMetformine: saved.sousMetformine }))
     : []), [saved, patient]);
 
-  const output = async (mode: OutputMode) => {
+  const output = (mode: OutputMode) => lock.run('pdf', () => doOutput(mode));
+  const doOutput = async (mode: OutputMode) => {
     if (!saved || busy || !printCtx.me) return;
     setBusy(mode);
     setError(null);

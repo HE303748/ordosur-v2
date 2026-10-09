@@ -34,7 +34,7 @@ export function ProchainBilanBadge({ patientId, className = '', onClick }: { pat
  */
 export function PatientExamStrip({ patient, canWrite }: { patient: Patient; canWrite: boolean }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-[#E5E5E0] dark:border-white/[0.08]">
+    <div className="flex flex-wrap items-center gap-2 px-3.5 py-2.5 min-h-[56px] rounded-xl bg-white dark:bg-white/[0.03] border border-[#E5E5E0] dark:border-white/[0.08]">
       <div className="flex-1 min-w-0 flex flex-wrap items-center gap-2">
         <ProchainBilanBadge patientId={patient.id} />
       </div>

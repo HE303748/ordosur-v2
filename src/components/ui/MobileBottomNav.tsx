@@ -12,6 +12,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { preloadView } from '../../lib/viewChunks';
 import {
   Home, Users, Shield, FileText, MoreHorizontal,
   Calendar, BarChart3, BookOpen, Folder, Settings, Sparkles, X,
@@ -36,6 +37,11 @@ export function MobileBottomNav({ activeView, onNavigate, onAIChat }: MobileBott
     if (moreOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
     return () => { document.body.style.overflow = 'unset'; };
+  }, [moreOpen]);
+
+  // Sprint P — menu « Plus » ouvert : le code des vues secondaires est préchargé.
+  useEffect(() => {
+    if (moreOpen) ['agenda', 'stats', 'encyclopedie', 'documents'].forEach(preloadView);
   }, [moreOpen]);
 
   const isMoreActive = SECONDARY_VIEWS.includes(activeView);

@@ -1,4 +1,5 @@
-import jsPDF from 'jspdf';
+// Sprint P — jsPDF (≈ 390 Ko) n'est plus dans le bundle initial : importé au premier PDF.
+import type { jsPDF } from 'jspdf';
 import { formatAge } from './ageUtils';
 import { formatNomPropre, formatDocteur, formatCabinet, civilite } from './formatName';
 
@@ -260,7 +261,8 @@ export const PDF_COLORS = C;
  */
 export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc: jsPDF; assets: PdfChromeAssets; fileName: string }> {
   // compress: true → flux (texte vectoriel et images) compressés ; indispensable pour le poids.
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+  const { jsPDF: JsPDF } = await import('jspdf');
+  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
 
   // Load cabinet logo (non-fatal if missing) + optional watermark
   const { logo: logoAsset, watermark: watermarkAsset } = await loadPdfChromeAssets(data.logo_url);

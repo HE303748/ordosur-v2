@@ -746,7 +746,7 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
                   </>
                 )}
               </div>
-              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 min-h-[24px]">
                 <span className="text-xs text-slate-400 dark:text-[#475569]">
                   <span className="font-bold text-slate-700 dark:text-[#94A3B8]">{ordonnancesLoading ? '…' : ordonnances.length}</span> ordonnance{!ordonnancesLoading && ordonnances.length === 1 ? '' : 's'}
                 </span>

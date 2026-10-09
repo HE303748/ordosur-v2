@@ -7,9 +7,15 @@ interface ToastProps {
   type: 'success' | 'error' | 'info' | 'warning';
   onClose: () => void;
   duration?: number;
+  /** false quand la notification est rendue dans ToastManager (qui la positionne). */
+  standalone?: boolean;
 }
 
-export function Toast({ message, type, onClose, duration = 4000 }: ToastProps) {
+// Sprint P — position : en haut au centre sur ordinateur, en bas (au-dessus de la barre de
+// navigation) sur mobile. Jamais en haut à droite, où se trouve le ✕ des fenêtres.
+const TOAST_POSITION = 'fixed z-[9999] left-1/2 -translate-x-1/2 bottom-24 lg:bottom-auto lg:top-4 w-[min(420px,calc(100vw-2rem))]';
+
+export function Toast({ message, type, onClose, duration = 4000, standalone = true }: ToastProps) {
   useEffect(() => {
     const timer = setTimeout(onClose, duration);
     return () => clearTimeout(timer);
@@ -26,11 +32,11 @@ export function Toast({ message, type, onClose, duration = 4000 }: ToastProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0,   scale: 1      }}
-      exit={{    opacity: 0, y: -12, scale: 0.95   }}
+      initial={{ opacity: 0, y: 12, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0,  scale: 1    }}
+      exit={{    opacity: 0, y: 8,  scale: 0.97 }}
       transition={{ type: 'spring', damping: 25, stiffness: 400 }}
-      className="fixed top-4 right-4 z-[9999] min-w-[320px] max-w-[420px]"
+      className={standalone ? `${TOAST_POSITION} pointer-events-auto` : 'w-full pointer-events-auto'}
     >
       <div className="bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden">
         <div className={`h-1 w-full ${config.bar}`} />
@@ -65,10 +71,10 @@ interface ToastManagerProps {
 
 export function ToastManager({ toasts, onRemove }: ToastManagerProps) {
   return (
-    <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2">
+    <div className={`${TOAST_POSITION} flex flex-col gap-2 pointer-events-none`}>
       <AnimatePresence>
         {toasts.map(t => (
-          <Toast key={t.id} message={t.message} type={t.type} onClose={() => onRemove(t.id)} />
+          <Toast key={t.id} message={t.message} type={t.type} onClose={() => onRemove(t.id)} standalone={false} />
         ))}
       </AnimatePresence>
     </div>

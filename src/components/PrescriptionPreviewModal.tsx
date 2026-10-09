@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { createActionLock } from '../lib/viewCache';
 import { ArrowLeft, Save, Printer, Download, AlertTriangle, Share2, CheckCircle2 } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
@@ -99,6 +100,9 @@ export function PrescriptionPreviewModal({
 }: PrescriptionPreviewModalProps) {
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
+  // Sprint P — double clic : une seule action à la fois (verrou synchrone ; l'état « en cours »
+  // de React n'est connu qu'au rendu suivant). Jamais 2 enregistrements ni 2 PDF.
+  const lock = useRef(createActionLock()).current;
 
   const docDate = date ? new Date(date) : new Date();
   const today = docDate.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -118,7 +122,8 @@ export function PrescriptionPreviewModal({
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = () => lock.run('action', doSave);
+  const doSave = async () => {
     if (blockedReason || busy || isSaved) return;
     setSaving(true);
     try { await onSave({ keepPreview: true }); } finally { setSaving(false); }
@@ -134,7 +139,8 @@ export function PrescriptionPreviewModal({
   const [outNote, setOutNote] = useState<string | null>(null);
 
   /** Ordonnance + examens : un seul PDF, imprimé, téléchargé ou partagé. */
-  const outputCombined = async (mode: OutputMode) => {
+  const outputCombined = (mode: OutputMode) => lock.run('action', () => doOutputCombined(mode));
+  const doOutputCombined = async (mode: OutputMode) => {
     if (blockedReason || busy) return;
     setPdfError(null);
     setOutNote(null);
@@ -151,16 +157,16 @@ export function PrescriptionPreviewModal({
     }
   };
 
-  const handlePrint = async () => {
+  const handlePrint = () => (hasExams ? outputCombined('print') : lock.run('action', doPrint));
+  const doPrint = async () => {
     if (blockedReason || busy) return;
-    if (hasExams) { await outputCombined('print'); return; }
     if (!(await ensureSaved())) return; // échec : toast affiché par onSave, pas d'impression
     window.print();
   };
 
-  const handleDownloadPdf = async () => {
+  const handleDownloadPdf = () => (hasExams ? outputCombined('download') : lock.run('action', doDownloadPdf));
+  const doDownloadPdf = async () => {
     if (blockedReason || busy) return;
-    if (hasExams) { await outputCombined('download'); return; }
     setPdfError(null);
     if (!(await ensureSaved())) return;
     setPdfLoading(true);

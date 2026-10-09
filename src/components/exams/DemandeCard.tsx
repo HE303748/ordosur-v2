@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createActionLock } from '../../lib/viewCache';
 import {
   Check, X, Printer, Download, Share2, RotateCcw, CalendarPlus, Undo2, AlertTriangle, FileText, Clock,
 } from 'lucide-react';
@@ -62,7 +63,17 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
   const st = STATUT_LABEL[d.statut];
   const shareable = canSharePdf();
 
-  const run = async (fn: () => Promise<void>, ok: string, optimistic: Record<string, DemandeLigne['statut']> = {}) => {
+  // Sprint P — double clic : une seule écriture / un seul PDF (verrou synchrone).
+  const lock = useRef(createActionLock()).current;
+  // Le formulaire de confirmation est amené à l'écran dès son ouverture : « Confirmer » est
+  // visible sans défilement.
+  const pendingRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (pending) pendingRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [pending]);
+  const run = (fn: () => Promise<void>, ok: string, optimistic: Record<string, DemandeLigne['statut']> = {}) =>
+    lock.run('write', () => doRun(fn, ok, optimistic));
+  const doRun = async (fn: () => Promise<void>, ok: string, optimistic: Record<string, DemandeLigne['statut']> = {}) => {
     if (busy) return;
     setBusy(true);
     setMessage(null);
@@ -102,7 +113,8 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
     }
   };
 
-  const print = async (mode: OutputMode) => {
+  const print = (mode: OutputMode) => lock.run('pdf', () => doPrint(mode));
+  const doPrint = async (mode: OutputMode) => {
     if (out || !patient) return;
     setOut(mode);
     setMessage(null);
@@ -119,7 +131,7 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
   // Sprint 5c — formulaire de confirmation (date ou motif), affiché AU PLUS PRÈS du bouton :
   // sous la ligne concernée, ou à la place des boutons pour une action sur toute la demande.
   const pendingForm = pending && (
-            <div className="w-full mt-2 rounded-xl border border-[#E5E5E0] dark:border-white/[0.1] bg-[#FAFAF7] dark:bg-white/[0.03] p-3">
+            <div ref={pendingRef} className="w-full mt-2 scroll-mb-4 rounded-xl border border-[#E5E5E0] dark:border-white/[0.1] bg-[#FAFAF7] dark:bg-white/[0.03] p-3">
               <p className="text-sm font-semibold text-[#0A1628] dark:text-[#E2E8F0]">
                 {pending.kind === 'realise'
                   ? (pending.ligne ? `Marquer « ${pending.ligne.libelle} » réalisé` : `Marquer les ${attente.length} examen${attente.length > 1 ? 's' : ''} en attente réalisé${attente.length > 1 ? 's' : ''}`)

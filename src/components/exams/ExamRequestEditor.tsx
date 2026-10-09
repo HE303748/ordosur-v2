@@ -134,6 +134,7 @@ export function ExamRequestEditor({
       e.stopPropagation();
       e.nativeEvent.stopImmediatePropagation();
       setOpen(false);
+      setQuery(''); // Sprint P — après Échap, le champ de recherche est vidé
     }
   };
   const listRef = useRef<HTMLDivElement>(null);
