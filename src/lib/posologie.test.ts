@@ -1,28 +1,38 @@
 import { describe, it, expect } from 'vitest';
 import {
-  linesMissingPosologie, posologieBlockMessage, deduceForme, computeQuantite, lastPosologieFor,
+  linesMissingPosologie, posologieConfirmMessage, printedPosologie, deduceForme, computeQuantite, lastPosologieFor,
   POSOLOGIE_FIABLE_DEPUIS,
   type PastLine,
 } from './posologie';
 
-describe('posologie obligatoire (blocage)', () => {
-  it('ligne sans posologie → bloquée, message nominatif', () => {
+describe('posologie non bloquante (confirmation à l’aperçu)', () => {
+  it('ligne sans posologie → repérée, confirmation nominative', () => {
     const lines = [
       { id: '1', nom: 'KARDEGIC 75 MG', posologie: '' },
       { id: '2', nom: 'BRUFEN 400 MG', posologie: '1 comprimé 3 fois par jour' },
     ];
     expect(linesMissingPosologie(lines).map(l => l.id)).toEqual(['1']);
-    expect(posologieBlockMessage(lines)).toBe('Posologie manquante pour KARDEGIC 75 MG.');
+    expect(posologieConfirmMessage(lines)).toBe('1 ligne sans posologie : KARDEGIC 75 MG');
   });
-  it('posologie faite d’espaces → bloquée', () => {
-    expect(posologieBlockMessage([{ id: '1', nom: 'SINTROM 4 MG', posologie: '   ' }])).not.toBeNull();
+  it('posologie faite d’espaces → comptée comme absente', () => {
+    expect(posologieConfirmMessage([{ id: '1', nom: 'SINTROM 4 MG', posologie: '   ' }])).toBe('1 ligne sans posologie : SINTROM 4 MG');
   });
-  it('posologie absente (null / undefined) → bloquée', () => {
-    expect(posologieBlockMessage([{ id: '1', nom: 'PLAVIX', posologie: null }, { id: '2', nom: 'DOLIPRANE' }]))
-      .toBe('Posologie manquante pour 2 médicaments : PLAVIX, DOLIPRANE.');
+  it('posologie absente (null / undefined) → plusieurs lignes, dans l’ordre', () => {
+    expect(posologieConfirmMessage([{ id: '1', nom: 'PLAVIX', posologie: null }, { id: '2', nom: 'DOLIPRANE' }]))
+      .toBe('2 lignes sans posologie : PLAVIX, DOLIPRANE');
   });
-  it('toutes les lignes renseignées → pas de blocage', () => {
-    expect(posologieBlockMessage([{ id: '1', nom: 'GLUCOPHAGE 850', posologie: '1 cp matin et soir' }])).toBeNull();
+  it('toutes les lignes renseignées → aucune confirmation', () => {
+    expect(posologieConfirmMessage([{ id: '1', nom: 'GLUCOPHAGE 850', posologie: '1 cp matin et soir' }])).toBeNull();
+  });
+  it('ligne sans nom → ignorée (bloquée par ailleurs)', () => {
+    expect(posologieConfirmMessage([{ id: '1', nom: '  ', posologie: '' }])).toBeNull();
+  });
+  it('impression : la saisie telle quelle, ou rien — jamais de texte inventé', () => {
+    expect(printedPosologie(' 1 sachet par jour ')).toBe('1 sachet par jour');
+    expect(printedPosologie('')).toBeNull();
+    expect(printedPosologie('   ')).toBeNull();
+    expect(printedPosologie(null)).toBeNull();
+    expect(printedPosologie(undefined)).toBeNull();
   });
 });
 

@@ -1,8 +1,10 @@
 // Sprint 4d-bis — Posologie : jamais de valeur inventée.
 //
 // Module pur (testé par posologie.test.ts).
-//  • Aucune posologie pré-remplie par défaut : le champ est vide et OBLIGATOIRE
-//    (pas d'aperçu, d'enregistrement, d'impression ni de PDF sans posologie).
+//  • Aucune posologie pré-remplie par défaut : le champ est vide. Il n'est PAS bloquant :
+//    à l'ouverture de l'aperçu, le médecin confirme les lignes sans posologie
+//    (« Continuer quand même » / « Compléter »). Une ligne sans posologie est enregistrée
+//    et imprimée sans posologie — aucun texte n'est inventé.
 //  • Pré-remplissage uniquement depuis des données réelles : posologie du traitement de
 //    fond (renouvellement) ou dernière posologie utilisée par CE médecin pour CE médicament,
 //    proposée comme suggestion modifiable.
@@ -20,14 +22,21 @@ export function linesMissingPosologie<L extends PosologieLine>(lines: L[]): L[] 
   return lines.filter(l => l.nom.trim() !== '' && !(l.posologie ?? '').trim());
 }
 
-/** Motif de blocage (aperçu / enregistrement / impression / PDF), ou null. */
-export function posologieBlockMessage(lines: PosologieLine[]): string | null {
+/**
+ * Texte de la confirmation affichée à l'ouverture de l'aperçu, ou null si toutes les lignes
+ * ont une posologie. Ce n'est PAS un blocage : le médecin peut continuer.
+ */
+export function posologieConfirmMessage(lines: PosologieLine[]): string | null {
   const missing = linesMissingPosologie(lines);
   if (missing.length === 0) return null;
   const noms = missing.map(l => l.nom.trim()).join(', ');
-  return missing.length === 1
-    ? `Posologie manquante pour ${noms}.`
-    : `Posologie manquante pour ${missing.length} médicaments : ${noms}.`;
+  return `${missing.length} ligne${missing.length > 1 ? 's' : ''} sans posologie : ${noms}`;
+}
+
+/** Texte imprimé pour la posologie d'une ligne : la saisie du médecin, ou rien. Jamais inventé. */
+export function printedPosologie(posologie: string | null | undefined): string | null {
+  const p = (posologie ?? '').trim();
+  return p ? p : null;
 }
 
 // ─── Forme galénique déduite du nom ──────────────────────────────────────────

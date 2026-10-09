@@ -196,8 +196,9 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
   );
 }
 
-// Sprint 4d-bis — AUCUNE posologie inventée : le champ est vide et obligatoire. La quantité
-// n'est calculée que si la forme, le rythme et la durée sont connus (lib/posologie).
+// Sprint 4d-bis — AUCUNE posologie inventée : le champ est vide. Il n'est pas bloquant : à
+// l'ouverture de l'aperçu, le médecin confirme les lignes sans posologie ou les complète.
+// La quantité n'est calculée que si la forme, le rythme et la durée sont connus (lib/posologie).
 
 export function PrescriptionFormModal({
   isOpen,
@@ -334,8 +335,27 @@ export function PrescriptionFormModal({
   const uncheckedIds = new Set(uncheckedLines.map(u => u.line.id));
   const horsBaseIds = new Set(verification.horsBase.map(l => l.id));
   const nbHorsBase = verification.horsBase.length;
-  // Sprint 4d-bis — posologie obligatoire sur chaque ligne (jamais de valeur par défaut).
-  const missingPosologieIds = new Set(linesMissingPosologie(medications).map(l => l.id));
+  // Posologie non bloquante : les lignes sans posologie sont confirmées à l'ouverture de l'aperçu.
+  const missingPosologie = linesMissingPosologie(medications);
+  const [confirmPosologie, setConfirmPosologie] = useState(false);
+  const [flashPosologieId, setFlashPosologieId] = useState<string | null>(null);
+  const posologieInputs = useRef(new Map<string, HTMLInputElement>());
+  const flashTimer = useRef<number | null>(null);
+  useEffect(() => () => { if (flashTimer.current) window.clearTimeout(flashTimer.current); }, []);
+  /** « Compléter » : première ligne sans posologie → défilement, focus dans le champ, surlignage bref. */
+  const completePosologie = () => {
+    setConfirmPosologie(false);
+    const first = missingPosologie[0];
+    if (!first) return;
+    setFlashPosologieId(first.id);
+    if (flashTimer.current) window.clearTimeout(flashTimer.current);
+    flashTimer.current = window.setTimeout(() => setFlashPosologieId(null), 2000);
+    window.requestAnimationFrame(() => {
+      const el = posologieInputs.current.get(first.id);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.focus({ preventScroll: true });
+    });
+  };
   // Sprint 4d-quater — dosage absent de la fiche : à préciser avant l'aperçu.
   const missingDosageIds = new Set(linesMissingDosage(medications).map(l => l.id));
   // Sprint 5 — examens : chargés seulement si la section est ouverte ; échéance obligatoire.
@@ -349,19 +369,19 @@ export function PrescriptionFormModal({
   const examBlocked = !!examValidation && !examValidation.ok;
   const canPreview =
     verification.status === 'verified' && medications.length > 0 && !medications.some(m => !m.nom.trim())
-    && missingPosologieIds.size === 0 && missingDosageIds.size === 0 && !examBlocked;
+    && missingDosageIds.size === 0 && !examBlocked;
 
   // Sprint 4d-quater — fermer un formulaire non vide (croix, clic extérieur, Échap, Annuler)
   // demande confirmation ; il n'est jamais fermé sans que le médecin l'ait décidé.
   const [confirmClose, setConfirmClose] = useState(false);
   const hasContent = formHasContent({ motif, medications, remarks, appointmentDate, appointmentTime, examens: examDraft });
   const requestClose = () => { if (hasContent) setConfirmClose(true); else onClose(); };
-  useEffect(() => { if (!isOpen) setConfirmClose(false); }, [isOpen]);
+  useEffect(() => { if (!isOpen) { setConfirmClose(false); setConfirmPosologie(false); } }, [isOpen]);
   // Sprint 5c — Échap, où que soit le focus : 1er Échap ferme la liste ouverte la plus haute
   // (le champ la gère lui-même, repéré par data-esc-own) ; sinon « Abandonner ? » ; dans ce
   // dialogue, Échap = « Continuer la saisie ». Jamais de fermeture directe.
-  const escRef = useRef({ confirmClose, requestClose });
-  escRef.current = { confirmClose, requestClose };
+  const escRef = useRef({ confirmClose, confirmPosologie, requestClose });
+  escRef.current = { confirmClose, confirmPosologie, requestClose };
   useEffect(() => {
     if (!isOpen) return;
     const h = (e: KeyboardEvent) => {
@@ -369,7 +389,9 @@ export function PrescriptionFormModal({
       e.preventDefault();
       if ((e.target as HTMLElement | null)?.closest?.('[data-esc-own]')) return;
       e.stopImmediatePropagation();
-      if (escRef.current.confirmClose) setConfirmClose(false); else escRef.current.requestClose();
+      if (escRef.current.confirmPosologie) setConfirmPosologie(false);
+      else if (escRef.current.confirmClose) setConfirmClose(false);
+      else escRef.current.requestClose();
     };
     window.addEventListener('keydown', h, true);
     return () => window.removeEventListener('keydown', h, true);
@@ -399,8 +421,16 @@ export function PrescriptionFormModal({
     }));
   };
 
+  /** Aperçu : s'il manque des posologies, le médecin confirme d'abord (jamais de blocage). */
   const handlePreview = () => {
     if (!canPreview) return;
+    if (missingPosologie.length > 0) { setConfirmPosologie(true); return; }
+    openPreview();
+  };
+
+  const openPreview = () => {
+    if (!canPreview) return;
+    setConfirmPosologie(false);
     const nextAppointment = appointmentDate && appointmentTime
       ? `${appointmentDate} à ${appointmentTime}`
       : undefined;
@@ -453,6 +483,32 @@ export function PrescriptionFormModal({
                 <button type="button" onClick={() => { setConfirmClose(false); (onCancel ?? onClose)(); }}
                   className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-[#DC2626] border border-[#DC2626]/40 hover:bg-[#DC2626]/[0.06] transition-colors">
                   Abandonner
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {confirmPosologie && missingPosologie.length > 0 && (
+          <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:p-4" role="alertdialog" aria-modal="true" aria-labelledby="posologie-title">
+            <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmPosologie(false)} />
+            <div className="relative w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl p-5">
+              <h3 id="posologie-title" className="text-base font-bold text-[#0A1628]">
+                {missingPosologie.length} ligne{missingPosologie.length > 1 ? 's' : ''} sans posologie
+              </h3>
+              <p className="text-sm text-slate-600 mt-1.5 break-words">
+                {missingPosologie.map(l => l.nom.trim()).join(', ')}
+              </p>
+              <p className="text-xs text-slate-500 mt-1.5">
+                Ces lignes seront imprimées sans posologie — aucun texte n’est ajouté à votre place.
+              </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <button type="button" autoFocus onClick={completePosologie}
+                  className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#00A86B] hover:bg-[#006B47] transition-colors">
+                  Compléter
+                </button>
+                <button type="button" onClick={openPreview}
+                  className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-[#0A1628] border border-slate-200 hover:bg-slate-50 transition-colors">
+                  Continuer quand même
                 </button>
               </div>
             </div>
@@ -563,7 +619,9 @@ export function PrescriptionFormModal({
           )}
 
           {medications.map((med, idx) => (
-            <div key={med.id} className="bg-white border border-slate-200 rounded-lg p-4 space-y-3">
+            <div key={med.id} className={`bg-white border rounded-lg p-4 space-y-3 transition-shadow duration-300 ${
+              flashPosologieId === med.id ? 'border-[#00A86B] ring-2 ring-[#00A86B]/40' : 'border-slate-200'
+            }`}>
               <div className="flex justify-between items-start">
                 <h4 className="font-semibold text-slate-900 flex items-center gap-2 flex-wrap">
                   Médicament {idx + 1}
@@ -625,24 +683,17 @@ export function PrescriptionFormModal({
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Posologie <span className="text-[#DC2626]" aria-hidden>*</span>
+                  Posologie
                 </label>
                 <Input
+                  ref={(el) => { if (el) posologieInputs.current.set(med.id, el); else posologieInputs.current.delete(med.id); }}
                   value={med.posologie}
                   onChange={(e) => handleMedicationChange(med.id, 'posologie', e.target.value)}
                   placeholder={(() => {
                     const u = deduceForme(med.nom, med.formeHint);
                     return u ? `Ex : 1 ${u.singulier} … fois par jour` : 'Dose, rythme et moment de prise';
                   })()}
-                  aria-required
-                  aria-invalid={missingPosologieIds.has(med.id)}
                 />
-                {missingPosologieIds.has(med.id) && (
-                  <p role="alert" className="text-xs font-medium text-[#DC2626] mt-1 flex items-center gap-1">
-                    <AlertTriangle className="w-3 h-3 flex-shrink-0" aria-hidden />
-                    Posologie obligatoire — aucune valeur n’est pré-remplie.
-                  </p>
-                )}
                 {(() => {
                   const sug = lastPosologieFor(med.nom, pastLines);
                   if (!sug || sug.posologie === med.posologie.trim()) return null;
@@ -801,17 +852,12 @@ export function PrescriptionFormModal({
         )}
 
         <div className="flex flex-col sm:flex-row sm:justify-end gap-2 sm:gap-3 pt-4 border-t border-slate-200">
-          {verification.status === 'verified' && missingPosologieIds.size === 0 && missingDosageIds.size > 0 && (
+          {verification.status === 'verified' && missingDosageIds.size > 0 && (
             <p role="alert" className="text-xs font-medium text-[#DC2626] sm:mr-auto sm:self-center">
               Aperçu indisponible : dosage à préciser sur {missingDosageIds.size} ligne{missingDosageIds.size > 1 ? 's' : ''}.
             </p>
           )}
-          {verification.status === 'verified' && missingPosologieIds.size > 0 && (
-            <p role="alert" className="text-xs font-medium text-[#DC2626] sm:mr-auto sm:self-center">
-              Aperçu indisponible : posologie manquante sur {missingPosologieIds.size} ligne{missingPosologieIds.size > 1 ? 's' : ''}.
-            </p>
-          )}
-          {examBlocked && verification.status === 'verified' && missingPosologieIds.size === 0 && missingDosageIds.size === 0 && (
+          {examBlocked && verification.status === 'verified' && missingDosageIds.size === 0 && (
             <p role="alert" className="text-xs font-medium text-[#DC2626] sm:mr-auto sm:self-center">
               Aperçu indisponible : {examValidation?.errors[0] ?? 'demande d’examens incomplète.'}
             </p>

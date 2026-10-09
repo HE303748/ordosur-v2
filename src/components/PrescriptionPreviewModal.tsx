@@ -75,6 +75,11 @@ interface PrescriptionPreviewModalProps {
    * même PDF. Impression, PDF et partage passent alors par ce PDF unique.
    */
   examPages?: ExamPage[];
+  /**
+   * Préférence du médecin (Paramètres › Cabinet, désactivée par défaut) : nom et âge du patient
+   * sur l'ordonnance imprimée / PDF. Les pages d'examens portent toujours le patient.
+   */
+  showPatientName?: boolean;
 }
 
 export function PrescriptionPreviewModal({
@@ -97,6 +102,7 @@ export function PrescriptionPreviewModal({
   nextAppointment,
   interactionAlerts = [],
   examPages = [],
+  showPatientName = false,
 }: PrescriptionPreviewModalProps) {
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -135,6 +141,7 @@ export function PrescriptionPreviewModal({
   const confirmation = isSaved && !readOnly;
   const pdfData = (): PdfOrdonnanceData => ({
     ordreNumber, logo_url, doctor, org, patient, motif, medications, remarks, nextAppointment, date: todayIso, interactionAlerts,
+    showPatientName,
   });
   const [outNote, setOutNote] = useState<string | null>(null);
 
@@ -171,19 +178,7 @@ export function PrescriptionPreviewModal({
     if (!(await ensureSaved())) return;
     setPdfLoading(true);
     try {
-      await generateOrdonnancePdf({
-        ordreNumber,
-        logo_url,
-        doctor,
-        org,
-        patient,
-        motif,
-        medications,
-        remarks,
-        nextAppointment,
-        date: todayIso,
-        interactionAlerts,
-      });
+      await generateOrdonnancePdf(pdfData());
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Erreur lors de la génération du PDF';
       setPdfError(msg);
@@ -220,8 +215,10 @@ export function PrescriptionPreviewModal({
                 {org.telephone && <p className="text-sm text-gray-600">Tél : {org.telephone}</p>}
               </div>
               <div className="text-right">
+                {/* Date : seule occurrence du document (le bloc signature ne la répète pas) */}
                 <p className="text-sm text-gray-600">Le {today}</p>
-                <p className="text-xs font-bold text-blue-600 mt-1">{ordreNumber}</p>
+                {/* Numéro : repère à l'écran uniquement, jamais imprimé */}
+                <p className="text-xs font-bold text-blue-600 mt-1 no-print">{ordreNumber}</p>
               </div>
             </div>
           </div>
@@ -234,8 +231,11 @@ export function PrescriptionPreviewModal({
             {doctor.ordre_number && <p className="text-sm text-gray-600">N° Ordre : {doctor.ordre_number}</p>}
           </div>
 
-          {/* Patient — toujours imprimé sur l'ordonnance (Sprint 4d-ter) */}
-          <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+          {/* Patient — repère à l'écran ; imprimé seulement si l'option du cabinet est activée */}
+          <div className={`mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200 ${showPatientName ? '' : 'no-print'}`}>
+            {!showPatientName && (
+              <p className="text-xs text-slate-500 mb-1">Non imprimé sur l’ordonnance (modifiable dans Paramètres › Cabinet)</p>
+            )}
             <p className="font-semibold">Patient : {civilite(patient.sexe)} {formatNomPropre(patient.prenom)} {formatNomPropre(patient.nom)}</p>
             {patient.date_naissance && (
               <p className="text-sm text-gray-600 mt-0.5">
@@ -259,7 +259,8 @@ export function PrescriptionPreviewModal({
             {medications.map((med, index) => (
               <div key={med.id} className="mb-3 pl-4 border-l-2 border-blue-300">
                 <p className="font-medium">{index + 1}. {med.nom}</p>
-                <p className="text-sm text-gray-700">{med.posologie}</p>
+                {/* Sans posologie : la ligne s'imprime sans posologie (aucun texte inventé) */}
+                {med.posologie?.trim() && <p className="text-sm text-gray-700">{med.posologie}</p>}
                 {med.duree?.trim() && <p className="text-xs text-gray-600">Durée : {med.duree}</p>}
               </div>
             ))}
@@ -273,7 +274,7 @@ export function PrescriptionPreviewModal({
             </div>
           )}
 
-          <DocumentSignatureBlock date={today} />
+          <DocumentSignatureBlock />
         </div>
 
         {hasExams && (

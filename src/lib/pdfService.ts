@@ -2,6 +2,7 @@
 import type { jsPDF } from 'jspdf';
 import { formatAge } from './ageUtils';
 import { formatNomPropre, formatDocteur, formatCabinet, civilite } from './formatName';
+import { printedPosologie } from './posologie';
 
 interface MedicationLine {
   nom: string;
@@ -46,6 +47,26 @@ export interface PdfOrdonnanceData {
   nextAppointment?: string;
   date: string;
   interactionAlerts?: PdfInteractionAlert[];
+  /**
+   * Préférence du médecin (doctors.show_patient_name_on_pdf, Paramètres › Cabinet) :
+   * nom et âge du patient imprimés sur l'ordonnance médicamenteuse. Désactivée par défaut.
+   * Sans effet sur les pages d'examens, les certificats et les lettres (patient toujours imprimé).
+   */
+  showPatientName?: boolean;
+}
+
+/**
+ * Ligne « Patient : … » de l'ordonnance médicamenteuse, ou null si le médecin n'a pas activé
+ * l'option : dans ce cas ni le nom ni l'âge ne sont imprimés.
+ */
+export function ordonnancePatientLine(
+  patient: PdfOrdonnanceData['patient'], showPatientName: boolean | undefined,
+): string | null {
+  if (!showPatientName) return null;
+  const ageStr = formatAge(patient.date_naissance);
+  const fullName = `${formatNomPropre(patient.prenom)} ${formatNomPropre(patient.nom)}`.trim();
+  // Même civilité que sur les pages d'examens : « M. », « Mme », « M./Mme » si sexe inconnu.
+  return `Patient : ${civilite(patient.sexe)} ${fullName || '—'}${ageStr ? ` — ${ageStr}` : ''}`;
 }
 
 function formatDate(dateStr: string): string {
@@ -157,8 +178,12 @@ export interface PdfDocumentHeader {
   org: { name: string; adresse?: string | null; telephone?: string | null };
   /** Titre du bloc droit : « ORDONNANCE », « CERTIFICAT MÉDICAL »… */
   title: string;
+  /** Date du document : SEULE occurrence imprimée (ni bloc signature, ni pied de page). */
   dateIso: string;
-  /** Numéro du document, imprimé discrètement sous la date. */
+  /**
+   * Numéro du document, imprimé discrètement sous la date — certificats uniquement.
+   * L'ordonnance et les pages d'examens ne portent plus de numéro à l'impression.
+   */
   numero?: string | null;
 }
 
@@ -199,7 +224,7 @@ export function drawPageChrome(doc: jsPDF, watermark: PdfImage | null): void {
 }
 
 /**
- * En-tête : identité médicale (gauche) + titre / date / numéro (droite).
+ * En-tête : identité médicale (gauche) + titre / date (+ numéro des certificats) (droite).
  * Renvoie le y (mm) où tracer le séparateur qui suit.
  */
 export function drawDocumentHeader(doc: jsPDF, h: PdfDocumentHeader, logo: PdfImage | null): number {
@@ -239,12 +264,14 @@ export function drawDocumentHeader(doc: jsPDF, h: PdfDocumentHeader, logo: PdfIm
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(C.INK_NAVY);
   doc.text(h.title, PAGE_W - MARGIN_R, headerTop + 6, { align: 'right' });
-  doc.setFontSize(8);
+  // Date : unique occurrence du document, donc lisible (9,5 pt, encre soutenue).
+  doc.setFontSize(9.5);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_FAINT);
-  doc.text(formatDate(h.dateIso), PAGE_W - MARGIN_R, headerTop + 12, { align: 'right' });
+  doc.setTextColor(C.INK_MUTED);
+  doc.text(`Le ${formatDate(h.dateIso)}`, PAGE_W - MARGIN_R, headerTop + 12, { align: 'right' });
   if (h.numero) {
     doc.setFontSize(7);
+    doc.setTextColor(C.INK_FAINT);
     doc.text(`N° ${h.numero}`, PAGE_W - MARGIN_R, headerTop + 16, { align: 'right' });
   }
 
@@ -259,10 +286,13 @@ export const PDF_COLORS = C;
  * Sprint 5 — Construit le PDF de l'ordonnance SANS l'enregistrer : les pages « Examens à
  * réaliser » peuvent ainsi suivre l'ordonnance dans le même fichier (lib/examPdf).
  */
-export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc: jsPDF; assets: PdfChromeAssets; fileName: string }> {
+export async function buildOrdonnancePdf(
+  data: PdfOrdonnanceData, opts: { compress?: boolean } = {},
+): Promise<{ doc: jsPDF; assets: PdfChromeAssets; fileName: string }> {
   // compress: true → flux (texte vectoriel et images) compressés ; indispensable pour le poids.
+  // (false : réservé aux tests, pour relire le texte des pages.)
   const { jsPDF: JsPDF } = await import('jspdf');
-  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: opts.compress ?? true });
 
   // Load cabinet logo (non-fatal if missing) + optional watermark
   const { logo: logoAsset, watermark: watermarkAsset } = await loadPdfChromeAssets(data.logo_url);
@@ -271,7 +301,8 @@ export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc
   decoratePage();
   // ── En-tête partagé avec les certificats ───────────────────────────────────
   let y = drawDocumentHeader(doc, {
-    doctor: data.doctor, org: data.org, title: 'ORDONNANCE', dateIso: data.date, numero: data.ordreNumber,
+    // Numéro d'ordonnance : visible dans l'application et en base, jamais imprimé.
+    doctor: data.doctor, org: data.org, title: 'ORDONNANCE', dateIso: data.date,
   }, logoAsset);
 
   // ── Séparateur ─────────────────────────────────────────────────────────────
@@ -280,36 +311,27 @@ export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc
   doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y);
   y += 7;
 
-  // ── Identité patient — TOUJOURS imprimée (Sprint 4d-ter) ──────────────────
-  // Une ordonnance médicamenteuse doit identifier le patient : l'ancienne préférence
-  // « Afficher le nom du patient » (désactivée par défaut) est supprimée.
-  // L'adresse du cabinet n'apparaît qu'une fois, dans l'en-tête ; la date est
-  // reprise dans le bloc de clôture (drawSignatureBlock).
-  doc.setFontSize(9.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_NAVY);
-  {
-    const ageStr = formatAge(data.patient.date_naissance);
-    const fullName = `${formatNomPropre(data.patient.prenom)} ${formatNomPropre(data.patient.nom)}`.trim();
-    // Sprint 5c — même civilité que sur les pages d'examens : « M. », « Mme », « M./Mme » si sexe inconnu.
-    const patientLine = `Patient : ${civilite(data.patient.sexe)} ${fullName || '—'}${ageStr ? ` — ${ageStr}` : ''}`;
+  // ── Identité patient — selon la préférence du médecin (désactivée par défaut) ──
+  // Désactivée : ni nom ni âge sur l'ordonnance médicamenteuse. La date n'apparaît qu'une
+  // fois, dans l'en-tête ; l'adresse du cabinet aussi.
+  const patientLine = ordonnancePatientLine(data.patient, data.showPatientName);
+  if (patientLine) {
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(C.INK_NAVY);
     const patientLineWrapped = doc.splitTextToSize(patientLine, CONTENT_W);
     doc.text(patientLineWrapped, MARGIN_L, y);
     y += patientLineWrapped.length > 1 ? patientLineWrapped.length * 4.5 + 2 : 6;
+
+    // ── Séparateur ───────────────────────────────────────────────────────────
+    doc.setDrawColor(C.DIVIDER);
+    doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y);
+    y += 8;
+  } else {
+    y += 1;
   }
 
-  // ── Séparateur ─────────────────────────────────────────────────────────────
-  doc.setDrawColor(C.DIVIDER);
-  doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y);
-  y += 8;
-
   // ── Médicaments ────────────────────────────────────────────────────────────
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(C.GREEN);
-  doc.text(`ORDONNANCE — ${formatDate(data.date)}`, MARGIN_L, y);
-  y += 7;
-
   data.medications.forEach((med, idx) => {
     // Page-break safety — leave room for signature + footer chrome
     if (y > 230) {
@@ -328,8 +350,10 @@ export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(C.INK_MUTED);
-    if (med.posologie) {
-      const lines = doc.splitTextToSize(`     Posologie : ${med.posologie.trim()}`, CONTENT_W);
+    // Ligne sans posologie : imprimée sans posologie (aucun texte de remplacement).
+    const posologie = printedPosologie(med.posologie);
+    if (posologie) {
+      const lines = doc.splitTextToSize(`     Posologie : ${posologie}`, CONTENT_W);
       doc.text(lines, MARGIN_L, y); y += lines.length * 4.5;
     }
     if (med.duree) {
@@ -367,18 +391,14 @@ export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc
     y += 5;
   }
 
-  // ── Date + signature/cachet ────────────────────────────────────────────────
-  drawSignatureBlock(doc, Math.max(y + 10, 232), data.date);
+  // ── Signature / cachet (la date est dans l'en-tête) ───────────────────────
+  drawSignatureBlock(doc, Math.max(y + 10, 232));
 
-  // ── Pied de page neutre ────────────────────────────────────────────────────
+  // ── Pied de page neutre : cabinet seul (ni date, ni numéro d'ordonnance) ──
   doc.setFontSize(6.5);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
-  doc.text(
-    [formatCabinet(data.org.name), formatDate(data.date), data.ordreNumber ? `N° ${data.ordreNumber}` : ''].filter(Boolean).join('  ·  '),
-    PAGE_W / 2, PAGE_H - 6,
-    { align: 'center' }
-  );
+  doc.text(formatCabinet(data.org.name), PAGE_W / 2, PAGE_H - 6, { align: 'center' });
 
   const fileName = `ordonnance_${data.patient.nom}_${data.patient.prenom}_${data.date}.pdf`
     .replace(/[^a-zA-Z0-9_.-]/g, '_');
@@ -409,22 +429,19 @@ export function stampPageNumbers(doc: jsPDF): number {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
-   BLOC DE CLÔTURE — commun à l'ordonnance et aux certificats
-   Date + zone « Signature et cachet du médecin », alignés à droite.
-   Aucune ville en dur : la date seule, comme sur l'ordonnance.
+   BLOC DE CLÔTURE — commun à l'ordonnance, aux examens et aux certificats
+   Zone « Signature et cachet du médecin », alignée à droite. La date n'y figure
+   plus : elle est imprimée une seule fois, dans l'en-tête (drawDocumentHeader).
    ════════════════════════════════════════════════════════════════════════════ */
 
-/** Dessine le bloc date + signature/cachet à partir de `topY` (mm) ; renvoie le y du bas du bloc. */
-export function drawSignatureBlock(doc: jsPDF, topY: number, dateIso: string): number {
+/** Dessine la zone signature/cachet à partir de `topY` (mm) ; renvoie le y du bas du bloc. */
+export function drawSignatureBlock(doc: jsPDF, topY: number): number {
   const blockX = PAGE_W - MARGIN_R - 60;
 
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(C.INK_MUTED);
-  doc.text(`Le ${formatDate(dateIso)}`, PAGE_W - MARGIN_R, topY, { align: 'right' });
-
   doc.setTextColor(C.INK_FAINT);
-  doc.text('Signature et cachet du médecin', blockX, topY + 7);
+  doc.text('Signature et cachet du médecin', blockX, topY + 4);
 
   doc.setDrawColor(C.DIVIDER);
   doc.setLineWidth(0.4);

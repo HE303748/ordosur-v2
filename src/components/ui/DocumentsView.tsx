@@ -376,14 +376,15 @@ async function generateCertificatPdf(params: {
   // ── Date + signature/cachet — même bloc que l'ordonnance ─────────────────
   y = Math.max(y + 8, pageH - 65);
   if (y > pageH - 40) { doc.addPage(); decoratePage(); y = mT + 10; }
-  drawSignatureBlock(doc, y, certDate);
+  // La date du certificat est imprimée une seule fois, dans l'en-tête.
+  drawSignatureBlock(doc, y);
 
   // ── Footer ────────────────────────────────────────────────────────────────
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7.5);
   doc.setTextColor(160, 160, 160);
   doc.text(
-    [formatCabinet(doctor.orgName), formatDateFr(certDate), `N° ${numero}`].filter(Boolean).join('  ·  '),
+    [formatCabinet(doctor.orgName), `N° ${numero}`].filter(Boolean).join('  ·  '),
     pageW / 2, pageH - 8, { align: 'center' }
   );
 
@@ -1099,7 +1100,7 @@ export function DocumentsView({ patients, showToast, doctorProfile, org, initial
                     </div>
 
                     {/* Date + signature/cachet — même bloc que l'ordonnance */}
-                    <DocumentSignatureBlock date={formatDateFr(certDate)} />
+                    <DocumentSignatureBlock />
 
                     {/* Footer */}
                     <p className="text-center text-xs text-slate-300 mt-6">

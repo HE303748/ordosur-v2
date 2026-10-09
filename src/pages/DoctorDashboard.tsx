@@ -47,7 +47,6 @@ import { viewCache, createActionLock } from '../lib/viewCache';
 import { resolveDoctorInfos } from '../lib/doctorNames';
 import { PatientExamStrip } from '../components/exams/PatientExamStrip';
 import { DerogationModal } from '../components/DerogationModal';
-import { posologieBlockMessage } from '../lib/posologie';
 import { searchMedicamentsMA } from '../lib/medSearch';
 import { medLabel, dosageManquant, ligneLabel, dosageBlockMessage } from '../lib/medLabel';
 import {
@@ -91,6 +90,7 @@ import {
   reconcileVerdictWithDisplay, isUndocumentedSeverity, verdictTitle, greenLineAllowed,
 } from '../lib/safetyGuards';
 import { PregnancyStatusEditor } from '../components/PregnancyStatusEditor';
+import { AnalysisIndicator, analysisIndicatorState } from '../components/AnalysisIndicator';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -1028,6 +1028,19 @@ function CheckerView({
   canWritePatient, onPatientPatched,
 }: CheckerViewProps) {
   const [showMasked, setShowMasked] = useState(false);
+  // Saisie fluide — aucun défilement automatique vers le verdict : après un ajout, le focus
+  // revient dans le champ de recherche (vidé) pour enchaîner le médicament suivant.
+  const medInputRef = useRef<HTMLInputElement>(null);
+  const focusMedSearch = () => {
+    window.requestAnimationFrame(() => medInputRef.current?.focus({ preventScroll: true }));
+  };
+  // Statut grossesse / case du traitement de fond : même règle (pas de défilement). Le focus
+  // ne revient au champ que sur ordinateur : sur écran tactile il ouvrirait le clavier.
+  const focusMedSearchIfPointer = () => {
+    if (typeof window !== 'undefined' && window.matchMedia?.('(hover: hover) and (pointer: fine)').matches) focusMedSearch();
+  };
+  /** Seul défilement vers le verdict : celui que le médecin demande (clic sur la pastille). */
+  const showVerdict = () => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   // Sprint 4d — cartes, bandeaux et verdict proviennent du MÊME run (instantané du verdict).
   // Pas de verdict → aucune carte (jamais d'alerte partielle ou d'un run précédent).
   const interactionAlerts = result?.alerts ?? [];
@@ -1131,7 +1144,11 @@ function CheckerView({
                   </div>
 
                   {/* Sprint 4e-C — statut grossesse / allaitement : toute modification relance l'analyse */}
-                  <PregnancyStatusEditor patient={selectedPatient} canWrite={canWritePatient} onPatched={onPatientPatched} />
+                  <PregnancyStatusEditor
+                    patient={selectedPatient}
+                    canWrite={canWritePatient}
+                    onPatched={(id, patch) => { onPatientPatched(id, patch); focusMedSearchIfPointer(); }}
+                  />
 
                   {/* Sprint 5 — prochain bilan + demande d'examens (document autonome, hors blocage 3b) */}
                   <PatientExamStrip patient={selectedPatient} canWrite={canWritePatient} />
@@ -1206,7 +1223,7 @@ function CheckerView({
                     error={fondError}
                     excluded={fondExcluded}
                     selectedMedIds={selectedMedIds}
-                    onToggle={toggleFond}
+                    onToggle={(id) => { toggleFond(id); focusMedSearchIfPointer(); }}
                     onRenew={renewFond}
                     onRetry={reloadFond}
                   />
@@ -1227,10 +1244,11 @@ function CheckerView({
             </div>
             <div className="p-4 lg:p-6">
               {/* Med search */}
-              <div className="mb-5">
-                <div className="relative">
+              <div className="mb-5 flex items-center gap-2">
+                <div className="relative flex-1 min-w-0">
                   <Pill className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                   <input
+                    ref={medInputRef}
                     type="text"
                     value={medSearchTerm}
                     onChange={e => { const v = e.target.value; setMedSearchTerm(v); setShowMedDropdown(true); searchMedications(v); }}
@@ -1248,7 +1266,7 @@ function CheckerView({
                       {!medSearchLoading && medSearchResults.map(med => (
                         <button
                           key={med.id}
-                          onMouseDown={e => { e.preventDefault(); addMedication(med); }}
+                          onMouseDown={e => { e.preventDefault(); addMedication(med); focusMedSearch(); }}
                           className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
                           {/* Ligne 1 : nom commercial. Sprint Quick Fixes A — Bug #2 :
@@ -1294,7 +1312,7 @@ function CheckerView({
                           {medSearchForeign.map(med => (
                             <button
                               key={med.id}
-                              onMouseDown={e => { e.preventDefault(); addMedication(med); }}
+                              onMouseDown={e => { e.preventDefault(); addMedication(med); focusMedSearch(); }}
                               className="w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                             >
                               <div className="flex items-center gap-2 flex-wrap">
@@ -1316,7 +1334,7 @@ function CheckerView({
                       {/* Ajout manuel quand aucun résultat */}
                       {!medSearchLoading && medSearchResults.length === 0 && (
                         <button
-                          onMouseDown={e => { e.preventDefault(); addManualMedication(medSearchTerm); }}
+                          onMouseDown={e => { e.preventDefault(); addManualMedication(medSearchTerm); focusMedSearch(); }}
                           className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors flex items-center gap-2"
                         >
                           <span className="text-violet-500 text-base leading-none">✏️</span>
@@ -1328,6 +1346,14 @@ function CheckerView({
                     </div>
                   )}
                 </div>
+                {/* Indicateur discret : « Analyse… » puis pastille du verdict (clic = voir le verdict) */}
+                <AnalysisIndicator
+                  state={analysisIndicatorState({
+                    hasPatient: !!selectedPatient, medCount: selectedMeds.length, failed: analysisFailed,
+                    verdict: result ? { severity: result.severity, title: verdictTitle(result.severity, result.title) } : null,
+                  })}
+                  onShowVerdict={showVerdict}
+                />
               </div>
 
               {/* Selected meds */}
@@ -1625,9 +1651,11 @@ interface OrdonnancesViewProps {
   logoUrl?: string | null;
   /** Sprint P — patients déjà chargés par le tableau de bord (noms sans requête supplémentaire). */
   patients: Patient[];
+  /** Préférence du cabinet : nom et âge du patient sur l'ordonnance imprimée / PDF (désactivée par défaut). */
+  showPatientName?: boolean;
 }
 
-function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, patients }: OrdonnancesViewProps) {
+function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, patients, showPatientName = false }: OrdonnancesViewProps) {
   const patientsRef = useRef(patients);
   patientsRef.current = patients;
   const pdfLock = useRef(createActionLock()).current;
@@ -1806,6 +1834,7 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, p
         patient: { prenom: ord.patient_prenom, nom: ord.patient_nom_only, date_naissance: ord.patient_date_naissance ?? null, sexe: ord.patient_sexe ?? null },
         medications: meds,
         date: (ord.date || ord.created_at || new Date().toISOString()).split('T')[0],
+        showPatientName,
       };
       // Sprint 5B — la demande d'examens se réimprime avec l'ordonnance (même PDF).
       const dem = ordDemandes.get(ord.id);
@@ -2042,6 +2071,7 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, p
           }))}
           remarks={viewOrd.remarques ?? ''}
           nextAppointment={viewOrd.prochain_rdv ?? undefined}
+          showPatientName={showPatientName}
           examPages={ordDemandes.get(viewOrd.id)
             ? pagesFromDemande(ordDemandes.get(viewOrd.id)!, {
                 prenom: viewOrd.patient_prenom, nom: viewOrd.patient_nom_only,
@@ -2099,9 +2129,36 @@ function SettingsView({
   const [cabinetSaving, setCabinetSaving] = useState(false);
   const [cabinetMsg, setCabinetMsg]       = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Sprint 4d-ter — la préférence « Afficher le nom du patient sur l'ordonnance » est
-  // supprimée : le patient est toujours imprimé. (La colonne doctors.show_patient_name_on_pdf
-  // reste en base, simplement plus lue.)
+  // ── Préférence d'impression : identité patient (doctors.show_patient_name_on_pdf) ────
+  // Désactivée par défaut : l'ordonnance médicamenteuse imprimée / PDF ne porte alors ni le
+  // nom ni l'âge du patient. Examens, certificats et lettres portent toujours le patient.
+  const [showPatientOnPdf, setShowPatientOnPdf] = useState<boolean>(!!doctorProfile?.show_patient_name_on_pdf);
+  const [pdfPrefSaving, setPdfPrefSaving]       = useState(false);
+  const [pdfPrefError, setPdfPrefError]         = useState<string | null>(null);
+  useEffect(() => {
+    setShowPatientOnPdf(!!doctorProfile?.show_patient_name_on_pdf);
+  }, [doctorProfile?.show_patient_name_on_pdf]);
+
+  const togglePatientOnPdf = async () => {
+    if (!doctorProfile?.id || pdfPrefSaving) return;
+    const next = !showPatientOnPdf;
+    setShowPatientOnPdf(next); // optimiste
+    setPdfPrefSaving(true);
+    setPdfPrefError(null);
+    // .select() : une mise à jour refusée par la RLS ne renvoie pas d'erreur, seulement 0 ligne.
+    const { data, error } = await supabase
+      .from('doctors')
+      .update({ show_patient_name_on_pdf: next })
+      .eq('id', doctorProfile.id)
+      .select('id');
+    setPdfPrefSaving(false);
+    if (error || !data || data.length === 0) {
+      setShowPatientOnPdf(!next);
+      setPdfPrefError("La préférence n'a pas pu être enregistrée. Réessayez.");
+      return;
+    }
+    onSaved();
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -2610,6 +2667,38 @@ function SettingsView({
                 </div>
               </div>
 
+              {/* Impression de l'ordonnance */}
+              <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5">
+                <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Impression de l'ordonnance</h3>
+                <div className="mt-4 flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p id="pdf-patient-label" className="text-sm font-semibold text-slate-800 dark:text-[#E2E8F0]">
+                      Afficher le nom du patient sur l'ordonnance
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5">
+                      Désactivé : l'ordonnance imprimée ou en PDF ne porte ni le nom ni l'âge du patient.
+                      Les examens à réaliser, les certificats et les lettres portent toujours le patient.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={showPatientOnPdf}
+                    aria-labelledby="pdf-patient-label"
+                    onClick={togglePatientOnPdf}
+                    disabled={pdfPrefSaving || !doctorProfile?.id}
+                    className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] focus-visible:ring-offset-2 disabled:opacity-60 ${
+                      showPatientOnPdf ? 'bg-[#00A86B]' : 'bg-slate-300 dark:bg-white/[0.15]'
+                    }`}
+                  >
+                    <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+                      showPatientOnPdf ? 'translate-x-6' : 'translate-x-1'
+                    }`} />
+                  </button>
+                </div>
+                {pdfPrefError && <p role="alert" className="mt-3 text-xs font-medium text-[#DC2626]">{pdfPrefError}</p>}
+              </div>
+
               {/* Logo */}
               <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm p-5 space-y-5">
                 <h3 className="font-bold text-slate-900 dark:text-[#E2E8F0]">Logo du cabinet</h3>
@@ -3094,12 +3183,8 @@ export function DoctorDashboard() {
     if (activeView !== 'documents') setDocumentsTab('certificats');
   }, [activeView]);
 
-  // Scroll to result
-  useEffect(() => {
-    if (result && resultsRef.current) {
-      setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-    }
-  }, [result]);
+  // Saisie fluide — plus AUCUN défilement automatique vers le verdict : l'indicateur à côté
+  // du champ de recherche (AnalysisIndicator) le signale, un clic y conduit.
 
   // Volet 2 — Chargement batch des synonymes des pathologies du patient sélectionné.
   // 1 seule requête .in('nom_fr', [...]) → pas de N+1. Si le patient n'a pas de pathologie
@@ -4373,12 +4458,8 @@ export function DoctorDashboard() {
       return false;
     }
 
-    // Sprint 4d-bis — posologie obligatoire sur chaque ligne (aucune valeur par défaut).
-    const posologieBlock = posologieBlockMessage(prescriptionData.medications ?? []);
-    if (posologieBlock) {
-      showToast(`Enregistrement refusé — ${posologieBlock}`, 'error');
-      return false;
-    }
+    // Posologie NON bloquante : les lignes sans posologie ont été confirmées par le médecin à
+    // l'ouverture de l'aperçu ; elles sont enregistrées et imprimées sans posologie.
 
     // Sprint 4d — alerte de niveau maximal (CI absolue / interaction majeure) : le médecin
     // confirme explicitement, avec un motif (modale), pour CETTE version de l'ordonnance.
@@ -4751,7 +4832,6 @@ export function DoctorDashboard() {
     setActiveView('checker');
     scheduleDraftSave();
     showToast('Médicaments ajoutés à l\'analyse — vérification relancée automatiquement', 'info');
-    setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
   };
 
   // ── Sprint 4d — Analyse automatique ──────────────────────────────────────
@@ -5495,6 +5575,7 @@ export function DoctorDashboard() {
                   telephone: clinicProfile.telephone ?? null,
                 } : null}
                 logoUrl={doctorProfile?.logo_url ?? null}
+                showPatientName={!!doctorProfile?.show_patient_name_on_pdf}
               />
             )}
 
@@ -5685,7 +5766,8 @@ export function DoctorDashboard() {
           // le blocage ne s'applique plus à cette ordonnance figée.
           blockedReason={savedOrdreNumber === prescriptionOrdreNumber ? null : (verificationBlockMessage(
             computeVerification(prescriptionData.medications ?? [], verifMeds, analysisValid, horsBaseConfirmedKey),
-          ) ?? dosageBlockMessage(prescriptionData.medications ?? []) ?? posologieBlockMessage(prescriptionData.medications ?? []))}
+          ) ?? dosageBlockMessage(prescriptionData.medications ?? []))}
+          showPatientName={!!doctorProfile?.show_patient_name_on_pdf}
           ordreNumber={prescriptionOrdreNumber}
           logo_url={doctorProfile?.logo_url ?? null}
           doctor={{
