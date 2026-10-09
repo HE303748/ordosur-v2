@@ -12,7 +12,7 @@ import { AntecedentsSection, PathologiesActivesBlock, type PatientPatch } from '
 import { supabase } from '../../lib/supabase';
 import { PregnancyStatusEditor } from '../PregnancyStatusEditor';
 import type { Patient as DbPatient } from '../../lib/supabase';
-import { openExamRequest } from '../../lib/examUi';
+import { openExamRequest, consumePatientTab, onPatientTabRequest } from '../../lib/examUi';
 import { ExamensSection } from '../exams/ExamensSection';
 import { ProchainBilanBadge } from '../exams/PatientExamStrip';
 
@@ -700,6 +700,15 @@ interface PatientTabsProps {
 
 export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, onEdit, onNavigateToChecker, doctorId, orgId, onTraitementsChanged, onPatientPatched }: PatientTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('resume');
+  // Sprint 5c — ouverture du profil sur un onglet précis (ex. carte « Examens à suivre »).
+  useEffect(() => {
+    const apply = () => {
+      const t = consumePatientTab(patient.id);
+      if (t && TABS.some(x => x.id === t)) setActiveTab(t as TabId);
+    };
+    apply();
+    return onPatientTabRequest(apply);
+  }, [patient.id]);
 
   return (
     <div className="flex flex-col h-full">

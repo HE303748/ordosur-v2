@@ -200,3 +200,50 @@ export function searchExams(
 
   return [...topPacks, ...examHits.slice(0, Math.max(0, limit - topPacks.length))];
 }
+
+// ─── Sprint 5c — Packs suggérés pour CE patient ──────────────────────────────
+
+const PACK_RULES: { test: (norm: string) => boolean; codes: string[] }[] = [
+  { test: p => CONTEXT_RULES[0].test(p), codes: ['SUIVI_DIABETE', 'BILAN_GLYCEMIQUE'] },
+  { test: p => /\bhta\b|hypertension arterielle|hypertension essentielle|^hypertension$/.test(p), codes: ['SUIVI_HTA'] },
+  { test: p => /cirrhos|hepatopath|hepatite|steatos|fibrose hepat/.test(p), codes: ['HEPATOPATHIE_CHRONIQUE', 'BILAN_HEPATIQUE', 'SEROLOGIES_HEPATITES'] },
+  { test: p => /thyroid|basedow|hashimoto/.test(p), codes: ['BILAN_THYROIDIEN'] },
+  { test: p => /insuffisance renale|nephropath|maladie renale/.test(p), codes: ['BILAN_RENAL'] },
+  { test: p => /dyslipid|hypercholesterol|hypertriglycerid/.test(p), codes: ['BILAN_LIPIDIQUE'] },
+  { test: p => /anemi|carence martiale|carence en fer/.test(p), codes: ['BILAN_MARTIAL'] },
+  { test: p => /grossesse|enceinte/.test(p), codes: ['PRENATAL_T1'] },
+];
+
+/** Codes des packs système pertinents pour ces pathologies, dans l'ordre de pertinence. */
+export function contextPackCodes(pathologies: string[] | null | undefined): string[] {
+  const out: string[] = [];
+  for (const raw of pathologies ?? []) {
+    const p = normExam(raw);
+    for (const r of PACK_RULES) if (r.test(p)) for (const c of r.codes) if (!out.includes(c)) out.push(c);
+  }
+  return out;
+}
+
+/**
+ * Ordre des packs proposés : d'abord ceux qui correspondent aux pathologies du patient
+ * (diabète → « Suivi du diabète », HTA → « Suivi HTA »…), puis les plus utilisés par ce
+ * médecin, puis ses packs personnels, puis l'ordre système. Les packs archivés sont écartés.
+ */
+export function sortPacksForPatient(packs: ExamPack[], usage: ReadonlyMap<string, number>, pathologies: string[] | null | undefined): ExamPack[] {
+  const ctx = contextPackCodes(pathologies);
+  const rank = (p: ExamPack) => {
+    const i = p.systeme && p.code ? ctx.indexOf(p.code) : -1;
+    return i === -1 ? Number.MAX_SAFE_INTEGER : i;
+  };
+  return packs.filter(p => !p.archive).sort((a, b) =>
+    rank(a) - rank(b)
+    || (usage.get(packKey(b)) ?? 0) - (usage.get(packKey(a)) ?? 0)
+    || Number(a.systeme) - Number(b.systeme)
+    || a.ordre - b.ordre
+    || a.nom.localeCompare(b.nom, 'fr'));
+}
+
+/** Le pack est suggéré par le dossier du patient (pastille « suggéré »). */
+export function isContextPack(p: Pick<ExamPack, 'systeme' | 'code'>, pathologies: string[] | null | undefined): boolean {
+  return !!p.systeme && !!p.code && contextPackCodes(pathologies).includes(p.code);
+}

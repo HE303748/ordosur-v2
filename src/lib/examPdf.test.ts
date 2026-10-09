@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import jsPDF from 'jspdf';
 import { buildExamPdf, appendExamPages, renderArabicLine } from './examPdf';
 import { buildExamPages, type ExamDocInput } from './examDocument';
-import { drawPageChrome, drawDocumentHeader, type PdfChromeAssets } from './pdfService';
+import { drawPageChrome, drawDocumentHeader, stampPageNumbers, type PdfChromeAssets } from './pdfService';
 import type { ExamRef } from './examSearch';
 import data from './examens_reference.data.json';
 
@@ -73,6 +73,40 @@ describe('PDF « Examens à réaliser »', () => {
     expect(await pageCount(blob)).toBe(4);
     expect(blob.size).toBeLessThan(500 * 1024);
     console.log(`[poids] ordonnance + 3 pages d'examens : ${(blob.size / 1024).toFixed(0)} Ko`);
+  });
+
+  it('numérotation « Page x/N » sur TOUT le document (ordonnance + examens)', () => {
+    // Document non compressé : le texte des pages est lisible dans le fichier.
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: false });
+    drawDocumentHeader(doc, { ...header, title: 'ORDONNANCE', dateIso: '2026-10-08', numero: 'ORD-20261008-AAAA' }, null);
+    const pages = buildExamPages(input([line('NFS'), line('ECHO_HEPATIQUE_DOPPLER'), line('FOGD')]));
+    appendExamPages(doc, pages, header, { logo: null, watermark: null }, { startOnNewPage: true });
+    expect(stampPageNumbers(doc)).toBe(4);
+    const raw = Buffer.from(doc.output('arraybuffer')).toString('latin1');
+    for (const n of [1, 2, 3, 4]) expect(raw).toContain(`(Page ${n}/4)`);
+    // Plus aucune numérotation partielle propre aux pages d'examens.
+    expect(raw).not.toContain('Page 1/3');
+    expect(raw).not.toContain('Page 3/3');
+  });
+
+  it('document d’une seule page : pas de numéro de page', () => {
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: false });
+    appendExamPages(doc, buildExamPages(input([line('NFS')])), header, { logo: null, watermark: null }, { startOnNewPage: false });
+    expect(stampPageNumbers(doc)).toBe(1);
+    expect(Buffer.from(doc.output('arraybuffer')).toString('latin1')).not.toContain('(Page 1/1)');
+  });
+
+  it('imagerie injectée : mentions imprimées sur sa page uniquement', async () => {
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: false });
+    const pages = buildExamPages({
+      ...input([line('NFS'), line('TDM_ABDOMINO_PELVIENNE', { precision: 'avec injection', injecte: true }), line('ECHO_ABDOMINALE')]),
+      sousMetformine: true,
+    });
+    appendExamPages(doc, pages, header, { logo: null, watermark: null }, { startOnNewPage: false });
+    const raw = Buffer.from(doc.output('arraybuffer')).toString('latin1');
+    expect(raw.split('(< 3 mois\\)').length - 1).toBe(1);
+    expect(raw.split('Patient sous metformine').length - 1).toBe(1);
+    await dump('imagerie_injectee', new Blob([doc.output('arraybuffer')]));
   });
 
   it('hors navigateur, la consigne en arabe est omise sans erreur', () => {

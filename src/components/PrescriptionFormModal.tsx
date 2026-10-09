@@ -1,9 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { useAnchoredPopover } from '../hooks/useAnchoredPopover';
 import { Plus, Trash2, Calendar, History, AlertTriangle, RefreshCw, FlaskConical, ChevronDown } from 'lucide-react';
 import { formHasContent, type DraftForm } from '../lib/ordonnanceDraft';
 import { medLabel, dosageManquant, linesMissingDosage, hasDosage } from '../lib/medLabel';
 import { type Medicament, type Patient } from '../lib/supabase';
-import { emptyExamDraft, validateExamDraft, toIsoDate, type ExamRequestDraft, type EcheanceResult } from '../lib/examRequest';
+import {
+  emptyExamDraft, validateExamDraft, toIsoDate, abandonSummary, hasMetformine,
+  type ExamRequestDraft, type EcheanceResult,
+} from '../lib/examRequest';
 import { useExamReferentiel, usePatientDemandes, usePatientExamContext } from '../hooks/useExamData';
 import { ExamRequestEditor } from './exams/ExamRequestEditor';
 import { searchMedicamentsMA } from '../lib/medSearch';
@@ -83,7 +88,7 @@ interface PrescriptionFormModalProps {
     remarks: string;
     nextAppointment?: string;
     /** Sprint 5 — demande d'examens jointe à l'ordonnance (null si aucun examen). */
-    examens?: { draft: ExamRequestDraft; echeance: EcheanceResult } | null;
+    examens?: { draft: ExamRequestDraft; echeance: EcheanceResult; sousMetformine?: boolean } | null;
   }) => void;
 }
 
@@ -129,10 +134,14 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
   }, [value, open, dirty]);
 
   const show = open && dirty && value.trim().length >= 2;
+  // Sprint 5c — liste en portail : jamais coupée par le cadre de la ligne ou de la modale.
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const popStyle = useAnchoredPopover(anchorRef, show);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={anchorRef}>
       <Input
+        data-esc-own={show ? '1' : undefined}
         value={value}
         onChange={(e) => { setDirty(true); setOpen(true); onChange(e.target.value); }}
         onFocus={() => setOpen(true)}
@@ -150,8 +159,9 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
         placeholder="Rechercher un médicament (ex : Brufen, Glucophage…)"
         autoComplete="off"
       />
-      {show && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-72 overflow-y-auto">
+      {show && popStyle && createPortal(
+        <div style={popStyle} onMouseDown={e => e.preventDefault()}
+          className="z-[90] bg-white border border-slate-200 rounded-xl shadow-2xl overflow-y-auto overscroll-contain">
           {loading && <p className="px-4 py-3 text-sm text-slate-400 text-center">Recherche…</p>}
           {!loading && results.map(m => (
             <button
@@ -179,7 +189,8 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
               <span className="block text-[11px] text-amber-700 mt-0.5">Hors base — ne pourra pas être vérifié par le moteur</span>
             </button>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -346,6 +357,23 @@ export function PrescriptionFormModal({
   const hasContent = formHasContent({ motif, medications, remarks, appointmentDate, appointmentTime, examens: examDraft });
   const requestClose = () => { if (hasContent) setConfirmClose(true); else onClose(); };
   useEffect(() => { if (!isOpen) setConfirmClose(false); }, [isOpen]);
+  // Sprint 5c — Échap, où que soit le focus : 1er Échap ferme la liste ouverte la plus haute
+  // (le champ la gère lui-même, repéré par data-esc-own) ; sinon « Abandonner ? » ; dans ce
+  // dialogue, Échap = « Continuer la saisie ». Jamais de fermeture directe.
+  const escRef = useRef({ confirmClose, requestClose });
+  escRef.current = { confirmClose, requestClose };
+  useEffect(() => {
+    if (!isOpen) return;
+    const h = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      if ((e.target as HTMLElement | null)?.closest?.('[data-esc-own]')) return;
+      e.stopImmediatePropagation();
+      if (escRef.current.confirmClose) setConfirmClose(false); else escRef.current.requestClose();
+    };
+    window.addEventListener('keydown', h, true);
+    return () => window.removeEventListener('keydown', h, true);
+  }, [isOpen]);
 
   // Sprint 4d-bis — « Dernière posologie utilisée » par ce médecin pour ces médicaments.
   const [pastLines, setPastLines] = useState<PastLine[]>([]);
@@ -382,7 +410,16 @@ export function PrescriptionFormModal({
       medications,
       remarks,
       nextAppointment,
-      examens: examValidation?.ok && examValidation.echeance ? { draft: examDraft, echeance: examValidation.echeance } : null,
+      examens: examValidation?.ok && examValidation.echeance
+        ? {
+            draft: examDraft, echeance: examValidation.echeance,
+            // Sprint 5c — metformine dans l'ordonnance ou le traitement de fond : mention sur l'imagerie injectée.
+            sousMetformine: hasMetformine([
+              ...medications.map(m => [m.nom, m.medicament?.dci, m.medicament?.dci_canonique].filter(Boolean).join(' ')),
+              ...examCtx.traitementsMedicaments,
+            ]),
+          }
+        : null,
     });
   };
 
@@ -394,25 +431,14 @@ export function PrescriptionFormModal({
 
   return (
     <Modal isOpen={isOpen} onClose={requestClose} title="Créer une Ordonnance" size="xl">
-      <div
-        className="space-y-6"
-        onKeyDown={(e) => {
-          // Échap dans le formulaire : demande de confirmation, jamais de fermeture directe.
-          if (e.key === 'Escape') {
-            e.preventDefault();
-            e.stopPropagation();
-            e.nativeEvent.stopImmediatePropagation();
-            if (confirmClose) setConfirmClose(false); else requestClose();
-          }
-        }}
-      >
+      <div className="space-y-6">
         {confirmClose && (
           <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:p-4" role="alertdialog" aria-modal="true" aria-labelledby="abandon-title">
             <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmClose(false)} />
             <div className="relative w-full sm:max-w-md bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl p-5">
               <h3 id="abandon-title" className="text-base font-bold text-[#0A1628]">Abandonner cette ordonnance ?</h3>
               <p className="text-sm text-slate-600 mt-1.5">
-                La saisie en cours ({medications.filter(m => m.nom.trim()).length} médicament{medications.filter(m => m.nom.trim()).length > 1 ? 's' : ''}) sera supprimée.
+                La saisie en cours ({abandonSummary(medications.filter(m => m.nom.trim()).length, examDraft.lines.length)}) sera supprimée.
                 Le patient et l’analyse restent en place.
               </p>
               <div className="mt-4 flex flex-col gap-2">
@@ -714,12 +740,12 @@ export function PrescriptionFormModal({
         </div>
 
         {/* Sprint 5 — Examens à réaliser : repliée par défaut, ouverte d'un clic */}
-        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="rounded-xl border border-slate-200 bg-white">
           <button
             type="button"
             onClick={() => setExamOpen(o => !o)}
             aria-expanded={examOpen}
-            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B]"
+            className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl hover:bg-slate-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B]"
           >
             <FlaskConical className="w-4 h-4 text-[#00A86B] flex-shrink-0" aria-hidden />
             <span className="flex-1 min-w-0">
@@ -740,6 +766,7 @@ export function PrescriptionFormModal({
                 onChange={setExamDraft}
                 refs={examRef.refs}
                 packs={examRef.packs}
+                packUsage={examRef.packUsage}
                 refsLoading={examRef.loading}
                 refsFailed={examRef.failed}
                 onRetryRefs={() => void examRef.reload()}

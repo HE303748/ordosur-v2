@@ -18,11 +18,15 @@ export function ExamPagesPreview({ pages }: { pages: ExamPage[] }) {
                 <Icon className="w-4 h-4 flex-shrink-0" aria-hidden />
                 <span className="break-words">{p.heading}</span>
               </p>
-              {p.pageLabel && <span className="text-[11px] font-semibold text-slate-400 flex-shrink-0">Page {p.pageLabel}</span>}
             </div>
             <p className={`text-xs mt-1 ${p.urgent ? 'font-bold text-[#0A1628]' : 'text-slate-600'}`}>{p.subtitle}</p>
             {p.fasting && (
               <p className="mt-2 inline-block px-2.5 py-1 rounded-md border border-amber-400 text-[11px] font-bold text-[#0A1628]">{fastingLabel(p.fasting)}</p>
+            )}
+            {p.notes.length > 0 && (
+              <ul className="mt-2 px-2.5 py-1.5 rounded-md border border-slate-300 text-[11px] font-semibold text-[#0A1628] space-y-0.5">
+                {p.notes.map(n => <li key={n}>• {n}</li>)}
+              </ul>
             )}
             {p.renseignements && (
               <p className="mt-2 text-xs text-slate-600"><span className="font-semibold text-[#00A86B] uppercase tracking-wide text-[10px]">Renseignements cliniques · </span>{p.renseignements}</p>

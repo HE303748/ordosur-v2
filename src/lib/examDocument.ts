@@ -5,7 +5,10 @@
 // les imageries sur une page ». Le rendu (PDF, aperçu écran) consomme ces pages telles quelles.
 
 import type { ExamType } from './examSearch';
-import { echeancePhrase, fastingInfo, formatFr, fullPrecision, type DemandeExamens, type ExamRequestDraft } from './examRequest';
+import {
+  echeancePhrase, fastingInfo, formatFr, fullPrecision, injectionNotes, isInjected,
+  type DemandeExamens, type ExamRequestDraft,
+} from './examRequest';
 import { formatAge } from './ageUtils';
 import { formatNomPropre, civilite } from './formatName';
 
@@ -18,6 +21,8 @@ export interface ExamDocLine {
   question?: string | null;
   a_jeun: boolean;
   delai_jeun_h?: number | null;
+  /** Sprint 5c — examen demandé avec injection (produit iodé ou gadolinium). */
+  injecte?: boolean;
 }
 
 export interface ExamDocInput {
@@ -28,6 +33,8 @@ export interface ExamDocInput {
   ald: boolean;
   regrouperImageries: boolean;
   renseignements?: string | null;
+  /** Sprint 5c — patient sous metformine (mention sur les imageries injectées). */
+  sousMetformine?: boolean;
   patient: { prenom: string; nom: string; sexe?: string | null; date_naissance?: string | null };
   lines: ExamDocLine[];
 }
@@ -47,6 +54,8 @@ export interface ExamPage {
   renseignements: string | null;
   groups: ExamPageGroup[];
   fasting: { hours: number | null } | null;
+  /** Sprint 5c — mentions de la page (« Créatininémie récente (< 3 mois) à apporter »…). */
+  notes: string[];
   ald: boolean;
   numero: string;
   dateIso: string;
@@ -105,7 +114,7 @@ export function buildExamPages(input: ExamDocInput): ExamPage[] {
     if (autres >= 0 && autres !== groups.length - 1) groups.push(groups.splice(autres, 1)[0]);
     pages.push({
       ...base, kind: 'biologie', heading: 'BIOLOGIE MÉDICALE', destination: 'À remettre au laboratoire d’analyses médicales',
-      groups, fasting: fast(bio),
+      groups, fasting: fast(bio), notes: [],
     });
   }
 
@@ -118,7 +127,7 @@ export function buildExamPages(input: ExamDocInput): ExamPage[] {
       ...base, kind: 'imagerie_groupee',
       heading: exp.length === 0 ? 'IMAGERIE MÉDICALE' : img.length === 0 ? 'EXPLORATIONS' : 'IMAGERIE ET EXPLORATIONS',
       destination: 'À remettre au centre d’imagerie ou au médecin réalisant l’examen',
-      groups, fasting: fast(others),
+      groups, fasting: fast(others), notes: injectionNotes(others.some(l => !!l.injecte), !!input.sousMetformine),
     });
   } else {
     for (const l of others) {
@@ -131,6 +140,7 @@ export function buildExamPages(input: ExamDocInput): ExamPage[] {
           : 'À remettre au médecin réalisant l’exploration',
         groups: [{ label: null, items: [item(l)] }],
         fasting: fast([l]),
+        notes: injectionNotes(!!l.injecte, !!input.sousMetformine),
       });
     }
   }
@@ -165,15 +175,17 @@ export function examFileName(patient: { nom: string; prenom: string }, numero: s
 type DocPatient = ExamDocInput['patient'];
 
 export function docInputFromDraft(
-  draft: ExamRequestDraft, o: { numero: string; dateIso: string; echeance: { date: string; libelle: string }; patient: DocPatient },
+  draft: ExamRequestDraft,
+  o: { numero: string; dateIso: string; echeance: { date: string; libelle: string }; patient: DocPatient; sousMetformine?: boolean },
 ): ExamDocInput {
   const lines: ExamDocLine[] = draft.lines.map(l => ({
     libelle: l.libelle, type: l.type, categorie: l.categorie, precision: fullPrecision(l), question: l.question,
-    a_jeun: l.a_jeun, delai_jeun_h: l.a_jeun ? l.delai_jeun_h : null,
+    a_jeun: l.a_jeun, delai_jeun_h: l.a_jeun ? l.delai_jeun_h : null, injecte: l.type !== 'biologie' && isInjected(l),
   }));
   return {
     numero: o.numero, dateIso: o.dateIso, echeance: o.echeance, urgent: draft.urgent, ald: draft.ald,
-    regrouperImageries: draft.regrouperImageries, renseignements: draft.renseignements, patient: o.patient, lines,
+    regrouperImageries: draft.regrouperImageries, renseignements: draft.renseignements, sousMetformine: !!o.sousMetformine,
+    patient: o.patient, lines,
   };
 }
 
@@ -183,11 +195,12 @@ export function docInputFromDemande(d: DemandeExamens, patient: DocPatient): Exa
     libelle: l.libelle, type: l.type, categorie: l.categorie,
     precision: fullPrecision({ precision: l.precision ?? '', injection: l.injection }),
     question: l.question_clinique, a_jeun: l.a_jeun, delai_jeun_h: l.delai_jeun_h,
+    injecte: l.type !== 'biologie' && isInjected({ injection: l.injection, precision: l.precision ?? '', libelle: l.libelle }),
   }));
   return {
     numero: d.numero, dateIso: d.date_demande, echeance: { date: d.echeance_date, libelle: d.echeance_libelle },
     urgent: d.urgent, ald: d.ald, regrouperImageries: d.regrouper_imageries,
-    renseignements: d.renseignements_cliniques, patient, lines,
+    renseignements: d.renseignements_cliniques, sousMetformine: !!d.sous_metformine, patient, lines,
   };
 }
 

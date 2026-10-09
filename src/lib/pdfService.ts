@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import { formatAge } from './ageUtils';
-import { formatNomPropre, formatDocteur, formatCabinet } from './formatName';
+import { formatNomPropre, formatDocteur, formatCabinet, civilite } from './formatName';
 
 interface MedicationLine {
   nom: string;
@@ -289,7 +289,8 @@ export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc
   {
     const ageStr = formatAge(data.patient.date_naissance);
     const fullName = `${formatNomPropre(data.patient.prenom)} ${formatNomPropre(data.patient.nom)}`.trim();
-    const patientLine = `Patient : ${fullName || '—'}${ageStr ? ` — ${ageStr}` : ''}`;
+    // Sprint 5c — même civilité que sur les pages d'examens : « M. », « Mme », « M./Mme » si sexe inconnu.
+    const patientLine = `Patient : ${civilite(data.patient.sexe)} ${fullName || '—'}${ageStr ? ` — ${ageStr}` : ''}`;
     const patientLineWrapped = doc.splitTextToSize(patientLine, CONTENT_W);
     doc.text(patientLineWrapped, MARGIN_L, y);
     y += patientLineWrapped.length > 1 ? patientLineWrapped.length * 4.5 + 2 : 6;
@@ -384,7 +385,25 @@ export async function buildOrdonnancePdf(data: PdfOrdonnanceData): Promise<{ doc
 
 export async function generateOrdonnancePdf(data: PdfOrdonnanceData): Promise<void> {
   const { doc, fileName } = await buildOrdonnancePdf(data);
+  stampPageNumbers(doc);
   doc.save(fileName);
+}
+
+/**
+ * Sprint 5c — « Page x/N » sur TOUT le document (ordonnance + pages d'examens), en bas à
+ * droite. À appeler une fois, quand toutes les pages sont dessinées. Rien si une seule page.
+ */
+export function stampPageNumbers(doc: jsPDF): number {
+  const n = doc.getNumberOfPages();
+  if (n < 2) return n;
+  for (let i = 1; i <= n; i++) {
+    doc.setPage(i);
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(C.INK_FAINT);
+    doc.text(`Page ${i}/${n}`, PAGE_W - MARGIN_R, PAGE_H - 6, { align: 'right' });
+  }
+  return n;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════

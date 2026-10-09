@@ -4,7 +4,7 @@ import type { Patient } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { notifyDataChanged } from '../../lib/dataSync';
 import {
-  emptyExamDraft, examDraftHasContent, renewDraftFromDemande, validateExamDraft, formatFr, suggestedControlDate, toIsoDate,
+  emptyExamDraft, examDraftHasContent, renewDraftFromDemande, validateExamDraft, formatFr, suggestedControlDate, toIsoDate, hasMetformine,
   type DemandeExamens, type ExamRequestDraft, type EcheanceResult,
 } from '../../lib/examRequest';
 import { buildExamPages, examFileName } from '../../lib/examDocument';
@@ -25,7 +25,7 @@ interface Props {
   showToast?: (msg: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
 }
 
-interface Saved { numero: string; echeance: EcheanceResult; draft: ExamRequestDraft; dateIso: string }
+interface Saved { numero: string; echeance: EcheanceResult; draft: ExamRequestDraft; dateIso: string; sousMetformine: boolean }
 
 /**
  * Sprint 5 — Document autonome « Demande d'examens » : sans médicament, donc HORS du
@@ -35,7 +35,7 @@ export function ExamRequestModal({ patient, renewFrom = null, currentMedicaments
   const { user, doctorProfile } = useAuth();
   const doctorId = doctorProfile?.id ?? null;
   const orgId = user?.org_id ?? null;
-  const { refs, packs, loading: refsLoading, failed: refsFailed, reload, reloadPacks } = useExamReferentiel(true);
+  const { refs, packs, packUsage, loading: refsLoading, failed: refsFailed, reload, reloadPacks } = useExamReferentiel(true);
   const { demandes } = usePatientDemandes(patient.id);
   const ctx = usePatientExamContext(patient.id, true);
   const printCtx = useExamPrintContext();
@@ -109,9 +109,11 @@ export function ExamRequestModal({ patient, renewFrom = null, currentMedicaments
     setError(null);
     try {
       const today = new Date();
-      const r = await createDemande(draft, { patientId: patient.id, orgId, doctorId }, validation.echeance, today);
+      // Sprint 5c — metformine (ordonnance en cours + traitement de fond) : mention sur l'imagerie injectée.
+      const sousMetformine = hasMetformine([...currentMedicaments, ...ctx.traitementsMedicaments]);
+      const r = await createDemande(draft, { patientId: patient.id, orgId, doctorId, sousMetformine }, validation.echeance, today);
       clearExamDraft(doctorId, patient.id);
-      setSaved({ numero: r.numero, echeance: validation.echeance, draft, dateIso: toIsoDate(today) });
+      setSaved({ numero: r.numero, echeance: validation.echeance, draft, dateIso: toIsoDate(today), sousMetformine });
       notifyDataChanged('examens');
       showToast?.('Demande d’examens enregistrée', 'success');
     } catch (e) {
@@ -122,7 +124,7 @@ export function ExamRequestModal({ patient, renewFrom = null, currentMedicaments
   };
 
   const pages = useMemo(() => (saved
-    ? buildExamPages(docInputFromDraft(saved.draft, { numero: saved.numero, dateIso: saved.dateIso, echeance: saved.echeance, patient }))
+    ? buildExamPages(docInputFromDraft(saved.draft, { numero: saved.numero, dateIso: saved.dateIso, echeance: saved.echeance, patient, sousMetformine: saved.sousMetformine }))
     : []), [saved, patient]);
 
   const output = async (mode: OutputMode) => {
@@ -180,7 +182,7 @@ export function ExamRequestModal({ patient, renewFrom = null, currentMedicaments
           {!saved ? (
             <ExamRequestEditor
               patient={patient} draft={draft} onChange={setDraft}
-              refs={refs} packs={packs} refsLoading={refsLoading} refsFailed={refsFailed}
+              refs={refs} packs={packs} packUsage={packUsage} refsLoading={refsLoading} refsFailed={refsFailed}
               onRetryRefs={() => void reload()} onPacksChanged={() => void reloadPacks()}
               demandes={demandes} ctx={ctx} extraMedicaments={currentMedicaments} autoFocusSearch
             />

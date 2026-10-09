@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useDataSync } from '../lib/dataSync';
 import type { ExamRef, ExamPack } from '../lib/examSearch';
 import type { DemandeExamens } from '../lib/examRequest';
-import { loadExamRefs, loadPacks, loadPackUsage, sortPacksByUsage, loadPatientDemandes, loadNextRdvDate } from '../lib/examensApi';
+import { loadExamRefs, loadPacks, loadPackUsage, loadPatientDemandes, loadNextRdvDate } from '../lib/examensApi';
 import { loadAntecedents } from '../lib/antecedents';
 import { loadTraitements, fondDisplayName } from '../lib/traitementsChroniques';
 import type { PrintContext } from '../lib/examUi';
@@ -51,12 +51,15 @@ export function useExamReferentiel(enabled: boolean) {
   const doctorId = doctorProfile?.id ?? null;
   const [refs, setRefs] = useState<ExamRef[]>([]);
   const [packs, setPacks] = useState<ExamPack[]>([]);
+  // Sprint 5c — usage des packs par ce médecin : le tri final dépend aussi des pathologies du patient.
+  const [packUsage, setPackUsage] = useState<Map<string, number>>(() => new Map());
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
 
   const reloadPacks = useCallback(async () => {
     const [p, usage] = await Promise.all([loadPacks(doctorId), doctorId ? loadPackUsage(doctorId) : Promise.resolve(new Map<string, number>())]);
-    setPacks(sortPacksByUsage(p, usage));
+    setPacks(p);
+    setPackUsage(usage);
   }, [doctorId]);
 
   const load = useCallback(async () => {
@@ -77,7 +80,7 @@ export function useExamReferentiel(enabled: boolean) {
 
   useEffect(() => { if (enabled) void load(); }, [enabled, load]);
 
-  return { refs, packs, loading, failed, reload: load, reloadPacks };
+  return { refs, packs, packUsage, loading, failed, reload: load, reloadPacks };
 }
 
 export interface PatientExamContext {

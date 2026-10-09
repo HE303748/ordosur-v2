@@ -6,7 +6,7 @@
 
 import jsPDF from 'jspdf';
 import {
-  buildOrdonnancePdf, drawDocumentHeader, drawPageChrome, drawSignatureBlock, loadPdfChromeAssets,
+  buildOrdonnancePdf, drawDocumentHeader, drawPageChrome, drawSignatureBlock, loadPdfChromeAssets, stampPageNumbers,
   PDF_COLORS as C, PDF_LAYOUT, type PdfChromeAssets, type PdfDocumentHeader, type PdfImage, type PdfOrdonnanceData,
 } from './pdfService';
 import { formatCabinet } from './formatName';
@@ -66,8 +66,8 @@ function drawFooter(doc: jsPDF, header: ExamPdfHeader, page: ExamPage): void {
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
   doc.text(
-    [formatCabinet(header.org.name), formatFr(page.dateIso), `N° ${page.numero}`, page.pageLabel ? `Page ${page.pageLabel}` : '']
-      .filter(Boolean).join('  ·  '),
+    // Numéro de page : posé à la fin sur TOUT le document (stampPageNumbers), ordonnance comprise.
+    [formatCabinet(header.org.name), formatFr(page.dateIso), `N° ${page.numero}`].filter(Boolean).join('  ·  '),
     PAGE_W / 2, PAGE_H - 6, { align: 'center' },
   );
 }
@@ -151,6 +151,19 @@ function drawExamPage(doc: jsPDF, page: ExamPage, header: ExamPdfHeader, assets:
       const ar = renderArabicLine(arabicInstructions({ fasting: page.fasting, urgent: true, echeanceDate: page.echeanceDate })[0] ?? '');
       if (ar) doc.addImage(ar.data, ar.format, PAGE_W - MARGIN_R - 4 - ar.wMm, y + 2.2, ar.wMm, ar.hMm);
     }
+    y += h + 6;
+  }
+
+  // Sprint 5c — imagerie injectée : créatininémie à apporter (et metformine le cas échéant)
+  if (page.notes.length > 0) {
+    const h = 5 + page.notes.length * 5;
+    doc.setDrawColor(C.INK_MUTED);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(MARGIN_L, y, CONTENT_W, h, 2, 2);
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(C.INK_NAVY);
+    page.notes.forEach((n, i) => doc.text(`•  ${n}`, MARGIN_L + 4, y + 6 + i * 5));
     y += h + 6;
   }
 
@@ -313,6 +326,7 @@ export async function buildExamPdf(
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
   const assets = opts.assets ?? await loadPdfChromeAssets(opts.logoUrl);
   appendExamPages(doc, pages, header, assets, { startOnNewPage: false, bilingual: opts.bilingual });
+  stampPageNumbers(doc);
   return { blob: doc.output('blob'), fileName: opts.fileName };
 }
 
@@ -320,6 +334,7 @@ export async function buildExamPdf(
 export async function buildOrdonnanceWithExamsPdf(data: PdfOrdonnanceData, pages: ExamPage[]): Promise<PdfFile> {
   const { doc, assets, fileName } = await buildOrdonnancePdf(data);
   appendExamPages(doc, pages, { doctor: data.doctor, org: data.org }, assets, { startOnNewPage: true });
+  stampPageNumbers(doc);
   return { blob: doc.output('blob'), fileName };
 }
 

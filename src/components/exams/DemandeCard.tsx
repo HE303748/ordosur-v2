@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Check, X, Printer, Download, Share2, RotateCcw, CalendarPlus, Undo2, AlertTriangle, FileText, Clock,
 } from 'lucide-react';
@@ -48,20 +48,25 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
   const [busy, setBusy] = useState(false);
   const [out, setOut] = useState<OutputMode | null>(null);
   const [message, setMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+  // Sprint 5c — retour visuel immédiat : le statut choisi s'affiche tout de suite, la base confirme ensuite.
+  const [optim, setOptim] = useState<Record<string, DemandeLigne['statut']>>({});
+  useEffect(() => { setOptim({}); }, [d]);
 
   const today = new Date();
   const todayIso = toIsoDate(today);
   const open = isOpen(d);
   const retard = joursRetard(d, today);
-  const attente = d.lignes.filter(l => l.statut === 'en_attente');
-  const realisees = d.lignes.filter(l => l.statut === 'realise').length;
+  const lignes = d.lignes.map(l => (optim[l.id] ? { ...l, statut: optim[l.id], date_realisation: optim[l.id] === 'realise' ? (l.date_realisation ?? date) : null } : l));
+  const attente = lignes.filter(l => l.statut === 'en_attente');
+  const realisees = lignes.filter(l => l.statut === 'realise').length;
   const st = STATUT_LABEL[d.statut];
   const shareable = canSharePdf();
 
-  const run = async (fn: () => Promise<void>, ok: string) => {
+  const run = async (fn: () => Promise<void>, ok: string, optimistic: Record<string, DemandeLigne['statut']> = {}) => {
     if (busy) return;
     setBusy(true);
     setMessage(null);
+    setOptim(o => ({ ...o, ...optimistic }));
     try {
       await fn();
       setPending(null);
@@ -69,6 +74,8 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
       notifyDataChanged('examens');
       setMessage({ type: 'ok', text: ok });
     } catch (e) {
+      // Échec : l'affichage revient à l'état réel.
+      setOptim(o => Object.fromEntries(Object.entries(o).filter(([k]) => !(k in optimistic))));
       setMessage({ type: 'err', text: e instanceof Error ? e.message : 'Action impossible' });
     } finally {
       setBusy(false);
@@ -79,11 +86,19 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
     if (!pending) return;
     if (pending.kind === 'realise') {
       const l = pending.ligne;
-      void run(() => (l ? setLigneStatut(l.id, 'realise', date) : markDemandeRealisee(d.id, date)), l ? 'Examen marqué réalisé' : 'Demande marquée réalisée');
+      void run(
+        () => (l ? setLigneStatut(l.id, 'realise', date) : markDemandeRealisee(d.id, date)),
+        l ? 'Examen marqué réalisé' : 'Demande marquée réalisée',
+        Object.fromEntries((l ? [l] : attente).map(x => [x.id, 'realise' as const])),
+      );
     } else {
       if (motif.trim().length < 3) { setMessage({ type: 'err', text: 'Motif d’annulation obligatoire.' }); return; }
       const l = pending.ligne;
-      void run(() => (l ? cancelLigne(l, d, motif) : cancelDemande(d.id, motif)), l ? 'Examen annulé' : 'Demande annulée');
+      void run(
+        () => (l ? cancelLigne(l, d, motif) : cancelDemande(d.id, motif)),
+        l ? 'Examen annulé' : 'Demande annulée',
+        Object.fromEntries((l ? [l] : attente).map(x => [x.id, 'annule' as const])),
+      );
     }
   };
 
@@ -101,6 +116,39 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
     }
   };
 
+  // Sprint 5c — formulaire de confirmation (date ou motif), affiché AU PLUS PRÈS du bouton :
+  // sous la ligne concernée, ou à la place des boutons pour une action sur toute la demande.
+  const pendingForm = pending && (
+            <div className="w-full mt-2 rounded-xl border border-[#E5E5E0] dark:border-white/[0.1] bg-[#FAFAF7] dark:bg-white/[0.03] p-3">
+              <p className="text-sm font-semibold text-[#0A1628] dark:text-[#E2E8F0]">
+                {pending.kind === 'realise'
+                  ? (pending.ligne ? `Marquer « ${pending.ligne.libelle} » réalisé` : `Marquer les ${attente.length} examen${attente.length > 1 ? 's' : ''} en attente réalisé${attente.length > 1 ? 's' : ''}`)
+                  : (pending.ligne ? `Annuler « ${pending.ligne.libelle} »` : `Annuler la demande (${attente.length} examen${attente.length > 1 ? 's' : ''} en attente)`)}
+              </p>
+              {pending.kind === 'realise' ? (
+                <label className="block mt-2 text-xs text-slate-600 dark:text-[#94A3B8]">
+                  Date de réalisation
+                  <input type="date" value={date} max={todayIso} min={d.date_demande} onChange={e => setDate(e.target.value)}
+                    className="mt-1 block w-full sm:w-48 px-3 py-2 text-sm bg-white dark:bg-[#1E293B] border border-slate-300 dark:border-white/[0.1] rounded-lg text-[#0A1628] dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/40" />
+                </label>
+              ) : (
+                <label className="block mt-2 text-xs text-slate-600 dark:text-[#94A3B8]">
+                  Motif <span className="text-[#DC2626]" aria-hidden>*</span>
+                  <input type="text" autoFocus value={motif} maxLength={200} onChange={e => setMotif(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); confirm(); } }}
+                    placeholder="Ex : examen devenu inutile, patient hospitalisé, erreur de saisie…"
+                    className="mt-1 block w-full px-3 py-2 text-sm bg-white dark:bg-[#1E293B] border border-slate-300 dark:border-white/[0.1] rounded-lg text-[#0A1628] dark:text-[#E2E8F0] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/40" />
+                </label>
+              )}
+              <div className="mt-3 flex gap-2">
+                <button type="button" onClick={confirm} disabled={busy || (pending.kind === 'realise' && !date)} className={pending.kind === 'realise' ? btnPrimary : `${btn} text-white bg-[#0A1628] border-[#0A1628] hover:bg-[#1A2B42]`}>
+                  {busy ? 'Enregistrement…' : pending.kind === 'realise' ? 'Confirmer' : 'Confirmer l’annulation'}
+                </button>
+                <button type="button" onClick={() => { setPending(null); setMessage(null); }} disabled={busy} className={btnNeutral}>Retour</button>
+              </div>
+            </div>
+  );
+
   return (
     <div className={`bg-white dark:bg-[#111827] rounded-2xl border ${retard > 0 ? 'border-[#DC2626]/25' : 'border-slate-200/80 dark:border-white/[0.06]'} overflow-hidden`}>
       <button type="button" onClick={() => setExpanded(e => !e)} aria-expanded={expanded}
@@ -115,7 +163,7 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
             {open ? <>À réaliser avant le {formatFr(d.echeance_date)}</> : <>Demande du {formatFr(d.date_demande)}</>}
           </p>
           <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-0.5 truncate">
-            {d.lignes.length} examen{d.lignes.length > 1 ? 's' : ''}{realisees > 0 && open ? ` · ${realisees} réalisé${realisees > 1 ? 's' : ''}` : ''}
+            {lignes.length} examen{lignes.length > 1 ? 's' : ''}{realisees > 0 && open ? ` · ${realisees} réalisé${realisees > 1 ? 's' : ''}` : ''}
             {open ? ` · demandé le ${formatFrShort(d.date_demande)}` : ''} · {d.numero}
           </p>
           <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -141,10 +189,10 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
             <p className="text-xs text-slate-600 dark:text-[#94A3B8] mt-3"><span className="font-semibold">Renseignements cliniques : </span>{d.renseignements_cliniques}</p>
           )}
           <ul className="mt-3 divide-y divide-slate-100 dark:divide-white/[0.05]">
-            {d.lignes.map(l => {
+            {lignes.map(l => {
               const prec = fullPrecision({ precision: l.precision ?? '', injection: l.injection });
               return (
-                <li key={l.id} className="py-2 flex items-start gap-2.5">
+                <li key={l.id} className="py-2 flex flex-wrap items-start gap-x-2.5">
                   <span aria-hidden className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${l.statut === 'realise' ? 'bg-[#00A86B]' : l.statut === 'annule' ? 'bg-slate-300 dark:bg-slate-600' : 'bg-amber-400'}`} />
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm font-semibold break-words ${l.statut === 'annule' ? 'text-slate-400 line-through dark:text-[#64748B]' : 'text-[#0A1628] dark:text-[#E2E8F0]'}`}>
@@ -173,11 +221,12 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
                   )}
                   {canWrite && l.statut === 'realise' && !l.resultat_id && (
                     <button type="button" disabled={busy} title="Remettre en attente" aria-label={`Remettre ${l.libelle} en attente`}
-                      onClick={() => void run(() => setLigneStatut(l.id, 'en_attente'), 'Examen remis en attente')}
+                      onClick={() => void run(() => setLigneStatut(l.id, 'en_attente'), 'Examen remis en attente', { [l.id]: 'en_attente' })}
                       className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.07] transition-colors flex-shrink-0 disabled:opacity-50">
                       <Undo2 className="w-4 h-4" />
                     </button>
                   )}
+                  {pending?.ligne?.id === l.id && pendingForm}
                 </li>
               );
             })}
@@ -187,36 +236,8 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
             <p className="text-xs text-slate-500 dark:text-[#94A3B8] mt-1"><span className="font-semibold">Motif d’annulation : </span>{d.motif_annulation}</p>
           )}
 
-          {pending && (
-            <div className="mt-3 rounded-xl border border-[#E5E5E0] dark:border-white/[0.1] bg-[#FAFAF7] dark:bg-white/[0.03] p-3">
-              <p className="text-sm font-semibold text-[#0A1628] dark:text-[#E2E8F0]">
-                {pending.kind === 'realise'
-                  ? (pending.ligne ? `Marquer « ${pending.ligne.libelle} » réalisé` : `Marquer les ${attente.length} examen${attente.length > 1 ? 's' : ''} en attente réalisé${attente.length > 1 ? 's' : ''}`)
-                  : (pending.ligne ? `Annuler « ${pending.ligne.libelle} »` : `Annuler la demande (${attente.length} examen${attente.length > 1 ? 's' : ''} en attente)`)}
-              </p>
-              {pending.kind === 'realise' ? (
-                <label className="block mt-2 text-xs text-slate-600 dark:text-[#94A3B8]">
-                  Date de réalisation
-                  <input type="date" value={date} max={todayIso} min={d.date_demande} onChange={e => setDate(e.target.value)}
-                    className="mt-1 block w-full sm:w-48 px-3 py-2 text-sm bg-white dark:bg-[#1E293B] border border-slate-300 dark:border-white/[0.1] rounded-lg text-[#0A1628] dark:text-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#00A86B]/40" />
-                </label>
-              ) : (
-                <label className="block mt-2 text-xs text-slate-600 dark:text-[#94A3B8]">
-                  Motif <span className="text-[#DC2626]" aria-hidden>*</span>
-                  <input type="text" autoFocus value={motif} maxLength={200} onChange={e => setMotif(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); confirm(); } }}
-                    placeholder="Ex : examen devenu inutile, patient hospitalisé, erreur de saisie…"
-                    className="mt-1 block w-full px-3 py-2 text-sm bg-white dark:bg-[#1E293B] border border-slate-300 dark:border-white/[0.1] rounded-lg text-[#0A1628] dark:text-[#E2E8F0] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/40" />
-                </label>
-              )}
-              <div className="mt-3 flex gap-2">
-                <button type="button" onClick={confirm} disabled={busy || (pending.kind === 'realise' && !date)} className={pending.kind === 'realise' ? btnPrimary : `${btn} text-white bg-[#0A1628] border-[#0A1628] hover:bg-[#1A2B42]`}>
-                  {busy ? 'Enregistrement…' : pending.kind === 'realise' ? 'Confirmer' : 'Confirmer l’annulation'}
-                </button>
-                <button type="button" onClick={() => { setPending(null); setMessage(null); }} disabled={busy} className={btnNeutral}>Retour</button>
-              </div>
-            </div>
-          )}
+          {/* Confirmation portant sur TOUTE la demande : à la place des boutons d'action. */}
+          {pending && !pending.ligne && pendingForm}
 
           {message && (
             <p role={message.type === 'err' ? 'alert' : 'status'}

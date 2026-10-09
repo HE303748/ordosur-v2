@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Save, Printer, Download, AlertTriangle, Share2 } from 'lucide-react';
+import { ArrowLeft, Save, Printer, Download, AlertTriangle, Share2, CheckCircle2 } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { generateOrdonnancePdf, PdfInteractionAlert, type PdfOrdonnanceData } from '../lib/pdfService';
@@ -8,7 +8,7 @@ import { buildOrdonnanceWithExamsPdf, canSharePdf } from '../lib/examPdf';
 import { outputPdf, type OutputMode } from '../lib/examUi';
 import { ExamPagesPreview } from './exams/ExamPagesPreview';
 import { formatAge } from '../lib/ageUtils';
-import { formatNomPropre, formatDocteur, formatCabinet } from '../lib/formatName';
+import { formatNomPropre, formatDocteur, formatCabinet, civilite } from '../lib/formatName';
 import { DocumentSignatureBlock } from './DocumentSignatureBlock';
 
 interface MedicationForm {
@@ -62,6 +62,7 @@ interface PrescriptionPreviewModalProps {
     prenom: string;
     nom: string;
     date_naissance?: string | null;
+    sexe?: string | null;
   };
   motif?: string;
   medications: MedicationForm[];
@@ -120,11 +121,13 @@ export function PrescriptionPreviewModal({
   const handleSave = async () => {
     if (blockedReason || busy || isSaved) return;
     setSaving(true);
-    try { await onSave(); } finally { setSaving(false); }
+    try { await onSave({ keepPreview: true }); } finally { setSaving(false); }
   };
 
   const hasExams = examPages.length > 0;
-  const shareable = hasExams && canSharePdf();
+  // Sprint 5c — partage natif (mobile) pour l'ordonnance seule comme pour l'ordonnance + examens.
+  const shareable = canSharePdf();
+  const confirmation = isSaved && !readOnly;
   const pdfData = (): PdfOrdonnanceData => ({
     ordreNumber, logo_url, doctor, org, patient, motif, medications, remarks, nextAppointment, date: todayIso, interactionAlerts,
   });
@@ -184,8 +187,19 @@ export function PrescriptionPreviewModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={readOnly ? 'Ordonnance' : "Aperçu de l'ordonnance"}>
+    <Modal isOpen={isOpen} onClose={onClose} title={readOnly ? 'Ordonnance' : confirmation ? 'Ordonnance enregistrée' : "Aperçu de l'ordonnance"}>
       <div className="space-y-4">
+        {/* Sprint 5c — écran de confirmation après l'enregistrement (ordonnance seule ou + examens) */}
+        {confirmation && (
+          <div role="status" className="flex items-start gap-3 px-4 py-3 rounded-xl bg-[#E6F4EE] border border-[#00A86B]/20 no-print">
+            <CheckCircle2 className="w-5 h-5 text-[#00A86B] flex-shrink-0 mt-0.5" aria-hidden />
+            <p className="text-sm text-[#0A1628]">
+              <span className="font-semibold">Ordonnance enregistrée</span> — N° {ordreNumber}
+              {hasExams && <> · {examPages.length} page{examPages.length > 1 ? 's' : ''} d’examens jointe{examPages.length > 1 ? 's' : ''}</>}.
+              <span className="block text-xs text-slate-600 mt-0.5">Vous pouvez la télécharger, l’imprimer ou la partager, puis fermer.</span>
+            </p>
+          </div>
+        )}
         <div id="prescription-content" className="bg-white border-2 border-blue-600 rounded-lg p-6">
 
           {/* En-tête cabinet */}
@@ -216,7 +230,7 @@ export function PrescriptionPreviewModal({
 
           {/* Patient — toujours imprimé sur l'ordonnance (Sprint 4d-ter) */}
           <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-            <p className="font-semibold">Patient : {formatNomPropre(patient.prenom)} {formatNomPropre(patient.nom)}</p>
+            <p className="font-semibold">Patient : {civilite(patient.sexe)} {formatNomPropre(patient.prenom)} {formatNomPropre(patient.nom)}</p>
             {patient.date_naissance && (
               <p className="text-sm text-gray-600 mt-0.5">
                 Né(e) le : {(() => {
@@ -289,7 +303,7 @@ export function PrescriptionPreviewModal({
               Modifier
             </Button>
           )}
-          {!readOnly && <Button onClick={handleSave} variant="primary" disabled={!!blockedReason || busy || isSaved}>
+          {!readOnly && !isSaved && <Button onClick={handleSave} variant="primary" disabled={!!blockedReason || busy || isSaved}>
             {saving
               ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin mr-2" />
               : <Save className="w-4 h-4 mr-2" />}
@@ -311,6 +325,11 @@ export function PrescriptionPreviewModal({
               : <Download className="w-4 h-4 mr-2" />}
             {pdfLoading ? 'Génération…' : 'Télécharger PDF'}
           </Button>
+          {confirmation && (
+            <Button onClick={onClose} variant="primary" disabled={busy}>
+              Fermer
+            </Button>
+          )}
         </div>
       </div>
 

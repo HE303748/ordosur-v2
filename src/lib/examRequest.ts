@@ -269,6 +269,8 @@ export interface DemandeExamens {
   motif_annulation: string | null;
   notes: string | null;
   created_at: string;
+  /** Sprint 5c — patient sous metformine au moment de la demande (mention sur l'imagerie injectée). */
+  sous_metformine?: boolean;
   lignes: DemandeLigne[];
 }
 
@@ -473,8 +475,7 @@ export function examAlerts(lines: ExamLineDraft[], refs: ExamRef[], ctx: ExamAle
         examens: iodes.map(l => l.libelle),
       });
     }
-    const metformine = (ctx.medicaments ?? []).some(m => METFORMINE_RE.test(normExam(m)));
-    if (metformine) {
+    if (hasMetformine(ctx.medicaments)) {
       out.push({
         code: 'iode_metformine',
         message: 'Patient sous metformine — conduite à tenir selon la fonction rénale',
@@ -552,7 +553,7 @@ export interface DemandePayload {
 /** Charge utile de la RPC creer_demande_examens (lignes ordonnées : biologie, imagerie, explorations). */
 export function buildDemandePayload(
   d: ExamRequestDraft,
-  ids: { numero: string; patient_id: string; org_id: string; doctor_id: string; ordonnance_id?: string | null },
+  ids: { numero: string; patient_id: string; org_id: string; doctor_id: string; ordonnance_id?: string | null; sous_metformine?: boolean },
   echeance: EcheanceResult,
   today: Date,
 ): DemandePayload {
@@ -572,6 +573,7 @@ export function buildDemandePayload(
       urgent: d.urgent,
       ald: d.ald,
       regrouper_imageries: d.regrouperImageries,
+      sous_metformine: !!ids.sous_metformine,
       packs_utilises: [...new Set(d.packsUtilises)],
     },
     lignes: ordered.map(l => ({
@@ -586,4 +588,82 @@ export function buildDemandePayload(
       injection: l.injection,
     })),
   };
+}
+
+// ─── Sprint 5c — Injection de produit de contraste, créatinine, compteurs ────
+
+/** Le patient reçoit de la metformine (médicaments de l'ordonnance en cours + traitement de fond). */
+export function hasMetformine(medicaments: string[] | null | undefined): boolean {
+  return (medicaments ?? []).some(m => METFORMINE_RE.test(normExam(m)));
+}
+
+/** Examen demandé AVEC injection (produit iodé ou gadolinium), y compris en saisie libre. */
+export function isInjected(l: Pick<ExamLineDraft, 'injection' | 'precision' | 'libelle'>): boolean {
+  if (l.injection === true) return true;
+  if (l.injection === false) return false;
+  const t = normExam(`${l.libelle} ${l.precision}`);
+  return /\b(avec|apres) injection\b|\binjecte/.test(t) && !/sans injection/.test(t);
+}
+
+export const NOTE_CREATININE = 'Créatininémie récente (< 3 mois) à apporter';
+export const NOTE_METFORMINE = 'Patient sous metformine';
+
+/** Mentions imprimées sur la page d'une imagerie injectée (rien si pas d'injection). */
+export function injectionNotes(injected: boolean, sousMetformine: boolean): string[] {
+  if (!injected) return [];
+  return sousMetformine ? [NOTE_CREATININE, NOTE_METFORMINE] : [NOTE_CREATININE];
+}
+
+/**
+ * « Ajouter créatinine + DFG » : codes à proposer quand un examen est injecté et qu'aucune
+ * créatinine n'est demandée (ni dans cette demande, ni déjà en attente pour ce patient).
+ * Liste vide = aucune suggestion. Jamais bloquant.
+ */
+export function creatinineSuggestion(
+  lines: ExamLineDraft[],
+  demandes: Array<Pick<DemandeExamens, 'statut' | 'lignes'>> = [],
+): string[] {
+  if (!lines.some(isInjected)) return [];
+  const has = (code: string) => lines.some(l => l.examen_code === code)
+    || demandes.some(d => isOpen(d) && d.lignes.some(l => l.examen_code === code && l.statut === 'en_attente'));
+  if (has('CREATININE')) return [];
+  return has('DFG') ? ['CREATININE'] : ['CREATININE', 'DFG'];
+}
+
+/** Nombre d'examens réellement NOUVEAUX qu'un ajout apporterait (hors examens déjà présents). */
+export function countNewLines(existing: ExamLineDraft[], incoming: ExamLineDraft[]): number {
+  return mergeLines(existing, incoming).lines.length - existing.length;
+}
+
+/** « 1 médicament, 14 examens » — contenu d'une saisie sur le point d'être abandonnée. */
+export function abandonSummary(nbMedicaments: number, nbExamens: number): string {
+  const parts: string[] = [];
+  if (nbMedicaments > 0 || nbExamens === 0) parts.push(`${nbMedicaments} médicament${nbMedicaments > 1 ? 's' : ''}`);
+  if (nbExamens > 0) parts.push(`${nbExamens} examen${nbExamens > 1 ? 's' : ''}`);
+  return parts.join(', ');
+}
+
+// ─── Sprint 5c — Suivi (Accueil) ─────────────────────────────────────────────
+
+export interface SuiviCounts { enAttente: number; enRetard: number; sous7j: number }
+
+/** La carte « Examens à suivre » s'affiche dès qu'il existe au moins une demande en attente. */
+export function suiviVisible(c: SuiviCounts | null | undefined): boolean {
+  return !!c && c.enAttente > 0;
+}
+
+/** « NFS, TP / INR, Albumine +11 » : examens encore en attente d'une demande, abrégés. */
+export function pendingExamsLabel(lignes: Array<{ libelle: string; statut: LigneStatut }>, max = 3): string {
+  const pending = lignes.filter(l => l.statut === 'en_attente').map(l => l.libelle);
+  if (pending.length === 0) return '';
+  const head = pending.slice(0, max).join(', ');
+  return pending.length > max ? `${head} +${pending.length - max}` : head;
+}
+
+/** « En retard de 3 jours », « Aujourd'hui », « Dans 15 jours ». */
+export function echeanceRelative(echeanceIso: string, today: Date): { late: boolean; label: string } {
+  const n = daysBetween(toIsoDate(today), echeanceIso);
+  if (n < 0) return { late: true, label: `En retard de ${-n} jour${-n > 1 ? 's' : ''}` };
+  if (n === 0) return { late: false, label: 'Aujourd’hui' };
+  return { late: false, label: `Dans ${n} jour${n > 1 ? 's' : ''}` };
 }

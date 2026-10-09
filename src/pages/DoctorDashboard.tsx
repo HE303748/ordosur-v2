@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import {
@@ -36,6 +36,7 @@ import { createDemande, attachOrdonnance, cancelDemande, loadDemandesForOrdonnan
 import { docInputFromDraft, onOpenExamRequest, onPlanRdvRequest, pagesFromDemande, type OpenExamRequest } from '../lib/examUi';
 import type { DemandeExamens } from '../lib/examRequest';
 import { buildOrdonnanceWithExamsPdf, downloadPdf } from '../lib/examPdf';
+import { scrollTargetOnViewChange } from '../lib/uiPlacement';
 import { ExamRequestModal } from '../components/exams/ExamRequestModal';
 import { PatientExamStrip } from '../components/exams/PatientExamStrip';
 import { DerogationModal } from '../components/DerogationModal';
@@ -1771,13 +1772,13 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
         logo_url: logoUrl ?? null,
         doctor: doctorInfo,
         org: orgInfo,
-        patient: { prenom: ord.patient_prenom, nom: ord.patient_nom_only, date_naissance: ord.patient_date_naissance ?? null },
+        patient: { prenom: ord.patient_prenom, nom: ord.patient_nom_only, date_naissance: ord.patient_date_naissance ?? null, sexe: ord.patient_sexe ?? null },
         medications: meds,
         date: (ord.date || ord.created_at || new Date().toISOString()).split('T')[0],
       };
       // Sprint 5B — la demande d'examens se réimprime avec l'ordonnance (même PDF).
       const dem = ordDemandes.get(ord.id);
-      const pages = dem ? pagesFromDemande(dem, { ...pdfData.patient, sexe: ord.patient_sexe ?? null }) : [];
+      const pages = dem ? pagesFromDemande(dem, pdfData.patient) : [];
       if (pages.length > 0) downloadPdf(await buildOrdonnanceWithExamsPdf(pdfData, pages));
       else await generateOrdonnancePdf(pdfData);
     } catch (e) {
@@ -1999,7 +2000,7 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl }:
           logo_url={logoUrl ?? null}
           doctor={doctorInfo}
           org={orgInfo}
-          patient={{ prenom: viewOrd.patient_prenom, nom: viewOrd.patient_nom_only, date_naissance: viewOrd.patient_date_naissance }}
+          patient={{ prenom: viewOrd.patient_prenom, nom: viewOrd.patient_nom_only, date_naissance: viewOrd.patient_date_naissance, sexe: viewOrd.patient_sexe ?? null }}
           motif={viewOrd.motif ?? undefined}
           medications={(viewOrd.ordonnance_lignes || []).map((l: any, i: number) => ({
             id: l.id ?? String(i),
@@ -2971,6 +2972,31 @@ export function DoctorDashboard() {
   const [examRequest, setExamRequest] = useState<OpenExamRequest | null>(null);
   useEffect(() => onOpenExamRequest(setExamRequest), []);
   const [documentsTab, setDocumentsTab] = useState<'certificats' | 'examens'>('certificats');
+  // Sprint 5c — position de défilement : chaque vue s'ouvre en haut de page ; le bouton
+  // « Précédent » du navigateur restaure la position mémorisée de la vue retrouvée.
+  const mainRef = useRef<HTMLElement>(null);
+  const scrollMemRef = useRef<Record<string, number>>({});
+  const scrollViewRef = useRef<string>(activeView);
+  const viaHistoryRef = useRef(false);
+  useEffect(() => {
+    const h = () => { viaHistoryRef.current = true; };
+    window.addEventListener('popstate', h);
+    return () => window.removeEventListener('popstate', h);
+  }, []);
+  useLayoutEffect(() => {
+    scrollViewRef.current = activeView;
+    const el = mainRef.current;
+    if (!el) return;
+    const target = scrollTargetOnViewChange(viaHistoryRef.current, scrollMemRef.current[activeView]);
+    viaHistoryRef.current = false;
+    el.scrollTop = target;
+    if (target === 0) return;
+    // La vue retrouvée s'affiche après la transition : la position est reposée une fois le contenu en place.
+    const timers = [80, 260, 600].map(ms => window.setTimeout(() => {
+      if (scrollViewRef.current === activeView) el.scrollTop = target;
+    }, ms));
+    return () => timers.forEach(t => window.clearTimeout(t));
+  }, [activeView]);
   // Sprint 5B — « Planifier un RDV de contrôle » : l'Agenda s'ouvre pré-rempli, rien n'est créé seul.
   const planRdvControle = (p: Patient, date: string) => {
     setAgendaPrefill({ patient_id: p.id, patient_nom: `${p.prenom} ${p.nom}`, date, motif: 'Contrôle — résultats d’examens' });
@@ -4357,7 +4383,7 @@ export function DoctorDashboard() {
 
     // Sprint 5 — Demande d'examens jointe : créée AVANT l'ordonnance, dans une transaction
     // (RPC). Si elle échoue, rien n'est enregistré : jamais d'ordonnance « à moitié ».
-    const examens = prescriptionData.examens as { draft: import('../lib/examRequest').ExamRequestDraft; echeance: import('../lib/examRequest').EcheanceResult } | null | undefined;
+    const examens = prescriptionData.examens as { draft: import('../lib/examRequest').ExamRequestDraft; echeance: import('../lib/examRequest').EcheanceResult; sousMetformine?: boolean } | null | undefined;
     let demandeId: string | null = null;
     if (examens && examens.draft.lines.length > 0) {
       const pending = pendingDemandeRef.current;
@@ -4368,6 +4394,7 @@ export function DoctorDashboard() {
           const created = await createDemande(examens.draft, {
             patientId: selectedPatient.id, orgId: user.org_id, doctorId,
             numero: prescriptionDemandeNumero ?? undefined,
+            sousMetformine: !!examens.sousMetformine,
           }, examens.echeance);
           demandeId = created.id;
           if (created.numero !== prescriptionDemandeNumero) setPrescriptionDemandeNumero(created.numero);
@@ -5199,7 +5226,11 @@ export function DoctorDashboard() {
           </div>
         )}
 
-        <main className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0">
+        <main
+          ref={mainRef}
+          onScroll={e => { scrollMemRef.current[scrollViewRef.current] = e.currentTarget.scrollTop; }}
+          className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0"
+        >
           {activeView === 'checker' && pendingDraft && pendingDraftPatient && draftOffer !== 'none' && (
             <div
               role="status"
@@ -5570,7 +5601,11 @@ export function DoctorDashboard() {
       {selectedPatient && showPrescriptionPreview && prescriptionData && user && (
         <PrescriptionPreviewModal
           isOpen={showPrescriptionPreview}
-          onClose={() => setShowPrescriptionPreview(false)}
+          onClose={() => {
+            setShowPrescriptionPreview(false);
+            // Sprint 5c — « Fermer » sur l'écran « Ordonnance enregistrée » : l'ordonnance figée est libérée.
+            if (savedOrdreNumber === prescriptionOrdreNumber) setPrescriptionData(null);
+          }}
           onBack={() => {
             setShowPrescriptionPreview(false);
             setShowPrescriptionForm(true);
@@ -5607,6 +5642,7 @@ export function DoctorDashboard() {
             ? buildExamPages(docInputFromDraft(prescriptionData.examens.draft, {
                 numero: prescriptionDemandeNumero, dateIso: toIsoDate(new Date()),
                 echeance: prescriptionData.examens.echeance, patient: selectedPatient,
+                sousMetformine: !!prescriptionData.examens.sousMetformine,
               }))
             : []}
         />

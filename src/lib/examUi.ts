@@ -46,6 +46,30 @@ export function onPlanRdvRequest(handler: (d: PlanRdvRequest) => void): () => vo
   return () => bus.removeEventListener(PLAN, h);
 }
 
+// ─── Ouvrir le profil d'un patient sur un onglet précis (ex. « Examens ») ──────
+
+const TAB = 'patient-tab';
+let pendingTab: { patientId: string; tab: string } | null = null;
+
+/** À appeler juste avant d'ouvrir la fiche : l'onglet demandé est pris à l'affichage du profil. */
+export function requestPatientTab(patientId: string, tab: string): void {
+  pendingTab = { patientId, tab };
+  bus.dispatchEvent(new CustomEvent(TAB, { detail: pendingTab }));
+}
+
+/** Onglet demandé pour ce patient (consommé une seule fois), ou null. */
+export function consumePatientTab(patientId: string): string | null {
+  if (!pendingTab || pendingTab.patientId !== patientId) return null;
+  const t = pendingTab.tab;
+  pendingTab = null;
+  return t;
+}
+
+export function onPatientTabRequest(handler: () => void): () => void {
+  bus.addEventListener(TAB, handler);
+  return () => bus.removeEventListener(TAB, handler);
+}
+
 // ─── Brouillon de la demande autonome ────────────────────────────────────────
 // sessionStorage uniquement (données de santé), 24 h, purgé à la déconnexion par
 // clearAllDrafts (même préfixe « ordosur:draft: » que le brouillon d'ordonnance).

@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 import { fetchAllRows } from './fetchAllRows';
-import { packKey, type ExamRef, type ExamPack, type PackLine } from './examSearch';
+import type { ExamRef, ExamPack, PackLine } from './examSearch';
 import {
   buildDemandePayload, newDemandeNumero, toIsoDate,
   type DemandeExamens, type DemandeLigne, type ExamRequestDraft, type EcheanceResult,
@@ -55,15 +55,6 @@ export async function loadPackUsage(doctorId: string): Promise<Map<string, numbe
   return out;
 }
 
-/** Packs triés : les plus utilisés par ce médecin d'abord, puis personnels, puis ordre système. */
-export function sortPacksByUsage(packs: ExamPack[], usage: Map<string, number>): ExamPack[] {
-  return [...packs].sort((a, b) =>
-    (usage.get(packKey(b)) ?? 0) - (usage.get(packKey(a)) ?? 0)
-    || Number(a.systeme) - Number(b.systeme)
-    || a.ordre - b.ordre
-    || a.nom.localeCompare(b.nom, 'fr'));
-}
-
 export async function createPersonalPack(p: { doctorId: string; orgId: string; nom: string; lignes: PackLine[]; mots_cles?: string[] }): Promise<ExamPack> {
   const { data, error } = await supabase.from('packs_examens')
     .insert({ systeme: false, doctor_id: p.doctorId, org_id: p.orgId, nom: p.nom.trim(), mots_cles: p.mots_cles ?? [], lignes: p.lignes })
@@ -85,7 +76,7 @@ export async function archivePack(id: string): Promise<void> {
 // ─── Demandes ────────────────────────────────────────────────────────────────
 
 const LIGNE_COLS = 'id, demande_id, examen_code, libelle, type, categorie, precision, question_clinique, a_jeun, delai_jeun_h, injection, statut, date_realisation, resultat_id, ordre';
-export const DEMANDE_COLS = `id, numero, patient_id, org_id, doctor_id, ordonnance_id, date_demande, echeance_date, echeance_libelle, renseignements_cliniques, urgent, ald, regrouper_imageries, packs_utilises, statut, motif_annulation, notes, created_at, lignes:demande_examen_lignes(${LIGNE_COLS})`;
+export const DEMANDE_COLS = `id, numero, patient_id, org_id, doctor_id, ordonnance_id, date_demande, echeance_date, echeance_libelle, renseignements_cliniques, urgent, ald, regrouper_imageries, sous_metformine, packs_utilises, statut, motif_annulation, notes, created_at, lignes:demande_examen_lignes(${LIGNE_COLS})`;
 
 function normalizeDemande(d: DemandeExamens): DemandeExamens {
   return { ...d, lignes: [...(d.lignes ?? [])].sort((a, b) => a.ordre - b.ordre) };
@@ -119,7 +110,7 @@ export async function loadDemandesForOrdonnances(ordonnanceIds: string[]): Promi
   return out;
 }
 
-export interface CreateDemandeIds { patientId: string; orgId: string; doctorId: string; ordonnanceId?: string | null; numero?: string }
+export interface CreateDemandeIds { patientId: string; orgId: string; doctorId: string; ordonnanceId?: string | null; numero?: string; sousMetformine?: boolean }
 
 /**
  * Crée la demande et ses lignes dans UNE transaction (RPC). En cas de collision de numéro
@@ -130,6 +121,7 @@ export async function createDemande(draft: ExamRequestDraft, ids: CreateDemandeI
   for (let attempt = 0; attempt < 2; attempt++) {
     const payload = buildDemandePayload(draft, {
       numero, patient_id: ids.patientId, org_id: ids.orgId, doctor_id: ids.doctorId, ordonnance_id: ids.ordonnanceId ?? null,
+      sous_metformine: !!ids.sousMetformine,
     }, echeance, today);
     const { data, error } = await supabase.rpc('creer_demande_examens', { p_demande: payload.demande, p_lignes: payload.lignes });
     if (!error) return { id: data as string, numero };
@@ -181,8 +173,11 @@ export async function markDemandeRealisee(demandeId: string, dateRealisation?: s
 
 // ─── Suivi (Accueil) et liste paginée (Documents) ────────────────────────────
 
-export interface SuiviRow { id: string; patient_id: string; numero: string; echeance_date: string; statut: DemandeExamens['statut']; urgent: boolean }
-export interface SuiviData { enRetard: number; sous7j: number; rows: SuiviRow[] }
+export interface SuiviRow {
+  id: string; patient_id: string; numero: string; echeance_date: string; statut: DemandeExamens['statut']; urgent: boolean;
+  lignes: Array<{ libelle: string; statut: DemandeLigne['statut'] }>;
+}
+export interface SuiviData { enAttente: number; enRetard: number; sous7j: number; rows: SuiviRow[] }
 
 /**
  * Carte « Examens à suivre » : compteurs exacts (head) + les 8 échéances les plus proches.
@@ -196,20 +191,28 @@ export async function loadSuivi(doctorId: string | null, today: Date = new Date(
     if (doctorId) q = q.eq('doctor_id', doctorId);
     return q;
   };
+  // Sprint 5c — la liste porte sur TOUTES les demandes en attente (les prochaines échéances),
+  // et non plus seulement sur celles en retard ou à moins de 7 jours : une demande à 15 jours
+  // n'affichait pas la carte.
   let list = supabase.from('demandes_examens')
-    .select('id, patient_id, numero, echeance_date, statut, urgent')
-    .in('statut', ['en_attente', 'partiel']).lte('echeance_date', in7)
-    .order('echeance_date', { ascending: true }).limit(8);
+    .select('id, patient_id, numero, echeance_date, statut, urgent, lignes:demande_examen_lignes(libelle, statut, ordre)')
+    .in('statut', ['en_attente', 'partiel'])
+    .order('echeance_date', { ascending: true }).limit(6);
   if (doctorId) list = list.eq('doctor_id', doctorId);
-  const [late, soon, rows] = await Promise.all([
+  const [all, late, soon, rows] = await Promise.all([
+    base(),
     base().lt('echeance_date', todayIso),
     base().gte('echeance_date', todayIso).lte('echeance_date', in7),
     list,
   ]);
+  if (all.error || rows.error) throw new Error((all.error ?? rows.error)?.message ?? 'Suivi des examens indisponible');
+  const data = ((rows.data as unknown as Array<SuiviRow & { lignes: Array<{ libelle: string; statut: DemandeLigne['statut']; ordre: number }> }>) ?? [])
+    .map(r => ({ ...r, lignes: [...(r.lignes ?? [])].sort((a, b) => a.ordre - b.ordre) }));
   return {
+    enAttente: all.count ?? data.length,
     enRetard: late.count ?? 0,
     sous7j: soon.count ?? 0,
-    rows: (rows.data as SuiviRow[] | null) ?? [],
+    rows: data,
   };
 }
 

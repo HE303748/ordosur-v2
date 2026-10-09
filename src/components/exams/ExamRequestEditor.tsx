@@ -1,12 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Search, X, Layers, AlertTriangle, RotateCcw, Plus, Check, FlaskConical, ScanLine, Activity, Bookmark, Pencil, Archive,
 } from 'lucide-react';
 import type { Patient } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { searchExams, packKey, type ExamRef, type ExamPack, type ExamType, type ExamSearchResult } from '../../lib/examSearch';
+import {
+  searchExams, packKey, sortPacksForPatient, isContextPack,
+  type ExamRef, type ExamPack, type ExamType, type ExamSearchResult,
+} from '../../lib/examSearch';
+import { useAnchoredPopover } from '../../hooks/useAnchoredPopover';
 import {
   ECHEANCE_CHOICES, computeEcheance, examAlerts, findRedondances, formatFr, formatFrShort, freeLine, lastRenewable,
+  creatinineSuggestion, countNewLines,
   lineFromRef, linesFromPack, mergeLines, packLinesFromDraft, renewDraftFromDemande, buildRenseignements, toIsoDate,
   type DemandeExamens, type EcheanceChoice, type ExamLineDraft, type ExamRequestDraft,
 } from '../../lib/examRequest';
@@ -35,6 +41,8 @@ interface Props {
   onChange: (d: ExamRequestDraft) => void;
   refs: ExamRef[];
   packs: ExamPack[];
+  /** Sprint 5c — nombre d'utilisations de chaque pack par ce médecin. */
+  packUsage?: ReadonlyMap<string, number>;
   refsLoading: boolean;
   refsFailed: boolean;
   onRetryRefs: () => void;
@@ -54,7 +62,7 @@ type Option =
   | { kind: 'free'; type: ExamType; label: string };
 
 export function ExamRequestEditor({
-  patient, draft, onChange, refs, packs, refsLoading, refsFailed, onRetryRefs, onPacksChanged,
+  patient, draft, onChange, refs, packs, packUsage, refsLoading, refsFailed, onRetryRefs, onPacksChanged,
   demandes, ctx, extraMedicaments = [], rdvDateOverride = null, autoFocusSearch = false,
 }: Props) {
   const { doctorProfile, user } = useAuth();
@@ -71,6 +79,7 @@ export function ExamRequestEditor({
   const [active, setActive] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null);
   const noticeTimer = useRef<number | null>(null);
   const flash = (msg: string) => {
     setNotice(msg);
@@ -119,12 +128,12 @@ export function ExamRequestEditor({
     if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); setActive(a => Math.min(a + 1, options.length - 1)); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(a => Math.max(a - 1, 0)); }
     else if (e.key === 'Enter') { if (visible) { e.preventDefault(); pick(options[Math.min(active, options.length - 1)]); } }
-    else if (e.key === 'Escape' && (visible || query)) {
+    else if (e.key === 'Escape' && visible) {
       // Échap ne ferme QUE la liste : l'événement ne remonte ni à la modale ni au tableau de bord.
       e.preventDefault();
       e.stopPropagation();
       e.nativeEvent.stopImmediatePropagation();
-      if (visible) setOpen(false); else setQuery('');
+      setOpen(false);
     }
   };
   const listRef = useRef<HTMLDivElement>(null);
@@ -188,7 +197,12 @@ export function ExamRequestEditor({
 
   // ── Packs ────────────────────────────────────────────────────────────────
   const [showAllPacks, setShowAllPacks] = useState(false);
-  const visiblePacks = showAllPacks ? packs : packs.slice(0, 6);
+  // Sprint 5c — d'abord les packs qui correspondent aux pathologies du patient, puis les plus utilisés.
+  const sortedPacks = useMemo(
+    () => sortPacksForPatient(packs, packUsage ?? new Map(), patient.pathologies),
+    [packs, packUsage, patient.pathologies],
+  );
+  const visiblePacks = showAllPacks ? sortedPacks : sortedPacks.slice(0, 6);
   const [savingPack, setSavingPack] = useState(false);
   const [packName, setPackName] = useState<string | null>(null); // null = formulaire fermé
   const [packError, setPackError] = useState<string | null>(null);
@@ -222,10 +236,14 @@ export function ExamRequestEditor({
     catch (e) { setPackError(e instanceof Error ? e.message : 'Archivage impossible'); }
   };
 
+  const packNew = packPreview ? countNewLines(draft.lines, linesFromPack(packPreview.pack, refs, packPreview.selected)) : 0;
+  // Sprint 5c — examen injecté sans créatinine demandée : suggestion en 1 clic (jamais bloquante).
+  const creatSug = creatinineSuggestion(draft.lines, demandes).filter(c => byCode.has(c));
   const grouped = TYPE_ORDER.map(t => ({ type: t, lines: draft.lines.filter(l => l.type === t) })).filter(g => g.lines.length > 0);
   const nbHorsBio = draft.lines.filter(l => l.type !== 'biologie').length;
   const hasChronic = (patient.pathologies?.length ?? 0) > 0;
   const showList = open && query.trim().length >= 2;
+  const popStyle = useAnchoredPopover(anchorRef, showList);
 
   if (refsFailed && refs.length === 0) {
     return (
@@ -239,7 +257,7 @@ export function ExamRequestEditor({
   return (
     <div className="space-y-4">
       {/* Recherche */}
-      <div className="relative">
+      <div className="relative" ref={anchorRef}>
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" aria-hidden />
         <input
           ref={searchRef}
@@ -250,7 +268,7 @@ export function ExamRequestEditor({
           aria-autocomplete="list"
           autoComplete="off"
           autoFocus={autoFocusSearch}
-          data-esc-own={(open && options.length > 0) || query ? '1' : undefined}
+          data-esc-own={open && options.length > 0 ? '1' : undefined}
           value={query}
           disabled={refsLoading && refs.length === 0}
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
@@ -260,8 +278,11 @@ export function ExamRequestEditor({
           placeholder={refsLoading && refs.length === 0 ? 'Chargement du référentiel…' : 'Rechercher un examen ou un pack (ex : hb, echo, tdm, bilan hépatique…)'}
           className={`${inputCls} pl-9 py-2.5`}
         />
-        {showList && (
-          <div id="exam-search-list" ref={listRef} role="listbox" className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-80 overflow-y-auto overscroll-contain">
+        {/* Sprint 5c — liste rendue dans un portail : jamais coupée par un cadre, ouverte vers le
+            haut si la place manque, défilement interne, clavier conservé (le champ garde le focus). */}
+        {showList && popStyle && createPortal(
+          <div id="exam-search-list" ref={listRef} role="listbox" style={popStyle} onMouseDown={e => e.preventDefault()}
+            className="z-[90] bg-white border border-slate-200 rounded-xl shadow-2xl overflow-y-auto overscroll-contain">
             {options.map((o, i) => {
               const isActive = i === active;
               const base = `w-full px-3 py-2.5 text-left flex items-center gap-2.5 border-b border-slate-50 last:border-b-0 transition-colors ${isActive ? 'bg-[#E6F4EE]' : 'hover:bg-slate-50'}`;
@@ -306,7 +327,8 @@ export function ExamRequestEditor({
                 </button>
               );
             })}
-          </div>
+          </div>,
+          document.body,
         )}
       </div>
 
@@ -320,12 +342,14 @@ export function ExamRequestEditor({
         {visiblePacks.map(p => (
           <button key={p.id} type="button" onClick={() => openPack(p)}
             className={`inline-flex items-center gap-1.5 ${chipCls(packPreview?.pack.id === p.id)}`}>
-            {!p.systeme && <Bookmark className="w-3 h-3" aria-hidden />}{p.nom}
+            {!p.systeme && <Bookmark className="w-3 h-3" aria-hidden />}
+            {isContextPack(p, patient.pathologies) && <span className="w-1.5 h-1.5 rounded-full bg-[#00A86B]" title="Suggéré d’après les pathologies du patient" aria-label="Suggéré pour ce patient" />}
+            {p.nom}
           </button>
         ))}
-        {packs.length > 6 && (
+        {sortedPacks.length > 6 && (
           <button type="button" onClick={() => setShowAllPacks(v => !v)} className="px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-[#0A1628] underline-offset-2 hover:underline">
-            {showAllPacks ? 'Moins de packs' : `Tous les packs (${packs.length})`}
+            {showAllPacks ? 'Moins de packs' : `Tous les packs (${sortedPacks.length})`}
           </button>
         )}
       </div>
@@ -375,11 +399,14 @@ export function ExamRequestEditor({
             })}
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <button type="button" disabled={packPreview.selected.size === 0}
+            <button type="button" disabled={packNew === 0}
               onClick={() => { addLines(linesFromPack(packPreview.pack, refs, packPreview.selected), packKey(packPreview.pack)); setPackPreview(null); }}
               className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#00A86B] hover:bg-[#006B47] disabled:opacity-50 transition-colors">
-              Ajouter {packPreview.selected.size} examen{packPreview.selected.size > 1 ? 's' : ''}
+              {packNew === 0 ? 'Aucun examen nouveau' : `Ajouter ${packNew} examen${packNew > 1 ? 's' : ''}`}
             </button>
+            {packNew > 0 && packNew < packPreview.selected.size && (
+              <span className="text-xs text-slate-500">{packPreview.selected.size - packNew} déjà dans la demande</span>
+            )}
             <button type="button" onClick={() => setPackPreview(null)} className="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-white">Annuler</button>
           </div>
         </div>
@@ -474,6 +501,17 @@ export function ExamRequestEditor({
               </div>
             );
           })}
+        </div>
+      )}
+
+      {creatSug.length > 0 && (
+        <div role="status" className="flex flex-col sm:flex-row sm:items-center gap-2 px-3 py-2.5 rounded-xl bg-[#FAFAF7] border border-[#E5E5E0] text-sm text-[#0A1628]">
+          <span className="flex-1 min-w-0">Examen avec injection : une créatininémie récente (&lt; 3 mois) sera demandée au patient.</span>
+          <button type="button"
+            onClick={() => addLines(creatSug.map(c => lineFromRef(byCode.get(c)!)))}
+            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#00A86B] hover:bg-[#006B47] active:scale-[0.98] transition-all whitespace-nowrap">
+            <Plus className="w-3.5 h-3.5" aria-hidden /> {creatSug.length === 2 ? 'Ajouter créatinine + DFG' : 'Ajouter la créatinine'}
+          </button>
         </div>
       )}
 
