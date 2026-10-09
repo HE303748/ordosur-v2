@@ -12,7 +12,7 @@ import {
 import { cancelDemande, cancelLigne, markDemandeRealisee, setLigneStatut } from '../../lib/examensApi';
 import { openExamRequest, outputDemande, requestPlanRdv, type OutputMode, type PrintContext } from '../../lib/examUi';
 import { canSharePdf } from '../../lib/examPdf';
-import { lignesASaisir } from '../../lib/resultatsLogic';
+import { lignesASaisir, ligneSuiviLabel } from '../../lib/resultatsLogic';
 
 // Sprint 6A — formulaire de saisie des résultats, chargé à l'ouverture.
 const ResultatsDemandeForm = lazy(() => import('../bilans/ResultatsDemandeForm').then(m => ({ default: m.ResultatsDemandeForm })));
@@ -221,7 +221,8 @@ export function DemandeCard({ demande: d, patient, canWrite, printCtx, showPatie
                       <p className="text-xs text-slate-500 dark:text-[#94A3B8] break-words">{[prec, l.question_clinique ? `Question : ${l.question_clinique}` : ''].filter(Boolean).join(' · ')}</p>
                     )}
                     <p className="text-[11px] text-slate-400 dark:text-[#64748B] mt-0.5">
-                      {l.statut === 'realise' ? `Réalisé le ${formatFr(l.date_realisation)} — ${l.resultat_id ? 'résultat saisi' : 'résultat à saisir'}` : l.statut === 'annule' ? 'Annulé' : 'En attente de résultat'}
+                      {/* Sprint 6A-bis — « résultat à saisir » : uniquement une ligne marquée réalisée à la main, sans résultat. */}
+                      {ligneSuiviLabel(l)}
                     </p>
                   </div>
                   {canWrite && l.statut === 'en_attente' && (

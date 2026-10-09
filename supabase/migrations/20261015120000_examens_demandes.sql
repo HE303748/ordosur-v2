@@ -9,7 +9,7 @@
 -- Jamais de suppression physique (aucune policy DELETE) : annulation = statut 'annule'.
 -- RLS identique à traitements_chroniques : lecture par l'org (secrétaire comprise),
 -- écriture réservée aux médecins de l'org, doctor_id = doctors.id.
--- Empreinte de la source : examens 86950639dc35155c0ae105b9fb06a114 · packs 8dbf768a7743051f2155c678699019f8
+-- Empreinte de la source : examens 098f3c1a3cc38564d7c4c0090783616a · packs 8dbf768a7743051f2155c678699019f8
 
 -- ═══ 1. Référentiel ═════════════════════════════════════════════════════════
 create table if not exists public.examens_reference (
@@ -423,12 +423,12 @@ insert into public.examens_reference (code, libelle, type, categorie, abreviatio
   ('TCA', 'TCA', 'biologie', 'Hémostase', array['tca','tck']::text[], array['temps de céphaline activée']::text[], false, null, false, false, null, false, '{}'::text[], null, null, '[]'::jsonb, 80),
   ('FIBRINOGENE', 'Fibrinogène', 'biologie', 'Hémostase', array['fib','fibrinogene']::text[], '{}'::text[], false, null, false, false, null, false, '{}'::text[], null, 'g/L', '[]'::jsonb, 90),
   ('D_DIMERES', 'D-dimères', 'biologie', 'Hémostase', array['ddi','d dimeres','ddimeres']::text[], '{}'::text[], false, null, false, false, null, false, '{}'::text[], null, 'ng/mL', '[]'::jsonb, 100),
-  ('GLYCEMIE_JEUN', 'Glycémie à jeun', 'biologie', 'Glycémie', array['gaj','gly','glycemie']::text[], array['glucose','sucre']::text[], true, 8, false, false, null, false, '{}'::text[], null, 'g/L', '[{"unite":"mmol/L","facteur":5.551},{"unite":"mg/dL","facteur":100}]'::jsonb, 110),
-  ('GLYCEMIE_PP', 'Glycémie post-prandiale', 'biologie', 'Glycémie', array['gpp','gly pp','glycemie pp']::text[], array['glycémie 2 h après le repas']::text[], false, null, false, false, null, false, '{}'::text[], null, 'g/L', '[{"unite":"mmol/L","facteur":5.551},{"unite":"mg/dL","facteur":100}]'::jsonb, 120),
+  ('GLYCEMIE_JEUN', 'Glycémie à jeun', 'biologie', 'Glycémie', array['gaj','gly','glycemie']::text[], array['glucose','sucre']::text[], true, 8, false, false, null, false, '{}'::text[], null, 'g/L', '[{"unite":"mmol/L","facteur":5.551}]'::jsonb, 110),
+  ('GLYCEMIE_PP', 'Glycémie post-prandiale', 'biologie', 'Glycémie', array['gpp','gly pp','glycemie pp']::text[], array['glycémie 2 h après le repas']::text[], false, null, false, false, null, false, '{}'::text[], null, 'g/L', '[{"unite":"mmol/L","facteur":5.551}]'::jsonb, 120),
   ('HBA1C', 'HbA1c (hémoglobine glyquée)', 'biologie', 'Glycémie', array['hba1c','hb a1c','hb','a1c','glyquee']::text[], array['hémoglobine glyquée','hémoglobine glycosylée','hémoglobine glyquee']::text[], false, null, false, false, null, false, '{}'::text[], null, '%', '[{"unite":"mmol/mol","formule":"ifcc","a":10.929,"b":-2.15}]'::jsonb, 130),
-  ('HGPO', 'HGPO 75 g (hyperglycémie provoquée par voie orale)', 'biologie', 'Glycémie', array['hgpo']::text[], array['hyperglycémie provoquée','test o''sullivan']::text[], true, 8, false, false, null, false, '{}'::text[], null, 'g/L', '[{"unite":"mmol/L","facteur":5.551},{"unite":"mg/dL","facteur":100}]'::jsonb, 140),
+  ('HGPO', 'HGPO 75 g (hyperglycémie provoquée par voie orale)', 'biologie', 'Glycémie', array['hgpo']::text[], array['hyperglycémie provoquée','test o''sullivan']::text[], true, 8, false, false, null, false, '{}'::text[], null, 'g/L', '[{"unite":"mmol/L","facteur":5.551}]'::jsonb, 140),
   ('UREE', 'Urée', 'biologie', 'Bilan rénal', array['uree']::text[], array['urée sanguine','azotémie']::text[], false, null, false, false, null, false, '{}'::text[], null, 'g/L', '[{"unite":"mmol/L","facteur":16.65}]'::jsonb, 150),
-  ('CREATININE', 'Créatinine', 'biologie', 'Bilan rénal', array['creat','creatinine']::text[], array['créatininémie','fonction rénale']::text[], false, null, false, false, null, false, '{}'::text[], null, 'mg/L', '[{"unite":"µmol/L","facteur":8.84},{"unite":"mg/dL","diviseur":10}]'::jsonb, 160),
+  ('CREATININE', 'Créatinine', 'biologie', 'Bilan rénal', array['creat','creatinine']::text[], array['créatininémie','fonction rénale']::text[], false, null, false, false, null, false, '{}'::text[], null, 'mg/L', '[{"unite":"µmol/L","facteur":8.84}]'::jsonb, 160),
   ('DFG', 'DFG estimé (CKD-EPI)', 'biologie', 'Bilan rénal', array['dfg','clairance','ckd','mdrd']::text[], array['débit de filtration glomérulaire','clairance de la créatinine']::text[], false, null, false, false, null, false, '{}'::text[], null, 'mL/min/1,73 m²', '[]'::jsonb, 170),
   ('IONOGRAMME', 'Ionogramme sanguin (Na, K, Cl)', 'biologie', 'Bilan rénal', array['iono','ionogramme','nak','na k','kaliemie','natremie']::text[], array['sodium','potassium','chlore','kaliémie','natrémie']::text[], false, null, false, false, null, false, '{}'::text[], null, 'mmol/L', '[]'::jsonb, 180),
   ('PROTEINURIE_24H', 'Protéinurie des 24 heures', 'biologie', 'Bilan rénal', array['pu 24','proteinurie','pu24']::text[], array['protéines urinaires']::text[], false, null, false, false, null, false, array['Recueil des urines de 24 h']::text[], null, 'g/24 h', '[]'::jsonb, 190),

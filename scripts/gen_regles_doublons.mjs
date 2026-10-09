@@ -6,6 +6,7 @@
 // Le moteur lit ces données EN BASE (doublon_classes / doublon_substances / regles_doublons).
 
 import { writeFileSync } from 'node:fs';
+import { writeNewMigration } from './lib/migrationGuard.mjs';
 
 const SOURCE = "Proposition Ordosur d'après RCP — à valider";
 
@@ -170,5 +171,6 @@ on conflict (code, classe_a, classe_b) do update set
   conduite = excluded.conduite, source = excluded.source;
 `;
 
-writeFileSync(new URL('../supabase/migrations/20261013120000_regles_doublons.sql', import.meta.url), sql);
+// Garde-fou : une migration existante n'est jamais réécrite (scripts/lib/migrationGuard.mjs).
+writeNewMigration(new URL('../supabase/migrations/20261013120000_regles_doublons.sql', import.meta.url), sql);
 console.log(`${classeRows.length} motifs de classe, ${substanceRows.length} motifs de substance, ${regles.length} règles`);

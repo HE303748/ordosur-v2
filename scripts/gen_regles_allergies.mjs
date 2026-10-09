@@ -6,6 +6,7 @@
 // Le moteur lit les familles et les règles EN BASE (allergie_familles / regles_allergies).
 
 import { writeFileSync } from 'node:fs';
+import { writeNewMigration } from './lib/migrationGuard.mjs';
 
 const SOURCE = "Proposition Ordosur d'après RCP — à valider";
 
@@ -213,5 +214,6 @@ on conflict (code, famille_allergie, famille_medicament) do update set
   titre = excluded.titre, conduite = excluded.conduite, source = excluded.source;
 `;
 
-writeFileSync(new URL('../supabase/migrations/20261011120000_regles_allergies.sql', import.meta.url), sql);
+// Garde-fou : une migration existante n'est jamais réécrite (scripts/lib/migrationGuard.mjs).
+writeNewMigration(new URL('../supabase/migrations/20261011120000_regles_allergies.sql', import.meta.url), sql);
 console.log(`${familleRows.length} motifs, ${regles.length} règles`);

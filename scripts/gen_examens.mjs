@@ -9,6 +9,7 @@
 // Libellés : vocabulaire français standard des laboratoires et centres de radiologie marocains.
 
 import { writeFileSync } from 'node:fs';
+import { writeNewMigration } from './lib/migrationGuard.mjs';
 import { createHash } from 'node:crypto';
 
 // ── Unités et conversions standard (Sprint 6). valeur_autre = valeur_defaut × facteur,
@@ -710,7 +711,8 @@ on conflict (code) where systeme do update set
 --     E'\\n' order by code collate "C")) from packs_examens where systeme;
 `;
 
-writeFileSync(new URL('../supabase/migrations/20261015120000_examens_demandes.sql', import.meta.url), sql);
+// Garde-fou : une migration existante n'est jamais réécrite (scripts/lib/migrationGuard.mjs).
+writeNewMigration(new URL('../supabase/migrations/20261015120000_examens_demandes.sql', import.meta.url), sql);
 console.log(`${exams.length} examens (${exams.filter(e => e.type === 'biologie').length} biologie, ${exams.filter(e => e.type === 'imagerie').length} imagerie, ${exams.filter(e => e.type === 'exploration').length} explorations), ${packRows.length} packs`);
 console.log(`empreinte examens ${empreinteExamens} · packs ${empreintePacks}`);
 

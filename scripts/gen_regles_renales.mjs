@@ -12,6 +12,7 @@
 //   la règle s'applique si  seuil_min ≤ valeur < seuil  (seuil_min absent = pas de borne basse).
 
 import { readFileSync, writeFileSync } from 'node:fs';
+import { writeNewMigration } from './lib/migrationGuard.mjs';
 import { createHash } from 'node:crypto';
 
 const SOURCE = "Proposition Ordosur d'après RCP — à valider";
@@ -200,6 +201,7 @@ ${examMaj.map(e => `update public.examens_reference set unites = ${q(JSON.string
 --   (examens : requête en fin de 20261015120000_examens_demandes.sql)
 `;
 
-writeFileSync(new URL('../supabase/migrations/20261018120000_fonction_renale.sql', import.meta.url), sql);
+// Garde-fou : une migration existante n'est jamais réécrite (scripts/lib/migrationGuard.mjs).
+writeNewMigration(new URL('../supabase/migrations/20261018120000_fonction_renale.sql', import.meta.url), sql);
 console.log(`${regles.length} règles, ${classeRows.length} motifs (${Object.keys(classes).length} classes)`);
 console.log(`empreinte règles ${empreinteRegles} · classes ${empreinteClasses} · examens ${examData.empreinte.examens}`);

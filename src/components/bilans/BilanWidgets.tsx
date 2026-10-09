@@ -45,7 +45,10 @@ export function DerniersBilansLine({ patient }: { patient: Pick<Patient, 'id' | 
       {items.map((i, k) => (
         <span key={i.key}>
           {k > 0 && <span aria-hidden className="text-slate-300 dark:text-slate-600"> · </span>}
-          <span className="whitespace-nowrap">{i.label} <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{i.valeur}</span> ({formatFrShort(i.date)})</span>
+          <span className="whitespace-nowrap">{i.label} <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{i.valeur}</span>
+            {/* Sprint 6A-bis — même badge que l'onglet Bilans (d'après les bornes du labo saisies) */}
+            {i.interpretation && i.interpretation !== 'normal' && <InterpretationBadge value={i.interpretation} className="ml-1 align-middle" />}
+            {' '}({formatFrShort(i.date)})</span>
         </span>
       ))}
     </p>

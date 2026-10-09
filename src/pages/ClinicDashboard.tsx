@@ -10,6 +10,7 @@ import { Modal } from '../components/Modal';
 import { DoctorForm, DoctorData } from '../components/DoctorForm';
 import { PatientForm } from '../components/PatientForm';
 import { Toast } from '../components/Toast';
+import { homeAlertLabel } from '../lib/uiLabels';
 import { PatientDetailsModal } from '../components/PatientDetailsModal';
 import { EmailVerificationBanner } from '../components/EmailVerificationBanner';
 import { MedicationHistoryModal } from '../components/MedicationHistoryModal';
@@ -654,7 +655,7 @@ export function ClinicDashboard() {
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">{activity.doctor_name}</p>
                       <p className="text-xs text-gray-600 mt-1">
-                        {activity.medicament_a} + {activity.medicament_b}
+                        {homeAlertLabel(activity)}
                       </p>
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full ${

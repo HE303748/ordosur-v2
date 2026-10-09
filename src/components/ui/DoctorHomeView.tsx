@@ -10,6 +10,7 @@ import { PageTransition } from './PageTransition';
 import { PatientAvatar } from './PatientAvatar';
 import { ExamensSuiviCard } from '../exams/ExamensSuiviCard';
 import { ResultatsARevoirCard } from '../bilans/BilanWidgets';
+import { homeAlertLabel } from '../../lib/uiLabels';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,9 @@ export interface HomeAlert {
   id: string;
   patient_id: string | null;
   medicament_a: string;
-  medicament_b: string;
+  medicament_b: string | null;
+  /** Canal de l'alerte (interaction_logs.source) : allergie, antécédent, rénal, doublon… */
+  source?: string | null;
   risk_level: string;
   timestamp: string;
 }
@@ -508,7 +511,8 @@ export function DoctorHomeView({
                 )
                 : recentAlerts.map(a => {
                   const badge = riskBadge(a.risk_level);
-                  const meds = a.medicament_a === a.medicament_b ? a.medicament_a : `${a.medicament_a} + ${a.medicament_b}`;
+                  // Sprint 6A-bis — jamais de « + null » : libellé selon la nature de l'alerte.
+                  const meds = homeAlertLabel(a);
                   const who = (a.patient_id && patientName.get(a.patient_id)) || 'Patient';
                   return (
                     <button key={a.id} type="button" onClick={() => onNavigate('checker')} className={ROW_BTN}

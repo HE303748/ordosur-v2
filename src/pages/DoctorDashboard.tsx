@@ -92,6 +92,7 @@ import {
 // Sprint 6B — canal fonction rénale (module pur lib/renalEngine, chargeur dédié hooks/useRenal)
 import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, type RenalReserve, type RenalStatus } from '../lib/renalEngine';
 import { useRenalChannel } from '../hooks/useRenal';
+import { patientSearchInput } from '../lib/uiLabels';
 import { RenalStrip } from '../components/bilans/RenalStrip';
 import { PregnancyStatusEditor } from '../components/PregnancyStatusEditor';
 import { AnalysisIndicator, analysisIndicatorState } from '../components/AnalysisIndicator';
@@ -1092,8 +1093,10 @@ function CheckerView({
                   <input
                     type="text"
                     value={patientSearchTerm}
-                    onChange={e => { setPatientSearchTerm(e.target.value); setShowPatientDropdown(true); }}
-                    onFocus={() => setShowPatientDropdown(true)}
+                    // Sprint 6A-bis — champ prérempli : la frappe REMPLACE le nom affiché, elle ne s'y ajoute jamais
+                    // (« Walid IdrissiWalid Idrissi »). Sélection du texte au focus + garde-fou sur la valeur.
+                    onChange={e => { setPatientSearchTerm(patientSearchInput(e.target.value, patientFieldLabel(selectedPatient))); setShowPatientDropdown(true); }}
+                    onFocus={e => { e.currentTarget.select(); setShowPatientDropdown(true); }}
                     onBlur={onPatientFieldBlur}
                     placeholder="Rechercher un patient..."
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-[#00A86B]/50 dark:focus:ring-[#00A86B]/40 focus:border-[#00A86B] dark:focus:border-[#00A86B]/40 transition-all"
@@ -4262,7 +4265,7 @@ export function DoctorDashboard() {
           .lte('created_at', endOfLastMonth),
         // Interactions détectées (historique) + dernières lignes pour le bloc « Dernières alertes »
         supabase.from('interaction_logs')
-          .select('id, patient_id, medicament_a, medicament_b, risk_level, timestamp', { count: 'exact' })
+          .select('id, patient_id, medicament_a, medicament_b, risk_level, source, timestamp', { count: 'exact' })
           .eq('doctor_id', doctorProfile?.id || user.id)
           // Sprint 3b — les confirmations « hors base » ne sont pas des interactions détectées
           .or('source.is.null,source.neq.hors_base_confirme')

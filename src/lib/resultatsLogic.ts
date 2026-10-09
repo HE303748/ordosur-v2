@@ -446,7 +446,7 @@ export interface ParsedSaisie {
   nom: string;
   /** Examens possibles, le plus probable en premier (HbA1c d'abord chez un diabétique). */
   candidats: Candidat[];
-  /** Plusieurs examens également plausibles : le médecin choisit explicitement. */
+  /** Plusieurs examens plausibles, ou nom trop court pour être sûr : le médecin choisit explicitement. */
   ambigu: boolean;
   nombre: NombreSaisi | null;
   qualitatif: Qualitatif | null;
@@ -456,15 +456,24 @@ export interface ParsedSaisie {
 
 const uniteLike = (s: string) => s.length <= 20 && /^[a-zA-Zµμ%°]/.test(s);
 
-function chercheCandidats(nom: string, refs: ExamRef[], pathologies: string[] | null | undefined): { candidats: Candidat[]; exact: boolean } {
+/**
+ * Sprint 6A-bis — deux garde-fous contre un nom tronqué par une frappe perdue :
+ *   • une valeur CHIFFRÉE ne peut viser qu'un examen de biologie (« ét 106 » ne devient pas
+ *     une échocardiographie) ;
+ *   • un nom de 1 ou 2 lettres qui n'est pas une abréviation exacte (« cr », « re ») est
+ *     `incertain` : les examens trouvés sont proposés, jamais retenus sans choix explicite.
+ */
+function chercheCandidats(nom: string, refs: ExamRef[], pathologies: string[] | null | undefined, chiffre = false): { candidats: Candidat[]; exact: boolean; incertain: boolean } {
+  const rien = { candidats: [], exact: false, incertain: false };
   const hits = searchExams(nom, refs, [], { pathologies, limit: 8 })
-    .flatMap(h => (h.kind === 'exam' ? [{ exam: h.exam, score: h.score, base: h.score - (h.contextual ? 30 : 0) }] : []));
-  if (hits.length === 0) return { candidats: [], exact: false };
+    .flatMap(h => (h.kind === 'exam' && (!chiffre || h.exam.type === 'biologie') ? [{ exam: h.exam, score: h.score, base: h.score - (h.contextual ? 30 : 0) }] : []));
+  if (hits.length === 0) return rien;
   const top = Math.max(...hits.map(h => h.base));
-  if (top < 50) return { candidats: [], exact: false };
+  if (top < 50) return rien;
   const kept = hits.filter(h => h.base >= top - 10).slice(0, 4);
   return {
     exact: top >= 100,
+    incertain: normExam(nom).length <= 2 && top < 100,
     candidats: kept.map(h => {
       const parametre = defaultParametre(h.exam);
       return { exam: h.exam, parametre, label: parametre ? `${capitalise(parametre)} (${shortLabel(h.exam.libelle)})` : shortLabel(h.exam.libelle) };
@@ -480,8 +489,8 @@ export function parseSaisieLibre(input: string, refs: ExamRef[], opts: { patholo
   const raw = input.trim().replace(/[  ]/g, ' ').replace(/\s*[:=]\s*/g, ' ').replace(/\s+/g, ' ');
   const vide: ParsedSaisie = { raw, nom: raw, candidats: [], ambigu: false, nombre: null, qualitatif: null, unite: null };
   if (raw.length < 2) return vide;
-  const done = (nom: string, c: Candidat[], rest: Partial<ParsedSaisie>): ParsedSaisie =>
-    ({ ...vide, nom, candidats: c, ambigu: c.length > 1, ...rest });
+  const done = (nom: string, c: Candidat[], rest: Partial<ParsedSaisie>, incertain = false): ParsedSaisie =>
+    ({ ...vide, nom, candidats: c, ambigu: c.length > 1 || (incertain && c.length > 0), ...rest });
 
   const tokens = raw.split(' ');
   // Qualitatif en fin de saisie : « vih négatif », « ag hbs + ».
@@ -490,13 +499,13 @@ export function parseSaisieLibre(input: string, refs: ExamRef[], opts: { patholo
     if (q) {
       const nom = tokens.slice(0, -1).join(' ');
       const c = chercheCandidats(nom, refs, opts.pathologies);
-      if (c.candidats.length > 0) return done(nom, c.candidats, { qualitatif: q });
+      if (c.candidats.length > 0) return done(nom, c.candidats, { qualitatif: q }, c.incertain);
     }
   }
 
   // Le texte entier est le nom exact d'un examen (« ca 125 », « ca 19-9 ») : pas de valeur.
   const entier = chercheCandidats(raw, refs, opts.pathologies);
-  if (entier.exact) return done(raw, entier.candidats, {});
+  if (entier.exact) return done(raw, entier.candidats, {}, entier.incertain);
 
   // Valeur chiffrée : on essaie chaque nombre comme frontière nom | valeur | unité.
   let repli: ParsedSaisie | null = null;
@@ -507,13 +516,13 @@ export function parseSaisieLibre(input: string, refs: ExamRef[], opts: { patholo
     const reste = [m[2] ?? '', ...tokens.slice(i + 1)].join(' ').trim();
     if (!nombre || (reste && !uniteLike(reste))) continue;
     const nom = tokens.slice(0, i).join(' ');
-    const c = chercheCandidats(nom, refs, opts.pathologies);
-    const parsed = done(nom, c.candidats, { nombre, unite: reste || null });
+    const c = chercheCandidats(nom, refs, opts.pathologies, true);
+    const parsed = done(nom, c.candidats, { nombre, unite: reste || null }, c.incertain);
     if (c.candidats.length > 0) return parsed;
     repli ??= parsed;
   }
   if (repli) return repli;
-  return done(raw, entier.candidats, {});
+  return done(raw, entier.candidats, {}, entier.incertain);
 }
 
 /** Unité proposée : celle de la dernière saisie du médecin pour cet examen, sinon l'unité de référence. */
@@ -643,7 +652,7 @@ export function lignesApresResultats<T extends { id: string; statut: LigneStatut
 
 // ─── Vérificateur : « Derniers bilans : … » ──────────────────────────────────
 
-export interface DernierBilan { key: string; label: string; valeur: string; date: string }
+export interface DernierBilan { key: string; label: string; valeur: string; date: string; interpretation: Interpretation | null }
 
 /**
  * Jusqu'à `max` derniers résultats, les plus pertinents d'abord : examens liés aux
@@ -657,7 +666,7 @@ export function derniersBilans(series: Serie[], pathologies: string[] | null | u
     .filter(s => s.dernier.valeur_num !== null || qualitatifLabel(s.dernier.valeur_texte) !== null)
     .sort((a, b) => rang(a) - rang(b) || b.dernier.date_prelevement.localeCompare(a.dernier.date_prelevement) || a.ordre - b.ordre)
     .slice(0, max)
-    .map(s => ({ key: s.key, label: s.label, valeur: valeurAffichee(s.dernier), date: s.dernier.date_prelevement }));
+    .map(s => ({ key: s.key, label: s.label, valeur: valeurAffichee(s.dernier), date: s.dernier.date_prelevement, interpretation: s.dernier.interpretation }));
 }
 
 export function derniersBilansLine(items: DernierBilan[]): string {
@@ -666,7 +675,14 @@ export function derniersBilansLine(items: DernierBilan[]): string {
 
 // ─── Courbe ──────────────────────────────────────────────────────────────────
 
-export interface ChartPoint { id: string; t: number; date: string; valeur: number }
+export interface ChartPoint {
+  id: string;
+  /** Position sur l'axe du temps : jour du prélèvement + rang de saisie dans la journée. */
+  t: number;
+  date: string;
+  valeur: number;
+  laboratoire: string | null;
+}
 export interface ChartSerie { unite: string | null; points: ChartPoint[]; bande: { basse: number | null; haute: number | null } | null }
 
 /** Unités dans lesquelles la série peut être tracée (référentiel, sinon unités saisies). */
@@ -695,11 +711,23 @@ export function chartSerie(serie: Serie, mesure: ExamMesure, unite: string | nul
     const src = matchUnite(de, mesure);
     return src && cible ? arrondi(cible.fromRef(src.toRef(v))) : null;
   };
+  // Sprint 6A-bis — UN point par résultat, jamais de regroupement par jour : deux valeurs du
+  // même jour sont deux points, placés dans l'ordre de saisie (horodatage) à l'intérieur du jour.
+  const chrono = [...serie.points]
+    .filter(p => p.valeur_num !== null)
+    .sort((a, b) => a.date_prelevement.localeCompare(b.date_prelevement) || a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
+  const parJour = new Map<string, number>();
+  for (const p of chrono) parJour.set(p.date_prelevement, (parJour.get(p.date_prelevement) ?? 0) + 1);
+  const rang = new Map<string, number>();
   const points: ChartPoint[] = [];
-  for (const p of [...serie.points].reverse()) {
-    if (p.valeur_num === null) continue;
-    const v = dans(p.valeur_num, p.unite_saisie);
-    if (v !== null) points.push({ id: p.id, t: tsOf(p.date_prelevement), date: p.date_prelevement, valeur: v });
+  for (const p of chrono) {
+    const k = rang.get(p.date_prelevement) ?? 0;
+    rang.set(p.date_prelevement, k + 1);
+    const v = dans(p.valeur_num!, p.unite_saisie);
+    if (v === null) continue;
+    // Les points d'un même jour se répartissent sur la journée (pas d'empilement).
+    const pas = Math.min(3_600_000, Math.floor(86_400_000 / (parJour.get(p.date_prelevement)! + 1)));
+    points.push({ id: p.id, t: tsOf(p.date_prelevement) + k * pas, date: p.date_prelevement, valeur: v, laboratoire: p.laboratoire });
   }
   let bande: ChartSerie['bande'] = null;
   const src = serie.points.find(p => p.valeur_num !== null && (p.borne_basse !== null || p.borne_haute !== null));
@@ -784,4 +812,123 @@ export function fieldToDraft(
     borneBasse: basse, borneHaute: haute, anormal: !chiffre && kind !== 'qualitatif' && f.anormal, ...extra,
   };
   return { draft, error: draftError(draft) };
+}
+
+// ─── Sprint 6A-bis — Saisie rapide : état et garde-fous ──────────────────────
+
+export type QuickEntryEtat = 'vide' | 'ambigu' | 'non_reconnu' | 'pret';
+
+export interface QuickEntrySelection {
+  /** Candidat choisi explicitement parmi une ambiguïté (index dans parsed.candidats). */
+  choice?: number | null;
+  /** Examen choisi dans la liste après un « Examen non reconnu ». */
+  forced?: Candidat | null;
+  /** « Créer un examen libre » confirmé explicitement pour CE nom. */
+  libreConfirme?: boolean;
+}
+
+export interface QuickEntryState {
+  etat: QuickEntryEtat;
+  candidat: Candidat | null;
+  /** Examen hors référentiel, confirmé par le médecin. */
+  libre: boolean;
+}
+
+/**
+ * Ce que la saisie rapide a le droit de faire. Un nom d'examen NON RECONNU ne devient jamais
+ * un examen libre tout seul : il faut soit choisir un examen dans la liste, soit confirmer
+ * explicitement « Créer un examen libre ». (Un nom tronqué — « éat 106 » pour « créat 106 » —
+ * ne peut donc plus créer un faux examen, ni priver le moteur rénal d'une créatinine.)
+ */
+export function quickEntryState(parsed: ParsedSaisie, sel: QuickEntrySelection = {}): QuickEntryState {
+  if (parsed.raw.length < 2) return { etat: 'vide', candidat: null, libre: false };
+  if (sel.forced) return { etat: 'pret', candidat: sel.forced, libre: false };
+  if (parsed.candidats.length === 0) {
+    return sel.libreConfirme && parsed.nom.trim().length >= 2
+      ? { etat: 'pret', candidat: null, libre: true }
+      : { etat: 'non_reconnu', candidat: null, libre: false };
+  }
+  if (parsed.ambigu) {
+    const c = sel.choice !== null && sel.choice !== undefined ? parsed.candidats[sel.choice] ?? null : null;
+    return c ? { etat: 'pret', candidat: c, libre: false } : { etat: 'ambigu', candidat: null, libre: false };
+  }
+  return { etat: 'pret', candidat: parsed.candidats[0], libre: false };
+}
+
+/**
+ * Message « Ajouté : … » — construit à partir de la LIGNE ENREGISTRÉE, jamais d'un état
+ * d'écran : le message et l'enregistrement portent exactement la même chaîne.
+ */
+export function ajouteLabel(payload: Pick<ResultatPayload, 'libelle' | 'parametre' | 'valeur_num' | 'valeur_texte' | 'unite_saisie'>, exam: ExamRef | null): string {
+  return `${resultatLabel(exam, payload.parametre, payload.libelle)} ${valeurAffichee(payload)}`.trim();
+}
+
+/**
+ * Échec d'un enregistrement lancé en arrière-plan : le texte n'est rendu au champ que si le
+ * médecin n'a rien tapé depuis. Ce qu'il est en train de taper n'est JAMAIS écrasé.
+ */
+export function restoreTextOnFailure(currentText: string, failedText: string): string {
+  return currentText.trim() === '' ? failedText : currentText;
+}
+
+// ─── Sprint 6A-bis — Rattachement d'un résultat à une demande en attente ─────
+
+export interface LigneARattacher { demandeId: string; dateDemande: string; numero: string; ligneId: string; statut: LigneStatut }
+
+interface DemandeLike {
+  id: string; numero: string; date_demande: string; statut: string;
+  lignes: Array<Pick<DemandeLigne, 'id' | 'examen_code' | 'libelle' | 'statut' | 'resultat_id'>>;
+}
+
+/**
+ * Examen demandé qui attend ce résultat : même examen, ligne non annulée et sans résultat,
+ * dans une demande non annulée. Les lignes « en attente » passent avant celles déjà marquées
+ * réalisées à la main ; à égalité, la demande la plus ancienne d'abord. `exclure` : lignes
+ * déjà utilisées par un enregistrement en cours.
+ */
+export function findLigneARattacher(
+  demandes: DemandeLike[], cible: { examCode: string | null; libelle: string }, exclure: ReadonlySet<string> = new Set(),
+): LigneARattacher | null {
+  const out: LigneARattacher[] = [];
+  for (const d of demandes) {
+    if (d.statut === 'annule') continue;
+    for (const l of d.lignes) {
+      if (l.statut === 'annule' || l.resultat_id || exclure.has(l.id)) continue;
+      const meme = cible.examCode ? l.examen_code === cible.examCode : (!l.examen_code && normExam(l.libelle) === normExam(cible.libelle));
+      if (meme) out.push({ demandeId: d.id, dateDemande: d.date_demande, numero: d.numero, ligneId: l.id, statut: l.statut });
+    }
+  }
+  out.sort((a, b) => Number(a.statut !== 'en_attente') - Number(b.statut !== 'en_attente') || a.dateDemande.localeCompare(b.dateDemande));
+  return out[0] ?? null;
+}
+
+/**
+ * Libellé de suivi d'une ligne de demande. « résultat à saisir » n'apparaît QUE pour une ligne
+ * marquée réalisée à la main, sans résultat rattaché.
+ */
+export function ligneSuiviLabel(l: Pick<DemandeLigne, 'statut' | 'date_realisation' | 'resultat_id'>): string {
+  if (l.statut === 'annule') return 'Annulé';
+  if (l.statut === 'en_attente') return 'En attente de résultat';
+  const d = l.date_realisation ? `Réalisé le ${l.date_realisation.slice(8, 10)}/${l.date_realisation.slice(5, 7)}/${l.date_realisation.slice(0, 4)}` : 'Réalisé';
+  return l.resultat_id ? `${d} — résultat saisi` : `${d} — résultat à saisir`;
+}
+
+/**
+ * Miroir du trigger resultats_examens_after_archive : un résultat archivé SANS remplacement
+ * rend sa ligne de demande à « en attente » (elle n'avait été réalisée que par ce résultat).
+ */
+export function lignesApresArchivage<T extends { id: string; statut: LigneStatut; date_realisation: string | null; resultat_id: string | null }>(lignes: T[], resultatId: string): T[] {
+  return lignes.map(l => (l.resultat_id === resultatId ? { ...l, statut: 'en_attente' as LigneStatut, date_realisation: null, resultat_id: null } : l));
+}
+
+/** Une ligne du graphique = UN résultat d'une des deux séries (a : principale, b : comparée). */
+export interface ChartRow { key: string; id: string; t: number; date: string; serie: 'a' | 'b'; a?: number; b?: number; laboratoire: string | null }
+
+/** Lignes du graphique : un résultat = une ligne (jamais fusionnées par date), triées sur l'axe du temps. */
+export function chartRows(primary: ChartSerie, secondary?: ChartSerie | null): ChartRow[] {
+  const rows: ChartRow[] = [
+    ...primary.points.map(p => ({ key: `a-${p.id}`, id: p.id, t: p.t, date: p.date, serie: 'a' as const, a: p.valeur, laboratoire: p.laboratoire })),
+    ...(secondary?.points ?? []).map(p => ({ key: `b-${p.id}`, id: p.id, t: p.t, date: p.date, serie: 'b' as const, b: p.valeur, laboratoire: p.laboratoire })),
+  ];
+  return rows.sort((x, y) => x.t - y.t || x.serie.localeCompare(y.serie));
 }

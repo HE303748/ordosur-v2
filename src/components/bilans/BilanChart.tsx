@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
 import { CartesianGrid, Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { formatFr } from '../../lib/examRequest';
-import { formatNombre, type ChartSerie } from '../../lib/resultatsLogic';
+import { chartRows, formatNombre, type ChartRow, type ChartSerie } from '../../lib/resultatsLogic';
 
 // Sprint 6A — Courbe d'un examen dans le temps. Recharts n'est chargé qu'à l'ouverture
-// d'une courbe (import() dans BilansSection) : il ne pèse pas sur le bundle initial.
+// d'une courbe (import() dans SerieDetail) : il ne pèse pas sur le bundle initial.
+//
+// Sprint 6A-bis — UNE ligne de données par résultat (jamais de regroupement par jour) : deux
+// valeurs prélevées le même jour sont deux points distincts, dans l'ordre de saisie.
 
 export interface ChartInput { label: string; serie: ChartSerie }
-
-interface Row { t: number; date: string; a?: number; b?: number; idA?: string; idB?: string }
 
 // Trait principal : couleur du texte courant (Ink Navy en clair, clair en mode sombre).
 const INK = 'currentColor';
@@ -20,7 +21,8 @@ const tick = (t: number) => {
   return `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${String(d.getUTCFullYear()).slice(2)}`;
 };
 
-interface DotProps { cx?: number; cy?: number; payload?: Row; index?: number }
+interface DotProps { cx?: number; cy?: number; payload?: ChartRow; index?: number }
+interface TipProps { active?: boolean; payload?: Array<{ payload?: ChartRow }> }
 
 export default function BilanChart({ primary, secondary, selectedId, onPoint }: {
   primary: ChartInput;
@@ -29,29 +31,34 @@ export default function BilanChart({ primary, secondary, selectedId, onPoint }: 
   selectedId?: string | null;
   onPoint?: (resultatId: string) => void;
 }) {
-  const data = useMemo(() => {
-    const byT = new Map<number, Row>();
-    for (const p of primary.serie.points) byT.set(p.t, { ...(byT.get(p.t) ?? { t: p.t, date: p.date }), a: p.valeur, idA: p.id });
-    for (const p of secondary?.serie.points ?? []) byT.set(p.t, { ...(byT.get(p.t) ?? { t: p.t, date: p.date }), b: p.valeur, idB: p.id });
-    return [...byT.values()].sort((x, y) => x.t - y.t);
-  }, [primary, secondary]);
+  const data = useMemo(() => chartRows(primary.serie, secondary?.serie), [primary, secondary]);
+  const unitA = primary.serie.unite ?? '';
+  const unitB = secondary?.serie.unite ?? '';
 
   const bande = primary.serie.bande;
   const dot = (which: 'a' | 'b', color: string) => (props: DotProps) => {
     const { cx, cy, payload, index } = props;
-    const id = which === 'a' ? payload?.idA : payload?.idB;
-    if (cx === undefined || cy === undefined || !id || payload?.[which] === undefined) return <g key={`${which}-${index}`} />;
-    const sel = id === selectedId;
+    if (cx === undefined || cy === undefined || !payload || payload.serie !== which || payload[which] === undefined) return <g key={`${which}-${index}`} />;
+    const sel = which === 'a' && payload.id === selectedId;
     return (
-      <circle key={`${which}-${id}`} cx={cx} cy={cy} r={sel ? 6.5 : 4.5} fill={sel ? color : '#fff'} stroke={color} strokeWidth={2}
-        style={{ cursor: onPoint ? 'pointer' : 'default' }} onClick={() => onPoint?.(id)}>
-        <title>{`${formatFr(payload!.date)} : ${formatNombre(payload![which])}`}</title>
-      </circle>
+      <circle key={payload.key} cx={cx} cy={cy} r={sel ? 6.5 : 4.5} fill={sel ? color : '#fff'} stroke={color} strokeWidth={2}
+        style={{ cursor: onPoint && which === 'a' ? 'pointer' : 'default' }} onClick={() => { if (which === 'a') onPoint?.(payload.id); }} />
     );
   };
 
-  const unitA = primary.serie.unite ?? '';
-  const unitB = secondary?.serie.unite ?? '';
+  // Infobulle du point survolé : valeur, unité, date, laboratoire.
+  const tip = ({ active, payload }: TipProps) => {
+    const row = active ? payload?.find(p => p.payload)?.payload : undefined;
+    if (!row) return null;
+    const v = row.serie === 'a' ? row.a : row.b;
+    return (
+      <div className="rounded-xl border border-[#E5E5E0] bg-white px-3 py-2 text-xs text-[#0A1628] shadow-lg">
+        <p className="font-semibold">{row.serie === 'a' ? primary.label : secondary?.label}</p>
+        <p className="text-sm font-bold tabular-nums">{formatNombre(v)} {row.serie === 'a' ? unitA : unitB}</p>
+        <p className="text-slate-500">{formatFr(row.date)}{row.laboratoire ? ` · ${row.laboratoire}` : ''}</p>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full h-56 sm:h-64 text-[#0A1628] dark:text-[#E2E8F0]" role="img"
@@ -74,10 +81,7 @@ export default function BilanChart({ primary, secondary, selectedId, onPoint }: 
           {bande && (bande.basse === null) !== (bande.haute === null) && (
             <ReferenceLine yAxisId="a" y={(bande.basse ?? bande.haute)!} stroke={GREEN} strokeDasharray="4 4" strokeOpacity={0.7} ifOverflow="extendDomain" />
           )}
-          <Tooltip
-            formatter={(value: number | string, name: string) => [`${formatNombre(Number(value))} ${name === 'a' ? unitA : unitB}`.trim(), name === 'a' ? primary.label : secondary?.label ?? '']}
-            labelFormatter={(t: number) => tick(t)}
-            contentStyle={{ borderRadius: 12, border: '1px solid #E5E5E0', fontSize: 12, color: '#0A1628' }} />
+          <Tooltip content={tip as never} />
           <Line yAxisId="a" type="linear" dataKey="a" name="a" stroke={INK} strokeWidth={2} connectNulls isAnimationActive={false}
             dot={dot('a', INK) as never} activeDot={false} />
           {secondary && (
