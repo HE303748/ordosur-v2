@@ -2,11 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   buildConditionMatcher, preparePatient, matchCondition, analysePatientTerm, conditionTitre, normCondition, motsDe, racine,
-  stadeDuDfg, FAMILLES, TITRE_STADE,
+  stadeDuDfg, FAMILLES, TITRE_STADE, NOMS_COMPLEMENTAIRES,
   type CiConceptRow, type PathologieCuree, type ConditionVerdict,
 } from './conditionMatcher';
 import { evaluateAllergies, type AllergieFamilleRow, type AllergyMed, type RegleAllergie } from './allergyClassEngine';
 import { medMatchesPattern, parseRenalCondition } from './renalEngine';
+import { isPlannedPregnancyCondition } from './pregnancyStatus';
 import data from './ci_condition_concepts.data.json';
 import allergyData from './regles_allergies.data.json';
 
@@ -19,7 +20,7 @@ const familles = allergyData.familles as AllergieFamilleRow[];
 const regles = (allergyData.regles as Array<Omit<RegleAllergie, 'id' | 'actif'>>).map((r, i) => ({ ...r, id: `r${i}`, actif: true }));
 const D = buildConditionMatcher(rows, curees, familles);
 
-type P = { pathologies?: string[]; allergiesMedicaments?: string[]; allergiesAlimentaires?: string[]; dfg?: number | null };
+type P = { pathologies?: string[]; allergiesMedicaments?: string[]; allergiesAlimentaires?: string[]; dfg?: number | null; antecedents?: string[] };
 const m = (p: P, cv: string, type = 'pathologie') => matchCondition(D, preparePatient(p, D), type, cv);
 const v = (p: P, cv: string, type = 'pathologie'): ConditionVerdict => m(p, cv, type).verdict;
 const patho = (...pathologies: string[]): P => ({ pathologies });
@@ -61,7 +62,7 @@ describe('table de correspondance (données générées)', () => {
   it('stades rénaux de la table = seuils lus par le canal rénal (60 → 3 · 45 → 3b · 30 → 4 · 15 → 5)', () => {
     const attendu: Record<number, number> = { 60: 3, 45: 3.5, 30: 4, 15: 5 };
     const renales = rows.filter(r => r.traitement === 'renal');
-    expect(renales).toHaveLength(11);
+    expect(renales).toHaveLength(10); // « Dialyse » a son traitement propre depuis le Sprint 2b-2
     for (const r of renales) expect(Number(r.stade), r.condition_valeur).toBe(attendu[parseRenalCondition(r.condition_valeur)!.seuil]);
   });
   it('rattachements corrigés à la relecture', () => {
@@ -141,7 +142,7 @@ describe('règle 3 — le concept d’une CI vient de la table, jamais de son te
   it('formulation sans concept : seul un libellé identique déclenche', () => {
     expect(v(patho('Hypokaliémie'), 'Hypokaliémie')).toBe('oui');
     expect(v(patho('hypokaliemie'), 'Hypokaliémie')).toBe('oui');
-    expect(v(patho('Infection urinaire'), 'Infection')).toBe('non');
+    expect(v(patho('Infection urinaire'), 'Infections fongiques systémiques')).toBe('non');
     expect(v(patho('Infarctus du myocarde'), 'Infarctus du ventricule droit')).toBe('non');
     expect(v(patho('Insuffisance surrénalienne'), 'Insuffisance surrénale (arrêt brusque)')).toBe('non');
   });
@@ -193,7 +194,6 @@ describe('règle 5 — qualificatif absent chez le patient', () => {
   it('ÉTAT DE CONTRÔLE → « À évaluer », titre « Si [qualificatif] »', () => {
     expect(m(patho('Épilepsie'), 'Épilepsie non contrôlée')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si non contrôlée', par: 'Épilepsie' });
     expect(m(patho('Insuffisance cardiaque'), 'Insuffisance cardiaque décompensée')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si décompensée' });
-    expect(m(patho('Ulcère gastrique'), 'Ulcère gastroduodénal actif')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si actif' });
     expect(m(patho('Diabète de type 2'), 'Diabète insulino-dépendant avec hypoglycémies fréquentes'))
       .toMatchObject({ verdict: 'a_evaluer', titre: 'Si insulino-dépendant avec hypoglycémies fréquentes' });
     expect(m(patho('Diabète de type 2'), 'Diabète décompensé (glycémie > 3 g/L)')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si décompensé (glycémie > 3 g/L)' });
@@ -297,15 +297,14 @@ describe('règle 7 — stades rénaux', () => {
     expect(v(s('4'), 'Insuffisance rénale chronique stade 3')).toBe('oui');
     expect(v(s('4'), 'Insuffisance rénale chronique stade 4-5')).toBe('oui');
     expect(v(s('4'), 'Insuffisance rénale chronique stade 5 (DFG < 15)')).toBe('non');
-    expect(v(s('5'), 'Dialyse')).toBe('oui');
     expect(v(patho('Insuffisance rénale sévère'), 'Insuffisance rénale chronique stade 4')).toBe('oui');
     expect(v(patho('Insuffisance rénale terminale'), 'Insuffisance rénale chronique stade 5')).toBe('oui');
-    expect(lignes(patho('Hémodialyse'), 'oui')).toBe(107); // toutes sauf l'insuffisance rénale AIGUË
+    expect(lignes(patho('Hémodialyse'), 'oui')).toBe(107); // toutes (dont « Dialyse ») sauf l'insuffisance rénale AIGUË
   });
   it('IRC sans stade ni DFG → « À évaluer » + « Préciser le stade ou saisir une créatinine »', () => {
     for (const p of ['Insuffisance rénale chronique', 'insuffisance rénale chronique', 'Insuffisance rénale', 'IRC']) {
       expect(m(patho(p), 'Insuffisance rénale chronique stade 4'), p).toMatchObject({ verdict: 'a_evaluer', titre: TITRE_STADE });
-      expect(lignes(patho(p), 'a_evaluer'), p).toBe(107);
+      expect(lignes(patho(p), 'a_evaluer'), p).toBe(106); // tout sauf « Dialyse » (1) et l'insuffisance rénale aiguë (1)
       expect(lignes(patho(p), 'oui'), p).toBe(0);
     }
   });
@@ -355,12 +354,11 @@ describe('défauts constatés au Sprint 6B (matchingExistant.defauts.test.ts) �
   it('même correction pour une pathologie saisie sans stade : plus rien de ferme, tout est « À évaluer »', () => {
     expect(lignes(patho('Insuffisance rénale'), 'oui')).toBe(0);
     expect(lignes(patho('Insuffisance rénale chronique'), 'oui')).toBe(0);
-    expect(lignes(patho('Insuffisance rénale chronique'), 'a_evaluer')).toBe(107);
+    expect(lignes(patho('Insuffisance rénale chronique'), 'a_evaluer')).toBe(106);
   });
-  it('« Dialyse » : un stade 3 ne la déclenche pas, une hémodialyse oui (inchangé), un stade 5 aussi', () => {
+  it('« Dialyse » : un stade 3 ne la déclenche pas, une hémodialyse oui (inchangé)', () => {
     expect(v(patho('Insuffisance rénale chronique stade 3'), 'Dialyse')).toBe('non');
     expect(v(patho('Hémodialyse'), 'Dialyse')).toBe('oui');
-    expect(v(patho('Insuffisance rénale chronique stade 5'), 'Dialyse')).toBe('oui');
   });
 });
 
@@ -445,5 +443,127 @@ describe('règle 9 — conditions obligatoires des disparitions validées', () =
     expect(medMatchesPattern(ASPEGIC, CI_ALLERGIE_ASPIRINE[0].dci_pattern)).toBe(true);
     expect(medMatchesPattern(BRUFEN, CI_ALLERGIE_ASPIRINE[1].dci_pattern)).toBe(true);
     for (const a of ['Aspirine', "Allergie à l'Aspirine"]) expect(v(allergie(a), "Allergie à l'Aspirine", 'allergie_med'), a).toBe('oui');
+  });
+});
+
+// ─── Sprint 2b-2 — correctifs du matching ────────────────────────────────────
+
+describe('2b-2, point 1 — une pathologie listée est ACTIVE par définition', () => {
+  it('« actif / évolutif » est satisfait : la CI s’applique, sévérité conservée, sans « À évaluer »', () => {
+    for (const [p, cv] of [
+      ['Ulcère gastrique', 'Ulcère gastroduodénal actif'],
+      ['Ulcère duodénal', 'Ulcère gastroduodénal actif (non traité)'],
+      ['Ulcère gastro-duodénal', 'Ulcère peptique actif'],
+      ['Goutte', 'Goutte active'],
+      ['Hépatite virale B', 'Hépatite virale active (B ou C)'],
+      ["Addiction à l'alcool", 'Alcoolisme actif'],
+      ['alcoolisme', 'Alcoolisme chronique actif'],
+      ['Zona', 'Varicelle ou zona actif (patient non immunisé)'],
+      ['Herpès', 'Varicelle / Herpès actif'],
+    ]) {
+      const r = m(patho(p), cv);
+      expect(r, `${p} × ${cv}`).toMatchObject({ verdict: 'oui', titre: null });
+      expect(conditionTitre(r)).toBeNull();
+    }
+  });
+  it('« en poussée » : même règle', () => {
+    const d = buildConditionMatcher([{
+      condition_norm: normCondition('Maladie de Crohn en poussée'), condition_valeur: 'Maladie de Crohn en poussée', ordre: 1,
+      libelle: 'Maladie de Crohn en poussée', traitement: 'concept', concept: 'Maladie de Crohn', famille: null,
+      qualificatif: 'en poussée', qualificatif_type: 'etat', stade: null,
+    }], curees, familles);
+    expect(matchCondition(d, preparePatient({ pathologies: ['Maladie de Crohn'] }, d), 'pathologie', 'Maladie de Crohn en poussée'))
+      .toMatchObject({ verdict: 'oui', titre: null });
+  });
+  it('le libellé du patient dit le contraire (cicatrisé, antécédent, rémission) → pas de correspondance', () => {
+    expect(v(patho('Ulcère gastrique cicatrisé'), 'Ulcère gastroduodénal actif')).toBe('non');
+    expect(v(patho("Antécédent d'ulcère gastrique"), 'Ulcère peptique actif')).toBe('non');
+    expect(v(patho('Goutte en rémission'), 'Goutte active')).toBe('non');
+  });
+  it('les AUTRES qualificatifs d’état restent « À évaluer » — le titre ne répète pas « actif »', () => {
+    expect(m(patho('Épilepsie'), 'Épilepsie non contrôlée')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si non contrôlée' });
+    expect(m(patho('Insuffisance cardiaque'), 'Insuffisance cardiaque décompensée')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si décompensée' });
+    expect(m(patho('Phéochromocytome'), 'Phéochromocytome non traité')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si non traité' });
+    expect(m(patho('Diabète de type 2'), 'Diabète insulino-dépendant avec hypoglycémies fréquentes').verdict).toBe('a_evaluer');
+    expect(m(patho('Tuberculose pulmonaire'), 'Tuberculose active non traitée')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si non traitée' });
+    expect(m(patho('Néoplasie évolutive'), 'Néoplasie évolutive non contrôlée')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si non contrôlée' });
+  });
+});
+
+describe('2b-2, point 2 — faux négatifs fermés', () => {
+  it('« Hypotension orthostatique » ⊂ Hypotension', () => {
+    expect(analysePatientTerm('Hypotension orthostatique', 'pathologie', D).concepts).toEqual(['Hypotension artérielle']);
+    expect(v(patho('Hypotension orthostatique'), 'Hypotension')).toBe('oui');
+    expect(v(patho('hypotension orthostatique'), 'Hypotension artérielle (TAS < 90 mmHg)')).toBe('oui');
+    expect(v(patho('Hypertension artérielle'), 'Hypotension')).toBe('non');
+  });
+  it('« Infection urinaire » et toute infection précisée ⊂ CI génériques « Infection »', () => {
+    for (const p of ['Infection urinaire', 'Cystite', 'Pneumonie', 'Tuberculose pulmonaire', 'Hépatite virale C', "Gastro-entérite de l'enfant",
+      'Infection ostéo-articulaire', 'infection cutanée', 'Infection']) {
+      expect(v(patho(p), 'Infection'), p).toBe('oui');
+    }
+    expect(m(patho('Infection urinaire'), 'Infection active sévère non contrôlée')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si sévère non contrôlée' });
+    expect(m(patho('Infection urinaire'), 'Infections actives sévères')).toMatchObject({ verdict: 'preciser', titre: 'Si sévères — préciser' });
+    expect(m(patho('Pneumonie'), 'Infection active non traitée (tuberculose, sepsis fongique)')).toMatchObject({ verdict: 'a_evaluer', titre: 'Si non traitée' });
+    // Ni une négation, ni une pathologie non infectieuse, ni une CI d'infection SPÉCIFIQUE.
+    expect(v(patho("Pas d'infection"), 'Infection')).toBe('non');
+    expect(v(patho('Arthrose'), 'Infection')).toBe('non');
+    expect(v(patho('Asthme'), 'Infection')).toBe('non');
+    expect(v(patho('Infection urinaire'), 'Infections fongiques systémiques')).toBe('non');
+  });
+  it('« Cirrhose alcoolique » → concept Cirrhose', () => {
+    for (const p of ['cirrhose alcoolique', 'Cirrhose', 'Cirrhose biliaire primitive', 'Cirrhose du foie']) {
+      expect(analysePatientTerm(p, 'pathologie', D).concepts, p).toEqual(['Cirrhose du foie']);
+      expect(v(patho(p), 'Cirrhose hépatique'), p).toBe('oui');
+    }
+    // La table ne rattache pas la cirrhose à l'insuffisance hépatique : aucune déduction ici.
+    expect(v(patho('cirrhose alcoolique'), 'Insuffisance hépatique')).toBe('non');
+  });
+  it('« Lupus érythémateux disséminé » → concept Lupus', () => {
+    expect(analysePatientTerm('lupus érythémateux disséminé', 'pathologie', D).concepts).toEqual(['Lupus érythémateux systémique']);
+  });
+  it('les noms complémentaires désignent tous un concept existant', () => {
+    const noms = new Set(curees.map(c => c.nom_fr));
+    for (const k of Object.keys(NOMS_COMPLEMENTAIRES)) expect(noms.has(k), k).toBe(true);
+  });
+});
+
+describe('2b-2, point 3 — CI « Dialyse »', () => {
+  it('déclenchée par un patient dialysé : pathologie ou antécédent', () => {
+    expect(v(patho('Hémodialyse'), 'Dialyse')).toBe('oui');
+    expect(v(patho('Dialyse péritonéale'), 'Dialyse')).toBe('oui');
+    expect(v({ pathologies: ['Insuffisance rénale chronique'], antecedents: ['Hémodialyse depuis 2023'] }, 'Dialyse')).toBe('oui');
+    expect(v({ pathologies: [], antecedents: ['Dialyse'] }, 'Dialyse')).toBe('oui');
+  });
+  it('déclenchée par un DFG < 15, même sans pathologie rénale saisie', () => {
+    expect(v({ pathologies: ['Asthme'], dfg: 14 }, 'Dialyse')).toBe('oui');
+    expect(v({ pathologies: ['Insuffisance rénale chronique'], dfg: 15 }, 'Dialyse')).toBe('non');
+    expect(v({ pathologies: ['Insuffisance rénale chronique'], dfg: 40 }, 'Dialyse')).toBe('non');
+  });
+  it('plus jamais « À évaluer » : IRC sans stade, stade 5 non dialysé, « non dialysé » → rien', () => {
+    for (const p of ['Insuffisance rénale chronique', 'IRC', 'Insuffisance rénale', 'Insuffisance rénale chronique stade 5',
+      'Insuffisance rénale terminale', 'IRC non dialysée']) {
+      expect(v(patho(p), 'Dialyse'), p).toBe('non');
+    }
+    // Les CI de STADE restent inchangées pour ces patients.
+    expect(v(patho('Insuffisance rénale chronique stade 5'), 'Insuffisance rénale chronique stade 5 (dialyse)')).toBe('oui');
+    expect(v(patho('Insuffisance rénale chronique'), 'Insuffisance rénale chronique stade 5')).toBe('a_evaluer');
+  });
+});
+
+describe('2b-2, point 4 — « Déficit en acide folique (grossesse planifiée) »', () => {
+  const CI = 'Déficit en acide folique (grossesse planifiée)';
+  it('jamais déclenchée par « Grossesse » en pathologie', () => {
+    for (const p of ['Grossesse', 'grossesse', 'Grossesse normale']) expect(v(patho(p), CI), p).toBe('non');
+    expect(D.rowsByNorm.get(normCondition(CI))![0].traitement).toBe('procreation');
+  });
+  it('reconnue comme CI de grossesse PLANIFIÉE (écartée par le moteur chez une patiente enceinte)', () => {
+    expect(isPlannedPregnancyCondition(CI)).toBe(true);
+    for (const c of ['Grossesse', 'Grossesse — 1er trimestre', 'Femme en âge de procréer sans contraception', "Grossesse dans le mois suivant l'arrêt (isotrétinoïne)"]) {
+      expect(isPlannedPregnancyCondition(c), c).toBe(false);
+    }
+  });
+  it('les autres CI de grossesse restent déclenchées par « Grossesse » en pathologie', () => {
+    expect(v(patho('Grossesse'), 'Grossesse — 1er trimestre')).toBe('oui');
   });
 });

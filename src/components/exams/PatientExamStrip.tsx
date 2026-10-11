@@ -33,7 +33,12 @@ export function ProchainBilanBadge({ patientId, className = '', onClick }: { pat
  * Sprint 5 — Sous le patient, dans le Vérificateur : prochain bilan + bouton « Demande
  * d'examens » (document autonome, sans médicament, hors blocage 3b).
  */
-export function PatientExamStrip({ patient, canWrite }: { patient: Patient; canWrite: boolean }) {
+export function PatientExamStrip({ patient, canWrite, dfgDouble }: {
+  patient: Patient;
+  canWrite: boolean;
+  /** Sprint 2b-2 (E) — les deux DFG (labo et calculé) quand ils coexistent : repris dans « Derniers bilans ». */
+  dfgDouble?: string | null;
+}) {
   return (
     <div className="flex flex-wrap items-center gap-2 px-3.5 py-2.5 min-h-[56px] rounded-xl bg-white dark:bg-white/[0.03] border border-[#E5E5E0] dark:border-white/[0.08]">
       <div className="flex-1 min-w-0 flex flex-wrap items-center gap-2">
@@ -50,7 +55,7 @@ export function PatientExamStrip({ patient, canWrite }: { patient: Patient; canW
         </button>
       )}
       {/* Sprint 6A — derniers résultats (information ; le moteur ne les lit pas) */}
-      <DerniersBilansLine patient={patient} />
+      <DerniersBilansLine patient={patient} dfgDouble={dfgDouble} />
     </div>
   );
 }

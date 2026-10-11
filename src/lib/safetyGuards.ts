@@ -160,6 +160,11 @@ export function countBySource(rows: Array<{ source: string }>): Record<string, n
 
 // ─── Sprint 4g — Titre du verdict cohérent avec ce qui est affiché ───────────
 // « Aucune interaction détectée » n'est permis que si la liste affichée est réellement vide.
+//
+// Sprint 2b-2 (D) — une interaction de sévérité NON DOCUMENTÉE (DDInter « non classée », 18 % des
+// paires) est une information : elle ne bloque plus le verdict vert. Elle reste toujours dite
+// (description du bandeau, section repliable), et le titre vert devient alors
+// « Aucune interaction cliniquement significative connue » — jamais « Aucune interaction détectée ».
 
 const KNOWN_SEVERITIES = ['contre_indication', 'a_evaluer', 'majeure', 'precaution', 'moderee', 'mineure', 'info'];
 
@@ -181,25 +186,29 @@ export interface DisplayedState {
 }
 
 export function undocumentedLabel(n: number): string {
-  return `${n} interaction${n > 1 ? 's' : ''} de sévérité non documentée — à évaluer`;
+  return `${n} interaction${n > 1 ? 's' : ''} de sévérité non documentée — information`;
 }
 
 /**
- * Un verdict « safe » alors que des cartes sont affichées devient « Sécuritaire sous réserve »,
- * avec la raison. Un verdict plus sévère n'est jamais atténué. `note` : texte à afficher
- * (remplace la description d'un verdict qui était vert ; s'y ajoute sinon), ou null.
+ * Un verdict « safe » alors que des cartes CLINIQUES sont affichées devient « Sécuritaire sous
+ * réserve », avec la raison. Les interactions de sévérité non documentée ne l'abaissent pas.
+ * Un verdict plus sévère n'est jamais atténué. `note` : texte à afficher (remplace la description
+ * d'un verdict vert abaissé ; s'y ajoute sinon), ou null.
  */
 export function reconcileVerdictWithDisplay(
   severity: VerdictSeverity, shown: DisplayedState,
 ): { severity: VerdictSeverity; lowered: boolean; note: string | null } {
+  const cliniques = Math.max(0, shown.cartes - shown.nonDocumentees);
   const reason =
-    shown.nonDocumentees > 0 ? undocumentedLabel(shown.nonDocumentees)
-      : shown.mineures > 0 ? `${shown.mineures} interaction${shown.mineures > 1 ? 's' : ''} mineure${shown.mineures > 1 ? 's' : ''} signalée${shown.mineures > 1 ? 's' : ''}`
-        : shown.cartes > 0 ? `${shown.cartes} alerte${shown.cartes > 1 ? 's' : ''} affichée${shown.cartes > 1 ? 's' : ''} — à évaluer`
-          : shown.infos > 0 ? `${shown.infos} médicament${shown.infos > 1 ? 's' : ''} sans DCI rattachée — vérification limitée`
-            : null;
-  if (severity === 'safe' && reason) return { severity: 'conditional', lowered: true, note: reason };
-  // Verdict déjà réservé ou sévère : seule la sévérité non documentée est rappelée en plus.
+    shown.mineures > 0 ? `${shown.mineures} interaction${shown.mineures > 1 ? 's' : ''} mineure${shown.mineures > 1 ? 's' : ''} signalée${shown.mineures > 1 ? 's' : ''}`
+      : cliniques > 0 ? `${cliniques} alerte${cliniques > 1 ? 's' : ''} affichée${cliniques > 1 ? 's' : ''} — à évaluer`
+        : shown.infos > 0 ? `${shown.infos} médicament${shown.infos > 1 ? 's' : ''} sans DCI rattachée — vérification limitée`
+          : null;
+  if (severity === 'safe' && reason) {
+    // La raison clinique abaisse le vert ; la sévérité non documentée est rappelée à sa suite.
+    return { severity: 'conditional', lowered: true, note: shown.nonDocumentees > 0 ? `${reason} · ${undocumentedLabel(shown.nonDocumentees)}` : reason };
+  }
+  // Verdict vert conservé, réservé ou sévère : la sévérité non documentée est toujours dite.
   return { severity, lowered: false, note: shown.nonDocumentees > 0 ? undocumentedLabel(shown.nonDocumentees) : null };
 }
 
@@ -209,6 +218,22 @@ export const VERDICT_TITLES: Record<VerdictSeverity, string> = {
   attention: 'Attention',
   dangerous: 'Prescription à risque',
 };
+
+/** Titre d'un verdict VERT quand des interactions de sévérité non documentée sont listées. */
+export const TITRE_VERT_NON_DOCUMENTEE = 'Aucune interaction cliniquement significative connue';
+
+/**
+ * Titre particulier d'un verdict d'après ce qui est affiché : vert + interaction(s) de sévérité
+ * non documentée → jamais « Aucune interaction détectée ». Sinon null (titre par défaut).
+ */
+export function titleForDisplay(severity: VerdictSeverity, shown: Pick<DisplayedState, 'nonDocumentees'>): string | null {
+  return severity === 'safe' && shown.nonDocumentees > 0 ? TITRE_VERT_NON_DOCUMENTEE : null;
+}
+
+/** Libellé de la section repliable du Vérificateur. */
+export function undocumentedSectionTitle(n: number): string {
+  return `Interaction${n > 1 ? 's' : ''} de sévérité non documentée (${n}) — information`;
+}
 
 /** Titre du bandeau (un titre particulier, ex. « Vérification impossible », prime). */
 export function verdictTitle(severity: VerdictSeverity, custom?: string | null): string {

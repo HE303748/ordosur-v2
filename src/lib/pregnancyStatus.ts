@@ -186,6 +186,14 @@ export function isContraceptionRequirement(condition: string | null | undefined)
   return /procre|contracep/.test(norm(condition));
 }
 
+/**
+ * Sprint 2b-2 — CI portant sur un PROJET de grossesse (« grossesse planifiée ») : sans objet chez une
+ * patiente déjà enceinte (statut déclaré ou « Grossesse » en pathologie).
+ */
+export function isPlannedPregnancyCondition(condition: string | null | undefined): boolean {
+  return /planifi|projet de grossesse/.test(norm(condition));
+}
+
 const jjmm = (isoDate: string | null) => {
   const m = (isoDate ?? '').match(/^\d{4}-(\d{2})-(\d{2})/);
   return m ? `${m[2]}/${m[1]}` : '';

@@ -652,7 +652,7 @@ export function lignesApresResultats<T extends { id: string; statut: LigneStatut
 
 // ─── Vérificateur : « Derniers bilans : … » ──────────────────────────────────
 
-export interface DernierBilan { key: string; label: string; valeur: string; date: string; interpretation: Interpretation | null }
+export interface DernierBilan { key: string; label: string; valeur: string; date: string; interpretation: Interpretation | null; examCode?: string | null }
 
 /**
  * Jusqu'à `max` derniers résultats, les plus pertinents d'abord : examens liés aux
@@ -666,7 +666,17 @@ export function derniersBilans(series: Serie[], pathologies: string[] | null | u
     .filter(s => s.dernier.valeur_num !== null || qualitatifLabel(s.dernier.valeur_texte) !== null)
     .sort((a, b) => rang(a) - rang(b) || b.dernier.date_prelevement.localeCompare(a.dernier.date_prelevement) || a.ordre - b.ordre)
     .slice(0, max)
-    .map(s => ({ key: s.key, label: s.label, valeur: valeurAffichee(s.dernier), date: s.dernier.date_prelevement, interpretation: s.dernier.interpretation }));
+    .map(s => ({ key: s.key, label: s.label, valeur: valeurAffichee(s.dernier), date: s.dernier.date_prelevement, interpretation: s.dernier.interpretation, examCode: s.examCode }));
+}
+
+/**
+ * Sprint 2b-2 (E) — quand un DFG labo et un DFG calculé coexistent, « Derniers bilans » les affiche
+ * ensemble, avec source et date (texte fourni par renalEngine.dfgDoubleLine). L'entrée « DFG » seule
+ * est alors retirée : elle ferait doublon et laisserait croire à un seul DFG.
+ */
+export function derniersBilansAvecDfg(items: DernierBilan[], dfgDouble: string | null | undefined): { items: DernierBilan[]; dfg: string | null } {
+  if (!dfgDouble) return { items, dfg: null };
+  return { items: items.filter(i => i.examCode !== 'DFG'), dfg: dfgDouble };
 }
 
 export function derniersBilansLine(items: DernierBilan[]): string {
@@ -683,7 +693,39 @@ export interface ChartPoint {
   valeur: number;
   laboratoire: string | null;
 }
-export interface ChartSerie { unite: string | null; points: ChartPoint[]; bande: { basse: number | null; haute: number | null } | null }
+export interface ChartSerie {
+  unite: string | null;
+  points: ChartPoint[];
+  bande: { basse: number | null; haute: number | null } | null;
+  /** Résultats chiffrés NON tracés : leur unité n'est pas convertible dans l'unité de la courbe. */
+  omis: number;
+}
+
+/**
+ * Sprint 2b-2 (F) — unité par défaut d'une courbe : l'unité de RÉFÉRENCE de l'examen ; sans
+ * référentiel, l'unité du résultat le plus récent. Tous les points sont convertis dans cette
+ * seule unité (ou dans celle que le médecin choisit).
+ */
+export function uniteCourbeDefaut(serie: Serie, mesure: ExamMesure): string | null {
+  const unites = unitesCourbe(serie, mesure);
+  if (mesure.uniteRef && unites.includes(mesure.uniteRef)) return mesure.uniteRef;
+  const dernier = serie.points.find(p => p.valeur_num !== null);
+  const u = matchUnite(dernier?.unite_saisie, mesure)?.unite ?? dernier?.unite_saisie ?? '';
+  return unites.includes(u) ? u : unites[0] ?? null;
+}
+
+/**
+ * Sprint 2b-2 (F) — bornes de l'axe vertical : les valeurs et la bande du labo, avec une marge de
+ * 8 %. L'axe ne descend JAMAIS sous 0 pour une grandeur positive (toutes les valeurs ≥ 0).
+ */
+export function axeDomaine(serie: Pick<ChartSerie, 'points' | 'bande'>): [number, number] {
+  const vals = [...serie.points.map(p => p.valeur), serie.bande?.basse, serie.bande?.haute].filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
+  if (vals.length === 0) return [0, 1];
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const marge = (max - min) * 0.08 || Math.abs(max) * 0.1 || 1;
+  const bas = min >= 0 ? Math.max(0, min - marge) : min - marge;
+  return [arrondi(bas), arrondi(max + marge)];
+}
 
 /** Unités dans lesquelles la série peut être tracée (référentiel, sinon unités saisies). */
 export function unitesCourbe(serie: Serie, mesure: ExamMesure): string[] {
@@ -700,8 +742,10 @@ export function unitesCourbe(serie: Serie, mesure: ExamMesure): string[] {
 const tsOf = (iso: string) => { const [y, m, d] = iso.slice(0, 10).split('-').map(Number); return Date.UTC(y, (m || 1) - 1, d || 1); };
 
 /**
- * Points de la courbe dans l'unité choisie (ordre chronologique). Un résultat saisi dans une
- * unité hors référentiel n'est tracé que si c'est l'unité affichée. La bande reprend les
+ * Points de la courbe dans l'unité choisie (ordre chronologique) : TOUS convertis dans cette seule
+ * unité, quelle que soit l'unité de saisie (mg/L, mg/dL, µmol/L mélangés). Un résultat saisi dans
+ * une unité hors référentiel n'est tracé que si c'est l'unité affichée ; sinon il est compté dans
+ * `omis` (jamais tracé tel quel sur une échelle qui n'est pas la sienne). La bande reprend les
  * bornes du laboratoire du résultat le plus récent qui en porte, converties dans cette unité.
  */
 export function chartSerie(serie: Serie, mesure: ExamMesure, unite: string | null): ChartSerie {
@@ -720,11 +764,12 @@ export function chartSerie(serie: Serie, mesure: ExamMesure, unite: string | nul
   for (const p of chrono) parJour.set(p.date_prelevement, (parJour.get(p.date_prelevement) ?? 0) + 1);
   const rang = new Map<string, number>();
   const points: ChartPoint[] = [];
+  let omis = 0;
   for (const p of chrono) {
     const k = rang.get(p.date_prelevement) ?? 0;
     rang.set(p.date_prelevement, k + 1);
     const v = dans(p.valeur_num!, p.unite_saisie);
-    if (v === null) continue;
+    if (v === null) { omis += 1; continue; }
     // Les points d'un même jour se répartissent sur la journée (pas d'empilement).
     const pas = Math.min(3_600_000, Math.floor(86_400_000 / (parJour.get(p.date_prelevement)! + 1)));
     points.push({ id: p.id, t: tsOf(p.date_prelevement) + k * pas, date: p.date_prelevement, valeur: v, laboratoire: p.laboratoire });
@@ -736,7 +781,7 @@ export function chartSerie(serie: Serie, mesure: ExamMesure, unite: string | nul
     const haute = src.borne_haute !== null ? dans(src.borne_haute, src.unite_saisie) : null;
     if (basse !== null || haute !== null) bande = { basse, haute };
   }
-  return { unite, points, bande };
+  return { unite, points, bande, omis };
 }
 
 // ─── Récapitulatif (PDF) ─────────────────────────────────────────────────────

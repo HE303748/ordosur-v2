@@ -3,8 +3,8 @@ import type { ExamRef } from './examSearch';
 import {
   ckdEpi2021, cockcroftGault, renalStade, ageAns, fraicheurCreatinine, poidsAncien, parsePoids, renalStatus, latestCreatinine,
   dfgLine, cockcroftLine, dfgActuelLine, parseRenalCondition, evaluateRenal, reservesLabel, mergeRenalWithExisting, applyInfoLines,
-  isRenalCard, renalClasses, medMatchesPattern, hasDialyse, SOURCE_BASE,
-  type BaseCI, type CreatinineResult, type RegleRenale, type RenalClasse, type RenalInput, type RenalStatus,
+  isRenalCard, renalClasses, medMatchesPattern, hasDialyse, SOURCE_BASE, dfgDoubleLine, dfgRetenuLabel, latestDfgLabo,
+  type BaseCI, type CreatinineResult, type DfgLaboResult, type RegleRenale, type RenalClasse, type RenalInput, type RenalStatus,
 } from './renalEngine';
 import { derogationKind, requiresDerogation, alertVerdictLevel } from './derogation';
 import { applyMergedLines, buildInteractionLogRows, countBySource, type LoggableAlert } from './safetyGuards';
@@ -533,5 +533,96 @@ describe('10. données : fixture = source des règles en base', () => {
     const aod = ['dabigatran', 'rivaroxaban', 'apixaban', 'edoxaban'];
     for (const r of regles) expect(r.mesure, r.code).toBe(aod.includes(r.classe) ? 'cockcroft' : 'dfg');
     expect(regles.filter(r => r.inclut_dialyse).map(r => r.classe).sort()).toEqual(['apixaban', 'edoxaban', 'rivaroxaban']);
+  });
+});
+
+// ─── Sprint 2b-2 (E) — deux DFG : labo et calculé ────────────────────────────
+describe('11. DFG labo et DFG calculé — le moteur utilise la donnée la plus récente', () => {
+  const L = (valeur: number | null, date: string, id = 'l1'): DfgLaboResult => ({ id, valeur_num: valeur, date_prelevement: date, created_at: `${date}T09:00:00Z` });
+  // Homme né le 01/03/1956 (70 ans) : créatinine 16,6 mg/L → CKD-EPI 44.
+  const creatBasse = (date: string) => [C(16.6, 'mg/L', date)];
+
+  it('valeur de référence du cas : créatinine 16,6 mg/L à 70 ans → DFG calculé 44', () => {
+    expect(renalStatus(input({ creatinines: creatBasse('2026-10-09') }))).toMatchObject({ connu: true, dfg: 44, source: 'calcule', dfgCalcule: 44, dfgLabo: null });
+  });
+
+  it('créatinine PLUS RÉCENTE que le DFG labo → le DFG calculé est retenu ; les deux sont affichés', () => {
+    const s = renalStatus(input({ creatinines: creatBasse('2026-10-09'), dfgLabos: [L(95, '2026-09-12')] }));
+    expect(s).toMatchObject({ connu: true, dfg: 44, stade: '30-44', source: 'calcule', dfgCalcule: 44, dfgLabo: { valeur: 95, date: '2026-09-12' } });
+    expect(dfgDoubleLine(s)).toBe('DFG labo 95 (12/09) · DFG calculé 44 (CKD-EPI, créat du 09/10)');
+    expect(dfgRetenuLabel(s)).toBe('le moteur utilise le DFG calculé (le plus récent)');
+    expect(dfgLine(s)).toBe('DFG labo 95 (12/09) · DFG calculé 44 (CKD-EPI, créat du 09/10) — le moteur utilise le DFG calculé (le plus récent)');
+    // Le moteur décide bien sur 44 : metformine « À évaluer » (30-44), et non rien du tout (95).
+    expect(ev([GLUCOPHAGE], s).alerts[0]).toMatchObject({ severite: 'a_evaluer', regleCode: 'METFORMINE_DFG_30_44' });
+    expect(ev([GLUCOPHAGE], s).alerts[0].condition).toContain('DFG 44 mL/min/1,73 m² (créat du 09/10)');
+  });
+
+  it('DFG labo PLUS RÉCENT que la créatinine → le DFG labo est retenu ; les deux sont affichés', () => {
+    const s = renalStatus(input({ creatinines: creatBasse('2026-08-01'), dfgLabos: [L(95, '2026-09-12')] }));
+    expect(s).toMatchObject({ connu: true, dfg: 95, stade: '>=60', source: 'labo', dfgCalcule: 44, fraicheur: 'fiable', raison: null });
+    expect(dfgDoubleLine(s)).toBe('DFG labo 95 (12/09) · DFG calculé 44 (CKD-EPI, créat du 01/08)');
+    expect(dfgRetenuLabel(s)).toBe('le moteur utilise le DFG labo (le plus récent)');
+    expect(ev([GLUCOPHAGE], s).alerts).toEqual([]);
+    expect(dfgActuelLine(s)).toBe('DFG actuel 95 mL/min (labo du 12/09)');
+  });
+
+  it('même jour → le DFG labo (la créatinine ne l’emporte que si elle est strictement plus récente)', () => {
+    const s = renalStatus(input({ creatinines: creatBasse('2026-09-12'), dfgLabos: [L(52, '2026-09-12')] }));
+    expect(s).toMatchObject({ dfg: 52, source: 'labo', dfgCalcule: 44 });
+  });
+
+  it('DFG labo seul (aucune créatinine) : utilisé par le moteur, affiché avec sa source et sa date', () => {
+    const s = renalStatus(input({ creatinines: [], dfgLabos: [L(24, '2026-09-20')] }));
+    expect(s).toMatchObject({ connu: true, dfg: 24, stade: '15-29', source: 'labo', dfgCalcule: null, cockcroft: null, creat: null });
+    expect(dfgDoubleLine(s)).toBeNull();
+    expect(dfgLine(s)).toBe('DFG 24 mL/min/1,73 m² (labo du 20/09)');
+    const a = ev([GLUCOPHAGE], s).alerts[0];
+    expect(a).toMatchObject({ severite: 'contre_indication', regleCode: 'METFORMINE_DFG_30' });
+    expect(a.condition).toBe('fonction rénale — DFG 24 mL/min/1,73 m² (labo du 20/09)');
+    // Anticoagulant : Cockcroft non calculable sans créatinine → réserve, avec la vraie raison.
+    const r = ev([PRADAXA], s);
+    expect(r.reserves).toEqual([{ medId: 'm4', medNom: 'Pradaxa', motif: 'cockcroft' }]);
+    expect(reservesLabel(r.reserves, s)).toBe('clairance de Cockcroft non calculable — créatinine utilisable manquante (Pradaxa)');
+  });
+
+  it('DFG labo utilisable même sans âge, sans sexe ou chez un mineur (aucun calcul nécessaire)', () => {
+    for (const over of [{ dateNaissance: null }, { sexe: null }, { dateNaissance: '2015-01-01' }]) {
+      expect(renalStatus(input({ creatinines: [], dfgLabos: [L(80, '2026-09-20')], ...over }))).toMatchObject({ connu: true, dfg: 80, source: 'labo' });
+    }
+  });
+
+  it('jamais de repli : créatinine plus récente mais inutilisable → fonction rénale inconnue, DFG labo seulement affiché', () => {
+    const s = renalStatus(input({ creatinines: [C(1.2, 'nmol/L', '2026-10-01')], dfgLabos: [L(95, '2026-09-12')] }));
+    expect(s).toMatchObject({ connu: false, raison: 'unite_inconnue', dfg: null, source: null, dfgLabo: { valeur: 95 } });
+    expect(ev([GLUCOPHAGE], s).reserves).toEqual([{ medId: 'm1', medNom: 'Glucophage', motif: 'fonction' }]);
+  });
+
+  it('fraîcheur du DFG labo : plus de 3 mois → « ancien » ; plus de 12 mois → ignoré', () => {
+    const ancien = renalStatus(input({ creatinines: [], dfgLabos: [L(70, '2026-05-01')] }));
+    expect(ancien).toMatchObject({ connu: true, dfg: 70, fraicheur: 'ancienne' });
+    expect(dfgLine(ancien)).toBe('DFG 70 mL/min/1,73 m² (labo du 01/05, ancien)');
+    expect(renalStatus(input({ creatinines: [], dfgLabos: [L(70, '2025-09-01')] }))).toMatchObject({ connu: false, raison: 'aucune_creatinine', dfgLabo: null });
+    // Périmé : la créatinine, même plus ancienne que rien d'autre d'utilisable, reste la seule donnée.
+    expect(renalStatus(input({ creatinines: creatBasse('2026-09-12'), dfgLabos: [L(70, '2025-09-01')] }))).toMatchObject({ dfg: 44, source: 'calcule', dfgLabo: null });
+  });
+
+  it('DFG labo : le plus récent, valeurs implausibles écartées', () => {
+    expect(latestDfgLabo([L(60, '2026-01-01', 'a'), L(48, '2026-06-01', 'b'), L(0, '2026-09-01', 'c'), L(999, '2026-09-02', 'd'), L(null, '2026-09-03', 'e')])!.id).toBe('b');
+    expect(latestDfgLabo([])).toBeNull();
+  });
+
+  it('toute modification d’un des deux DFG change l’empreinte (l’analyse est relancée)', () => {
+    const a = renalStatus(input({ creatinines: creatBasse('2026-10-09'), dfgLabos: [L(95, '2026-09-12')] }));
+    const b = renalStatus(input({ creatinines: creatBasse('2026-10-09'), dfgLabos: [L(90, '2026-09-12')] }));
+    const c = renalStatus(input({ creatinines: creatBasse('2026-10-09') }));
+    expect(new Set([a.sig, b.sig, c.sig]).size).toBe(3);
+  });
+
+  it('sans DFG labo : comportement du Sprint 6B inchangé', () => {
+    const s = renalStatus(input());
+    expect(s).toMatchObject({ source: 'calcule', dfgLabo: null });
+    expect(dfgLine(s)).toMatch(/^DFG \d+ mL\/min\/1,73 m² \(CKD-EPI, créat du 12\/09\)$/);
+    expect(dfgDoubleLine(s)).toBeNull();
+    expect(dfgRetenuLabel(s)).toBeNull();
   });
 });

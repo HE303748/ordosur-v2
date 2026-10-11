@@ -3,6 +3,8 @@
 // reprend la sévérité du verdict déjà établi. Un clic fait défiler vers le verdict (le seul
 // défilement vers le verdict est celui que le médecin demande).
 
+import { TITRE_VERT_NON_DOCUMENTEE } from '../lib/safetyGuards';
+
 export type IndicatorSeverity = 'safe' | 'conditional' | 'attention' | 'dangerous';
 
 export type AnalysisIndicatorState =
@@ -67,7 +69,7 @@ export function AnalysisIndicator({ state, onShowVerdict }: { state: AnalysisInd
       aria-label={`Verdict : ${state.title}. Afficher le verdict`}
       className={`${BASE} ${p.box} hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] transition`}>
       <span className={`w-2 h-2 rounded-full ${p.dot}`} aria-hidden />
-      {INDICATOR_LABELS[state.severity]}
+      {state.severity === 'safe' && state.title === TITRE_VERT_NON_DOCUMENTEE ? 'Rien de significatif' : INDICATOR_LABELS[state.severity]}
     </button>
   );
 }

@@ -3,6 +3,7 @@ import {
   excludedFond, fondExclusionLabel, verdictWithFondExclusion, patientFieldLabel, patientMismatchMessage,
   applyMergedLines, alertLogSources, buildInteractionLogRows, countBySource, isLoggable,
   reconcileVerdictWithDisplay, isUndocumentedSeverity, undocumentedLabel, verdictTitle, greenLineAllowed, VERDICT_TITLES,
+  titleForDisplay, undocumentedSectionTitle, TITRE_VERT_NON_DOCUMENTEE,
   type VerdictSeverity,
   type LoggableAlert, type MergedChannel,
 } from './safetyGuards';
@@ -308,21 +309,42 @@ describe('4g. le titre du verdict ne contredit jamais la liste', () => {
   const RANK: Record<VerdictSeverity, number> = { safe: 0, conditional: 1, attention: 2, dangerous: 3 };
   const VERT = VERDICT_TITLES.safe;
 
-  it('cas de la production : INALER + Doliprane, interaction « non documentée » listée', () => {
-    const r = reconcileVerdictWithDisplay('safe', { cartes: 1, nonDocumentees: 1, mineures: 0, infos: 0 });
-    expect(r).toEqual({ severity: 'conditional', lowered: true, note: '1 interaction de sévérité non documentée — à évaluer' });
-    expect(verdictTitle(r.severity)).toBe('Sécuritaire sous réserve');
-    expect(undocumentedLabel(2)).toBe('2 interactions de sévérité non documentée — à évaluer');
+  /** Titre réellement affiché : titre particulier d'après la liste, sinon titre du niveau. */
+  const titreAffiche = (severity: VerdictSeverity, shown: { nonDocumentees: number }) => verdictTitle(severity, titleForDisplay(severity, shown));
+
+  it('Sprint 2b-2 (D) — INALER + Doliprane, seule une interaction « non documentée » est listée : le vert est conservé', () => {
+    const shown = { cartes: 1, nonDocumentees: 1, mineures: 0, infos: 0 };
+    const r = reconcileVerdictWithDisplay('safe', shown);
+    expect(r).toEqual({ severity: 'safe', lowered: false, note: '1 interaction de sévérité non documentée — information' });
+    expect(titreAffiche(r.severity, shown)).toBe('Aucune interaction cliniquement significative connue');
+    expect(titreAffiche(r.severity, shown)).not.toBe(VERT);
+    expect(undocumentedLabel(2)).toBe('2 interactions de sévérité non documentée — information');
+    expect(undocumentedSectionTitle(1)).toBe('Interaction de sévérité non documentée (1) — information');
+    expect(undocumentedSectionTitle(3)).toBe('Interactions de sévérité non documentée (3) — information');
   });
 
-  it('toutes les combinaisons : « Aucune interaction détectée » ⇔ verdict vert ET rien d’affiché', () => {
-    let verts = 0;
+  it('Sprint 2b-2 (D) — la sévérité non documentée n’atténue ni ne masque rien d’autre', () => {
+    // Une interaction mineure listée à côté : « sous réserve » comme avant, les deux raisons dites.
+    expect(reconcileVerdictWithDisplay('safe', { cartes: 2, nonDocumentees: 1, mineures: 1, infos: 0 }))
+      .toEqual({ severity: 'conditional', lowered: true, note: '1 interaction mineure signalée · 1 interaction de sévérité non documentée — information' });
+    // Une autre carte clinique : comptée sans les non documentées.
+    expect(reconcileVerdictWithDisplay('safe', { cartes: 3, nonDocumentees: 2, mineures: 0, infos: 0 }).note)
+      .toBe('1 alerte affichée — à évaluer · 2 interactions de sévérité non documentée — information');
+    // Titre particulier réservé au vert.
+    for (const sev of ['conditional', 'attention', 'dangerous'] as VerdictSeverity[]) expect(titleForDisplay(sev, { nonDocumentees: 2 })).toBeNull();
+    expect(titleForDisplay('safe', { nonDocumentees: 0 })).toBeNull();
+    expect(titleForDisplay('safe', { nonDocumentees: 1 })).toBe(TITRE_VERT_NON_DOCUMENTEE);
+  });
+
+  it('toutes les combinaisons : cohérence du titre et de la liste', () => {
+    let verts = 0, vertsNonDoc = 0;
     for (const severity of SEVERITIES)
       for (const nonDocumentees of [0, 1, 3]) for (const mineures of [0, 1, 2]) for (const autres of [0, 1, 4]) for (const infos of [0, 1]) {
         const cartes = nonDocumentees + mineures + autres;
-        const r = reconcileVerdictWithDisplay(severity, { cartes, nonDocumentees, mineures, infos });
-        const titre = verdictTitle(r.severity);
-        // 1. le titre vert n'existe que si la liste affichée est réellement vide
+        const shown = { cartes, nonDocumentees, mineures, infos };
+        const r = reconcileVerdictWithDisplay(severity, shown);
+        const titre = titreAffiche(r.severity, shown);
+        // 1. « Aucune interaction détectée » n'existe que si la liste affichée est réellement vide
         if (titre === VERT) {
           verts++;
           expect(severity).toBe('safe');
@@ -330,17 +352,29 @@ describe('4g. le titre du verdict ne contredit jamais la liste', () => {
           expect(infos).toBe(0);
         }
         if (severity === 'safe' && cartes === 0 && infos === 0) expect(titre).toBe(VERT);
-        // 2. un verdict n'est jamais atténué
-        expect(RANK[r.severity]).toBeGreaterThanOrEqual(RANK[severity]);
-        // 3. une sévérité non documentée est toujours dite, et donne au minimum « sous réserve »
-        if (nonDocumentees > 0) {
-          expect(r.note).toBe(undocumentedLabel(nonDocumentees));
-          expect(RANK[r.severity]).toBeGreaterThanOrEqual(RANK.conditional);
+        // 2. « … cliniquement significative connue » ⇔ vert ET la liste ne contient QUE des non documentées
+        if (titre === TITRE_VERT_NON_DOCUMENTEE) {
+          vertsNonDoc++;
+          expect(severity).toBe('safe');
+          expect(nonDocumentees).toBeGreaterThan(0);
+          expect(cartes).toBe(nonDocumentees);
+          expect(infos).toBe(0);
         }
-        // 4. un verdict vert abaissé porte toujours sa raison
+        if (severity === 'safe' && nonDocumentees > 0 && cartes === nonDocumentees && infos === 0) expect(titre).toBe(TITRE_VERT_NON_DOCUMENTEE);
+        // 3. un verdict n'est jamais atténué
+        expect(RANK[r.severity]).toBeGreaterThanOrEqual(RANK[severity]);
+        // 4. une sévérité non documentée est toujours dite — et n'abaisse jamais le verdict à elle seule
+        if (nonDocumentees > 0) {
+          expect(r.note).toContain(undocumentedLabel(nonDocumentees));
+          if (mineures === 0 && autres === 0 && infos === 0) expect(r.severity).toBe(severity);
+        }
+        // 5. une carte CLINIQUE (mineure ou autre) ou une information interdit toujours le vert
+        if (mineures + autres + infos > 0) expect(r.severity).not.toBe('safe');
+        // 6. un verdict vert abaissé porte toujours sa raison
         if (r.lowered) { expect(severity).toBe('safe'); expect(r.severity).toBe('conditional'); expect(r.note).toBeTruthy(); }
       }
     expect(verts).toBe(1);
+    expect(vertsNonDoc).toBe(2); // 1 ou 3 interactions non documentées, rien d'autre
   });
 
   it('raison affichée selon ce qui est listé', () => {
@@ -352,7 +386,7 @@ describe('4g. le titre du verdict ne contredit jamais la liste', () => {
     expect(note({})).toBeNull();
     // Verdict déjà sévère : seule la sévérité non documentée est ajoutée.
     expect(reconcileVerdictWithDisplay('attention', { cartes: 3, nonDocumentees: 1, mineures: 1, infos: 0 }))
-      .toEqual({ severity: 'attention', lowered: false, note: '1 interaction de sévérité non documentée — à évaluer' });
+      .toEqual({ severity: 'attention', lowered: false, note: '1 interaction de sévérité non documentée — information' });
     expect(reconcileVerdictWithDisplay('dangerous', { cartes: 2, nonDocumentees: 0, mineures: 1, infos: 0 }).note).toBeNull();
   });
 

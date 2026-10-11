@@ -7,7 +7,7 @@ import { createActionLock } from '../../lib/viewCache';
 import { archiveResultat, saveResultats } from '../../lib/resultatsApi';
 import {
   BORNES_ABSENTES, bornesLabel, buildResultatPayload, chartSerie, deltaCheck, examMesure, fieldToDraft, findPrevious, formatNombre, isNonVu,
-  matchUnite, qualitatifLabel, unitesCourbe, valeurAffichee,
+  qualitatifLabel, uniteCourbeDefaut, unitesCourbe, valeurAffichee,
   type DeltaWarning, type FieldState, type ResultatExamen, type Serie,
 } from '../../lib/resultatsLogic';
 import { INPUT, InterpretationBadge, ResultFields } from './ResultFields';
@@ -52,9 +52,9 @@ export function SerieDetail({ serie, series, refs, resultats, canWrite, doctorId
   const [showArchives, setShowArchives] = useState(false);
   const rowRefs = useRef(new Map<string, HTMLLIElement>());
 
-  // Unité affichée : celle du dernier résultat, tant que le médecin n'en choisit pas une autre.
-  const uniteDefaut = matchUnite(serie.dernier.unite_saisie, mesure)?.unite ?? serie.dernier.unite_saisie ?? unites[0] ?? null;
-  const uniteActive = unite !== null && unites.includes(unite) ? unite : (unites.includes(uniteDefaut ?? '') ? uniteDefaut : unites[0] ?? null);
+  // Sprint 2b-2 (F) — unité affichée : l'unité de RÉFÉRENCE de l'examen, tant que le médecin n'en choisit
+  // pas une autre. Tous les points sont convertis dans cette seule unité.
+  const uniteActive = unite !== null && unites.includes(unite) ? unite : uniteCourbeDefaut(serie, mesure);
   const primary = useMemo(() => chartSerie(serie, mesure, uniteActive), [serie, mesure, uniteActive]);
 
   const comparables = useMemo(() => series.filter(s => s.key !== serie.key && s.points.some(p => p.valeur_num !== null)), [series, serie.key]);
@@ -62,8 +62,7 @@ export function SerieDetail({ serie, series, refs, resultats, canWrite, doctorId
   const secondary = useMemo(() => {
     if (!other) return null;
     const m = examMesure(other.examCode ? byCode.get(other.examCode) ?? null : null, other.parametre);
-    const u = matchUnite(other.dernier.unite_saisie, m)?.unite ?? other.dernier.unite_saisie ?? unitesCourbe(other, m)[0] ?? null;
-    return { label: other.label, serie: chartSerie(other, m, u) };
+    return { label: other.label, serie: chartSerie(other, m, uniteCourbeDefaut(other, m)) };
   }, [other, byCode]);
 
   const selectPoint = (id: string) => {
@@ -158,6 +157,7 @@ export function SerieDetail({ serie, series, refs, resultats, canWrite, doctorId
                 {primary.bande
                   ? <span><span aria-hidden className="inline-block w-3 h-2 bg-[#00A86B]/20 align-middle mr-1 rounded-sm" />Bornes du labo ({formatFr(serie.points.find(p => p.borne_basse !== null || p.borne_haute !== null)?.date_prelevement)})</span>
                   : <span>{BORNES_ABSENTES}</span>}
+                {primary.omis > 0 && <span>{primary.omis} résultat{primary.omis > 1 ? 's' : ''} non tracé{primary.omis > 1 ? 's' : ''} (unité non convertible en {uniteActive || 'cette unité'})</span>}
               </p>
             </div>
           ) : (

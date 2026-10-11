@@ -6,7 +6,7 @@ import {
   interpret, bornesLabel, bornesValides, needsReview, isNonVu, resultatsARevoir, serieKey, buildSeries, categoriesOf,
   tendance, valeurAffichee, findPrevious, deltaCheck, parseSaisieLibre, defaultUnite, lastUnitsBySerie,
   buildResultatPayload, draftError, lignesASaisir, lignesApresResultats, derniersBilans, derniersBilansLine,
-  chartSerie, unitesCourbe, buildRecap, shortLabel, defaultParametre, emptyField, fieldToDraft,
+  chartSerie, unitesCourbe, uniteCourbeDefaut, axeDomaine, derniersBilansAvecDfg, buildRecap, shortLabel, defaultParametre, emptyField, fieldToDraft,
   type ResultatExamen, type ResultatDraft,
 } from './resultatsLogic';
 import data from './examens_reference.data.json';
@@ -564,5 +564,87 @@ describe('10. champ de saisie → brouillon', () => {
     expect(fieldToDraft({ ...emptyField(), texte: 'Nodule', anormal: true }, refs.find(r => r.type === 'imagerie')!, null).draft).toMatchObject({ texte: 'Nodule', anormal: true });
     expect(fieldToDraft({ ...emptyField('µmol/L'), valeur: '12' }, null, null, { libelleLibre: 'Zincémie' }).draft).toMatchObject({ nombre: { valeur: 12 }, unite: 'µmol/L' });
     expect(fieldToDraft({ ...emptyField(), texte: 'RAS' }, null, null, { libelleLibre: 'Frottis' }).draft).toMatchObject({ texte: 'RAS', nombre: null });
+  });
+});
+
+// ─── Sprint 2b-2 (F) — courbes : une seule unité, axe jamais sous 0 ──────────
+describe('12. courbe : valeurs saisies en mg/L et en mg/dL mélangées', () => {
+  const m = examMesure(ref('CREATININE'));
+  const melange = [
+    R('CREATININE', { valeur_num: 9, unite_saisie: 'mg/L', date_prelevement: '2026-03-01' }),
+    R('CREATININE', { valeur_num: 1.1, unite_saisie: 'mg/dL', date_prelevement: '2026-05-01' }),
+    R('CREATININE', { valeur_num: 115, unite_saisie: 'µmol/L', date_prelevement: '2026-07-01' }),
+    R('CREATININE', { valeur_num: 1.4, unite_saisie: 'mg/dl', date_prelevement: '2026-09-01', borne_basse: 0.6, borne_haute: 1.2 }),
+  ];
+  const s = buildSeries(melange, refs)[0];
+
+  it('unité par défaut = unité de RÉFÉRENCE de l’examen, même si le dernier résultat est dans une autre', () => {
+    expect(s.dernier.unite_saisie).toBe('mg/dl');
+    expect(uniteCourbeDefaut(s, m)).toBe('mg/L');
+    expect(uniteCourbeDefaut(buildSeries([R('HBA1C', { valeur_num: 55, unite_saisie: 'mmol/mol' })], refs)[0], examMesure(ref('HBA1C')))).toBe('%');
+    // Sans référentiel : l'unité du résultat le plus récent.
+    const libre = buildSeries([R(null, { valeur_num: 3, unite_saisie: 'UI/L' })], refs)[0];
+    expect(uniteCourbeDefaut(libre, examMesure(null))).toBe('UI/L');
+  });
+
+  it('tous les points sont convertis dans UNE seule unité (mg/L), bande comprise', () => {
+    const c = chartSerie(s, m, uniteCourbeDefaut(s, m));
+    expect(c.unite).toBe('mg/L');
+    expect(c.points.map(p => formatNombre(p.valeur, 1))).toEqual(['9', '11', '13', '14']);
+    expect(c.bande).toEqual({ basse: 6, haute: 12 });
+    expect(c.omis).toBe(0);
+    // Aucune valeur brute en mg/dL (1,1 · 1,4) ni en µmol/L (115) ne subsiste sur l'échelle en mg/L.
+    for (const p of c.points) { expect(p.valeur).toBeGreaterThan(5); expect(p.valeur).toBeLessThan(20); }
+  });
+
+  it('même série dans une autre unité choisie : tout est converti aussi', () => {
+    const dl = chartSerie(s, m, 'mg/dL');
+    expect(dl.points.map(p => formatNombre(p.valeur, 2))).toEqual(['0,9', '1,1', '1,3', '1,4']);
+    expect(dl.bande).toEqual({ basse: 0.6, haute: 1.2 });
+    const umol = chartSerie(s, m, 'µmol/L');
+    expect(umol.points.map(p => Math.round(p.valeur))).toEqual([80, 97, 115, 124]);
+  });
+
+  it('un résultat en unité NON convertible n’est jamais tracé sur l’échelle d’une autre unité : il est compté', () => {
+    const avecHorsRef = buildSeries([...melange, R('CREATININE', { valeur_num: 1.2, unite_saisie: 'nmol/L', date_prelevement: '2026-10-01' })], refs)[0];
+    const c = chartSerie(avecHorsRef, m, 'mg/L');
+    expect(c.points).toHaveLength(4);
+    expect(c.omis).toBe(1);
+  });
+
+  it('l’axe ne descend jamais sous 0 pour une grandeur positive', () => {
+    const c = chartSerie(s, m, 'mg/L');
+    const [bas, haut] = axeDomaine(c);
+    expect(bas).toBeGreaterThanOrEqual(0);
+    expect(bas).toBeLessThanOrEqual(6);   // la bande basse du labo reste visible
+    expect(haut).toBeGreaterThan(14);
+    // Valeurs proches de 0 : la marge ne fait pas passer l'axe en négatif.
+    const pt = (valeur: number, i: number) => ({ id: `p${i}`, t: i, date: '2026-01-01', valeur, laboratoire: null });
+    expect(axeDomaine({ points: [0.1, 0.4, 3].map(pt), bande: null })[0]).toBe(0);
+    expect(axeDomaine({ points: [0, 0].map(pt), bande: null })).toEqual([0, 1]);
+    expect(axeDomaine({ points: [5, 5].map(pt), bande: null })).toEqual([4.5, 5.5]);
+    expect(axeDomaine({ points: [2, 8].map(pt), bande: { basse: 0, haute: 6 } })[0]).toBe(0);
+    // Une grandeur qui peut être négative garde son axe négatif.
+    expect(axeDomaine({ points: [-4, 2].map(pt), bande: null })[0]).toBeLessThan(-4);
+    expect(axeDomaine({ points: [], bande: null })).toEqual([0, 1]);
+  });
+});
+
+describe('13. « Derniers bilans » : deux DFG (Sprint 2b-2, E)', () => {
+  const series = buildSeries([
+    R('CREATININE', { valeur_num: 16.3, unite_saisie: 'mg/L', date_prelevement: '2026-10-09' }),
+    R('DFG', { valeur_num: 95, unite_saisie: 'mL/min/1,73 m²', date_prelevement: '2026-09-12' }),
+  ], refs);
+  const items = derniersBilans(series, []);
+  const DOUBLE = 'DFG labo 95 (12/09) · DFG calculé 44 (CKD-EPI, créat du 09/10)';
+
+  it('les deux DFG sont affichés ensemble, avec source et date ; l’entrée « DFG » seule est retirée', () => {
+    expect(items.map(i => i.examCode).sort()).toEqual(['CREATININE', 'DFG']);
+    const r = derniersBilansAvecDfg(items, DOUBLE);
+    expect(r.dfg).toBe(DOUBLE);
+    expect(r.items.map(i => i.examCode)).toEqual(['CREATININE']);
+  });
+  it('un seul DFG : la ligne est inchangée', () => {
+    expect(derniersBilansAvecDfg(items, null)).toEqual({ items, dfg: null });
   });
 });

@@ -44,7 +44,18 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   `ci_condition_concepts` (formulation → concept de pathologies_curees, qualificatif, stade, famille), générée et relue à la main
   dans `scripts/gen_ci_condition_concepts.mjs` — jamais cherché dans le texte. Toute NOUVELLE formulation de
   `contraindications.condition_valeur` doit y être ajoutée (sinon : libellé identique seulement). Plus aucun préfixe ni sous-chaîne.
-  Banc de non-régression hors dépôt : `../sprint2b/banc.mjs --reel` (toute disparition non validée = STOP).
+  Banc de non-régression hors dépôt : `../sprint2b/banc.mjs --reel` (toute disparition non validée = STOP) ; écart entre deux
+  passes : `../sprint2b/compare.mjs`.
+  Sprint 2b-2 : une pathologie listée est ACTIVE (« actif / évolutif » satisfait, sévérité conservée) ; famille « infection »
+  (CI génériques « Infection ») ; CI « Dialyse » = patient dialysé (pathologie / antécédent) ou DFG < 15 ; écritures courantes
+  hors référentiel dans `NOMS_COMPLEMENTAIRES` (« Cirrhose », « Hypotension orthostatique »).
+- Deux DFG (Sprint 2b-2) : DFG labo (examen `DFG` des bilans) et DFG calculé (CKD-EPI). Le moteur utilise la donnée la plus
+  récente : la créatinine si son prélèvement est strictement plus récent, sinon le DFG labo — jamais de repli. Les deux sont affichés
+  avec source et date (`renalEngine.dfgDoubleLine`).
+- Sévérité non documentée (`non_classee`, Sprint 2b-2) : information — ne bloque plus le vert ; section repliable ; le titre vert
+  devient « Aucune interaction cliniquement significative connue » (`safetyGuards.titleForDisplay`).
+- Courbes (Sprint 2b-2) : tous les points convertis dans UNE unité (défaut = unité de référence, `uniteCourbeDefaut`) ; axe jamais
+  sous 0 (`axeDomaine`) ; un résultat non convertible n'est pas tracé, il est compté.
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).

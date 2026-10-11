@@ -20,7 +20,7 @@
 //   qualificatif_type  etat    → précision d'état de contrôle absente chez le patient : « À évaluer »
 //                      gravite → précision de gravité / de forme absente : sévérité CONSERVÉE, « à préciser »
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { writeNewMigration } from './lib/migrationGuard.mjs';
 
@@ -101,8 +101,8 @@ const T = [
   ['Colite infectieuse', SANS('aucun concept')],
   ['Coronaropathie', C('Cardiopathie ischémique', fam('coronaropathie'))],
   ['Décompensation cardiaque aiguë', C(IC, etat('décompensée (aiguë)'))],
-  // Contient « grossesse » : reste traitée comme une CI de grossesse (bloc dédié), jamais par une pathologie.
-  ['Déficit en acide folique (grossesse planifiée)', G],
+  // Sprint 2b-2 — PROJET de grossesse : relève de la procréation, sans objet chez une patiente déjà enceinte.
+  ['Déficit en acide folique (grossesse planifiée)', PRO],
   ['Déficit en G6PD', C('Déficit en G6PD')],
   ['Démence à corps de Lewy', C('Démence', grav('à corps de Lewy'))],
   ['Dépendance aux opioïdes (en sevrage)', SANS('aucun concept')],
@@ -114,7 +114,8 @@ const T = [
   ['Diabète décompensé', C('Diabète décompensé', fam('diabete'), etat('décompensé'))],
   ['Diabète décompensé (glycémie > 3 g/L)', C('Diabète décompensé', fam('diabete'), etat('décompensé (glycémie > 3 g/L)'))],
   ['Diabète insulino-dépendant avec hypoglycémies fréquentes', F('diabete', etat('insulino-dépendant avec hypoglycémies fréquentes'))],
-  ['Dialyse', REN(5)],
+  // Sprint 2b-2 — patient dialysé (pathologie ou antécédent) ou DFG < 15 : jamais « À évaluer ».
+  ['Dialyse', { traitement: 'dialyse' }],
   ['Dysfonction sinusale / Maladie du sinus', C('Dysfonction sinusale')],
   ['Endocardite bactérienne', C('Endocardite')],
   ['Enfant < 16 ans (fièvre virale)', AGE],
@@ -183,12 +184,13 @@ const T = [
   ['Infarctus du myocarde', C(IDM)],
   ['Infarctus du myocarde récent (< 3 mois)', C(IDM, grav('récent (< 3 mois)'))],
   ['Infarctus du ventricule droit', SANS('forme particulière : non rattaché à « Infarctus du myocarde » (dérivés nitrés indiqués par ailleurs)')],
-  ['Infection', SANS('trop générique : aucun concept')],
+  // Sprint 2b-2 — CI génériques « Infection » : famille « infection » (toute infection précisée).
+  ['Infection', F('infection')],
   ['Infection active non traitée (tuberculose, sepsis fongique)',
-    SANS('trop générique : aucun concept', lib('Infection active non traitée')),
+    F('infection', etat('active non traitée'), lib('Infection active non traitée')),
     C(TB, etat('active non traitée'), lib('tuberculose')), C('Septicémie', etat('active non traitée'), lib('sepsis fongique'))],
-  ['Infection active sévère non contrôlée', SANS('trop générique : aucun concept')],
-  ['Infections actives sévères', SANS('trop générique : aucun concept')],
+  ['Infection active sévère non contrôlée', F('infection', etat('active sévère non contrôlée'))],
+  ['Infections actives sévères', F('infection', grav('actives sévères'))],
   ['Infections fongiques systémiques', SANS('aucun concept')],
   ['Infections urinaires récurrentes (> 3/an)', C('Infection urinaire', fam('infection_urinaire'), grav('récurrentes (> 3/an)'))],
   ['Injection de produit de contraste iodé', CTX('acte')],
@@ -302,8 +304,8 @@ const T = [
 // Familles reconnues par le moteur (membres déclarés dans conditionMatcher.ts, vérifiés par ses tests).
 const FAMILLES = ['diabete', 'ulcere_gastroduodenal', 'hta', 'hepatite_virale', 'migraine', 'depression', 'asthme', 'varicelle',
   'infection_urinaire', 'trouble_rythme', 'coronaropathie', 'dyslipidemie', 'hyperthyroidie', 'psychose', 'neuropathie',
-  'retrecissement_aortique', 'mtev'];
-const TRAITEMENTS = ['concept', 'renal', 'grossesse', 'allaitement', 'procreation', 'age', 'allergie', 'contexte', 'sans_concept'];
+  'retrecissement_aortique', 'mtev', 'infection'];
+const TRAITEMENTS = ['concept', 'renal', 'dialyse', 'grossesse', 'allaitement', 'procreation', 'age', 'allergie', 'contexte', 'sans_concept'];
 
 // ── Lignes + contrôles ───────────────────────────────────────────────────────
 const rows = [];
@@ -391,7 +393,13 @@ ${rows.map(r => `  (${[r.condition_norm, r.condition_valeur, r.ordre, r.libelle,
 on conflict (condition_norm, ordre) do nothing;
 `;
 
-writeNewMigration(new URL('../supabase/migrations/20261020120000_ci_condition_concepts.sql', import.meta.url), sql);
+// La migration du Sprint 2b-1 est un fait historique : elle n'est écrite que si elle n'existe pas (dépôt neuf).
+const M1 = new URL('../supabase/migrations/20261020120000_ci_condition_concepts.sql', import.meta.url);
+if (!existsSync(M1)) writeNewMigration(M1, sql);
+
+// Sprint 2b-2 — les évolutions de la table passent par une migration DÉDIÉE, écrite à la main
+// (supabase/migrations/20261021120000_ci_condition_concepts_2b2.sql) ; l'empreinte ci-dessous est
+// comparée à celle de la base après application.
 const par = k => rows.filter(r => r.traitement === k).length;
 console.log(`${vus.size} formulations, ${rows.length} lignes — ${TRAITEMENTS.map(k => `${k} ${par(k)}`).join(' · ')}`);
 console.log(`empreinte concepts ${empreinte} · curees ${empreinteCurees}`);

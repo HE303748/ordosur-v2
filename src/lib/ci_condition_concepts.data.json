@@ -1,6 +1,6 @@
 {
  "empreinte": {
-  "concepts": "7ebad8ce7e7830e89ceee5997c2f53b7",
+  "concepts": "bd1dd28caa7c01fcd3263e2598ee99ae",
   "curees": "41bdb489d8b10716d10d89b1dccc8647"
  },
  "familles": [
@@ -20,7 +20,8 @@
   "psychose",
   "neuropathie",
   "retrecissement_aortique",
-  "mtev"
+  "mtev",
+  "infection"
  ],
  "concepts": [
   {
@@ -613,7 +614,7 @@
    "condition_valeur": "Déficit en acide folique (grossesse planifiée)",
    "ordre": 1,
    "libelle": "Déficit en acide folique (grossesse planifiée)",
-   "traitement": "grossesse",
+   "traitement": "procreation",
    "concept": null,
    "famille": null,
    "qualificatif": null,
@@ -756,12 +757,12 @@
    "condition_valeur": "Dialyse",
    "ordre": 1,
    "libelle": "Dialyse",
-   "traitement": "renal",
-   "concept": "Insuffisance rénale chronique",
+   "traitement": "dialyse",
+   "concept": null,
    "famille": null,
    "qualificatif": null,
    "qualificatif_type": null,
-   "stade": 5,
+   "stade": null,
    "note": null
   },
   {
@@ -1627,26 +1628,26 @@
    "condition_valeur": "Infection",
    "ordre": 1,
    "libelle": "Infection",
-   "traitement": "sans_concept",
+   "traitement": "concept",
    "concept": null,
-   "famille": null,
+   "famille": "infection",
    "qualificatif": null,
    "qualificatif_type": null,
    "stade": null,
-   "note": "trop générique : aucun concept"
+   "note": null
   },
   {
    "condition_norm": "infection active non traitee tuberculose sepsis fongique",
    "condition_valeur": "Infection active non traitée (tuberculose, sepsis fongique)",
    "ordre": 1,
    "libelle": "Infection active non traitée",
-   "traitement": "sans_concept",
+   "traitement": "concept",
    "concept": null,
-   "famille": null,
-   "qualificatif": null,
-   "qualificatif_type": null,
+   "famille": "infection",
+   "qualificatif": "active non traitée",
+   "qualificatif_type": "etat",
    "stade": null,
-   "note": "trop générique : aucun concept"
+   "note": null
   },
   {
    "condition_norm": "infection active non traitee tuberculose sepsis fongique",
@@ -1679,26 +1680,26 @@
    "condition_valeur": "Infection active sévère non contrôlée",
    "ordre": 1,
    "libelle": "Infection active sévère non contrôlée",
-   "traitement": "sans_concept",
+   "traitement": "concept",
    "concept": null,
-   "famille": null,
-   "qualificatif": null,
-   "qualificatif_type": null,
+   "famille": "infection",
+   "qualificatif": "active sévère non contrôlée",
+   "qualificatif_type": "etat",
    "stade": null,
-   "note": "trop générique : aucun concept"
+   "note": null
   },
   {
    "condition_norm": "infections actives severes",
    "condition_valeur": "Infections actives sévères",
    "ordre": 1,
    "libelle": "Infections actives sévères",
-   "traitement": "sans_concept",
+   "traitement": "concept",
    "concept": null,
-   "famille": null,
-   "qualificatif": null,
-   "qualificatif_type": null,
+   "famille": "infection",
+   "qualificatif": "actives sévères",
+   "qualificatif_type": "gravite",
    "stade": null,
-   "note": "trop générique : aucun concept"
+   "note": null
   },
   {
    "condition_norm": "infections fongiques systemiques",

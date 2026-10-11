@@ -16,6 +16,12 @@
 //   6. Qualificatif discriminant présent du seul côté de la CI → pas de correspondance.
 //   7. Fonction rénale : comparaison de STADES (libellé du patient ou DFG du canal rénal).
 //   8. Allergies : par famille ou molécule, jamais croisées avec les pathologies.
+//
+// Sprint 2b-2 :
+//   • une pathologie LISTÉE est active par définition (l'historique est dans les antécédents) :
+//     « actif / évolutif / en poussée » est satisfait, la sévérité de la CI est conservée ;
+//   • CI « Dialyse » : patient dialysé (pathologie ou antécédent) ou DFG < 15, rien d'autre ;
+//   • famille « infection » : toute infection précisée déclenche les CI génériques « Infection ».
 
 import { allergyFamilles, type AllergieFamilleRow } from './allergyClassEngine';
 import { parseRenalCondition } from './renalEngine';
@@ -23,7 +29,7 @@ import { parseRenalCondition } from './renalEngine';
 // ─── Données ─────────────────────────────────────────────────────────────────
 
 export type CiTraitement =
-  | 'concept' | 'renal' | 'grossesse' | 'allaitement' | 'procreation' | 'age' | 'allergie' | 'contexte' | 'sans_concept';
+  | 'concept' | 'renal' | 'dialyse' | 'grossesse' | 'allaitement' | 'procreation' | 'age' | 'allergie' | 'contexte' | 'sans_concept';
 
 /** Ligne de la table ci_condition_concepts. */
 export interface CiConceptRow {
@@ -70,6 +76,32 @@ export const FAMILLES: Record<string, { membres: string[]; libelles?: string[] }
   neuropathie: { membres: ['Neuropathie périphérique', 'Neuropathie diabétique'] },
   retrecissement_aortique: { membres: ['Rétrécissement aortique', 'Rétrécissement aortique serré'] },
   mtev: { membres: ['Thrombose veineuse profonde', 'Embolie pulmonaire'] },
+  // Sprint 2b-2 — toute infection précisée ⊂ CI génériques « Infection ».
+  infection: {
+    membres: [
+      'Abcès cutané', 'Angine', 'Bronchiolite', 'Bronchiolite du nourrisson', 'Bronchite aiguë', 'Brucellose', 'Candidose cutanée',
+      'Cellulite infectieuse', 'Coqueluche', 'COVID-19', 'Cystite', 'Dengue', 'Endocardite', 'Érysipèle', 'Fièvre typhoïde', 'Folliculite',
+      'Gastro-entérite', "Gastro-entérite de l'enfant", 'Grippe', 'Hépatite virale B', 'Hépatite virale C', 'Herpès', 'Hydatidose',
+      'Impétigo', "Impétigo de l'enfant", 'Infection à Helicobacter pylori', 'Infection à papillomavirus', 'Infection à VIH',
+      'Infection urinaire', 'Infection vaginale', 'Laryngite', 'Leishmaniose', 'Méningite', 'Mononucléose infectieuse', 'Mycose cutanée',
+      'Mycose vaginale', 'Onychomycose', 'Oreillons', "Otite de l'enfant", 'Otite externe', 'Otite moyenne aiguë', 'Paludisme',
+      'Pharyngite', 'Pneumonie', 'Pneumopathie infectieuse', 'Prostatite', 'Pyélonéphrite', 'Rhinopharyngite',
+      "Rhinopharyngite de l'enfant", 'Rougeole', 'Rubéole', 'Salpingite', 'Septicémie', 'Sinusite aiguë', 'Syndrome grippal', 'Teigne',
+      'Toxoplasmose', 'Tuberculose pulmonaire', 'Vaginose bactérienne', 'Varicelle', "Varicelle de l'enfant", 'Zona',
+    ],
+    libelles: ['Infection'],
+  },
+};
+
+/**
+ * Sprint 2b-2 — écritures courantes absentes de pathologies_curees, rattachées à la main.
+ * Elles valent un NOM de pathologie : en tête d'un libellé, elles admettent une précision
+ * (« Cirrhose alcoolique », « Cirrhose biliaire primitive »).
+ */
+export const NOMS_COMPLEMENTAIRES: Record<string, string[]> = {
+  'Cirrhose du foie': ['Cirrhose'],
+  'Hypotension artérielle': ['Hypotension orthostatique'],
+  'Lupus érythémateux systémique': ['Lupus érythémateux disséminé', 'Lupus érythémateux'],
 };
 
 const IRC = 'Insuffisance rénale chronique';
@@ -123,6 +155,8 @@ const PRECISIONS = R('actif', 'evolutif', 'chronique', 'severe', 'modere', 'lege
   'gueri', 'remission', 'allergique', 'stade', 'type', 'debutant', 'persistant', 'intermittent', 'recidivant', 'connu', 'essentiel',
   'idiopathique', 'primaire', 'bilateral', 'droit', 'gauche');
 
+// Une pathologie listée est active : ces mots d'un qualificatif de CI sont satisfaits d'office.
+const ACTIVITE = R('actif', 'evolutif', 'poussee');
 // États du patient incompatibles avec un qualificatif d'état de la CI (actif, non contrôlé, décompensé…).
 const INACTIFS = R('cicatrise', 'gueri', 'ancien', 'antecedent', 'atcd', 'remission');
 const MAITRISES = R('controle', 'equilibre', 'stable', 'stabilise', 'traite', 'substitue', 'compense');
@@ -176,6 +210,7 @@ export function buildConditionMatcher(
     nomMots.set(c.nom_fr, motsDe(c.nom_fr));
     add(c.nom_fr, c.nom_fr, true);
     for (const s of (c.synonymes ?? '').split(',').map(x => x.trim()).filter(Boolean)) add(s, c.nom_fr, false);
+    for (const s of NOMS_COMPLEMENTAIRES[c.nom_fr] ?? []) add(s, c.nom_fr, true);
   }
   const famillesDe = new Map<string, string[]>();
   const familleLibelles = new Map<string, string>();
@@ -239,13 +274,14 @@ function conceptsDuLibelle(mots: string[], d: ConditionMatcherData): { concepts:
     best.push({ p, reste });
   }
   if (best.length > 0) return { concepts: garde(best.map(b => b.p)), familles: [] };
-  // Famille générique précisée (« Diabète déséquilibré »).
+  // Famille générique précisée (« Diabète déséquilibré ») ; en tête du libellé, toute précision est admise
+  // (« Infection ostéo-articulaire », « Diabète MODY ») sauf une négation.
   for (const [k, f] of d.familleLibelles) {
     const p = k.split(' ');
     const i = p.length < mots.length ? contient(mots, p) : -1;
     if (i < 0) continue;
     const reste = [...mots.slice(0, i), ...mots.slice(i + p.length)];
-    if (reste.every(w => PRECISIONS.has(w) || /^\d/.test(w))) return { concepts: [], familles: [f] };
+    if (i === 0 ? !reste.some(w => NEGATIONS.has(w)) : reste.every(w => PRECISIONS.has(w) || /^\d/.test(w))) return { concepts: [], familles: [f] };
   }
   return { concepts: [], familles: [] };
 }
@@ -262,6 +298,9 @@ function stadeDuLibelle(n: string): { stade: number | null; precis: boolean } {
   return { stade: null, precis: false };
 }
 
+/** « Dialyse », « Hémodialyse », « Dialyse péritonéale » — pas une « péritonite de dialyse », pas « non dialysé ». */
+const estDialyse = (n: string) => /dialys/.test(n) && !/peritonite/.test(n) && !/\b(pas|sans|non)\b/.test(n);
+
 const ALLERGIE_RE = /^(allergie|allergies|intolerance|hypersensibilite)\b/;
 
 export function analysePatientTerm(label: string, kind: 'pathologie' | 'allergie', d: ConditionMatcherData): PatientTerm {
@@ -273,7 +312,7 @@ export function analysePatientTerm(label: string, kind: 'pathologie' | 'allergie
   }
   const { concepts, familles: directes } = conceptsDuLibelle(mots, d);
   const familles = [...new Set([...directes, ...concepts.flatMap(c => d.famillesDe.get(c) ?? [])])];
-  const chronique = concepts.includes(IRC) || (/dialys/.test(norm) && !/peritonite/.test(norm));
+  const chronique = concepts.includes(IRC) || estDialyse(norm);
   return {
     label, kind: 'pathologie', norm, mots, concepts, familles,
     renal: chronique ? stadeDuLibelle(norm) : null,
@@ -284,12 +323,18 @@ export function analysePatientTerm(label: string, kind: 'pathologie' | 'allergie
 
 export interface PatientConditions {
   termes: PatientTerm[];
-  /** DFG (CKD-EPI) du canal rénal, s'il est connu. */
+  /** DFG du canal rénal, s'il est connu. */
   dfg: number | null;
+  /** Patient dialysé : pathologie listée ou antécédent. */
+  dialyse: boolean;
 }
 
 export function preparePatient(
-  p: { pathologies?: string[] | null; allergiesMedicaments?: string[] | null; allergiesAlimentaires?: string[] | null; dfg?: number | null },
+  p: {
+    pathologies?: string[] | null; allergiesMedicaments?: string[] | null; allergiesAlimentaires?: string[] | null; dfg?: number | null;
+    /** Libellés des antécédents non archivés : seule la dialyse y est lue. */
+    antecedents?: string[] | null;
+  },
   d: ConditionMatcherData,
 ): PatientConditions {
   const termes: PatientTerm[] = [];
@@ -304,7 +349,8 @@ export function preparePatient(
   for (const x of p.pathologies ?? []) if (x) push(x, 'pathologie');
   for (const x of p.allergiesMedicaments ?? []) if (x) push(x, 'allergie');
   for (const x of p.allergiesAlimentaires ?? []) if (x) push(x, 'allergie');
-  return { termes, dfg: typeof p.dfg === 'number' && Number.isFinite(p.dfg) ? p.dfg : null };
+  const dialyse = [...(p.pathologies ?? []), ...(p.antecedents ?? [])].some(x => estDialyse(normCondition(x)));
+  return { termes, dfg: typeof p.dfg === 'number' && Number.isFinite(p.dfg) ? p.dfg : null, dialyse };
 }
 
 // ─── Verdict ─────────────────────────────────────────────────────────────────
@@ -352,6 +398,12 @@ function matchRenal(t: PatientTerm, stadeCi: number, dfg: number | null): Condit
     : NON(`stade patient ${stade} < stade CI ${stadeCi}`);
 }
 
+/** Qualificatif sans ses mots d'activité, pour le titre (« active non traitée » → « non traitée »). */
+function sansActivite(q: string): string {
+  const out = q.replace(/en poussée,?\s*/gi, '').split(/\s+/).filter(w => !ACTIVITE.has(racine(normCondition(w)))).join(' ').trim();
+  return out || q;
+}
+
 function matchConcept(t: PatientTerm, row: CiConceptRow, d: ConditionMatcherData): ConditionMatch {
   if (t.kind !== 'pathologie') return NON('type croisé (allergie × pathologie)');
   const parConcept = !!row.concept && t.concepts.includes(row.concept);
@@ -359,7 +411,7 @@ function matchConcept(t: PatientTerm, row: CiConceptRow, d: ConditionMatcherData
   if (!parConcept && !parFamille) return NON('autre concept');
   const lien = parConcept ? `concept « ${row.concept} »` : `famille « ${row.famille} »`;
 
-  const q = row.qualificatif ? motsDe(sansParentheses(row.qualificatif)) : [];
+  const q = (row.qualificatif ? motsDe(sansParentheses(row.qualificatif)) : []).filter(w => !ACTIVITE.has(w));
   // Mots connus du côté du patient : son libellé + le nom du (des) concept(s) qui ont correspondu.
   const membres = row.famille ? FAMILLES[row.famille]?.membres ?? [] : [];
   const cote = new Set([
@@ -372,7 +424,15 @@ function matchConcept(t: PatientTerm, row: CiConceptRow, d: ConditionMatcherData
   const disc = motsDe(sansParentheses(row.libelle)).filter(w => estDiscriminant(w) && !q.includes(w) && !discPatient.has(discriminantDe(w)));
   if (disc.length > 0) return NON(`qualificatif discriminant du seul côté de la CI : ${disc.join(', ')}`);
 
-  if (q.length === 0) return { verdict: 'oui', titre: null, par: t.label, raison: lien };
+  const qBrut = row.qualificatif ? motsDe(sansParentheses(row.qualificatif)) : [];
+  if (qBrut.length === 0) return { verdict: 'oui', titre: null, par: t.label, raison: lien };
+  // Sprint 2b-2 — une pathologie listée est ACTIVE par définition : « actif / évolutif / en poussée » est
+  // satisfait (sévérité conservée), sauf si le libellé du patient dit lui-même le contraire.
+  if (qBrut.some(w => ACTIVITE.has(w))) {
+    if (t.mots.some(w => INACTIFS.has(w))) return NON(`${lien} — état opposé chez le patient`);
+    if (q.length === 0) return { verdict: 'oui', titre: null, par: t.label, raison: `${lien} — pathologie listée, donc active` };
+  }
+  const libelleQ = sansActivite(row.qualificatif ?? '');
   for (const [a, b] of EXCLUSIFS) {
     const qa = q.some(w => a.has(w)), qb = q.some(w => b.has(w));
     const pa = t.mots.some(w => a.has(w)), pb = t.mots.some(w => b.has(w));
@@ -385,9 +445,9 @@ function matchConcept(t: PatientTerm, row: CiConceptRow, d: ConditionMatcherData
   if (row.qualificatif_type === 'etat') {
     const maitrise = t.mots.some((w, i) => MAITRISES.has(w) && !NEGATEURS.has(t.mots[i - 1] ?? ''));
     if (maitrise || t.mots.some(w => INACTIFS.has(w))) return NON(`${lien} — état opposé chez le patient`);
-    return { verdict: 'a_evaluer', titre: `Si ${row.qualificatif}`, par: t.label, raison: `${lien} — état « ${row.qualificatif} » non renseigné` };
+    return { verdict: 'a_evaluer', titre: `Si ${libelleQ}`, par: t.label, raison: `${lien} — état « ${libelleQ} » non renseigné` };
   }
-  return { verdict: 'preciser', titre: `Si ${row.qualificatif} — préciser`, par: t.label, raison: `${lien} — « ${row.qualificatif} » non renseigné, sévérité conservée` };
+  return { verdict: 'preciser', titre: `Si ${libelleQ} — préciser`, par: t.label, raison: `${lien} — « ${libelleQ} » non renseigné, sévérité conservée` };
 }
 
 // ── Allergies (décision 8) ──
@@ -440,6 +500,13 @@ export function matchCondition(
   const rows = allergieCi ? lignesParDefaut(conditionType, conditionValeur, cv)
     : d.rowsByNorm.get(cv) ?? lignesParDefaut(conditionType, conditionValeur, cv);
 
+  // Sprint 2b-2 — CI « Dialyse » : jamais « À évaluer ». Le patient est dialysé (pathologie ou antécédent),
+  // ou son DFG est < 15, ou la CI ne le concerne pas.
+  if (rows.some(r => r.traitement === 'dialyse')) {
+    if (patient.dialyse) return { verdict: 'oui', titre: null, par: 'dialyse', raison: 'patient dialysé (pathologie ou antécédent)' };
+    if (patient.dfg !== null && patient.dfg < 15) return { verdict: 'oui', titre: null, par: `DFG ${patient.dfg} mL/min`, raison: 'DFG < 15' };
+    return NON('CI de dialyse : patient non dialysé, DFG ≥ 15 ou inconnu');
+  }
   let best = NON('aucune condition du patient ne correspond');
   const garder = (m: ConditionMatch) => { if (RANG[m.verdict] > RANG[best.verdict] || best.par === null && m.verdict === 'non') best = m; };
   for (const t of patient.termes) {
@@ -457,6 +524,7 @@ export function matchCondition(
             : NON('CI d’allaitement : la pathologie du patient n’en parle pas'));
           break;
         case 'renal': garder(matchRenal(t, Number(row.stade), patient.dfg)); break;
+        case 'dialyse': break; // décidée plus haut, indépendamment des libellés
         case 'concept': garder(matchConcept(t, row, d)); break;
         default:
           // contexte / sans_concept : libellé strictement identique (après normalisation) uniquement.

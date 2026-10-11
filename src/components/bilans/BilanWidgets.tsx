@@ -7,7 +7,7 @@ import { formatFrShort } from '../../lib/examRequest';
 import { requestPatientTab } from '../../lib/examUi';
 import { viewCache } from '../../lib/viewCache';
 import { loadARevoir, type ARevoirData } from '../../lib/resultatsApi';
-import { buildSeries, derniersBilans, resultatLabel, resultatsARevoir, valeurAffichee } from '../../lib/resultatsLogic';
+import { buildSeries, derniersBilans, derniersBilansAvecDfg, resultatLabel, resultatsARevoir, valeurAffichee } from '../../lib/resultatsLogic';
 import { useExamRefs, usePatientResultats } from '../../hooks/useBilans';
 import { InterpretationBadge } from './ResultFields';
 
@@ -34,11 +34,17 @@ export function ARevoirBadge({ patientId, onClick, compact = false }: { patientI
  * — 5 examens au maximum, les plus pertinents selon les pathologies. INFORMATION uniquement :
  * le moteur de sécurité ne lit pas cette ligne.
  */
-export function DerniersBilansLine({ patient }: { patient: Pick<Patient, 'id' | 'pathologies'> }) {
+export function DerniersBilansLine({ patient, dfgDouble }: {
+  patient: Pick<Patient, 'id' | 'pathologies'>;
+  /** Sprint 2b-2 (E) — « DFG labo 95 (12/09) · DFG calculé 44 (CKD-EPI, créat du 09/10) » quand les deux existent. */
+  dfgDouble?: string | null;
+}) {
   const { resultats } = usePatientResultats(patient.id);
   const refs = useExamRefs(resultats.length > 0);
-  const items = useMemo(() => derniersBilans(buildSeries(resultats, refs), patient.pathologies), [resultats, refs, patient.pathologies]);
-  if (items.length === 0) return null;
+  const { items, dfg } = useMemo(
+    () => derniersBilansAvecDfg(derniersBilans(buildSeries(resultats, refs), patient.pathologies), dfgDouble),
+    [resultats, refs, patient.pathologies, dfgDouble]);
+  if (items.length === 0 && !dfg) return null;
   return (
     <p className="w-full text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed">
       <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">Derniers bilans : </span>
@@ -51,6 +57,12 @@ export function DerniersBilansLine({ patient }: { patient: Pick<Patient, 'id' | 
             {' '}({formatFrShort(i.date)})</span>
         </span>
       ))}
+      {dfg && (
+        <span>
+          {items.length > 0 && <span aria-hidden className="text-slate-300 dark:text-slate-600"> · </span>}
+          <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{dfg}</span>
+        </span>
+      )}
     </p>
   );
 }

@@ -82,15 +82,15 @@ import {
   evaluateAntecedents, mergeWithExisting, classifyAntecedent,
   type RegleAntecedent, type RegleClasse, type RegleSeverite,
 } from '../lib/antecedentEngine';
-import { pregnancyContext, classifyPregnancyAlert, isMajorTeratogen, pregnancySummary, isContraceptionRequirement } from '../lib/pregnancyStatus';
+import { pregnancyContext, classifyPregnancyAlert, isMajorTeratogen, pregnancySummary, isContraceptionRequirement, isPlannedPregnancyCondition } from '../lib/pregnancyStatus';
 // Sprint 4f — garde-fous (exclusion du fond, identité patient, journalisation)
 import {
   excludedFond, fondExclusionLabel, verdictWithFondExclusion, patientFieldLabel, patientMismatchMessage,
   buildInteractionLogRows, applyMergedLines, type MergedChannel,
-  reconcileVerdictWithDisplay, isUndocumentedSeverity, verdictTitle, greenLineAllowed,
+  reconcileVerdictWithDisplay, isUndocumentedSeverity, verdictTitle, greenLineAllowed, titleForDisplay, undocumentedSectionTitle,
 } from '../lib/safetyGuards';
 // Sprint 6B — canal fonction rénale (module pur lib/renalEngine, chargeur dédié hooks/useRenal)
-import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, type RenalReserve, type RenalStatus } from '../lib/renalEngine';
+import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, dfgDoubleLine, type RenalReserve, type RenalStatus } from '../lib/renalEngine';
 import { useRenalChannel } from '../hooks/useRenal';
 import {
   buildConditionMatcher, preparePatient, matchCondition, conditionTitre,
@@ -838,6 +838,30 @@ function PreexistingAlertsBlock({ alerts }: { alerts: InteractionAlert[] }) {
   );
 }
 
+// Sprint 2b-2 (D) — Interactions de sévérité non documentée : information, repliée, jamais masquée.
+function UndocumentedAlertsBlock({ alerts }: { alerts: InteractionAlert[] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.06] rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-2 px-4 py-3 text-left hover:bg-slate-50 dark:hover:bg-white/[0.03] transition-colors flex-wrap"
+      >
+        <ChevronDown className={`w-4 h-4 text-slate-400 flex-shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
+        <Info className="w-4 h-4 text-slate-500 dark:text-slate-300 flex-shrink-0" aria-hidden />
+        <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">{undocumentedSectionTitle(alerts.length)}</span>
+        <span className="text-xs text-slate-500 dark:text-[#94A3B8]">interaction connue, gravité non précisée par la source</span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {alerts.map((alert, idx) => <AlertCard key={idx} alert={alert} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Sprint 3 — Panneau « Traitement de fond (N) » du Vérificateur.
 function FondPanel({
   patient, traitements, loading, error, excluded, selectedMedIds, onToggle, onRenew, onRetry,
@@ -1056,7 +1080,10 @@ function CheckerView({
   const currentAlerts       = dedupAlerts.filter(a => a.origin !== 'fond');
   const preexistingAlerts   = dedupAlerts.filter(a => a.origin === 'fond');
   // Sprint 2 — alertes fermes (cartes) vs bloc conditionnel grossesse (replié)
-  const firmAlerts          = currentAlerts.filter(a => !a.pregnancyContext);
+  const firmAll             = currentAlerts.filter(a => !a.pregnancyContext);
+  // Sprint 2b-2 (D) — sévérité non documentée : section repliable à part, hors des cartes d'alerte.
+  const firmAlerts          = firmAll.filter(a => !isUndocumentedSeverity(a.severite));
+  const undocumentedAlerts  = firmAll.filter(a => isUndocumentedSeverity(a.severite));
   const pregnancyCtxAlerts  = currentAlerts.filter(a => a.pregnancyContext);
   const selectedMedIds      = new Set(selectedMeds.map(m => m.id));
   const maskedReasons = [...new Set(maskedAlerts.map(m => m.reason))].join(', ');
@@ -1151,7 +1178,7 @@ function CheckerView({
                   />
 
                   {/* Sprint 5 — prochain bilan + demande d'examens (document autonome, hors blocage 3b) */}
-                  <PatientExamStrip patient={selectedPatient} canWrite={canWritePatient} />
+                  <PatientExamStrip patient={selectedPatient} canWrite={canWritePatient} dfgDouble={dfgDoubleLine(renalStatus)} />
 
                   {/* Sprint 6B — DFG / Cockcroft utilisés par le moteur + poids (le modifier relance l'analyse) */}
                   <RenalStrip patient={selectedPatient} status={renalStatus} canWrite={canWritePatient}
@@ -1521,6 +1548,9 @@ function CheckerView({
                 ))}
               </div>
             )}
+
+            {/* 3a. Sprint 2b-2 (D) — Sévérité non documentée : information, repliée */}
+            {undocumentedAlerts.length > 0 && <UndocumentedAlertsBlock alerts={undocumentedAlerts} />}
 
             {/* 3b. Sprint 2 — Bloc conditionnel grossesse / allaitement / procréation */}
             {pregnancyCtxAlerts.length > 0 && (
@@ -3844,6 +3874,8 @@ export function DoctorDashboard() {
           allergiesMedicaments: selectedPatient.allergies_medicaments,
           allergiesAlimentaires: selectedPatient.allergies_alimentaires,
           dfg: renal.status.connu ? renal.status.dfg : null,
+          // Sprint 2b-2 — dialyse déclarée en antécédent personnel (jamais un antécédent familial).
+          antecedents: patientAntecedents.filter(a => !a.archive && a.categorie !== 'familial').map(a => a.libelle),
         }, conditionData);
 
         for (const contra of allContraindications) {
@@ -3901,6 +3933,9 @@ export function DoctorDashboard() {
 
             // b. Patiente + CI grossesse/allaitement/procréation : déclenchée sur le médicament seul.
             if (patientSexe === 'F' && sexeCI === 'F' && PREGNANCY_CTX_RE.test(cv)) {
+              // Sprint 2b-2 — CI de grossesse PLANIFIÉE : sans objet chez une patiente déjà enceinte.
+              if (isPlannedPregnancyCondition(contra.condition_valeur)
+                && (hasGrossesse || pregnancyContext(selectedPatient).statut === 'enceinte')) continue;
               const firm =
                 (hasGrossesse && /grossesse|enceinte/.test(cv)) ||
                 (hasAllaitement && /allait/.test(cv));
@@ -5004,9 +5039,9 @@ export function DoctorDashboard() {
     if (pregnancyOnly) overallSeverity = 'conditional';
     // Alerte ferme mineure + bloc conditionnel : jamais de vert.
     else if (overallSeverity === 'safe' && pregnancyCtxCount > 0) overallSeverity = 'attention';
-    // Sprint 4g — le titre ne contredit jamais la liste : une carte affichée (interaction de
-    // sévérité non documentée, mineure…) interdit « Aucune interaction détectée ». Mêmes
-    // cartes que l'écran (dédoublonnées, hors informations).
+    // Sprint 4g — le titre ne contredit jamais la liste : une carte clinique affichée (mineure…)
+    // interdit le vert. Sprint 2b-2 (D) — une sévérité NON DOCUMENTÉE est une information : elle ne
+    // bloque plus le vert, mais change son titre et reste toujours dite. Mêmes cartes que l'écran.
     const shownFirm = dedupClinicalAlerts(firmAlerts);
     const display = reconcileVerdictWithDisplay(overallSeverity, {
       cartes: shownFirm.length,
@@ -5015,6 +5050,7 @@ export function DoctorDashboard() {
       infos: currentAlerts.filter(a => a.severite === 'info').length,
     });
     overallSeverity = display.severity;
+    const undocumentedCount = shownFirm.filter(a => isUndocumentedSeverity(a.severite)).length;
     // Sprint 3 — seules des alertes préexistantes : « Sécuritaire sous réserve », jamais vert.
     const preexistingOnly = overallSeverity === 'safe' && preexistingCount > 0;
     if (preexistingOnly) overallSeverity = 'conditional';
@@ -5054,7 +5090,8 @@ export function DoctorDashboard() {
       ? '⚠ Vérification impossible'
       : someNonVerifiable && overallSeverity === 'safe'
         ? 'Résultat partiel — médicaments vérifiés uniquement'
-        : undefined;
+        // Sprint 2b-2 (D) — vert avec interaction(s) de sévérité non documentée : jamais « Aucune interaction détectée ».
+        : titleForDisplay(overallSeverity, { nonDocumentees: undocumentedCount }) ?? undefined;
 
     const preexistingLabel = `Alertes préexistantes dans le traitement de fond (${preexistingCount})`;
     const baseDescription =
@@ -5065,6 +5102,8 @@ export function DoctorDashboard() {
           : pregnancyOnly
             ? `Aucune alerte, sauf en cas de grossesse ou d'allaitement (${pregnancyCtxCount} CI)${pregnancyStale}`
           : display.lowered
+            ? display.note!
+          : overallSeverity === 'safe' && undocumentedCount > 0 && !someNonVerifiable
             ? display.note!
           : preexistingOnly
             ? preexistingLabel
@@ -5112,7 +5151,7 @@ export function DoctorDashboard() {
     // Sprint 4g — sévérité non documentée : toujours dite, quel que soit le verdict.
     // Sprint 6B — réserve rénale : toujours dite, quel que soit le verdict.
     const withRenal = renalNote !== '' && !renalUnavailable ? `${withDoublons} · ${renalNote}` : withDoublons;
-    const withUndocumented = display.note && !display.lowered ? `${withRenal} · ${display.note}` : withRenal;
+    const withUndocumented = display.note && !display.lowered && !withRenal.includes(display.note) ? `${withRenal} · ${display.note}` : withRenal;
     const withExclusion = fondExclus.length === 0 ? withUndocumented
       : fondExcluOnly ? `Aucune alerte sur les médicaments analysés · ${fondExclusLabel}`
         : `${withUndocumented} · ${fondExclusLabel}`;

@@ -13,6 +13,13 @@
 //     médicament dans ce fichier.
 //   • Les comparaisons portent sur la valeur ARRONDIE affichée au médecin : ce qu'il lit
 //     est exactement ce qui a décidé.
+//
+// Sprint 2b-2 (E) — DEUX DFG peuvent coexister : celui que le laboratoire a rendu (examen « DFG »
+// saisi dans les bilans) et celui calculé ici d'après la créatinine. RÈGLE :
+//   le moteur utilise la donnée LA PLUS RÉCENTE — la créatinine si son prélèvement est
+//   strictement plus récent que celui du DFG labo, sinon le DFG labo (y compris le même jour).
+//   Jamais de repli : si la donnée la plus récente est inutilisable, la fonction rénale est inconnue.
+// Les deux valeurs sont toujours affichées avec leur source et leur date.
 
 import type { ExamRef } from './examSearch';
 import { formatFr, formatFrShort, parseIsoDate, toIsoDate } from './examRequest';
@@ -112,6 +119,14 @@ export interface CreatinineResult {
   created_at?: string;
 }
 
+/** DFG rendu par le laboratoire (examen « DFG » des bilans), en mL/min/1,73 m². */
+export interface DfgLaboResult {
+  id: string;
+  valeur_num: number | null;
+  date_prelevement: string;
+  created_at?: string;
+}
+
 export interface RenalInput {
   dateNaissance: string | null | undefined;
   sexe: string | null | undefined;
@@ -120,6 +135,8 @@ export interface RenalInput {
   pathologies: string[] | null | undefined;
   /** Résultats de créatinine NON archivés du patient. */
   creatinines: CreatinineResult[];
+  /** Sprint 2b-2 — DFG NON archivés saisis d'après le compte rendu du laboratoire. */
+  dfgLabos?: DfgLaboResult[];
   /** Examen CREATININE du référentiel (porte les conversions d'unités). */
   creatRef: ExamRef | null;
   today: Date;
@@ -141,6 +158,12 @@ export interface RenalStatus {
   /** Clairance de Cockcroft-Gault arrondie (mL/min), si le poids est connu. */
   cockcroft: number | null;
   creat: { id: string; valeur: number; unite: string | null; date: string; mgDl: number | null } | null;
+  /** Sprint 2b-2 — origine du DFG retenu par le moteur (null si inconnu). */
+  source: 'calcule' | 'labo' | null;
+  /** Dernier DFG rendu par le laboratoire (utilisable : moins de 12 mois), qu'il soit retenu ou non. */
+  dfgLabo: { id: string; valeur: number; date: string } | null;
+  /** DFG calculé (CKD-EPI) d'après la dernière créatinine, qu'il soit retenu ou non. */
+  dfgCalcule: number | null;
   fraicheur: Fraicheur | null;
   poidsKg: number | null;
   poidsDate: string | null;
@@ -176,17 +199,22 @@ export function renalStatus(input: RenalInput): RenalStatus {
   const poids = typeof input.poidsKg === 'number' && input.poidsKg >= POIDS_MIN && input.poidsKg <= POIDS_MAX ? input.poidsKg : null;
   const base: RenalStatus = {
     connu: false, raison: null, dfg: null, stade: null, cockcroft: null, creat: null, fraicheur: null,
+    source: null, dfgLabo: null, dfgCalcule: null,
     poidsKg: poids, poidsDate: poids !== null ? (input.poidsDate ?? null) : null,
     poidsAncien: poids !== null && poidsAncien(input.poidsDate, input.today),
     dialyse: hasDialyse(input.pathologies), age, sig: '',
   };
   const done = (s: RenalStatus): RenalStatus => ({
     ...s,
-    sig: [s.creat?.id ?? '', s.dfg ?? '', s.cockcroft ?? '', s.raison ?? '', s.fraicheur ?? '', s.poidsKg ?? '', s.poidsDate ?? '', s.poidsAncien ? 1 : 0, s.dialyse ? 1 : 0].join(':'),
+    sig: [s.creat?.id ?? '', s.dfg ?? '', s.cockcroft ?? '', s.raison ?? '', s.fraicheur ?? '', s.poidsKg ?? '', s.poidsDate ?? '', s.poidsAncien ? 1 : 0, s.dialyse ? 1 : 0,
+      s.source ?? '', s.dfgLabo?.id ?? '', s.dfgLabo?.valeur ?? '', s.dfgCalcule ?? ''].join(':'),
   });
   const inconnu = (raison: RenalInconnuRaison, extra: Partial<RenalStatus> = {}) => done({ ...base, ...extra, raison });
 
   if (input.loadError) return inconnu('chargement');
+
+  // ── DFG calculé d'après la dernière créatinine (inchangé depuis le Sprint 6B) ──
+  const calc = ((): RenalStatus => {
   const last = latestCreatinine(input.creatinines);
   if (!last) return inconnu('aucune_creatinine');
   if (last.valeur_num === null || !Number.isFinite(last.valeur_num) || last.valeur_num <= 0) return inconnu('valeur_invalide');
@@ -203,9 +231,35 @@ export function renalStatus(input: RenalInput): RenalStatus {
 
   const dfg = Math.round(ckdEpi2021(mgDl, age, sexe));
   return done({
-    ...base, connu: true, creat, fraicheur, dfg, stade: renalStade(dfg),
+    ...base, connu: true, creat, fraicheur, dfg, stade: renalStade(dfg), source: 'calcule', dfgCalcule: dfg,
     cockcroft: poids !== null ? Math.round(cockcroftGault(mgDl, age, poids, sexe)) : null,
   });
+  })();
+
+  // ── Sprint 2b-2 (E) — DFG rendu par le laboratoire ──
+  const lab = latestDfgLabo(input.dfgLabos ?? []);
+  const labFraicheur = lab ? fraicheurCreatinine(lab.date_prelevement, input.today) : 'inconnue';
+  if (!lab || labFraicheur === 'inconnue') return calc; // aucun DFG labo utilisable (absent ou de plus de 12 mois)
+  const dfgLabo = { id: lab.id, valeur: Math.round(lab.valeur_num!), date: lab.date_prelevement };
+
+  // La créatinine est STRICTEMENT plus récente : elle seule compte (même si le calcul est impossible).
+  if (calc.creat && calc.creat.date > lab.date_prelevement) return done({ ...calc, dfgLabo });
+
+  // Sinon le DFG labo est la donnée la plus récente : c'est lui que le moteur utilise. La clairance de
+  // Cockcroft reste calculée d'après la dernière créatinine quand elle est utilisable.
+  return done({
+    ...base, connu: true, raison: null, dfg: dfgLabo.valeur, stade: renalStade(dfgLabo.valeur), source: 'labo', fraicheur: labFraicheur,
+    dfgLabo, dfgCalcule: calc.dfgCalcule, creat: calc.creat, cockcroft: calc.connu ? calc.cockcroft : null,
+  });
+}
+
+export const DFG_LABO_MAX = 250;
+
+/** DFG labo le plus récent et plausible (0 < valeur ≤ 250), ou null. */
+export function latestDfgLabo(rows: DfgLaboResult[]): DfgLaboResult | null {
+  return [...rows]
+    .filter(r => r.valeur_num !== null && Number.isFinite(r.valeur_num) && r.valeur_num > 0 && r.valeur_num <= DFG_LABO_MAX)
+    .sort((a, b) => b.date_prelevement.localeCompare(a.date_prelevement) || (b.created_at ?? '').localeCompare(a.created_at ?? ''))[0] ?? null;
 }
 
 // ─── Libellés ────────────────────────────────────────────────────────────────
@@ -223,6 +277,23 @@ const RAISON_LABEL: Record<RenalInconnuRaison, string> = {
 };
 
 const creatDate = (s: RenalStatus) => (s.creat ? `créat du ${formatFrShort(s.creat.date)}` : '');
+/** Origine datée du DFG retenu : « créat du 09/10 » ou « labo du 12/09 ». */
+const dfgOrigine = (s: RenalStatus) => (s.source === 'labo' && s.dfgLabo ? `labo du ${formatFrShort(s.dfgLabo.date)}` : creatDate(s));
+
+/**
+ * Sprint 2b-2 (E) — les deux DFG, avec source et date, quand ils coexistent :
+ * « DFG labo 95 (12/09) · DFG calculé 44 (CKD-EPI, créat du 09/10) ». Sinon null.
+ */
+export function dfgDoubleLine(s: RenalStatus): string | null {
+  if (!s.dfgLabo || s.dfgCalcule === null || !s.creat) return null;
+  return `DFG labo ${s.dfgLabo.valeur} (${formatFrShort(s.dfgLabo.date)}) · DFG calculé ${s.dfgCalcule} (CKD-EPI, ${creatDate(s)})`;
+}
+
+/** « le moteur utilise le DFG calculé (le plus récent) » — quand deux DFG coexistent. */
+export function dfgRetenuLabel(s: RenalStatus): string | null {
+  if (dfgDoubleLine(s) === null || !s.connu) return null;
+  return `le moteur utilise le DFG ${s.source === 'labo' ? 'labo' : 'calculé'} (le plus récent)`;
+}
 
 /** « DFG 42 mL/min/1,73 m² (CKD-EPI, créat du 12/09) » ou la raison pour laquelle il est inconnu. */
 export function dfgLine(s: RenalStatus): string {
@@ -231,7 +302,11 @@ export function dfgLine(s: RenalStatus): string {
     return s.raison === 'creatinine_perimee' && s.creat ? `${r} (${formatFr(s.creat.date)})`
       : s.raison === 'unite_inconnue' && s.creat ? `${r} (${formatNombre(s.creat.valeur, 6)} ${s.creat.unite ?? 'sans unité'})` : r;
   }
-  return `DFG ${s.dfg} mL/min/1,73 m² (CKD-EPI, ${creatDate(s)}${s.fraicheur === 'ancienne' ? ', ancienne' : ''})`;
+  const anc = s.fraicheur === 'ancienne' ? (s.source === 'labo' ? ', ancien' : ', ancienne') : '';
+  const double = dfgDoubleLine(s);
+  if (double) return `${double} — ${dfgRetenuLabel(s)}${anc ? ` (${anc.slice(2)})` : ''}`;
+  if (s.source === 'labo') return `DFG ${s.dfg} mL/min/1,73 m² (${dfgOrigine(s)}${anc})`;
+  return `DFG ${s.dfg} mL/min/1,73 m² (CKD-EPI, ${creatDate(s)}${anc})`;
 }
 
 /** « Cl. Cockcroft 38 mL/min » (+ « poids ancien »), ou null si elle n'est pas calculable. */
@@ -248,7 +323,7 @@ function valeurCourte(s: RenalStatus, mesure: Mesure): string {
 /** « DFG actuel 72 mL/min (créat du 12/09) » — ajoutée aux CI rénales déclenchées par les pathologies. */
 export function dfgActuelLine(s: RenalStatus): string | null {
   if (!s.connu || s.dfg === null) return null;
-  return `DFG actuel ${s.dfg} mL/min (${creatDate(s)}${s.fraicheur === 'ancienne' ? ', ancienne' : ''})`;
+  return `DFG actuel ${s.dfg} mL/min (${dfgOrigine(s)}${s.fraicheur === 'ancienne' ? ', ancienne' : ''})`;
 }
 
 // ─── Lecture des contre-indications rénales DÉJÀ en base ─────────────────────
@@ -392,7 +467,7 @@ export function evaluateRenal(
     .map(c => ({ ci: c, cond: parseRenalCondition(c.condition_valeur) }))
     .filter((x): x is { ci: BaseCI; cond: RenalCondition } => x.cond !== null);
   const anc = status.fraicheur === 'ancienne' ? ', ancienne' : '';
-  const dfgLong = status.connu ? `DFG ${status.dfg} mL/min/1,73 m² (${creatDate(status)}${anc})` : '';
+  const dfgLong = status.connu ? `DFG ${status.dfg} mL/min/1,73 m² (${dfgOrigine(status)}${anc})` : '';
 
   const alerts: RenalAlert[] = [];
   const reserves: RenalReserve[] = [];
@@ -456,7 +531,7 @@ export function reservesLabel(reserves: RenalReserve[], status: RenalStatus): st
   const parts: string[] = [];
   const f = noms('fonction'), c = noms('cockcroft');
   if (f.length > 0) parts.push(`fonction rénale non disponible (${f.join(', ')})${status.raison === 'mineur' ? ' — DFG non calculable (< 18 ans)' : ''}`);
-  if (c.length > 0) parts.push(`clairance de Cockcroft non calculable — poids manquant (${c.join(', ')})`);
+  if (c.length > 0) parts.push(`clairance de Cockcroft non calculable — ${status.source === 'labo' && status.poidsKg !== null ? 'créatinine utilisable manquante' : 'poids manquant'} (${c.join(', ')})`);
   return parts.join(' · ');
 }
 

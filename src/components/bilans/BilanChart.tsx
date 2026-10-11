@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { CartesianGrid, Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { formatFr } from '../../lib/examRequest';
-import { chartRows, formatNombre, type ChartRow, type ChartSerie } from '../../lib/resultatsLogic';
+import { axeDomaine, chartRows, formatNombre, type ChartRow, type ChartSerie } from '../../lib/resultatsLogic';
 
 // Sprint 6A — Courbe d'un examen dans le temps. Recharts n'est chargé qu'à l'ouverture
 // d'une courbe (import() dans SerieDetail) : il ne pèse pas sur le bundle initial.
@@ -32,6 +32,9 @@ export default function BilanChart({ primary, secondary, selectedId, onPoint }: 
   onPoint?: (resultatId: string) => void;
 }) {
   const data = useMemo(() => chartRows(primary.serie, secondary?.serie), [primary, secondary]);
+  // Sprint 2b-2 (F) — axe calculé sur les valeurs converties : jamais sous 0 pour une grandeur positive.
+  const domA = useMemo(() => axeDomaine(primary.serie), [primary]);
+  const domB = useMemo(() => (secondary ? axeDomaine(secondary.serie) : undefined), [secondary]);
   const unitA = primary.serie.unite ?? '';
   const unitB = secondary?.serie.unite ?? '';
 
@@ -68,10 +71,10 @@ export default function BilanChart({ primary, secondary, selectedId, onPoint }: 
           <CartesianGrid stroke="#94A3B8" strokeOpacity={0.2} vertical={false} />
           <XAxis dataKey="t" type="number" scale="time" domain={['dataMin', 'dataMax']} tickFormatter={tick} tick={{ fontSize: 11, fill: SLATE }}
             tickLine={false} axisLine={{ stroke: '#94A3B8', strokeOpacity: 0.4 }} padding={{ left: 14, right: 14 }} minTickGap={28} />
-          <YAxis yAxisId="a" tick={{ fontSize: 11, fill: SLATE }} tickLine={false} axisLine={false} width={46} domain={['auto', 'auto']}
+          <YAxis yAxisId="a" tick={{ fontSize: 11, fill: SLATE }} tickLine={false} axisLine={false} width={46} domain={domA} allowDataOverflow={false}
             tickFormatter={(v: number) => formatNombre(v, 2)} />
           {secondary && (
-            <YAxis yAxisId="b" orientation="right" tick={{ fontSize: 11, fill: SLATE }} tickLine={false} axisLine={false} width={46} domain={['auto', 'auto']}
+            <YAxis yAxisId="b" orientation="right" tick={{ fontSize: 11, fill: SLATE }} tickLine={false} axisLine={false} width={46} domain={domB}
               tickFormatter={(v: number) => formatNombre(v, 2)} />
           )}
           {/* Bande = bornes du laboratoire saisies avec le résultat le plus récent (jamais une norme interne). */}
