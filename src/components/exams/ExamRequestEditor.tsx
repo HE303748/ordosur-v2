@@ -10,6 +10,7 @@ import {
   type ExamRef, type ExamPack, type ExamType, type ExamSearchResult,
 } from '../../lib/examSearch';
 import { useAnchoredPopover } from '../../hooks/useAnchoredPopover';
+import { indexOfKey, moveActiveKey, resolveActiveKey } from '../../lib/stableSearch';
 import {
   ECHEANCE_CHOICES, computeEcheance, examAlerts, findRedondances, formatFr, formatFrShort, freeLine, lastRenewable,
   creatinineSuggestion, countNewLines,
@@ -61,6 +62,10 @@ type Option =
   | { kind: 'result'; r: ExamSearchResult }
   | { kind: 'free'; type: ExamType; label: string };
 
+/** Clé stable d'une option de la liste de recherche (Sprint 2c : sélection par clé, jamais par index). */
+const optionKey = (o: Option): string =>
+  o.kind === 'free' ? `free-${o.type}` : o.r.kind === 'pack' ? `pack-${o.r.pack.id}` : `exam-${o.r.exam.code}`;
+
 export function ExamRequestEditor({
   patient, draft, onChange, refs, packs, packUsage, refsLoading, refsFailed, onRetryRefs, onPacksChanged,
   demandes, ctx, extraMedicaments = [], rdvDateOverride = null, autoFocusSearch = false,
@@ -76,7 +81,9 @@ export function ExamRequestEditor({
   // ── Recherche ────────────────────────────────────────────────────────────
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(0);
+  // Sprint 2c — la sélection clavier mémorise la CLÉ de l'option (jamais sa position) : si la liste
+  // change (référentiel ou packs rechargés), Entrée ajoute toujours l'option surlignée.
+  const [activeKey, setActiveKey] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const anchorRef = useRef<HTMLDivElement>(null);
@@ -99,7 +106,10 @@ export function ExamRequestEditor({
     TYPE_ORDER.forEach(t => out.push({ kind: 'free', type: t, label: q }));
     return out;
   }, [results, query]);
-  useEffect(() => { setActive(0); }, [query]);
+  const optionKeys = useMemo(() => options.map(optionKey), [options]);
+  const active = indexOfKey(optionKeys, resolveActiveKey(optionKeys, activeKey)) ?? 0;
+  const setActive = (i: number) => setActiveKey(optionKeys[i] ?? null);
+  useEffect(() => { setActiveKey(null); }, [query]);
 
   const addLines = (incoming: ExamLineDraft[], packUsed?: string) => {
     const { lines, merged } = mergeLines(draftRef.current.lines, incoming);
@@ -125,9 +135,13 @@ export function ExamRequestEditor({
 
   const onSearchKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const visible = open && options.length > 0;
-    if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); setActive(a => Math.min(a + 1, options.length - 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(a => Math.max(a - 1, 0)); }
-    else if (e.key === 'Enter') { if (visible) { e.preventDefault(); pick(options[Math.min(active, options.length - 1)]); } }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); setActiveKey(k => moveActiveKey(optionKeys, k, 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveKey(k => moveActiveKey(optionKeys, k, -1)); }
+    else if (e.key === 'Enter') {
+      const cle = resolveActiveKey(optionKeys, activeKey);
+      const o = options.find(x => optionKey(x) === cle);
+      if (visible && o) { e.preventDefault(); pick(o); }
+    }
     else if (e.key === 'Escape' && visible) {
       // Échap ne ferme QUE la liste : l'événement ne remonte ni à la modale ni au tableau de bord.
       e.preventDefault();

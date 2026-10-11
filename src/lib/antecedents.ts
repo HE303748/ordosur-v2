@@ -1,4 +1,10 @@
 import { supabase } from './supabase';
+import { searchPathologies } from './pathologySearch';
+import type { PathologieCuree } from './conditionMatcher';
+import ciConceptsData from './ci_condition_concepts.data.json';
+
+/** Référentiel embarqué (372 pathologies, généré avec la table de correspondance du moteur). */
+export const CUREES_REFERENTIEL = ciConceptsData.curees as PathologieCuree[];
 import type { HemorragieDigestiveDetails, UlcereGdDetails, OuiNonInconnu, Episodes } from './antecedentEngine';
 
 // Sprint 4 — Antécédents structurés (table antecedents) + dates des pathologies actives.
@@ -69,16 +75,17 @@ export async function loadAntecedents(patientId: string, includeArchived = true)
 }
 
 /** Recherche dans le référentiel curé (372 lignes) — même requête que PatientForm. */
+/**
+ * Sprint 2c — recherche NORMALISÉE (accents, casse, mots vides, « type I » = « type 1 ») : même
+ * classement que la saisie des pathologies (lib/pathologySearch), la meilleure réponse en tête.
+ * Seuls les identifiants sont lus en base, par nom exact.
+ */
 export async function searchPathologiesCurees(q: string): Promise<{ id: string; nom_fr: string }[]> {
-  const sanitized = q.replace(/[%,()]/g, '').trim();
-  if (!sanitized) return [];
-  const { data } = await supabase
-    .from('pathologies_curees')
-    .select('id, nom_fr')
-    .or(`nom_fr.ilike.%${sanitized}%,synonymes.ilike.%${sanitized}%`)
-    .order('nom_fr')
-    .limit(20);
-  return ((data as { id: string; nom_fr: string }[] | null) ?? []).filter(r => !!r.nom_fr);
+  const noms = searchPathologies(q, CUREES_REFERENTIEL, 20);
+  if (noms.length === 0) return [];
+  const { data } = await supabase.from('pathologies_curees').select('id, nom_fr').in('nom_fr', noms);
+  const rows = ((data as { id: string; nom_fr: string }[] | null) ?? []).filter(r => !!r.nom_fr);
+  return rows.sort((a, b) => noms.indexOf(a.nom_fr) - noms.indexOf(b.nom_fr));
 }
 
 /** id d'une pathologie curée par nom_fr EXACT (null si absente). */

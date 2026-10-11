@@ -33,7 +33,7 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
 
 ## Base de données (Supabase yxzvukryngvlzjgaydqj)
 - Tables clés : medicaments 52 802 (colonne `dci_canonique`) · drug_interactions 163 124 ·
-  pathologies 48 041 · pathologies_curees 372 · contraindications 1 465 · ci_condition_concepts 245 · allergies_reference 71.
+  pathologies 48 041 · pathologies_curees 372 · contraindications 1 467 · ci_condition_concepts 245 · allergies_reference 71.
 - Bilans (Sprint 6A) : `resultats_examens` (valeurs figées ; correction = archivage avec motif + nouvelle ligne ;
   interprétation calculée en base UNIQUEMENT d'après les bornes du labo saisies ; RPC `enregistrer_resultats_examens`).
   Règles pures : `src/lib/resultatsLogic.ts`. Conversions d'unités : uniquement `examens_reference.unites`.
@@ -49,6 +49,16 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   Sprint 2b-2 : une pathologie listée est ACTIVE (« actif / évolutif » satisfait, sévérité conservée) ; famille « infection »
   (CI génériques « Infection ») ; CI « Dialyse » = patient dialysé (pathologie / antécédent) ou DFG < 15 ; écritures courantes
   hors référentiel dans `NOMS_COMPLEMENTAIRES` (« Cirrhose », « Hypotension orthostatique »).
+- Sprint 2c — fiabilité de la saisie :
+  · Listes de recherche (`lib/stableSearch.ts`) : l'élément ajouté est celui dont l'élément cliqué porte l'identifiant
+    (`data-*` + `pickById`), jamais un index ; une liste n'est relancée que si la FRAPPE a changé (`needsSearch`).
+    À respecter dans toute nouvelle recherche.
+  · Verdict : la clé d'analyse contient `patientEngineSignature` (pathologies, allergies, réactions, sexe, date de naissance,
+    grossesse, poids). Tout écran qui écrit `patients` appelle `notifyDataChanged('patient')` : le Vérificateur relit la fiche.
+  · Pathologies : recherche locale normalisée (`lib/pathologySearch.ts`, même normalisation que le moteur, « type I » = « type 1 ») ;
+    libellé libre non relié à un concept → badge « Non reconnu par le moteur » + suggestion en 1 clic. Aucune donnée existante modifiée.
+  · Infections bénignes (`FAMILLES.infection.benignes`) : CI génériques « Infection » en « À évaluer ».
+  · IRC déclarée + DFG calculé ≥ 60 : ligne d'information (`incoherenceIrcDfg`).
 - Deux DFG (Sprint 2b-2) : DFG labo (examen `DFG` des bilans) et DFG calculé (CKD-EPI). Le moteur utilise la donnée la plus
   récente : la créatinine si son prélèvement est strictement plus récent, sinon le DFG labo — jamais de repli. Les deux sont affichés
   avec source et date (`renalEngine.dfgDoubleLine`).

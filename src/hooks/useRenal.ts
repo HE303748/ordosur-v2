@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Patient } from '../lib/supabase';
 import { fetchAllRows } from '../lib/fetchAllRows';
-import { useDataSync } from '../lib/dataSync';
+import { notifyDataChanged, useDataSync } from '../lib/dataSync';
 import type { ExamRef } from '../lib/examSearch';
 import { toIsoDate } from '../lib/examRequest';
 import { loadExamRefs } from '../lib/examensApi';
@@ -149,5 +149,6 @@ export async function savePoids(patientId: string, poidsKg: number, today: Date 
   const { data, error } = await supabase.from('patients').update(patch).eq('id', patientId).select('id');
   if (error) throw new Error(error.message);
   if (!data || data.length === 0) throw new Error('Poids non enregistré (droits insuffisants)');
+  notifyDataChanged('patient'); // Sprint 2c — verdict invalidé, analyse relancée
   return patch;
 }

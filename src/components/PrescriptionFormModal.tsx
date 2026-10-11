@@ -12,6 +12,7 @@ import {
 import { useExamReferentiel, usePatientDemandes, usePatientExamContext } from '../hooks/useExamData';
 import { ExamRequestEditor } from './exams/ExamRequestEditor';
 import { searchMedicamentsMA } from '../lib/medSearch';
+import { needsSearch, pickById, searchKey } from '../lib/stableSearch';
 import {
   computeVerification,
   type VerifMedicament, type VerifSelectedMed, type UncheckedLine as VerifUncheckedLine,
@@ -117,16 +118,21 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
   const [results, setResults] = useState<Medicament[]>([]);
   const [loading, setLoading] = useState(false);
   const seq = useRef(0);
+  // Sprint 2c — frappe à laquelle répond la liste affichée : rouvrir la liste (reprise de focus)
+  // avec la même frappe ne relance rien, la liste ne bouge pas sous le curseur.
+  const shownKey = useRef<string | null>(null);
 
   useEffect(() => {
     if (!open || !dirty) return;
     const q = value.trim();
-    if (q.length < 2) { setResults([]); setLoading(false); return; }
+    if (q.length < 2) { shownKey.current = null; setResults([]); setLoading(false); return; }
+    if (!needsSearch(q, shownKey.current)) return;
     const s = ++seq.current;
     setLoading(true);
     const t = window.setTimeout(async () => {
       const rows = await searchMedicamentsMA(q, 10);
       if (s !== seq.current) return;
+      shownKey.current = searchKey(q);
       setResults(rows);
       setLoading(false);
     }, 250);
@@ -167,7 +173,14 @@ function MedNameField({ value, onChange, onPick, onUseAsIs }: {
             <button
               key={m.id}
               type="button"
-              onMouseDown={(e) => { e.preventDefault(); onPick(m); setDirty(false); setOpen(false); }}
+              data-med-id={m.id}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                // Sprint 2c — la fiche choisie est celle dont l'élément cliqué porte l'identifiant.
+                const picked = pickById(results, e.currentTarget.dataset.medId);
+                if (!picked) return;
+                onPick(picked); setDirty(false); setOpen(false);
+              }}
               className="w-full px-4 py-2.5 text-left hover:bg-[#E6F4EE] border-b border-slate-50 last:border-b-0 transition-colors"
             >
               <p className="text-sm font-semibold text-slate-900">

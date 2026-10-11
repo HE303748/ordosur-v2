@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Baby } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { notifyDataChanged } from '../lib/dataSync';
 import {
   pregnancyContext, pregnancySummary, saToDdr, ddrToSa,
   type GrossesseStatut, type PregnancyFields,
@@ -68,6 +69,7 @@ export function PregnancyStatusEditor({ patient, canWrite, onPatched }: Props) {
     setSaving(true);
     setError(null);
     const { error: err } = await supabase.from('patients').update(patch).eq('id', patient.id);
+    if (!err) notifyDataChanged('patient'); // Sprint 2c — verdict invalidé, analyse relancée
     setSaving(false);
     if (err) {
       console.error('[OrdoSur] statut grossesse update error:', err);

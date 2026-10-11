@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   buildConditionMatcher, preparePatient, matchCondition, analysePatientTerm, conditionTitre, normCondition, motsDe, racine,
-  stadeDuDfg, FAMILLES, TITRE_STADE, NOMS_COMPLEMENTAIRES,
+  stadeDuDfg, FAMILLES, TITRE_STADE, NOMS_COMPLEMENTAIRES, TITRE_INFECTION_BENIGNE, incoherenceIrcDfg, chiffresArabes,
   type CiConceptRow, type PathologieCuree, type ConditionVerdict,
 } from './conditionMatcher';
 import { evaluateAllergies, type AllergieFamilleRow, type AllergyMed, type RegleAllergie } from './allergyClassEngine';
@@ -498,7 +498,7 @@ describe('2b-2, point 2 — faux négatifs fermés', () => {
     expect(v(patho('Hypertension artérielle'), 'Hypotension')).toBe('non');
   });
   it('« Infection urinaire » et toute infection précisée ⊂ CI génériques « Infection »', () => {
-    for (const p of ['Infection urinaire', 'Cystite', 'Pneumonie', 'Tuberculose pulmonaire', 'Hépatite virale C', "Gastro-entérite de l'enfant",
+    for (const p of ['Infection urinaire', 'Pyélonéphrite', 'Pneumonie', 'Tuberculose pulmonaire', 'Hépatite virale C', 'Septicémie',
       'Infection ostéo-articulaire', 'infection cutanée', 'Infection']) {
       expect(v(patho(p), 'Infection'), p).toBe('oui');
     }
@@ -565,5 +565,110 @@ describe('2b-2, point 4 — « Déficit en acide folique (grossesse planifiée) 
   });
   it('les autres CI de grossesse restent déclenchées par « Grossesse » en pathologie', () => {
     expect(v(patho('Grossesse'), 'Grossesse — 1er trimestre')).toBe('oui');
+  });
+});
+
+// ─── Sprint 2c ───────────────────────────────────────────────────────────────
+
+describe('2c, point 3 — chiffres romains = chiffres arabes', () => {
+  it('après « type / stade / grade / classe / degré » uniquement', () => {
+    expect(chiffresArabes('diabete type i')).toBe('diabete type 1');
+    expect(chiffresArabes('diabete de type ii')).toBe('diabete de type 2');
+    expect(chiffresArabes('insuffisance renale chronique stade iv')).toBe('insuffisance renale chronique stade 4');
+    expect(chiffresArabes('nyha iii iv')).toBe('nyha iii iv'); // hors de ces mots : inchangé
+    expect(chiffresArabes('vitamine k')).toBe('vitamine k');
+  });
+  it('« Diabète type I » est rattaché à « Diabète de type 1 » ; « IRC stade IV » au stade 4', () => {
+    expect(analysePatientTerm('Diabète type I', 'pathologie', D).concepts).toEqual(['Diabète de type 1']);
+    expect(analysePatientTerm('diabete type II', 'pathologie', D).concepts).toEqual(['Diabète de type 2']);
+    expect(v(patho('Diabète type I'), 'Diabète de type 1')).toBe('oui');
+    expect(v(patho('Diabète type II'), 'Diabète de type 1')).toBe('non');
+    expect(v(patho('Insuffisance rénale chronique stade IV'), 'Insuffisance rénale chronique stade 4')).toBe('oui');
+    expect(v(patho('Insuffisance rénale chronique stade III'), 'Insuffisance rénale chronique stade 4')).toBe('non');
+  });
+});
+
+describe('2c, point 4 — incohérence IRC déclarée / DFG calculé', () => {
+  const prep = (pathologies: string[], antecedents: string[] = []) => preparePatient({ pathologies, antecedents }, D);
+  it('IRC sans stade (ou stade ≥ 3) et DFG calculé ≥ 60 → ligne d’information', () => {
+    expect(incoherenceIrcDfg(prep(['Insuffisance rénale chronique']), 100)).toBe('IRC déclarée mais DFG 100 : préciser le stade ou vérifier');
+    expect(incoherenceIrcDfg(prep(['IRC']), 60)).toBe('IRC déclarée mais DFG 60 : préciser le stade ou vérifier');
+    expect(incoherenceIrcDfg(prep(['Insuffisance rénale chronique stade 3']), 85)).toContain('DFG 85');
+    expect(incoherenceIrcDfg(prep(['Insuffisance renale moderee']), 72)).toContain('DFG 72');
+  });
+  it('rien si le DFG est < 60, inconnu, ou si la fiche est cohérente', () => {
+    expect(incoherenceIrcDfg(prep(['Insuffisance rénale chronique']), 59)).toBeNull();
+    expect(incoherenceIrcDfg(prep(['Insuffisance rénale chronique']), null)).toBeNull(); // pas de créatinine de moins de 12 mois
+    expect(incoherenceIrcDfg(prep(['Asthme']), 100)).toBeNull();                          // pas d'IRC déclarée
+    expect(incoherenceIrcDfg(prep(['Insuffisance rénale chronique stade 2']), 75)).toBeNull(); // stade 1-2 : DFG ≥ 60 attendu
+    expect(incoherenceIrcDfg(prep(['Insuffisance rénale aiguë']), 100)).toBeNull();
+    expect(incoherenceIrcDfg(prep(['Hémodialyse']), 100)).toBeNull();
+    expect(incoherenceIrcDfg(prep(['Insuffisance rénale chronique'], ['Dialyse']), 100)).toBeNull();
+  });
+});
+
+describe('2c, point 5 — infections bénignes ou localisées face aux CI génériques « Infection »', () => {
+  const GENERIQUES = ['Infection', 'Infection active non traitée (tuberculose, sepsis fongique)', 'Infection active sévère non contrôlée', 'Infections actives sévères'];
+  it('bénignes ou localisées → « À évaluer », « Si infection évolutive ou sévère »', () => {
+    for (const p of ['Rhinopharyngite', 'Angine', 'Sinusite aiguë', 'Otite moyenne aiguë', 'Onychomycose', 'Mycose cutanée', 'Cystite', 'rhume',
+      "Gastro-entérite de l'enfant", 'Pharyngite']) {
+      for (const cv of GENERIQUES) {
+        expect(m(patho(p), cv), `${p} × ${cv}`).toMatchObject({ verdict: 'a_evaluer', titre: TITRE_INFECTION_BENIGNE });
+      }
+    }
+    expect(TITRE_INFECTION_BENIGNE).toBe('Si infection évolutive ou sévère');
+  });
+  it('systémiques ou sévères → sévérité de la CI conservée', () => {
+    for (const p of ['Septicémie', 'Pneumonie', 'Tuberculose pulmonaire', 'Pyélonéphrite', 'Méningite', 'Endocardite', 'Infection à VIH',
+      'Hépatite virale B', 'Zona', 'Infection urinaire', 'Paludisme']) {
+      expect(m(patho(p), 'Infection'), p).toMatchObject({ verdict: 'oui', titre: null });
+      expect(v(patho(p), 'Infections actives sévères'), p).toBe('preciser');
+    }
+  });
+  it('une infection sévère à côté d’une bénigne : la sévérité de la CI l’emporte', () => {
+    expect(v(patho('Angine', 'Pneumonie'), 'Infection')).toBe('oui');
+  });
+  it('un libellé libre « Infection … » n’est pas présumé bénin', () => {
+    expect(v(patho('Infection ostéo-articulaire'), 'Infection')).toBe('oui');
+  });
+  it('les CI propres à une infection bénigne ne sont pas concernées (seulement les CI génériques)', () => {
+    expect(v(patho('Cystite'), 'Infections urinaires récurrentes (> 3/an)')).toBe('preciser');
+  });
+  it('toute infection bénigne est membre de la famille', () => {
+    for (const b of FAMILLES.infection.benignes!) expect(FAMILLES.infection.membres, b).toContain(b);
+  });
+});
+
+describe('2c, point 6 — CI absolue « Diabète de type 1 » : sulfamides hypoglycémiants et répaglinide', () => {
+  const sql = readFileSync(new URL('../../supabase/migrations/20261022120000_ci_dt1_sulfamides_hypoglycemiants.sql', import.meta.url), 'utf8');
+  const lignes = [...sql.matchAll(/\(\s*'([^']+)',\s*'pathologie',\s*'([^']+)',\s*'(absolue|relative)'/g)].map(x => ({ dci_pattern: x[1], condition_valeur: x[2], severite: x[3] }));
+  const med = (id: string, nom: string, dci: string): AllergyMed => ({ id, nom, dci });
+
+  it('la migration ajoute deux CI ABSOLUES sur la formulation déjà reliée au concept', () => {
+    expect(lignes).toHaveLength(2);
+    for (const l of lignes) {
+      expect(l).toMatchObject({ condition_valeur: 'Diabète de type 1', severite: 'absolue' });
+      expect(D.rowsByNorm.get(normCondition(l.condition_valeur))![0].concept).toBe('Diabète de type 1');
+    }
+    expect(sql).toContain("Proposition Ordosur d''après RCP — à valider");
+  });
+  it('« Diabete type 1 » + Daonil → CI absolue ; idem Diamicron, Amarel, Minidiab, Novonorm', () => {
+    const cas: Array<[string, string]> = [['Daonil', 'GLIBENCLAMIDE'], ['Diamicron', 'GLICLAZIDE'], ['Amarel 1 mg', 'GLIMÉPIRIDE'], ['Minidiab', 'GLIPIZIDE'], ['Novonorm 0.5 mg', 'RÉPAGLINIDE']];
+    for (const [nom, dci] of cas) {
+      const hits = lignes.filter(l => medMatchesPattern(med(nom, nom, dci), l.dci_pattern));
+      expect(hits, nom).toHaveLength(1);
+      for (const p of ['Diabete type 1', 'Diabète de type 1', 'Diabète type I', 'DID']) {
+        expect(m(patho(p), hits[0].condition_valeur), `${p} + ${nom}`).toMatchObject({ verdict: 'oui', titre: null });
+      }
+    }
+  });
+  it('un diabète de type 2 ne la déclenche pas ; un « Diabète » sans type demande la précision', () => {
+    expect(v(patho('Diabete type 2'), 'Diabète de type 1')).toBe('non');
+    expect(m(patho('Diabète'), 'Diabète de type 1')).toMatchObject({ verdict: 'preciser', titre: 'Si de type 1 — préciser' });
+  });
+  it('la metformine et les autres antidiabétiques ne sont pas visés', () => {
+    for (const [nom, dci] of [['Glucophage', 'METFORMINE'], ['Januvia', 'SITAGLIPTINE'], ['Lantus', 'INSULINE GLARGINE']]) {
+      expect(lignes.some(l => medMatchesPattern(med(nom, nom, dci), l.dci_pattern)), nom).toBe(false);
+    }
   });
 });

@@ -501,6 +501,7 @@ export function AntecedentsSection({ patient, doctorId, orgId, onPatientPatched 
       const cleaned = cleanPathologiesDepuis(nextPathos, nextDepuis);
       const { error } = await supabase
         .from('patients').update({ pathologies: nextPathos, pathologies_depuis: cleaned }).eq('id', patient.id);
+      if (!error) notifyDataChanged('patient'); // Sprint 2c — pathologies modifiées : verdict invalidé
       if (error) throw error;
       onPatientPatched?.(patient.id, { pathologies: nextPathos, pathologies_depuis: cleaned });
     } catch (e: unknown) {

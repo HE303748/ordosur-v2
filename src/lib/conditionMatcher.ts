@@ -22,6 +22,12 @@
 //     « actif / évolutif / en poussée » est satisfait, la sévérité de la CI est conservée ;
 //   • CI « Dialyse » : patient dialysé (pathologie ou antécédent) ou DFG < 15, rien d'autre ;
 //   • famille « infection » : toute infection précisée déclenche les CI génériques « Infection ».
+//
+// Sprint 2c :
+//   • chiffres romains = chiffres arabes après « type / stade / grade / classe / degré » (« type I ») ;
+//   • infections bénignes ou localisées : CI génériques « Infection » en « À évaluer »
+//     (« Si infection évolutive ou sévère ») ; les infections systémiques gardent la sévérité ;
+//   • incohérence IRC déclarée / DFG calculé ≥ 60 : information (incoherenceIrcDfg).
 
 import { allergyFamilles, type AllergieFamilleRow } from './allergyClassEngine';
 import { parseRenalCondition } from './renalEngine';
@@ -55,7 +61,7 @@ export interface PathologieCuree { nom_fr: string; synonymes: string | null }
  * Familles (décision 4) : une CI portant sur la famille vaut pour chacun de ses membres.
  * `libelles` : écritures génériques du patient sans concept propre (« Diabète »).
  */
-export const FAMILLES: Record<string, { membres: string[]; libelles?: string[] }> = {
+export const FAMILLES: Record<string, { membres: string[]; libelles?: string[]; benignes?: string[] }> = {
   diabete: {
     membres: ['Diabète de type 1', 'Diabète de type 2', 'Diabète décompensé', 'Diabète gestationnel'],
     libelles: ['Diabète', 'Diabète sucré'],
@@ -90,6 +96,15 @@ export const FAMILLES: Record<string, { membres: string[]; libelles?: string[] }
       'Toxoplasmose', 'Tuberculose pulmonaire', 'Vaginose bactérienne', 'Varicelle', "Varicelle de l'enfant", 'Zona',
     ],
     libelles: ['Infection'],
+    // Sprint 2c — bénignes ou localisées : la CI générique « Infection » devient « À évaluer ».
+    // Tout le reste (systémique, sévère, virale à risque de réactivation) garde la sévérité de la CI.
+    benignes: [
+      'Abcès cutané', 'Angine', 'Bronchiolite', 'Bronchiolite du nourrisson', 'Bronchite aiguë', 'Candidose cutanée', 'Cystite', 'Folliculite',
+      'Gastro-entérite', "Gastro-entérite de l'enfant", 'Impétigo', "Impétigo de l'enfant", 'Infection à Helicobacter pylori',
+      'Infection à papillomavirus', 'Infection vaginale', 'Laryngite', 'Mycose cutanée', 'Mycose vaginale', 'Onychomycose',
+      "Otite de l'enfant", 'Otite externe', 'Otite moyenne aiguë', 'Pharyngite', 'Rhinopharyngite', "Rhinopharyngite de l'enfant",
+      'Sinusite aiguë', 'Syndrome grippal', 'Teigne', 'Vaginose bactérienne',
+    ],
   },
 };
 
@@ -105,6 +120,7 @@ export const NOMS_COMPLEMENTAIRES: Record<string, string[]> = {
 };
 
 const IRC = 'Insuffisance rénale chronique';
+export const TITRE_INFECTION_BENIGNE = 'Si infection évolutive ou sévère';
 
 // ─── Normalisation (décision 2) ──────────────────────────────────────────────
 
@@ -129,9 +145,18 @@ export function racine(w: string): string {
   return r === 'evolutif' ? 'actif' : r;
 }
 
+const ROMAINS: Record<string, string> = { i: '1', ii: '2', iii: '3', iv: '4', v: '5' };
+/**
+ * Sprint 2c — chiffres romains = chiffres arabes après « type / stade / grade / classe / degré »
+ * (« diabète type I » = « diabète de type 1 », « IRC stade IV » = « stade 4 »). Texte déjà normalisé.
+ */
+export function chiffresArabes(norm: string): string {
+  return norm.replace(/\b(types?|stades?|grades?|classes?|degres?) (i{1,3}|iv|v)\b/g, (_m, mot: string, r: string) => `${mot} ${ROMAINS[r]}`);
+}
+
 /** Mots entiers significatifs, en racines. */
 export function motsDe(s: string | null | undefined): string[] {
-  return normCondition(s).split(' ').filter(w => w && !STOP.has(w)).map(racine);
+  return chiffresArabes(normCondition(s)).split(' ').filter(w => w && !STOP.has(w)).map(racine);
 }
 
 const sansParentheses = (s: string) => s.replace(/\([^)]*\)/g, ' ');
@@ -144,7 +169,7 @@ const GENERIQUES = R('hypertension', 'hypotension', 'tension', 'insuffisance', '
 // Décision 6 — qualificatifs qui changent l'IDENTITÉ de la maladie (début de racine).
 const DISCRIMINANTS = ['pulmonair', 'neonat', 'gravidiqu', 'foetal', 'fetal', 'portal', 'intracran', 'surrenal', 'respiratoir', 'aigu'];
 const discriminantDe = (w: string) => DISCRIMINANTS.find(d => w.startsWith(d)) ?? null;
-const estDiscriminant = (w: string) => discriminantDe(w) !== null;
+export const estDiscriminant = (w: string) => discriminantDe(w) !== null;
 
 // Le libellé du patient écarte lui-même la maladie (« pas de… », « ATCD familial de… », « suspicion de… »).
 const NEGATIONS = R('pas', 'aucun', 'aucune', 'absence', 'familial', 'familiale', 'familiaux', 'suspicion', 'depistage', 'risque');
@@ -304,7 +329,7 @@ const estDialyse = (n: string) => /dialys/.test(n) && !/peritonite/.test(n) && !
 const ALLERGIE_RE = /^(allergie|allergies|intolerance|hypersensibilite)\b/;
 
 export function analysePatientTerm(label: string, kind: 'pathologie' | 'allergie', d: ConditionMatcherData): PatientTerm {
-  const norm = normCondition(label);
+  const norm = chiffresArabes(normCondition(label));
   const mots = motsDe(label);
   // Une « Allergie aux … » saisie parmi les pathologies reste une allergie.
   if (kind === 'allergie' || ALLERGIE_RE.test(norm)) {
@@ -424,6 +449,14 @@ function matchConcept(t: PatientTerm, row: CiConceptRow, d: ConditionMatcherData
   const disc = motsDe(sansParentheses(row.libelle)).filter(w => estDiscriminant(w) && !q.includes(w) && !discPatient.has(discriminantDe(w)));
   if (disc.length > 0) return NON(`qualificatif discriminant du seul côté de la CI : ${disc.join(', ')}`);
 
+  // Sprint 2c — infection bénigne ou localisée face à une CI GÉNÉRIQUE « Infection » : « À évaluer ».
+  if (row.famille === 'infection' && !parConcept) {
+    const benignes = FAMILLES.infection.benignes ?? [];
+    const duPatient = t.concepts.filter(c => membres.includes(c));
+    if (duPatient.length > 0 && duPatient.every(c => benignes.includes(c))) {
+      return { verdict: 'a_evaluer', titre: TITRE_INFECTION_BENIGNE, par: t.label, raison: `${lien} — infection bénigne ou localisée` };
+    }
+  }
   const qBrut = row.qualificatif ? motsDe(sansParentheses(row.qualificatif)) : [];
   if (qBrut.length === 0) return { verdict: 'oui', titre: null, par: t.label, raison: lien };
   // Sprint 2b-2 — une pathologie listée est ACTIVE par définition : « actif / évolutif / en poussée » est
@@ -540,4 +573,17 @@ export function matchCondition(
 export function conditionTitre(m: ConditionMatch): string | null {
   if (!m.titre || m.verdict === 'oui' || m.verdict === 'non') return null;
   return m.par ? `${m.titre} (patient : « ${m.par.trim()} »)` : m.titre;
+}
+
+/**
+ * Sprint 2c — incohérence « IRC déclarée / DFG normal » : une insuffisance rénale chronique figure
+ * dans les pathologies (sans stade, ou à un stade ≥ 3) alors que le DFG CALCULÉ d'après une
+ * créatinine de moins de 12 mois est ≥ 60. Information non bloquante ; null sinon (pas d'IRC
+ * déclarée, stade 1 ou 2 — cohérent avec un DFG ≥ 60 —, patient dialysé, DFG inconnu ou < 60).
+ */
+export function incoherenceIrcDfg(patient: PatientConditions, dfgCalcule: number | null | undefined): string | null {
+  if (dfgCalcule === null || dfgCalcule === undefined || dfgCalcule < 60 || patient.dialyse) return null;
+  const irc = patient.termes.filter(t => t.kind === 'pathologie' && t.renal !== null);
+  if (irc.length === 0 || irc.every(t => t.renal!.stade !== null && t.renal!.stade < 3)) return null;
+  return `IRC déclarée mais DFG ${dfgCalcule} : préciser le stade ou vérifier`;
 }

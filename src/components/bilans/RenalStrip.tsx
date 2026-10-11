@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Scale } from 'lucide-react';
+import { Info, Scale } from 'lucide-react';
 import { formatFr } from '../../lib/examRequest';
 import { formatNombre } from '../../lib/resultatsLogic';
 import { cockcroftLine, dfgLine, parsePoids, poidsAncien, POIDS_MAX, POIDS_MIN, type RenalStatus } from '../../lib/renalEngine';
@@ -99,10 +99,12 @@ export function PoidsEditor({ patient, canWrite, onPatched, className = '' }: {
  * du 12/09) », « Cl. Cockcroft 38 mL/min » si le poids est connu, et la saisie du poids.
  * La valeur affichée est exactement celle que le moteur utilise (même objet `status`).
  */
-export function RenalStrip({ patient, status, canWrite, onPatched }: {
+export function RenalStrip({ patient, status, canWrite, onPatched, note }: {
   patient: PoidsPatient;
   status: RenalStatus;
   canWrite: boolean;
+  /** Sprint 2c — information non bloquante (« IRC déclarée mais DFG 100 : préciser le stade ou vérifier »). */
+  note?: string | null;
   onPatched?: (patientId: string, patch: PoidsPatch) => void;
 }) {
   const cg = cockcroftLine(status);
@@ -117,6 +119,12 @@ export function RenalStrip({ patient, status, canWrite, onPatched }: {
         {status.connu && !cg && <span className="text-slate-500 dark:text-[#94A3B8]"> · Cl. Cockcroft non calculable (poids manquant)</span>}
         {status.dialyse && <span className="text-slate-600 dark:text-[#94A3B8]"> · dialyse déclarée</span>}
       </p>
+      {note && (
+        <p role="note" className="flex items-start gap-1.5 text-xs text-slate-600 dark:text-[#94A3B8]">
+          <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-slate-400" aria-hidden />
+          {note}
+        </p>
+      )}
       <PoidsEditor patient={patient} canWrite={canWrite} onPatched={onPatched} />
     </div>
   );

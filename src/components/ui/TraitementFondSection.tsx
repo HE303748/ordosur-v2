@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { supabase, type Medicament } from '../../lib/supabase';
 import { searchMedicamentsMA } from '../../lib/medSearch';
+import { needsSearch, pickById, searchKey } from '../../lib/stableSearch';
 import { medLabel } from '../../lib/medLabel';
 import {
   loadTraitements, resolveDoctorNames, fondDisplayName, formatDateFrShort, todayIsoDate,
@@ -131,6 +132,8 @@ export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: P
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const searchSeq = useRef(0);
+  // Sprint 2c — frappe à laquelle répond la liste affichée (jamais relancée pour la même frappe).
+  const shownKey = useRef<string | null>(null);
 
   // Arrêt
   const [stopTarget, setStopTarget] = useState<TraitementChronique | null>(null);
@@ -160,12 +163,14 @@ export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: P
   useEffect(() => {
     if (!addOpen || picked || manualName !== null) return;
     const q = term.trim();
-    if (q.length < 2) { setResults([]); setSearching(false); return; }
+    if (q.length < 2) { shownKey.current = null; setResults([]); setSearching(false); return; }
+    if (!needsSearch(q, shownKey.current)) return;
     const seq = ++searchSeq.current;
     setSearching(true);
     const t = window.setTimeout(async () => {
       const rows = await searchMedicamentsMA(q, 12);
       if (seq !== searchSeq.current) return;
+      shownKey.current = searchKey(q);
       setResults(rows);
       setSearching(false);
     }, 250);
@@ -177,6 +182,7 @@ export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: P
     .sort((a, b) => (b.date_arret ?? '').localeCompare(a.date_arret ?? ''));
 
   const openAdd = () => {
+    shownKey.current = null;
     setTerm(''); setResults([]); setPicked(null); setManualName(null);
     setPosologie(''); setDateDebut(''); setNotes(''); setFormError(null);
     setAddOpen(true);
@@ -447,7 +453,8 @@ export function TraitementFondSection({ patient, doctorId, orgId, onChanged }: P
                   {!searching && results.map(m => (
                     <button
                       key={m.id}
-                      onClick={() => setPicked(m)}
+                      data-med-id={m.id}
+                      onClick={e => { const p = pickById(results, e.currentTarget.dataset.medId); if (p) setPicked(p); }}
                       className="w-full px-4 py-2.5 text-left hover:bg-[#E6F4EE] dark:hover:bg-[#00A86B]/[0.08] border-b border-slate-50 dark:border-white/[0.04] last:border-b-0 transition-colors"
                     >
                       <p className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0]">

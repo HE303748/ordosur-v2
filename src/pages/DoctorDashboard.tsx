@@ -48,6 +48,8 @@ import { resolveDoctorInfos } from '../lib/doctorNames';
 import { PatientExamStrip } from '../components/exams/PatientExamStrip';
 import { DerogationModal } from '../components/DerogationModal';
 import { searchMedicamentsMA } from '../lib/medSearch';
+import { needsSearch, pickById, searchKey } from '../lib/stableSearch';
+import { patientEngineSignature } from '../lib/patientEngineSig';
 import { medLabel, dosageManquant, ligneLabel, dosageBlockMessage } from '../lib/medLabel';
 import {
   evaluateAllergies, mergeAllergyAlerts, classifyAllergies,
@@ -93,7 +95,7 @@ import {
 import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, dfgDoubleLine, type RenalReserve, type RenalStatus } from '../lib/renalEngine';
 import { useRenalChannel } from '../hooks/useRenal';
 import {
-  buildConditionMatcher, preparePatient, matchCondition, conditionTitre,
+  buildConditionMatcher, preparePatient, matchCondition, conditionTitre, incoherenceIrcDfg,
   type CiConceptRow, type PathologieCuree,
 } from '../lib/conditionMatcher';
 import ciConceptsData from '../lib/ci_condition_concepts.data.json';
@@ -985,7 +987,7 @@ interface CheckerViewProps {
   showMedDropdown: boolean;
   setShowMedDropdown: (v: boolean) => void;
   medSearchLoading: boolean;
-  searchMedications: (term: string) => void;
+  searchMedications: (term: string, opts?: { onlyIfChanged?: boolean }) => void;
   addMedication: (med: Medicament) => void;
   addManualMedication: (nom: string) => void;
   removeMedication: (id: string) => void;
@@ -1024,6 +1026,8 @@ interface CheckerViewProps {
   allergyRulesReady: boolean;
   // Sprint 6B — fonction rénale utilisée par le moteur (affichée sous le patient)
   renalStatus: RenalStatus;
+  /** Sprint 2c — IRC déclarée mais DFG calculé ≥ 60 : information non bloquante. */
+  ircNote: string | null;
   // Sprint 4e-C — saisie rapide du statut grossesse / allaitement
   canWritePatient: boolean;
   onPatientPatched: (patientId: string, patch: PatientPatch) => void;
@@ -1046,7 +1050,7 @@ function CheckerView({
   reincludeFond, onPatientFieldBlur,
   analysisPending,
   antecedents, antecedentsLoading, antecedentsError, antecedentRulesReady,
-  allergyStatus, allergyRulesReady, renalStatus,
+  allergyStatus, allergyRulesReady, renalStatus, ircNote,
   canWritePatient, onPatientPatched,
 }: CheckerViewProps) {
   const [showMasked, setShowMasked] = useState(false);
@@ -1181,7 +1185,7 @@ function CheckerView({
                   <PatientExamStrip patient={selectedPatient} canWrite={canWritePatient} dfgDouble={dfgDoubleLine(renalStatus)} />
 
                   {/* Sprint 6B — DFG / Cockcroft utilisés par le moteur + poids (le modifier relance l'analyse) */}
-                  <RenalStrip patient={selectedPatient} status={renalStatus} canWrite={canWritePatient}
+                  <RenalStrip patient={selectedPatient} status={renalStatus} canWrite={canWritePatient} note={ircNote}
                     onPatched={(id, patch) => { onPatientPatched(id, patch); focusMedSearchIfPointer(); }} />
 
                   {/* Medical badges */}
@@ -1283,7 +1287,7 @@ function CheckerView({
                     type="text"
                     value={medSearchTerm}
                     onChange={e => { const v = e.target.value; setMedSearchTerm(v); setShowMedDropdown(true); searchMedications(v); }}
-                    onFocus={() => { setShowMedDropdown(true); if (medSearchTerm.length >= 2) searchMedications(medSearchTerm); }}
+                    onFocus={() => { setShowMedDropdown(true); if (medSearchTerm.length >= 2) searchMedications(medSearchTerm, { onlyIfChanged: true }); }}
                     onBlur={() => setTimeout(() => setShowMedDropdown(false), 300)}
                     placeholder="Ex: Doliprane, paracétamol..."
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40 focus:border-violet-300 dark:focus:border-violet-500/40 transition-all"
@@ -1297,7 +1301,13 @@ function CheckerView({
                       {!medSearchLoading && medSearchResults.map(med => (
                         <button
                           key={med.id}
-                          onMouseDown={e => { e.preventDefault(); addMedication(med); focusMedSearch(); }}
+                          data-med-id={med.id}
+                          onMouseDown={e => {
+                            e.preventDefault();
+                            // Sprint 2c — la fiche ajoutée est celle dont l'élément cliqué porte l'identifiant.
+                            const picked = pickById(medSearchResults, e.currentTarget.dataset.medId);
+                            if (picked) { addMedication(picked); focusMedSearch(); }
+                          }}
                           className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
                           {/* Ligne 1 : nom commercial. Sprint Quick Fixes A — Bug #2 :
@@ -1343,7 +1353,12 @@ function CheckerView({
                           {medSearchForeign.map(med => (
                             <button
                               key={med.id}
-                              onMouseDown={e => { e.preventDefault(); addMedication(med); focusMedSearch(); }}
+                              data-med-id={med.id}
+                              onMouseDown={e => {
+                                e.preventDefault();
+                                const picked = pickById(medSearchForeign ?? [], e.currentTarget.dataset.medId);
+                                if (picked) { addMedication(picked); focusMedSearch(); }
+                              }}
                               className="w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                             >
                               <div className="flex items-center gap-2 flex-wrap">
@@ -3367,6 +3382,22 @@ export function DoctorDashboard() {
     if (pid) refreshAntecedents(pid);
   }, { onFocus: false });
 
+  // Sprint 2c — fiche patient modifiée ailleurs (formulaire patient, profil, sections du Sprint 4,
+  // statut de grossesse, poids) : la fiche du patient en cours d'analyse est RELUE en base. Son
+  // empreinte (patientEngineSignature) fait partie de la clé d'analyse : le verdict est invalidé et
+  // l'analyse automatique repart, sans attendre « Relancer ».
+  useDataSync(['patient'], () => {
+    const pid = selectedPatientIdRef.current;
+    if (!pid) return;
+    void (async () => {
+      const { data, error } = await supabase.from('patients').select('*').eq('id', pid).maybeSingle();
+      if (error || !data || selectedPatientIdRef.current !== pid) return;
+      const fresh = data as Patient;
+      setPatients(prev => prev.map(p => (p.id === pid ? { ...p, ...fresh } : p)));
+      setSelectedPatient(prev => (prev && prev.id === pid ? { ...prev, ...fresh } : prev));
+    })();
+  }, { onFocus: false });
+
   // Règles et classes : chargées une fois (fetchAllRows). Échec → antécédents digestifs
   // non analysés, signalé (bloc Vérificateur + verdict jamais vert).
   const [antRegles, setAntRegles] = useState<RegleAntecedent[]>([]);
@@ -3446,6 +3477,16 @@ export function DoctorDashboard() {
     () => buildConditionMatcher(ciConcepts, pathologiesCurees, allergyFamilles),
     [ciConcepts, pathologiesCurees, allergyFamilles],
   );
+
+  // Sprint 2c — IRC dans les pathologies mais DFG calculé (créatinine < 12 mois) ≥ 60 : information.
+  const ircNote = useMemo(() => (selectedPatient
+    ? incoherenceIrcDfg(preparePatient({
+      pathologies: selectedPatient.pathologies,
+      antecedents: patientAntecedents.filter(a => !a.archive && a.categorie !== 'familial').map(a => a.libelle),
+    }, conditionData), renal.status.dfgCalcule)
+    : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedPatient?.id, (selectedPatient?.pathologies ?? []).join('|'), patientAntecedents, conditionData, renal.status.dfgCalcule]);
 
   // Allergies médicamenteuses du patient + type de réaction (anaphylaxie) saisi dans la fiche.
   const patientAllergies = useMemo<PatientAllergy[]>(() => (selectedPatient?.allergies_medicaments ?? [])
@@ -3544,6 +3585,7 @@ export function DoctorDashboard() {
   // fond inclus. Tout changement (ajout/retrait, case décochée, traitement rechargé)
   // invalide le verdict : il devra être recalculé via « Analyser » (jamais de verdict périmé,
   // jamais d'ordonnance enregistrée sur une analyse qui ne correspond plus).
+  const patientEngineSig = patientEngineSignature(selectedPatient);
   const currentAnalysisKey = useMemo(() => {
     const meds = selectedMeds.map(m => m.id).sort().join(',');
     const fond = fondTraitements
@@ -3555,9 +3597,11 @@ export function DoctorDashboard() {
     const ant = patientAntecedents.map(a => `${a.id}:${a.updated_at}`).sort().join(',');
     // Sprint 4e-B — allergies (et type de réaction) : toute modification invalide le verdict.
     // Sprint 4f — le patient fait partie de la clé : un verdict ne vaut jamais pour un autre patient.
-    return `${selectedPatient?.id ?? ''}#${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}#${pregnancySig}#${teratogensReady ? 1 : 0}#${renal.status.sig}#${renal.rulesReady ? 1 : 0}`;
+    // Sprint 2c — toute la fiche lue par le moteur (pathologies, allergies, sexe, date de naissance,
+    // grossesse, poids) fait partie de la clé : la modifier, depuis n'importe quel écran, invalide le verdict.
+    return `${selectedPatient?.id ?? ''}#${patientEngineSig}#${meds}#${fond}#${ant}#${antRulesReady ? 1 : 0}#${allergySig}#${allergyRulesReady ? 1 : 0}#${dupRulesReady ? 1 : 0}#${pregnancySig}#${teratogensReady ? 1 : 0}#${renal.status.sig}#${renal.rulesReady ? 1 : 0}`;
   // Sprint 6B — créatinine, poids ou date du poids modifiés : le verdict est invalidé (renal.status.sig).
-  }, [selectedPatient?.id, selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady, pregnancySig, teratogensReady, renal.status.sig, renal.rulesReady]);
+  }, [selectedPatient?.id, patientEngineSig, selectedMeds, fondTraitements, fondExcluded, patientAntecedents, antRulesReady, allergySig, allergyRulesReady, dupRulesReady, pregnancySig, teratogensReady, renal.status.sig, renal.rulesReady]);
   // Sprint 4d — valide seulement si le verdict porte sur l'ensemble actuel ET sur le dernier run.
   const analysisValid = !!result && analyzedKey === currentAnalysisKey && result.runId === alertsRunId;
   useEffect(() => {
@@ -4368,14 +4412,20 @@ export function DoctorDashboard() {
   // Sprint 4d — seule la réponse de la DERNIÈRE frappe s'affiche (une réponse lente à « br »
   // ne remplace plus celle de « brufen »).
   const medSearchSeqRef = useRef(0);
-  const searchMedications = async (term: string) => {
+  // Sprint 2c — frappe à laquelle répond la liste AFFICHÉE. Reprendre le focus (ou revenir sur
+  // l'onglet) avec la même frappe ne relance rien : la liste ne passe plus par « Recherche… » et ne
+  // se réordonne jamais sous le curseur. Seule une frappe différente la remplace.
+  const medShownKeyRef = useRef<string | null>(null);
+  const searchMedications = async (term: string, opts: { onlyIfChanged?: boolean } = {}) => {
+    if (opts.onlyIfChanged && !needsSearch(term, medShownKeyRef.current)) return;
     const seq = ++medSearchSeqRef.current;
     setMedSearchForeign(null);
-    if (term.length < 2) { setMedSearchResults([]); setMedSearchLoading(false); return; }
+    if (term.length < 2) { medShownKeyRef.current = null; setMedSearchResults([]); setMedSearchLoading(false); return; }
     setMedSearchLoading(true);
     // Sprint 4d-ter — recherche commune : équivalence mg ↔ g (SQL) + doublons masqués à l'affichage.
     const maRows = await searchMedicamentsMA(term, 15);
     if (seq !== medSearchSeqRef.current) return;
+    medShownKeyRef.current = searchKey(term);
     setMedSearchResults(maRows);
     // Sprint 4d-bis — aucun résultat 🇲🇦 : les entrées hors Maroc sont proposées d'office.
     if (maRows.length === 0) await loadForeignMeds(term, seq);
@@ -4752,6 +4802,8 @@ export function DoctorDashboard() {
         const updated: Patient = { ...editingPatient, ...patientData };
         setPatients(prev => prev.map(p => p.id === editingPatient.id ? updated : p));
         if (selectedPatient?.id === editingPatient.id) setSelectedPatient(updated);
+        // Sprint 2c — fiche modifiée : toutes les vues abonnées (dont le Vérificateur) la relisent.
+        notifyDataChanged('patient');
         showToast('Patient mis à jour avec succès', 'success');
       } else {
         const { data, error } = await supabase
@@ -4773,6 +4825,7 @@ export function DoctorDashboard() {
   const handlePatientPatched = (patientId: string, patch: PatientPatch) => {
     setPatients(prev => prev.map(p => (p.id === patientId ? { ...p, ...patch } : p)));
     setSelectedPatient(prev => (prev && prev.id === patientId ? { ...prev, ...patch } : prev));
+    notifyDataChanged('patient');
   };
 
   const handleDeletePatient = async (patientId: string) => {
@@ -4806,6 +4859,7 @@ export function DoctorDashboard() {
         label: medLabel(med) || null,
         dosageManquant: dosageManquant(med),
       }]);
+    medShownKeyRef.current = null;
     setMedSearchTerm(''); setMedSearchResults([]); setMedSearchForeign(null); setShowMedDropdown(false);
   };
 
@@ -4814,6 +4868,7 @@ export function DoctorDashboard() {
     if (!trimmed) return;
     const id = `manual_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
     setSelectedMeds(prev => [...prev, { id, nom: trimmed, dci: null, manual: true }]);
+    medShownKeyRef.current = null;
     setMedSearchTerm(''); setMedSearchResults([]); setShowMedDropdown(false);
   };
 
@@ -5635,6 +5690,7 @@ export function DoctorDashboard() {
                 allergyStatus={allergyStatus}
                 allergyRulesReady={allergyRulesReady}
                 renalStatus={renal.status}
+                ircNote={ircNote}
                 canWritePatient={!!doctorProfile?.id}
                 onPatientPatched={handlePatientPatched}
               />

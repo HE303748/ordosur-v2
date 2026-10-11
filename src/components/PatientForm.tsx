@@ -1,9 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { User, Phone, Mail, MapPin, Calendar, Heart, Plus, X, Pill, Leaf, Scissors, ClipboardList, CreditCard, AlertTriangle } from 'lucide-react';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Patient, supabase } from '../lib/supabase';
-import { cleanPathologiesDepuis, parseYear, currentYear, type PathologiesDepuis } from '../lib/antecedents';
+import { cleanPathologiesDepuis, parseYear, currentYear, CUREES_REFERENTIEL, type PathologiesDepuis } from '../lib/antecedents';
+import { buildConditionMatcher, type CiConceptRow } from '../lib/conditionMatcher';
+import { searchPathologies as searchPathologiesLocal, pathologiesNonReconnues, BADGE_NON_RECONNU } from '../lib/pathologySearch';
+import ciConceptsData from '../lib/ci_condition_concepts.data.json';
+
+// Sprint 2c — même dictionnaire et même normalisation que le moteur (conditionMatcher) : ce que la
+// saisie propose et ce que le moteur reconnaît ne peuvent pas diverger.
+const MATCHER = buildConditionMatcher(ciConceptsData.concepts as CiConceptRow[], CUREES_REFERENTIEL);
 
 interface PatientFormProps {
   patient?: Patient | null;
@@ -43,6 +50,9 @@ function BadgeSelector({
   onChange,
   placeholder,
   asyncSearch,
+  localSearch,
+  warnings,
+  onReplace,
   renderBadgeExtra,
 }: {
   label: string;
@@ -55,6 +65,12 @@ function BadgeSelector({
   // Sprint Quick Fix B — recherche server-side optionnelle (utilisée pour pathologies).
   // Si absente, filtre client-side sur `suggestions` (comportement original — allergies).
   asyncSearch?: (q: string) => Promise<string[]>;
+  // Sprint 2c — recherche locale, synchrone et déterministe (pathologies : même normalisation que
+  // le moteur). La liste ne dépend que de la frappe : elle ne change jamais sous le curseur.
+  localSearch?: (q: string) => string[];
+  // Sprint 2c — valeurs que le moteur ne reconnaît pas, avec la meilleure suggestion (1 clic).
+  warnings?: Array<{ label: string; suggestion: string | null }>;
+  onReplace?: (ancien: string, nouveau: string) => void;
   // Sprint 4 — contenu additionnel dans chaque badge (champ « depuis [année] » des pathologies).
   renderBadgeExtra?: (val: string) => React.ReactNode;
 }) {
@@ -83,6 +99,11 @@ function BadgeSelector({
 
   // Empty input → fallback suggestions. Sinon : async results si fournis, sinon filtre client.
   const filteredSuggestions = (() => {
+    if (localSearch) {
+      return input.trim().length < 2
+        ? suggestions.filter(s => !values.includes(s)).slice(0, 8)
+        : localSearch(input).filter(s => !values.includes(s));
+    }
     if (asyncSearch) {
       if (input.trim().length < 2) {
         return suggestions.filter(s => !values.includes(s)).slice(0, 8);
@@ -136,6 +157,25 @@ function BadgeSelector({
         </div>
       )}
 
+      {/* Sprint 2c — libellés non reliés à un concept par le moteur : signalés, jamais bloquants */}
+      {warnings && warnings.length > 0 && (
+        <ul className="mb-2 space-y-1">
+          {warnings.map(w => (
+            <li key={w.label} className="flex flex-wrap items-center gap-x-2 gap-y-1 px-2 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-900">
+              <AlertTriangle className="w-3 h-3 flex-shrink-0" aria-hidden />
+              <span className="min-w-0 break-words"><span className="font-semibold">« {w.label} »</span> — {BADGE_NON_RECONNU}</span>
+              {w.suggestion && onReplace && (
+                <button type="button" data-suggestion={w.suggestion} data-label={w.label}
+                  onClick={e => onReplace(e.currentTarget.dataset.label!, e.currentTarget.dataset.suggestion!)}
+                  className="px-2 py-0.5 rounded-full font-semibold bg-white border border-amber-300 hover:bg-amber-100 transition-colors">
+                  Remplacer par « {w.suggestion} »
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
       {/* Input + suggestions */}
       <div className="relative">
         <div className="flex gap-1.5">
@@ -164,7 +204,8 @@ function BadgeSelector({
               <button
                 key={s}
                 type="button"
-                onMouseDown={e => { e.preventDefault(); add(s); }}
+                data-value={s}
+                onMouseDown={e => { e.preventDefault(); const v = e.currentTarget.dataset.value; if (v) add(v); }}
                 className="w-full px-3 py-1.5 text-left text-xs hover:bg-primary-50 transition-colors border-b border-gray-100 last:border-b-0"
               >
                 {s}
@@ -200,22 +241,8 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
     load();
   }, []);
 
-  // Recherche pathologies server-side sur la table curée `pathologies_curees`
-  // (372 libellés FR propres). Tolère les requêtes en anglais / abréviations via la
-  // colonne `synonymes` (jamais affichée), mais affiche STRICTEMENT `nom_fr`.
-  // Limit 30 pour ne pas surcharger le dropdown.
-  const searchPathologies = useCallback(async (q: string): Promise<string[]> => {
-    // Sanitize : strip `%` et `,` pour éviter d'injecter dans le pattern ilike / la syntaxe .or()
-    const sanitized = q.replace(/[%,]/g, '').trim();
-    if (!sanitized) return [];
-    const { data } = await supabase
-      .from('pathologies_curees')
-      .select('nom_fr')
-      .or(`nom_fr.ilike.%${sanitized}%,synonymes.ilike.%${sanitized}%`)
-      .order('nom_fr')
-      .limit(30);
-    return (data ?? []).map(r => r.nom_fr).filter((v): v is string => Boolean(v));
-  }, []);
+  // Sprint 2c — la recherche des pathologies est locale (lib/pathologySearch) : insensible aux accents,
+  // à la casse, aux mots vides et aux chiffres romains, classée, et identique à ce que le moteur reconnaît.
 
   // ── Form state ──────────────────────────────────────────────────────────
   const [formData, setFormData] = useState({
@@ -425,7 +452,17 @@ export function PatientForm({ patient, onSave, onCancel }: PatientFormProps) {
             icon={Heart}
             color="violet"
             suggestions={dbPathologies}
-            asyncSearch={searchPathologies}
+            localSearch={q => searchPathologiesLocal(q, CUREES_REFERENTIEL, 30)}
+            warnings={pathologiesNonReconnues(formData.pathologies, MATCHER, CUREES_REFERENTIEL)}
+            onReplace={(ancien, nouveau) => {
+              // 1 clic : le libellé libre est remplacé par le concept du référentiel (l'année « depuis » suit).
+              setFormData(prev => ({ ...prev, pathologies: [...new Set(prev.pathologies.map(p => (p === ancien ? nouveau : p)))] }));
+              setPathoDepuis(prev => {
+                if (!(ancien in prev)) return prev;
+                const { [ancien]: annee, ...reste } = prev;
+                return nouveau in reste ? reste : { ...reste, [nouveau]: annee };
+              });
+            }}
             values={formData.pathologies}
             onChange={v => setFormData(prev => ({ ...prev, pathologies: v }))}
             placeholder="Rechercher une pathologie..."

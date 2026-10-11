@@ -43,7 +43,9 @@ const AJOUTE_MS = 4000;
  */
 export function QuickResultInput({ patientId, pathologies, doctorId, orgId, refs, resultats, lastUnits }: Props) {
   const [text, setText] = useState('');
-  const [choice, setChoice] = useState<number | null>(null);
+  // Sprint 2c — l'examen choisi parmi plusieurs candidats est mémorisé par son CODE (jamais par sa
+  // position) : si la liste des candidats change, le choix désigne toujours le même examen, ou rien.
+  const [choiceCode, setChoiceCode] = useState<string | null>(null);
   const [forced, setForced] = useState<Candidat | null>(null);
   const [libreConfirme, setLibreConfirme] = useState(false);
   const [picker, setPicker] = useState<string | null>(null); // texte de recherche de la liste, null = fermée
@@ -71,6 +73,9 @@ export function QuickResultInput({ patientId, pathologies, doctorId, orgId, refs
 
   const { demandes } = usePatientDemandes(patientId);
   const parsed = useMemo(() => parseSaisieLibre(text, refs, { pathologies }), [text, refs, pathologies]);
+  const choiceIdx = choiceCode === null ? -1 : parsed.candidats.findIndex(c => c.exam.code === choiceCode);
+  const choice: number | null = choiceIdx === -1 ? null : choiceIdx;
+  const setChoice = (i: number | null) => setChoiceCode(i === null ? null : parsed.candidats[i]?.exam.code ?? null);
   const state = quickEntryState(parsed, { choice, forced, libreConfirme });
   const candidat = state.candidat;
   const libre = state.libre;
@@ -166,7 +171,7 @@ export function QuickResultInput({ patientId, pathologies, doctorId, orgId, refs
     if (parsed.ambigu && !forced && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
       e.preventDefault();
       const n = parsed.candidats.length;
-      setChoice(c => (c === null ? (e.key === 'ArrowDown' ? 0 : n - 1) : (c + (e.key === 'ArrowDown' ? 1 : n - 1)) % n));
+      setChoice(choice === null ? (e.key === 'ArrowDown' ? 0 : n - 1) : (choice + (e.key === 'ArrowDown' ? 1 : n - 1)) % n);
       setHint(null);
       return;
     }
@@ -208,8 +213,8 @@ export function QuickResultInput({ patientId, pathologies, doctorId, orgId, refs
           </p>
           <div role="radiogroup" aria-label="Examen concerné" className="mt-1.5 flex flex-wrap gap-1.5">
             {parsed.candidats.map((c, i) => (
-              <button key={c.exam.code} type="button" role="radio" aria-checked={choice === i}
-                onClick={() => { setChoice(i); setHint(null); mainRef.current?.focus({ preventScroll: true }); }}
+              <button key={c.exam.code} type="button" role="radio" aria-checked={choice === i} data-exam-code={c.exam.code}
+                onClick={e => { setChoiceCode(e.currentTarget.dataset.examCode ?? null); setHint(null); mainRef.current?.focus({ preventScroll: true }); }}
                 className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B] ${choice === i
                   ? 'bg-[#0A1628] text-white border-[#0A1628] dark:bg-[#E2E8F0] dark:text-[#0A1628]'
                   : 'bg-white text-[#0A1628] border-[#E5E5E0] hover:border-[#0A1628] dark:bg-transparent dark:text-[#E2E8F0] dark:border-white/[0.12]'}`}>
@@ -246,7 +251,8 @@ export function QuickResultInput({ patientId, pathologies, doctorId, orgId, refs
                 <ul className="mt-1.5 flex flex-wrap gap-1.5">
                   {pickerResults.map(e => (
                     <li key={e.code}>
-                      <button type="button" onClick={() => pick(e)}
+                      <button type="button" data-exam-code={e.code}
+                        onClick={ev => { const x = pickerResults.find(r => r.code === ev.currentTarget.dataset.examCode); if (x) pick(x); }}
                         className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-[#0A1628] border border-[#E5E5E0] hover:border-[#0A1628] dark:bg-transparent dark:text-[#E2E8F0] dark:border-white/[0.12] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00A86B]">
                         {shortLabel(e.libelle)}
                       </button>
