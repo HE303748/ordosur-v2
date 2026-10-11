@@ -1,0 +1,1490 @@
+[
+ {
+  "nom_fr": "Abcès cutané",
+  "synonymes": "skin abscess, furoncle, abces"
+ },
+ {
+  "nom_fr": "Accident ischémique transitoire",
+  "synonymes": "AIT, TIA, transient ischemic attack"
+ },
+ {
+  "nom_fr": "Accident vasculaire cérébral",
+  "synonymes": "AVC, stroke, attaque cerebrale, ischemie cerebrale"
+ },
+ {
+  "nom_fr": "Acné",
+  "synonymes": "acne, acne juvenile"
+ },
+ {
+  "nom_fr": "Acouphènes",
+  "synonymes": "tinnitus, bourdonnements oreille"
+ },
+ {
+  "nom_fr": "Addiction au tabac",
+  "synonymes": "tabagisme, tobacco dependence, dependance tabac"
+ },
+ {
+  "nom_fr": "Addiction à l'alcool",
+  "synonymes": "alcoholism, dependance alcoolique, alcoolisme"
+ },
+ {
+  "nom_fr": "Adénopathie",
+  "synonymes": "lymphadenopathy, ganglion, adenopathie"
+ },
+ {
+  "nom_fr": "Allaitement",
+  "synonymes": "breastfeeding, suivi allaitement"
+ },
+ {
+  "nom_fr": "Allergie alimentaire",
+  "synonymes": "food allergy, allergie alimentaire"
+ },
+ {
+  "nom_fr": "Allergie aux acariens",
+  "synonymes": "dust mite allergy"
+ },
+ {
+  "nom_fr": "Allergie médicamenteuse",
+  "synonymes": "drug allergy, allergie medicament"
+ },
+ {
+  "nom_fr": "Alopécie",
+  "synonymes": "alopecia, chute de cheveux, calvitie"
+ },
+ {
+  "nom_fr": "Aménorrhée",
+  "synonymes": "amenorrhea, absence de regles"
+ },
+ {
+  "nom_fr": "Angine",
+  "synonymes": "amygdalite, tonsillitis, angine blanche"
+ },
+ {
+  "nom_fr": "Angine de poitrine",
+  "synonymes": "angor, angina pectoris, angine"
+ },
+ {
+  "nom_fr": "Anorexie mentale",
+  "synonymes": "anorexia nervosa, anorexie"
+ },
+ {
+  "nom_fr": "Anémie",
+  "synonymes": "anemia, anemie"
+ },
+ {
+  "nom_fr": "Anémie ferriprive",
+  "synonymes": "iron deficiency anemia, anemie par carence en fer"
+ },
+ {
+  "nom_fr": "Anémie par carence en vitamine B12",
+  "synonymes": "vitamin B12 deficiency anemia, Biermer"
+ },
+ {
+  "nom_fr": "Anévrisme de l'aorte",
+  "synonymes": "aneurysme aortique, aortic aneurysm"
+ },
+ {
+  "nom_fr": "Apnée du sommeil",
+  "synonymes": "SAOS, sleep apnea, apnees obstructives"
+ },
+ {
+  "nom_fr": "Appendicite",
+  "synonymes": "appendicitis"
+ },
+ {
+  "nom_fr": "Arthrite",
+  "synonymes": "arthritis, monoarthrite"
+ },
+ {
+  "nom_fr": "Arthrose",
+  "synonymes": "osteoarthritis, arthrose, gonarthrose, coxarthrose"
+ },
+ {
+  "nom_fr": "Artériopathie oblitérante des membres inférieurs",
+  "synonymes": "AOMI, arteriopathie, peripheral artery disease"
+ },
+ {
+  "nom_fr": "Asthme",
+  "synonymes": "asthma, asthme bronchique"
+ },
+ {
+  "nom_fr": "Asthme du nourrisson",
+  "synonymes": "infant asthma"
+ },
+ {
+  "nom_fr": "Asthénie",
+  "synonymes": "fatigue, tiredness, asthenie, epuisement"
+ },
+ {
+  "nom_fr": "Astigmatisme",
+  "synonymes": "astigmatism"
+ },
+ {
+  "nom_fr": "Bloc auriculo-ventriculaire",
+  "synonymes": "BAV, AV block, bloc cardiaque"
+ },
+ {
+  "nom_fr": "Blépharite",
+  "synonymes": "blepharitis"
+ },
+ {
+  "nom_fr": "Bouchon de cérumen",
+  "synonymes": "cerumen, earwax, cerumen impacte"
+ },
+ {
+  "nom_fr": "Bouffées de chaleur",
+  "synonymes": "hot flashes, bouffees de chaleur"
+ },
+ {
+  "nom_fr": "Boulimie",
+  "synonymes": "bulimia"
+ },
+ {
+  "nom_fr": "Bradycardie",
+  "synonymes": "bradycardia"
+ },
+ {
+  "nom_fr": "Bronchiolite",
+  "synonymes": "bronchiolitis"
+ },
+ {
+  "nom_fr": "Bronchiolite du nourrisson",
+  "synonymes": "bronchiolitis infant"
+ },
+ {
+  "nom_fr": "Bronchite aiguë",
+  "synonymes": "acute bronchitis, bronchite"
+ },
+ {
+  "nom_fr": "Bronchite chronique",
+  "synonymes": "chronic bronchitis"
+ },
+ {
+  "nom_fr": "Bronchopneumopathie chronique obstructive",
+  "synonymes": "BPCO, COPD, bronchite chronique obstructive"
+ },
+ {
+  "nom_fr": "Brucellose",
+  "synonymes": "brucellosis, fievre de Malte"
+ },
+ {
+  "nom_fr": "Burn-out",
+  "synonymes": "epuisement professionnel, burnout, surmenage"
+ },
+ {
+  "nom_fr": "Bursite",
+  "synonymes": "bursitis"
+ },
+ {
+  "nom_fr": "COVID-19",
+  "synonymes": "coronavirus, SARS-CoV-2, covid"
+ },
+ {
+  "nom_fr": "Canal lombaire étroit",
+  "synonymes": "lumbar stenosis, stenose canalaire"
+ },
+ {
+  "nom_fr": "Cancer colorectal",
+  "synonymes": "colorectal cancer, cancer du colon"
+ },
+ {
+  "nom_fr": "Cancer de l'estomac",
+  "synonymes": "stomach cancer, cancer gastrique"
+ },
+ {
+  "nom_fr": "Cancer de la prostate",
+  "synonymes": "prostate cancer"
+ },
+ {
+  "nom_fr": "Cancer de la thyroïde",
+  "synonymes": "thyroid cancer"
+ },
+ {
+  "nom_fr": "Cancer de la vessie",
+  "synonymes": "bladder cancer"
+ },
+ {
+  "nom_fr": "Cancer du col de l'utérus",
+  "synonymes": "cervical cancer, cancer du col"
+ },
+ {
+  "nom_fr": "Cancer du foie",
+  "synonymes": "liver cancer, carcinome hepatocellulaire"
+ },
+ {
+  "nom_fr": "Cancer du pancréas",
+  "synonymes": "pancreatic cancer"
+ },
+ {
+  "nom_fr": "Cancer du poumon",
+  "synonymes": "lung cancer, cancer bronchique"
+ },
+ {
+  "nom_fr": "Cancer du sein",
+  "synonymes": "breast cancer, cancer mammaire"
+ },
+ {
+  "nom_fr": "Candidose cutanée",
+  "synonymes": "cutaneous candidiasis, intertrigo candidosique"
+ },
+ {
+  "nom_fr": "Carcinome basocellulaire",
+  "synonymes": "basal cell carcinoma, BCC"
+ },
+ {
+  "nom_fr": "Cardiomyopathie",
+  "synonymes": "myocardiopathie, cardiomyopathy"
+ },
+ {
+  "nom_fr": "Cardiomyopathie hypertrophique",
+  "synonymes": "CMHO, hypertrophic cardiomyopathy, cardiomyopathie obstructive"
+ },
+ {
+  "nom_fr": "Cardiopathie ischémique",
+  "synonymes": "coronaropathie, ischemie cardiaque, ischemic heart disease, maladie coronarienne"
+ },
+ {
+  "nom_fr": "Carence en vitamine B12",
+  "synonymes": "vitamin B12 deficiency, carence B12"
+ },
+ {
+  "nom_fr": "Carence en vitamine D",
+  "synonymes": "vitamin D deficiency, hypovitaminose D"
+ },
+ {
+  "nom_fr": "Cataracte",
+  "synonymes": "cataract, cataracte senile"
+ },
+ {
+  "nom_fr": "Cellulite infectieuse",
+  "synonymes": "cellulitis, dermohypodermite bacterienne"
+ },
+ {
+  "nom_fr": "Cervicalgie",
+  "synonymes": "neck pain, douleur cervicale"
+ },
+ {
+  "nom_fr": "Chalazion",
+  "synonymes": "chalazion"
+ },
+ {
+  "nom_fr": "Choc anaphylactique",
+  "synonymes": "anaphylaxis, anaphylactic shock, anaphylaxie"
+ },
+ {
+  "nom_fr": "Cholécystite",
+  "synonymes": "cholecystitis, inflammation vesicule"
+ },
+ {
+  "nom_fr": "Cirrhose du foie",
+  "synonymes": "cirrhosis, cirrhose hepatique"
+ },
+ {
+  "nom_fr": "Colique néphrétique",
+  "synonymes": "renal colic"
+ },
+ {
+  "nom_fr": "Coliques du nourrisson",
+  "synonymes": "infant colic, coliques"
+ },
+ {
+  "nom_fr": "Conjonctivite",
+  "synonymes": "conjunctivitis, oeil rouge"
+ },
+ {
+  "nom_fr": "Conjonctivite allergique",
+  "synonymes": "allergic conjunctivitis"
+ },
+ {
+  "nom_fr": "Constipation",
+  "synonymes": "constipation"
+ },
+ {
+  "nom_fr": "Contraception",
+  "synonymes": "contraception, suivi contraceptif"
+ },
+ {
+  "nom_fr": "Convulsions",
+  "synonymes": "seizures, crise convulsive"
+ },
+ {
+  "nom_fr": "Convulsions fébriles",
+  "synonymes": "febrile seizures, convulsions hyperthermiques"
+ },
+ {
+  "nom_fr": "Coqueluche",
+  "synonymes": "whooping cough, pertussis"
+ },
+ {
+  "nom_fr": "Coxarthrose",
+  "synonymes": "arthrose de hanche, hip osteoarthritis"
+ },
+ {
+  "nom_fr": "Cystite",
+  "synonymes": "cystitis, infection vessie"
+ },
+ {
+  "nom_fr": "Céphalée",
+  "synonymes": "headache, mal de tete, cephalee"
+ },
+ {
+  "nom_fr": "Céphalée de tension",
+  "synonymes": "tension headache, cephalee"
+ },
+ {
+  "nom_fr": "Dengue",
+  "synonymes": "dengue fever"
+ },
+ {
+  "nom_fr": "Dermatite atopique",
+  "synonymes": "atopic dermatitis, eczema atopique"
+ },
+ {
+  "nom_fr": "Dermatite de contact",
+  "synonymes": "contact dermatitis, eczema de contact"
+ },
+ {
+  "nom_fr": "Dermatite séborrhéique",
+  "synonymes": "seborrheic dermatitis, dermite seborrheique"
+ },
+ {
+  "nom_fr": "Diabète de type 1",
+  "synonymes": "diabete insulinodependant, DID, type 1 diabetes, diabetes mellitus"
+ },
+ {
+  "nom_fr": "Diabète de type 2",
+  "synonymes": "diabete non insulinodependant, DNID, type 2 diabetes, diabetes"
+ },
+ {
+  "nom_fr": "Diabète décompensé",
+  "synonymes": "diabete decompense, decompensated diabetes, acidocetose"
+ },
+ {
+  "nom_fr": "Diabète gestationnel",
+  "synonymes": "gestational diabetes"
+ },
+ {
+  "nom_fr": "Diabète insipide",
+  "synonymes": "diabetes insipidus"
+ },
+ {
+  "nom_fr": "Diarrhée",
+  "synonymes": "diarrhea, diarrhee chronique"
+ },
+ {
+  "nom_fr": "Diarrhée aiguë du nourrisson",
+  "synonymes": "acute diarrhea infant"
+ },
+ {
+  "nom_fr": "Dilatation des bronches",
+  "synonymes": "bronchiectasie, bronchiectasis, DDB"
+ },
+ {
+  "nom_fr": "Diverticulite",
+  "synonymes": "diverticulitis"
+ },
+ {
+  "nom_fr": "Diverticulose colique",
+  "synonymes": "diverticulosis, diverticules"
+ },
+ {
+  "nom_fr": "Dorsalgie",
+  "synonymes": "back pain, douleur dorsale"
+ },
+ {
+  "nom_fr": "Douleur abdominale",
+  "synonymes": "abdominal pain, mal de ventre, douleur abdominale"
+ },
+ {
+  "nom_fr": "Douleur articulaire",
+  "synonymes": "arthralgia, arthralgie, douleur articulaire"
+ },
+ {
+  "nom_fr": "Douleur thoracique",
+  "synonymes": "chest pain, douleur thoracique"
+ },
+ {
+  "nom_fr": "Drépanocytose",
+  "synonymes": "sickle cell disease, anemie falciforme"
+ },
+ {
+  "nom_fr": "Dysfonction sinusale",
+  "synonymes": "maladie du sinus, sick sinus syndrome, dysfonction sinusale"
+ },
+ {
+  "nom_fr": "Dysfonction érectile",
+  "synonymes": "erectile dysfunction, impuissance, troubles erection"
+ },
+ {
+  "nom_fr": "Dyslipidémie",
+  "synonymes": "hyperlipidemie, cholesterol, dyslipidemia"
+ },
+ {
+  "nom_fr": "Dysménorrhée",
+  "synonymes": "dysmenorrhea, regles douloureuses"
+ },
+ {
+  "nom_fr": "Dyspepsie",
+  "synonymes": "dyspepsia, digestion difficile, indigestion"
+ },
+ {
+  "nom_fr": "Dysphonie",
+  "synonymes": "dysphonia, enrouement"
+ },
+ {
+  "nom_fr": "Dyspnée",
+  "synonymes": "essoufflement, dyspnea, difficulte respiratoire"
+ },
+ {
+  "nom_fr": "Déficit en G6PD",
+  "synonymes": "G6PD deficiency, favisme, deficit glucose 6 phosphate deshydrogenase"
+ },
+ {
+  "nom_fr": "Dégénérescence maculaire liée à l'âge",
+  "synonymes": "DMLA, AMD, macular degeneration"
+ },
+ {
+  "nom_fr": "Démence",
+  "synonymes": "dementia, troubles cognitifs majeurs"
+ },
+ {
+  "nom_fr": "Dénutrition",
+  "synonymes": "malnutrition, denutrition"
+ },
+ {
+  "nom_fr": "Déshydratation",
+  "synonymes": "dehydration, deshydratation"
+ },
+ {
+  "nom_fr": "Eczéma",
+  "synonymes": "eczema, dermatite eczematiforme"
+ },
+ {
+  "nom_fr": "Embolie pulmonaire",
+  "synonymes": "EP, pulmonary embolism"
+ },
+ {
+  "nom_fr": "Endocardite",
+  "synonymes": "endocarditis"
+ },
+ {
+  "nom_fr": "Endométriose",
+  "synonymes": "endometriosis"
+ },
+ {
+  "nom_fr": "Entorse",
+  "synonymes": "sprain, foulure, entorse cheville"
+ },
+ {
+  "nom_fr": "Fibrillation auriculaire",
+  "synonymes": "FA, fibrillation atriale, atrial fibrillation, arythmie complete, ACFA"
+ },
+ {
+  "nom_fr": "Fibrome utérin",
+  "synonymes": "myome, uterine fibroid, leiomyome"
+ },
+ {
+  "nom_fr": "Fibromyalgie",
+  "synonymes": "fibromyalgia"
+ },
+ {
+  "nom_fr": "Fibrose pulmonaire",
+  "synonymes": "pulmonary fibrosis"
+ },
+ {
+  "nom_fr": "Fissure anale",
+  "synonymes": "anal fissure"
+ },
+ {
+  "nom_fr": "Fièvre",
+  "synonymes": "fever, pyrexie, hyperthermie, fievre"
+ },
+ {
+  "nom_fr": "Fièvre prolongée",
+  "synonymes": "prolonged fever, fievre au long cours"
+ },
+ {
+  "nom_fr": "Fièvre typhoïde",
+  "synonymes": "typhoid fever"
+ },
+ {
+  "nom_fr": "Folliculite",
+  "synonymes": "folliculitis"
+ },
+ {
+  "nom_fr": "Gale",
+  "synonymes": "scabies, gale sarcoptique"
+ },
+ {
+  "nom_fr": "Gastrite",
+  "synonymes": "gastritis, inflammation estomac"
+ },
+ {
+  "nom_fr": "Gastro-entérite",
+  "synonymes": "gastroenteritis, gastroenterite aigue, GEA"
+ },
+ {
+  "nom_fr": "Gastro-entérite de l'enfant",
+  "synonymes": "gastroenteritis child, GEA enfant"
+ },
+ {
+  "nom_fr": "Glaucome",
+  "synonymes": "glaucoma, hypertonie oculaire"
+ },
+ {
+  "nom_fr": "Glomérulonéphrite",
+  "synonymes": "glomerulonephritis"
+ },
+ {
+  "nom_fr": "Goitre",
+  "synonymes": "goiter, nodule thyroidien"
+ },
+ {
+  "nom_fr": "Gonarthrose",
+  "synonymes": "arthrose du genou, knee osteoarthritis"
+ },
+ {
+  "nom_fr": "Goutte",
+  "synonymes": "gout, crise de goutte, arthrite uratique"
+ },
+ {
+  "nom_fr": "Grippe",
+  "synonymes": "influenza, flu, etat grippal"
+ },
+ {
+  "nom_fr": "Grossesse normale",
+  "synonymes": "pregnancy, grossesse, suivi de grossesse"
+ },
+ {
+  "nom_fr": "Hernie discale",
+  "synonymes": "disc herniation, hernie discale lombaire"
+ },
+ {
+  "nom_fr": "Hernie hiatale",
+  "synonymes": "hiatal hernia"
+ },
+ {
+  "nom_fr": "Hernie inguinale",
+  "synonymes": "inguinal hernia, hernie de l'aine"
+ },
+ {
+  "nom_fr": "Hernie ombilicale",
+  "synonymes": "umbilical hernia"
+ },
+ {
+  "nom_fr": "Herpès",
+  "synonymes": "herpes, herpes simplex, bouton de fievre"
+ },
+ {
+  "nom_fr": "Hydatidose",
+  "synonymes": "kyste hydatique, echinococcosis, hydatid cyst"
+ },
+ {
+  "nom_fr": "Hypercholestérolémie",
+  "synonymes": "cholesterol eleve, hypercholesterolemia"
+ },
+ {
+  "nom_fr": "Hyperkaliémie",
+  "synonymes": "hyperkalemia, potassium eleve"
+ },
+ {
+  "nom_fr": "Hypermétropie",
+  "synonymes": "hyperopia, hypermetropie"
+ },
+ {
+  "nom_fr": "Hyperparathyroïdie",
+  "synonymes": "hyperparathyroidism"
+ },
+ {
+  "nom_fr": "Hypertension artérielle",
+  "synonymes": "HTA, hypertension, tension, arterial hypertension, high blood pressure"
+ },
+ {
+  "nom_fr": "Hypertension artérielle non contrôlée",
+  "synonymes": "HTA non controlee, HTA severe, uncontrolled hypertension"
+ },
+ {
+  "nom_fr": "Hypertension artérielle secondaire",
+  "synonymes": "HTA secondaire, secondary hypertension"
+ },
+ {
+  "nom_fr": "Hyperthyroïdie",
+  "synonymes": "hyperthyroidism, thyrotoxicose, thyroide elevee"
+ },
+ {
+  "nom_fr": "Hypertriglycéridémie",
+  "synonymes": "triglycerides, hypertriglyceridemia"
+ },
+ {
+  "nom_fr": "Hypertrophie bénigne de la prostate",
+  "synonymes": "HBP, adenome prostate, BPH, prostate"
+ },
+ {
+  "nom_fr": "Hypertrophie des amygdales",
+  "synonymes": "tonsillar hypertrophy, grosses amygdales"
+ },
+ {
+  "nom_fr": "Hyperuricémie",
+  "synonymes": "acide urique, hyperuricemia"
+ },
+ {
+  "nom_fr": "Hyperéosinophilie",
+  "synonymes": "eosinophilia"
+ },
+ {
+  "nom_fr": "Hyponatrémie",
+  "synonymes": "hyponatremia, sodium bas"
+ },
+ {
+  "nom_fr": "Hypoparathyroïdie",
+  "synonymes": "hypoparathyroidism"
+ },
+ {
+  "nom_fr": "Hypotension artérielle",
+  "synonymes": "hypotension, low blood pressure"
+ },
+ {
+  "nom_fr": "Hypothyroïdie",
+  "synonymes": "hypothyroidism, thyroide basse"
+ },
+ {
+  "nom_fr": "Hématurie",
+  "synonymes": "hematuria, sang dans les urines"
+ },
+ {
+  "nom_fr": "Hémochromatose",
+  "synonymes": "hemochromatosis, surcharge en fer"
+ },
+ {
+  "nom_fr": "Hémophilie",
+  "synonymes": "hemophilia"
+ },
+ {
+  "nom_fr": "Hémorroïdes",
+  "synonymes": "hemorrhoids, crise hemorroidaire"
+ },
+ {
+  "nom_fr": "Hépatite aiguë",
+  "synonymes": "acute hepatitis"
+ },
+ {
+  "nom_fr": "Hépatite virale B",
+  "synonymes": "hepatitis B, VHB, hepatite B"
+ },
+ {
+  "nom_fr": "Hépatite virale C",
+  "synonymes": "hepatitis C, VHC, hepatite C"
+ },
+ {
+  "nom_fr": "Hépatomégalie",
+  "synonymes": "gros foie, hepatomegaly"
+ },
+ {
+  "nom_fr": "Impétigo",
+  "synonymes": "impetigo"
+ },
+ {
+  "nom_fr": "Impétigo de l'enfant",
+  "synonymes": "impetigo child"
+ },
+ {
+  "nom_fr": "Incontinence urinaire",
+  "synonymes": "urinary incontinence, fuites urinaires"
+ },
+ {
+  "nom_fr": "Infarctus du myocarde",
+  "synonymes": "IDM, crise cardiaque, myocardial infarction, heart attack"
+ },
+ {
+  "nom_fr": "Infection urinaire",
+  "synonymes": "cystite, UTI, urinary tract infection, infection urinaire"
+ },
+ {
+  "nom_fr": "Infection vaginale",
+  "synonymes": "vaginite, vaginitis, vaginose"
+ },
+ {
+  "nom_fr": "Infection à Helicobacter pylori",
+  "synonymes": "H pylori, helicobacter"
+ },
+ {
+  "nom_fr": "Infection à VIH",
+  "synonymes": "HIV, SIDA, AIDS, VIH"
+ },
+ {
+  "nom_fr": "Infection à papillomavirus",
+  "synonymes": "HPV, papillomavirus, condylomes"
+ },
+ {
+  "nom_fr": "Infertilité",
+  "synonymes": "infertility, sterilite, hypofertilite"
+ },
+ {
+  "nom_fr": "Insomnie",
+  "synonymes": "insomnia, troubles du sommeil"
+ },
+ {
+  "nom_fr": "Insuffisance cardiaque",
+  "synonymes": "IC, heart failure, defaillance cardiaque"
+ },
+ {
+  "nom_fr": "Insuffisance hépatique",
+  "synonymes": "hepatic failure, defaillance hepatique, insuffisance hepatocellulaire"
+ },
+ {
+  "nom_fr": "Insuffisance mitrale",
+  "synonymes": "regurgitation mitrale, mitral regurgitation"
+ },
+ {
+  "nom_fr": "Insuffisance respiratoire chronique",
+  "synonymes": "chronic respiratory failure, insuffisance respiratoire"
+ },
+ {
+  "nom_fr": "Insuffisance rénale aiguë",
+  "synonymes": "acute kidney injury, AKI, IRA"
+ },
+ {
+  "nom_fr": "Insuffisance rénale chronique",
+  "synonymes": "IRC, chronic kidney disease, CKD, insuffisance renale"
+ },
+ {
+  "nom_fr": "Insuffisance surrénalienne",
+  "synonymes": "maladie d'Addison, adrenal insufficiency, Addison"
+ },
+ {
+  "nom_fr": "Insuffisance veineuse chronique",
+  "synonymes": "IVC, chronic venous insufficiency"
+ },
+ {
+  "nom_fr": "Kyste ovarien",
+  "synonymes": "ovarian cyst"
+ },
+ {
+  "nom_fr": "Kératite",
+  "synonymes": "keratitis"
+ },
+ {
+  "nom_fr": "Kératose actinique",
+  "synonymes": "actinic keratosis, keratose solaire"
+ },
+ {
+  "nom_fr": "Laryngite",
+  "synonymes": "laryngitis"
+ },
+ {
+  "nom_fr": "Leishmaniose",
+  "synonymes": "leishmaniasis, bouton d'Orient"
+ },
+ {
+  "nom_fr": "Leucémie",
+  "synonymes": "leukemia, leucemie"
+ },
+ {
+  "nom_fr": "Lichen plan",
+  "synonymes": "lichen planus"
+ },
+ {
+  "nom_fr": "Lithiase biliaire",
+  "synonymes": "calculs biliaires, gallstones, cholelithiase"
+ },
+ {
+  "nom_fr": "Lithiase urinaire",
+  "synonymes": "calculs renaux, kidney stones, colique nephretique"
+ },
+ {
+  "nom_fr": "Lombalgie",
+  "synonymes": "mal de dos, low back pain, lumbago, douleur lombaire"
+ },
+ {
+  "nom_fr": "Lupus érythémateux systémique",
+  "synonymes": "lupus, LES, systemic lupus erythematosus, SLE"
+ },
+ {
+  "nom_fr": "Lymphome",
+  "synonymes": "lymphoma, lymphome"
+ },
+ {
+  "nom_fr": "Lymphome de Hodgkin",
+  "synonymes": "Hodgkin lymphoma, maladie de Hodgkin"
+ },
+ {
+  "nom_fr": "Malabsorption",
+  "synonymes": "malabsorption, syndrome de malabsorption"
+ },
+ {
+  "nom_fr": "Maladie cœliaque",
+  "synonymes": "celiac disease, intolerance au gluten"
+ },
+ {
+  "nom_fr": "Maladie d'Alzheimer",
+  "synonymes": "Alzheimer disease, demence Alzheimer"
+ },
+ {
+  "nom_fr": "Maladie de Basedow",
+  "synonymes": "Graves disease, goitre exophtalmique"
+ },
+ {
+  "nom_fr": "Maladie de Crohn",
+  "synonymes": "Crohn disease, MICI"
+ },
+ {
+  "nom_fr": "Maladie de Parkinson",
+  "synonymes": "Parkinson disease, parkinson"
+ },
+ {
+  "nom_fr": "Malaise",
+  "synonymes": "malaise, faintness"
+ },
+ {
+  "nom_fr": "Mastite",
+  "synonymes": "mastitis, infection du sein"
+ },
+ {
+  "nom_fr": "Mastopathie",
+  "synonymes": "mastopathy, maladie du sein"
+ },
+ {
+  "nom_fr": "Menace d'accouchement prématuré",
+  "synonymes": "MAP, preterm labor"
+ },
+ {
+  "nom_fr": "Migraine",
+  "synonymes": "migraine, mal de tete"
+ },
+ {
+  "nom_fr": "Migraine avec aura",
+  "synonymes": "migraine with aura, migraine accompagnee"
+ },
+ {
+  "nom_fr": "Mononucléose infectieuse",
+  "synonymes": "mononucleosis, MNI, maladie du baiser"
+ },
+ {
+  "nom_fr": "Myasthénie",
+  "synonymes": "myasthenia gravis, myasthenie grave"
+ },
+ {
+  "nom_fr": "Mycose cutanée",
+  "synonymes": "dermatophytose, fungal skin infection, mycose peau"
+ },
+ {
+  "nom_fr": "Mycose vaginale",
+  "synonymes": "candidose vaginale, vaginal candidiasis, mycose"
+ },
+ {
+  "nom_fr": "Myocardite",
+  "synonymes": "myocarditis"
+ },
+ {
+  "nom_fr": "Myopathie",
+  "synonymes": "myopathy, rhabdomyolyse, atteinte musculaire"
+ },
+ {
+  "nom_fr": "Myopie",
+  "synonymes": "myopia"
+ },
+ {
+  "nom_fr": "Myélome multiple",
+  "synonymes": "multiple myeloma, maladie de Kahler"
+ },
+ {
+  "nom_fr": "Mélanome",
+  "synonymes": "melanoma, melanome malin"
+ },
+ {
+  "nom_fr": "Méningite",
+  "synonymes": "meningitis"
+ },
+ {
+  "nom_fr": "Ménopause",
+  "synonymes": "menopause, troubles de la menopause"
+ },
+ {
+  "nom_fr": "Ménorragie",
+  "synonymes": "menorrhagia, regles abondantes"
+ },
+ {
+  "nom_fr": "Naevus",
+  "synonymes": "grain de beaute, nevus, mole"
+ },
+ {
+  "nom_fr": "Nausées de la grossesse",
+  "synonymes": "nausees gravidiques, morning sickness"
+ },
+ {
+  "nom_fr": "Nausées et vomissements",
+  "synonymes": "nausea, vomiting, vomissements"
+ },
+ {
+  "nom_fr": "Neuropathie diabétique",
+  "synonymes": "diabetic neuropathy"
+ },
+ {
+  "nom_fr": "Neuropathie périphérique",
+  "synonymes": "peripheral neuropathy, polyneuropathie"
+ },
+ {
+  "nom_fr": "Nodule thyroïdien",
+  "synonymes": "thyroid nodule"
+ },
+ {
+  "nom_fr": "Néoplasie évolutive",
+  "synonymes": "cancer evolutif, neoplasie active, tumeur maligne"
+ },
+ {
+  "nom_fr": "Névralgie du trijumeau",
+  "synonymes": "trigeminal neuralgia"
+ },
+ {
+  "nom_fr": "Obésité",
+  "synonymes": "obesity, surpoids, exces de poids"
+ },
+ {
+  "nom_fr": "Occlusion intestinale",
+  "synonymes": "bowel obstruction, ileus"
+ },
+ {
+  "nom_fr": "Onychomycose",
+  "synonymes": "mycose des ongles, nail fungus"
+ },
+ {
+  "nom_fr": "Oreillons",
+  "synonymes": "mumps, parotidite ourlienne"
+ },
+ {
+  "nom_fr": "Orgelet",
+  "synonymes": "stye, hordeolum"
+ },
+ {
+  "nom_fr": "Ostéoporose",
+  "synonymes": "osteoporosis"
+ },
+ {
+  "nom_fr": "Otite de l'enfant",
+  "synonymes": "otitis child, otite nourrisson"
+ },
+ {
+  "nom_fr": "Otite externe",
+  "synonymes": "otitis externa"
+ },
+ {
+  "nom_fr": "Otite moyenne aiguë",
+  "synonymes": "acute otitis media, OMA, otite"
+ },
+ {
+  "nom_fr": "Otite séreuse",
+  "synonymes": "otite seromuqueuse, serous otitis"
+ },
+ {
+  "nom_fr": "Palpitations",
+  "synonymes": "palpitations"
+ },
+ {
+  "nom_fr": "Paludisme",
+  "synonymes": "malaria, paludisme, malaria"
+ },
+ {
+  "nom_fr": "Pancréatite aiguë",
+  "synonymes": "acute pancreatitis"
+ },
+ {
+  "nom_fr": "Pancréatite chronique",
+  "synonymes": "chronic pancreatitis"
+ },
+ {
+  "nom_fr": "Paralysie faciale",
+  "synonymes": "paralysie de Bell, facial palsy, Bell palsy"
+ },
+ {
+  "nom_fr": "Pelade",
+  "synonymes": "alopecia areata, pelade"
+ },
+ {
+  "nom_fr": "Perte d'appétit",
+  "synonymes": "anorexia, anorexie, perte appetit"
+ },
+ {
+  "nom_fr": "Perte de poids",
+  "synonymes": "weight loss, amaigrissement"
+ },
+ {
+  "nom_fr": "Pharyngite",
+  "synonymes": "pharyngitis, mal de gorge"
+ },
+ {
+  "nom_fr": "Phimosis",
+  "synonymes": "phimosis"
+ },
+ {
+  "nom_fr": "Phlébite superficielle",
+  "synonymes": "thrombophlebite superficielle, superficial phlebitis"
+ },
+ {
+  "nom_fr": "Phéochromocytome",
+  "synonymes": "pheochromocytoma, pheochromocytome"
+ },
+ {
+  "nom_fr": "Pityriasis versicolor",
+  "synonymes": "tinea versicolor"
+ },
+ {
+  "nom_fr": "Pneumonie",
+  "synonymes": "pneumopathie, pneumonia, infection pulmonaire"
+ },
+ {
+  "nom_fr": "Pneumopathie infectieuse",
+  "synonymes": "pneumonia, infection pulmonaire"
+ },
+ {
+  "nom_fr": "Pneumothorax",
+  "synonymes": "pneumothorax"
+ },
+ {
+  "nom_fr": "Polyarthrite rhumatoïde",
+  "synonymes": "PR, rheumatoid arthritis, polyarthrite"
+ },
+ {
+  "nom_fr": "Polyglobulie",
+  "synonymes": "polycythemia, polyglobulie"
+ },
+ {
+  "nom_fr": "Polymyalgia rheumatica",
+  "synonymes": "pseudo-polyarthrite rhizomelique, PPR"
+ },
+ {
+  "nom_fr": "Polyradiculonévrite",
+  "synonymes": "Guillain-Barre, Guillain Barre syndrome"
+ },
+ {
+  "nom_fr": "Porphyrie",
+  "synonymes": "porphyria"
+ },
+ {
+  "nom_fr": "Presbytie",
+  "synonymes": "presbyopia"
+ },
+ {
+  "nom_fr": "Prise de poids",
+  "synonymes": "weight gain"
+ },
+ {
+  "nom_fr": "Prostatite",
+  "synonymes": "prostatitis"
+ },
+ {
+  "nom_fr": "Protéinurie",
+  "synonymes": "proteinuria, albuminurie"
+ },
+ {
+  "nom_fr": "Prurit",
+  "synonymes": "pruritus, demangeaisons, prurit"
+ },
+ {
+  "nom_fr": "Pré-éclampsie",
+  "synonymes": "preeclampsia, toxemie gravidique"
+ },
+ {
+  "nom_fr": "Prédiabète",
+  "synonymes": "intolerance au glucose, prediabetes, hyperglycemie moderee"
+ },
+ {
+  "nom_fr": "Psoriasis",
+  "synonymes": "psoriasis"
+ },
+ {
+  "nom_fr": "Psychose",
+  "synonymes": "psychosis, trouble psychotique"
+ },
+ {
+  "nom_fr": "Pyélonéphrite",
+  "synonymes": "pyelonephritis, infection rein"
+ },
+ {
+  "nom_fr": "Périarthrite scapulo-humérale",
+  "synonymes": "epaule douloureuse, frozen shoulder"
+ },
+ {
+  "nom_fr": "Péricardite",
+  "synonymes": "pericarditis"
+ },
+ {
+  "nom_fr": "Rectocolite hémorragique",
+  "synonymes": "RCH, ulcerative colitis, colite ulcereuse"
+ },
+ {
+  "nom_fr": "Reflux du nourrisson",
+  "synonymes": "infant reflux, RGO nourrisson"
+ },
+ {
+  "nom_fr": "Reflux gastro-œsophagien",
+  "synonymes": "RGO, reflux, GERD, gastroesophageal reflux"
+ },
+ {
+  "nom_fr": "Retard de croissance",
+  "synonymes": "growth retardation, retard staturo-ponderal"
+ },
+ {
+  "nom_fr": "Rhinite allergique",
+  "synonymes": "allergic rhinitis, rhume des foins"
+ },
+ {
+  "nom_fr": "Rhinite allergique saisonnière",
+  "synonymes": "seasonal allergic rhinitis, pollinose, rhume des foins"
+ },
+ {
+  "nom_fr": "Rhinite chronique",
+  "synonymes": "chronic rhinitis, rhinite"
+ },
+ {
+  "nom_fr": "Rhinopharyngite",
+  "synonymes": "rhume, nasopharyngitis, common cold, coryza"
+ },
+ {
+  "nom_fr": "Rhinopharyngite de l'enfant",
+  "synonymes": "rhume enfant, common cold child"
+ },
+ {
+  "nom_fr": "Rosacée",
+  "synonymes": "rosacea, couperose"
+ },
+ {
+  "nom_fr": "Rougeole",
+  "synonymes": "measles, rougeole"
+ },
+ {
+  "nom_fr": "Rubéole",
+  "synonymes": "rubella"
+ },
+ {
+  "nom_fr": "Rétention urinaire",
+  "synonymes": "urinary retention"
+ },
+ {
+  "nom_fr": "Rétinopathie diabétique",
+  "synonymes": "diabetic retinopathy, retinopathie"
+ },
+ {
+  "nom_fr": "Rétrécissement aortique",
+  "synonymes": "stenose aortique, aortic stenosis"
+ },
+ {
+  "nom_fr": "Rétrécissement aortique serré",
+  "synonymes": "stenose aortique serree, severe aortic stenosis"
+ },
+ {
+  "nom_fr": "Salpingite",
+  "synonymes": "salpingitis, infection genitale haute"
+ },
+ {
+  "nom_fr": "Schizophrénie",
+  "synonymes": "schizophrenia"
+ },
+ {
+  "nom_fr": "Sciatique",
+  "synonymes": "sciatica, lombosciatique, nevralgie sciatique"
+ },
+ {
+  "nom_fr": "Sclérose en plaques",
+  "synonymes": "SEP, multiple sclerosis"
+ },
+ {
+  "nom_fr": "Septicémie",
+  "synonymes": "sepsis, septicemie, bacteriemie"
+ },
+ {
+  "nom_fr": "Sinusite",
+  "synonymes": "sinusitis, sinusite chronique"
+ },
+ {
+  "nom_fr": "Sinusite aiguë",
+  "synonymes": "acute sinusitis"
+ },
+ {
+  "nom_fr": "Souffle cardiaque",
+  "synonymes": "heart murmur"
+ },
+ {
+  "nom_fr": "Spondylarthrite ankylosante",
+  "synonymes": "ankylosing spondylitis, spondylarthrite"
+ },
+ {
+  "nom_fr": "Strabisme",
+  "synonymes": "strabismus, oeil qui louche"
+ },
+ {
+  "nom_fr": "Stéatose hépatique",
+  "synonymes": "foie gras, NASH, fatty liver, steatose"
+ },
+ {
+  "nom_fr": "Sténose de l'artère rénale",
+  "synonymes": "renal artery stenosis, stenose arteres renales"
+ },
+ {
+  "nom_fr": "Sueurs nocturnes",
+  "synonymes": "night sweats, sueurs"
+ },
+ {
+  "nom_fr": "Surdité",
+  "synonymes": "hearing loss, hypoacousie, perte auditive"
+ },
+ {
+  "nom_fr": "Syncope",
+  "synonymes": "malaise, fainting, perte de connaissance, syncope"
+ },
+ {
+  "nom_fr": "Syndrome de Cushing",
+  "synonymes": "Cushing syndrome, hypercorticisme"
+ },
+ {
+  "nom_fr": "Syndrome de Wolff-Parkinson-White",
+  "synonymes": "WPW, Wolff Parkinson White, preexcitation"
+ },
+ {
+  "nom_fr": "Syndrome de l'intestin irritable",
+  "synonymes": "colopathie fonctionnelle, IBS, colon irritable"
+ },
+ {
+  "nom_fr": "Syndrome des ovaires polykystiques",
+  "synonymes": "SOPK, PCOS, ovaires polykystiques"
+ },
+ {
+  "nom_fr": "Syndrome du canal carpien",
+  "synonymes": "carpal tunnel syndrome, canal carpien"
+ },
+ {
+  "nom_fr": "Syndrome grippal",
+  "synonymes": "flu-like syndrome, etat grippal"
+ },
+ {
+  "nom_fr": "Syndrome métabolique",
+  "synonymes": "metabolic syndrome"
+ },
+ {
+  "nom_fr": "Syndrome néphrotique",
+  "synonymes": "nephrotic syndrome"
+ },
+ {
+  "nom_fr": "Sécheresse oculaire",
+  "synonymes": "dry eye, syndrome sec oculaire"
+ },
+ {
+  "nom_fr": "Tachycardie",
+  "synonymes": "tachycardia, palpitations"
+ },
+ {
+  "nom_fr": "Teigne",
+  "synonymes": "tinea, dermatophytie, ringworm"
+ },
+ {
+  "nom_fr": "Tendinite",
+  "synonymes": "tendinitis, tendinopathie"
+ },
+ {
+  "nom_fr": "Tendinite de la coiffe des rotateurs",
+  "synonymes": "rotator cuff, coiffe des rotateurs"
+ },
+ {
+  "nom_fr": "Thalassémie",
+  "synonymes": "thalassemia"
+ },
+ {
+  "nom_fr": "Thrombocytose",
+  "synonymes": "thrombocytosis, plaquettes elevees"
+ },
+ {
+  "nom_fr": "Thrombopénie",
+  "synonymes": "thrombocytopenia, plaquettes basses"
+ },
+ {
+  "nom_fr": "Thrombose veineuse profonde",
+  "synonymes": "TVP, phlebite, deep vein thrombosis, DVT"
+ },
+ {
+  "nom_fr": "Thyroïdite",
+  "synonymes": "thyroiditis, Hashimoto"
+ },
+ {
+  "nom_fr": "Toux chronique",
+  "synonymes": "chronic cough, toux"
+ },
+ {
+  "nom_fr": "Toxoplasmose",
+  "synonymes": "toxoplasmosis"
+ },
+ {
+  "nom_fr": "Tremblement essentiel",
+  "synonymes": "essential tremor, tremblement"
+ },
+ {
+  "nom_fr": "Trouble anxieux généralisé",
+  "synonymes": "anxiete, TAG, generalized anxiety, anxiety"
+ },
+ {
+  "nom_fr": "Trouble bipolaire",
+  "synonymes": "bipolar disorder, maniaco-depressif, PMD"
+ },
+ {
+  "nom_fr": "Trouble de l'adaptation",
+  "synonymes": "adjustment disorder"
+ },
+ {
+  "nom_fr": "Trouble de la coagulation",
+  "synonymes": "coagulation disorder, coagulopathie"
+ },
+ {
+  "nom_fr": "Trouble du comportement alimentaire",
+  "synonymes": "TCA, eating disorder"
+ },
+ {
+  "nom_fr": "Trouble du déficit de l'attention avec hyperactivité",
+  "synonymes": "TDAH, ADHD, hyperactivite"
+ },
+ {
+  "nom_fr": "Trouble du rythme cardiaque",
+  "synonymes": "arythmie, arrhythmia, dysrythmie"
+ },
+ {
+  "nom_fr": "Trouble du sommeil",
+  "synonymes": "sleep disorder"
+ },
+ {
+  "nom_fr": "Trouble du spectre autistique",
+  "synonymes": "autisme, autism, TSA"
+ },
+ {
+  "nom_fr": "Trouble dépressif",
+  "synonymes": "depression, episode depressif, depressive disorder"
+ },
+ {
+  "nom_fr": "Trouble dépressif récurrent",
+  "synonymes": "depression recurrente, recurrent depression"
+ },
+ {
+  "nom_fr": "Trouble obsessionnel compulsif",
+  "synonymes": "TOC, OCD, obsessions"
+ },
+ {
+  "nom_fr": "Trouble panique",
+  "synonymes": "attaque de panique, panic disorder, crise d'angoisse"
+ },
+ {
+  "nom_fr": "Tuberculose pulmonaire",
+  "synonymes": "TB, tuberculosis, BK, tuberculose"
+ },
+ {
+  "nom_fr": "Ulcère duodénal",
+  "synonymes": "duodenal ulcer"
+ },
+ {
+  "nom_fr": "Ulcère gastrique",
+  "synonymes": "gastric ulcer, ulcere estomac"
+ },
+ {
+  "nom_fr": "Ulcère gastro-duodénal",
+  "synonymes": "ulcere peptique, peptic ulcer, ulcere gastroduodenal"
+ },
+ {
+  "nom_fr": "Urticaire",
+  "synonymes": "urticaria, hives"
+ },
+ {
+  "nom_fr": "Uvéite",
+  "synonymes": "uveitis"
+ },
+ {
+  "nom_fr": "Vaginose bactérienne",
+  "synonymes": "bacterial vaginosis"
+ },
+ {
+  "nom_fr": "Valvulopathie",
+  "synonymes": "maladie valvulaire, valvular disease, valve"
+ },
+ {
+  "nom_fr": "Varicelle",
+  "synonymes": "chickenpox, varicelle"
+ },
+ {
+  "nom_fr": "Varicelle de l'enfant",
+  "synonymes": "chickenpox child"
+ },
+ {
+  "nom_fr": "Varices des membres inférieurs",
+  "synonymes": "varices, varicose veins"
+ },
+ {
+  "nom_fr": "Varicocèle",
+  "synonymes": "varicocele"
+ },
+ {
+  "nom_fr": "Verrue",
+  "synonymes": "wart, verrue vulgaire"
+ },
+ {
+  "nom_fr": "Vertige",
+  "synonymes": "vertigo, etourdissement, vertiges"
+ },
+ {
+  "nom_fr": "Vertige de Ménière",
+  "synonymes": "Meniere disease, maladie de Meniere"
+ },
+ {
+  "nom_fr": "Vertige paroxystique positionnel bénin",
+  "synonymes": "VPPB, BPPV"
+ },
+ {
+  "nom_fr": "Vertiges",
+  "synonymes": "dizziness, vertiges, etourdissements"
+ },
+ {
+  "nom_fr": "Vitiligo",
+  "synonymes": "vitiligo"
+ },
+ {
+  "nom_fr": "Végétations adénoïdes",
+  "synonymes": "adenoid hypertrophy, vegetations"
+ },
+ {
+  "nom_fr": "Zona",
+  "synonymes": "shingles, herpes zoster, zona"
+ },
+ {
+  "nom_fr": "Épanchement pleural",
+  "synonymes": "pleural effusion, pleuresie"
+ },
+ {
+  "nom_fr": "Épicondylite",
+  "synonymes": "tennis elbow, epicondylite laterale"
+ },
+ {
+  "nom_fr": "Épilepsie",
+  "synonymes": "epilepsy, crise convulsive, comitialite"
+ },
+ {
+  "nom_fr": "Épistaxis",
+  "synonymes": "saignement de nez, nosebleed"
+ },
+ {
+  "nom_fr": "Érysipèle",
+  "synonymes": "erysipelas, dermohypodermite"
+ },
+ {
+  "nom_fr": "Érythème fessier",
+  "synonymes": "diaper rash, dermite du siege"
+ },
+ {
+  "nom_fr": "État de stress post-traumatique",
+  "synonymes": "ESPT, PTSD, stress post traumatique, trauma"
+ },
+ {
+  "nom_fr": "Œdème",
+  "synonymes": "edema, oedeme, gonflement"
+ },
+ {
+  "nom_fr": "Œdème de Quincke",
+  "synonymes": "angioedema, angio-oedeme, Quincke"
+ },
+ {
+  "nom_fr": "Œsophagite",
+  "synonymes": "esophagitis, oesophagite"
+ }
+]

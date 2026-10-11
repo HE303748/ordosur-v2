@@ -33,19 +33,23 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
 
 ## Base de données (Supabase yxzvukryngvlzjgaydqj)
 - Tables clés : medicaments 52 802 (colonne `dci_canonique`) · drug_interactions 163 124 ·
-  pathologies 48 041 · pathologies_curees 372 · contraindications 1 421 · allergies_reference 71.
+  pathologies 48 041 · pathologies_curees 372 · contraindications 1 465 · ci_condition_concepts 245 · allergies_reference 71.
 - Bilans (Sprint 6A) : `resultats_examens` (valeurs figées ; correction = archivage avec motif + nouvelle ligne ;
   interprétation calculée en base UNIQUEMENT d'après les bornes du labo saisies ; RPC `enregistrer_resultats_examens`).
   Règles pures : `src/lib/resultatsLogic.ts`. Conversions d'unités : uniquement `examens_reference.unites`.
 - Fonction rénale (Sprint 6B) : canal additionnel `src/lib/renalEngine.ts` (CKD-EPI 2021, Cockcroft si `patients.poids_kg`),
   règles en base `regles_renales` / `regles_renales_classes` (générées par `scripts/gen_regles_renales.mjs`), créatinine
-  relue en base avant chaque verdict (`hooks/useRenal.ts`, jamais le cache de vue). Défauts connus du matching existant,
-  constatés par `matchingExistant.defauts.test.ts` (préfixe « insuffisance r ») : à corriger au Sprint 2b.
+  relue en base avant chaque verdict (`hooks/useRenal.ts`, jamais le cache de vue).
+- Matching des conditions (Sprint 2b-1) : module pur `src/lib/conditionMatcher.ts`. Le concept d'une CI est LU dans la table
+  `ci_condition_concepts` (formulation → concept de pathologies_curees, qualificatif, stade, famille), générée et relue à la main
+  dans `scripts/gen_ci_condition_concepts.mjs` — jamais cherché dans le texte. Toute NOUVELLE formulation de
+  `contraindications.condition_valeur` doit y être ajoutée (sinon : libellé identique seulement). Plus aucun préfixe ni sous-chaîne.
+  Banc de non-régression hors dépôt : `../sprint2b/banc.mjs --reel` (toute disparition non validée = STOP).
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).
   Matching médicament : pattern ⊆ norm(dci + nom + dci_canonique). Matching condition :
-  pathologies + synonymes avec triple garde-fou anti faux-positifs.
+  `conditionMatcher.ts` (concepts, familles, stades rénaux, qualificatifs → « À évaluer » ou sévérité conservée « à préciser »).
 
 ## Workflow
 - 1 sprint = 1 session Claude Code = 1 push. Fermer la session après le push.

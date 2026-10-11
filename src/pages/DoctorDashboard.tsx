@@ -92,6 +92,11 @@ import {
 // Sprint 6B — canal fonction rénale (module pur lib/renalEngine, chargeur dédié hooks/useRenal)
 import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, type RenalReserve, type RenalStatus } from '../lib/renalEngine';
 import { useRenalChannel } from '../hooks/useRenal';
+import {
+  buildConditionMatcher, preparePatient, matchCondition, conditionTitre,
+  type CiConceptRow, type PathologieCuree,
+} from '../lib/conditionMatcher';
+import ciConceptsData from '../lib/ci_condition_concepts.data.json';
 import { patientSearchInput } from '../lib/uiLabels';
 import { RenalStrip } from '../components/bilans/RenalStrip';
 import { PregnancyStatusEditor } from '../components/PregnancyStatusEditor';
@@ -213,21 +218,6 @@ interface MaskedAlert {
   alert: InteractionAlert;
   reason: string;
 }
-
-// Volet 2 — Racines médicales génériques mono-mot, partagées entre maladies cliniquement
-// DISTINCTES (ex: "hypertension" ∈ artérielle ET pulmonaire ; "insuffisance" ∈ rénale,
-// cardiaque, hépatique…). Exclues du matching word-boundary des SYNONYMES pour éviter les
-// faux positifs inter-organes (un patient HTA artérielle ne doit pas déclencher une CI
-// d'hypertension pulmonaire néonatale). Valeurs déjà normalisées (sans accents, minuscules).
-// NE concerne PAS : les abréviations (hta, irc, avc…), les synonymes multi-mots
-// ("arterial hypertension"), ni le nom de la pathologie (qui garde sa logique substring).
-const GENERIC_SYNONYM_STOPLIST = new Set<string>([
-  'hypertension', 'hypotension', 'tension',
-  'insuffisance', 'deficit',
-  'cancer', 'carcinome', 'tumeur', 'neoplasie',
-  'infection', 'inflammation',
-  'syndrome', 'maladie', 'trouble', 'troubles',
-]);
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -3088,7 +3078,11 @@ export function DoctorDashboard() {
   // Volet 2 — synonymes des pathologies du patient sélectionné.
   // Clé = nom_fr de la pathologie (tel que stocké dans patients.pathologies),
   // valeur = liste de synonymes bruts. Chargé en 1 requête batch quand le patient change.
-  const [pathologySynonyms, setPathologySynonyms] = useState<Map<string, string[]>>(new Map());
+  // Sprint 2b-1 — table de correspondance « formulation de CI → concept » et dictionnaire des
+  // pathologies. Valeur initiale = copie embarquée (générée par scripts/gen_ci_condition_concepts.mjs) :
+  // le matching des conditions n'est JAMAIS aveugle, même si le chargement en base échoue.
+  const [ciConcepts, setCiConcepts] = useState<CiConceptRow[]>(ciConceptsData.concepts as CiConceptRow[]);
+  const [pathologiesCurees, setPathologiesCurees] = useState<PathologieCuree[]>(ciConceptsData.curees as PathologieCuree[]);
 
   // Prescription
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
@@ -3200,43 +3194,33 @@ export function DoctorDashboard() {
   // Saisie fluide — plus AUCUN défilement automatique vers le verdict : l'indicateur à côté
   // du champ de recherche (AnalysisIndicator) le signale, un clic y conduit.
 
-  // Volet 2 — Chargement batch des synonymes des pathologies du patient sélectionné.
-  // 1 seule requête .in('nom_fr', [...]) → pas de N+1. Si le patient n'a pas de pathologie
-  // ou que la requête échoue, on garde une Map vide → le moteur retombe sur le nom seul
-  // (fallback gracieux, aucun crash).
+  // Sprint 2b-1 — la base fait foi (fetchAllRows) ; table vide ou erreur → la copie embarquée reste en place.
   useEffect(() => {
+    if (!user?.id) return;
     let cancelled = false;
-    const loadSynonyms = async () => {
-      const pathos = selectedPatient?.pathologies?.filter(Boolean) ?? [];
-      if (pathos.length === 0) {
-        setPathologySynonyms(new Map());
-        return;
-      }
+    (async () => {
       try {
-        const { data } = await supabase
-          .from('pathologies_curees')
-          .select('nom_fr, synonymes')
-          .in('nom_fr', pathos);
+        const [rows, curees] = await Promise.all([
+          fetchAllRows<CiConceptRow>(
+            (from, to) => supabase.from('ci_condition_concepts')
+              .select('condition_norm, condition_valeur, ordre, libelle, traitement, concept, famille, qualificatif, qualificatif_type, stade')
+              .order('condition_norm').order('ordre').range(from, to),
+            { label: 'ci_condition_concepts' },
+          ),
+          fetchAllRows<PathologieCuree>(
+            (from, to) => supabase.from('pathologies_curees').select('nom_fr, synonymes').order('nom_fr').range(from, to),
+            { label: 'pathologies_curees' },
+          ),
+        ]);
         if (cancelled) return;
-        const map = new Map<string, string[]>();
-        for (const row of data ?? []) {
-          const syns = (row.synonymes ?? '')
-            .split(',')
-            .map((s: string) => s.trim())
-            .filter((s: string) => s.length > 0);
-          if (syns.length > 0) map.set(row.nom_fr, syns);
-        }
-        setPathologySynonyms(map);
-      } catch {
-        if (!cancelled) setPathologySynonyms(new Map());
+        if (rows.length > 0) setCiConcepts(rows);
+        if (curees.length > 0) setPathologiesCurees(curees);
+      } catch (e) {
+        console.error('[OrdoSur] ci_condition_concepts load error:', e);
       }
-    };
-    loadSynonyms();
+    })();
     return () => { cancelled = true; };
-    // Sprint 4 — rechargé aussi quand les pathologies du MÊME patient changent (ajout depuis
-    // le profil ou la fiche) : sinon la nouvelle pathologie était testée sans ses synonymes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPatient?.id, (selectedPatient?.pathologies ?? []).join('|')]);
+  }, [user?.id]);
 
   // Sprint 3 — Traitement de fond actif du patient sélectionné.
   // Fix — la liste était chargée UNIQUEMENT au changement de patient : un traitement ajouté
@@ -3426,6 +3410,12 @@ export function DoctorDashboard() {
     })();
     return () => { cancelled = true; };
   }, [user?.id]);
+
+  // Sprint 2b-1 — matching des conditions : table de correspondance + dictionnaire + familles d'allergies.
+  const conditionData = useMemo(
+    () => buildConditionMatcher(ciConcepts, pathologiesCurees, allergyFamilles),
+    [ciConcepts, pathologiesCurees, allergyFamilles],
+  );
 
   // Allergies médicamenteuses du patient + type de réaction (anaphylaxie) saisi dans la fiche.
   const patientAllergies = useMemo<PatientAllergy[]>(() => (selectedPatient?.allergies_medicaments ?? [])
@@ -3846,33 +3836,15 @@ export function DoctorDashboard() {
       );
 
       if (selectedPatient && allContraindications.length > 0) {
-        // Volet 2 — Termes de test par condition patient.
-        //   • normName : nom normalisé → matching SUBSTRING bidirectionnel (logique d'origine,
-        //     inchangée → aucune régression sur les matchs existants).
-        //   • synRegexes : synonymes (pathologies uniquement) normalisés, longueur ≥ 3,
-        //     compilés en regex word-boundary \bsyn\b → matching ADDITIF strict.
-        //     Le word-boundary neutralise "tension" ≠ "hypertension" (faux positif évité).
-        //     Le synonyme étant déjà normalisé (alphanumérique + espaces), la regex est sûre.
-        const buildTerm = (raw: string, synonyms: string[]) => ({
-          normName: norm(raw),
-          synRegexes: synonyms
-            .map(s => norm(s))
-            // ≥ 3 chars (garde les abréviations HTA/IRC/AVC) ET hors stop-list
-            // (exclut les racines génériques mono-mot type "hypertension" / "insuffisance"
-            // → anti faux-positif inter-organes).
-            .filter(s => s.length >= 3 && !GENERIC_SYNONYM_STOPLIST.has(s))
-            .map(s => new RegExp(`\\b${s}\\b`)),
-        });
-
-        const conditionTerms = [
-          // Pathologies : nom + synonymes (via pathologySynonyms, fallback [] si absente)
-          ...(selectedPatient.pathologies || []).map(p =>
-            buildTerm(p, pathologySynonyms.get(p) ?? [])
-          ),
-          // Allergies : nom seul (pas de synonymes en base → comportement inchangé)
-          ...(selectedPatient.allergies_medicaments || []).map(a => buildTerm(a, [])),
-          ...(selectedPatient.allergies_alimentaires || []).map(a => buildTerm(a, [])),
-        ];
+        // Sprint 2b-1 — conditions du patient lues UNE fois (concepts, familles, stade rénal),
+        // puis comparées à chaque CI par src/lib/conditionMatcher.ts : plus aucune comparaison
+        // de sous-chaîne ni de préfixe. Le DFG du canal rénal sert de stade quand il est connu.
+        const patientConditions = preparePatient({
+          pathologies: selectedPatient.pathologies,
+          allergiesMedicaments: selectedPatient.allergies_medicaments,
+          allergiesAlimentaires: selectedPatient.allergies_alimentaires,
+          dfg: renal.status.connu ? renal.status.dfg : null,
+        }, conditionData);
 
         for (const contra of allContraindications) {
           // dci_pattern may be pipe-separated (OR): "amoxicilline|ampicilline|..."
@@ -3887,17 +3859,12 @@ export function DoctorDashboard() {
           const matched = matchMeds(dciParts);
           if (matched.length === 0) continue;
 
-          // Check patient has the contraindicated condition :
-          //   nom → substring bidirectionnel + préfixe slice-14 (inchangé)
-          //   synonymes → word-boundary uniquement (additif, anti faux-positif)
-          const condMatch = conditionTerms.some(term => {
-            const pc = term.normName;
-            if (
-              pc.includes(cv) || cv.includes(pc) ||
-              (cv.length > 6 && pc.includes(cv.slice(0, Math.min(cv.length, 14))))
-            ) return true;
-            return term.synRegexes.some(re => re.test(cv));
-          });
+          // Le patient a-t-il la condition contre-indiquée ? Verdict du module :
+          //   oui → carte inchangée · preciser → sévérité conservée, précision demandée
+          //   a_evaluer → carte « À évaluer » · non → rien.
+          const cond = matchCondition(conditionData, patientConditions, contra.condition_type, contra.condition_valeur);
+          const condMatch = cond.verdict !== 'non';
+          const condTitre = conditionTitre(cond);
 
           for (const med of matched) {
             const key = `ci|${med.nom}|${contra.condition_valeur.slice(0, 30)}`;
@@ -3943,9 +3910,16 @@ export function DoctorDashboard() {
               continue;
             }
 
-            // c. Logique d'origine (inchangée)
+            // c. Condition du patient (Sprint 2b-1). Précision absente chez le patient : état de
+            //    contrôle ou stade → « À évaluer » ; gravité / forme → sévérité de la CI conservée.
             if (!condMatch) continue;
-            pushAlert(alert);
+            pushAlert(condTitre
+              ? {
+                ...alert,
+                severite: cond.verdict === 'a_evaluer' ? 'a_evaluer' : alert.severite,
+                description: `${condTitre}. ${contra.description}`,
+              }
+              : alert);
           }
         }
       }
@@ -4180,7 +4154,7 @@ export function DoctorDashboard() {
       if (!cancelled) { setAnalysisPending(false); setAnalysisFailed(true); }
     });
     return () => { cancelled = true; };
-  }, [selectedMeds, selectedPatient, allContraindications, pathologySynonyms, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick, patientAllergies, allergyFamilles, allergyRegles, dupClasses, dupSubstances, dupRegles, renal.status, renal.regles, renal.classes]);
+  }, [selectedMeds, selectedPatient, allContraindications, conditionData, fondTraitements, fondExcluded, patientAntecedents, antRegles, antClasses, rerunTick, patientAllergies, allergyFamilles, allergyRegles, dupClasses, dupSubstances, dupRegles, renal.status, renal.regles, renal.classes]);
 
   // ── Data loaders ─────────────────────────────────────────────────────────
 
