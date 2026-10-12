@@ -25,6 +25,9 @@ Cœur du produit : vérificateur d'interactions médicamenteuses et contre-indic
    qui est de petite taille). Vérifier la structure réelle en base avant de coder.
 5. **Compte démo `contact@ordosur.com` (Dr. Karim El Amrani) : NE JAMAIS supprimer/vider ses données.**
 6. ErrorBoundary en place (global + par vue, `resetKey`) : ne pas retirer.
+7. **Ne jamais relier une spécialité à un contre-ion seul (sodium, potassium, calcium, magnésium, lysine) quand la DCI
+   désigne un sel d'une autre molécule** (« SODIUM (VALPROATE DE) », « FOLINATE DE CALCIUM »…). Une ligne sans
+   ingrédient est un signal honnête (« non vérifiable ») ; une ligne mal reliée est un faux vert.
 
 ## Design (tokens officiels : src/lib/design-tokens.ts)
 Ink Navy #0A1628 · Medical Green #00A86B (SEUL accent) · Paper #FAFAF7 ·
@@ -87,6 +90,13 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   destinataire, texte riche « paragraphes + **gras** », suivi, brouillon — léger). Règle d'or : aucune donnée inventée, une
   section sans donnée est omise ; un traitement n'est dit « antihypertenseur » que si le patient est hypertendu. Ces modules
   ne lisent ni n'alimentent le moteur de sécurité. PDF : `src/lib/lettrePdf.ts`.
+- Mapping médicament → ingrédients (Sprint BDD-0) : les interactions (`check_interactions_v2(p_med_ids)`) passent
+  UNIQUEMENT par `medicament_ingredients` ; les CI, le canal rénal et le canal tératogène lisent le TEXTE (DCI, nom,
+  `dci_canonique`) — corriger un lien sans corriger une DCI fausse ne suffit donc pas. Jumeaux FR/EN dans `ingredients`
+  (metformin/metformine, valproic acid/valproate, hydroxycarbamide/hydroxyurea… : ANSM sur l'un, DDInter sur l'autre) :
+  non fusionnés, une spécialité est reliée AUX DEUX. Correctifs ponctuels : source unique
+  `scripts/gen_bdd0_mapping_fixes.mjs` (migration gardée par l'état de départ + empreinte base = source). Rapports de
+  revue hors dépôt : `../sprint2b/revue/bdd0_incoherences.csv`, `bdd0_jumeaux.csv`.
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).

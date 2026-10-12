@@ -1,0 +1,510 @@
+{
+  "empreinte": "dba743694a6b4aa88a20c45d20eae3bd",
+  "ingredients": {
+    "sodium": "623e135e-bb05-44ad-82e8-63107e9edaae",
+    "calcium": "23c4c366-6864-41b9-8925-436168cc1f65",
+    "valproic acid": "46b92d72-da29-4708-aac5-12a4662a8d1a",
+    "valproate": "c1ce864e-971a-44e0-8689-cf6c6317e296",
+    "hyaluronic acid": "0010c033-08d9-4603-a7cc-6638453782b6",
+    "leucovorin": "87a35c45-adbe-4e6d-a787-240ee0030ed1",
+    "acide folinique": "f320b18e-1a19-4629-906b-62dd12c2654f",
+    "clarithromycin": "51e6f7f8-653b-4aae-afd8-620afdca8a65",
+    "clarithromycine": "9fba138c-8fb9-48d2-81b8-cc196e87fa1c",
+    "octocog alfa": "76689dc4-4a62-4966-80be-03c444970729",
+    "hydrochlorothiazide": "07076f7e-26a3-4286-932a-201894abb400",
+    "colchicine": "ea6e9c47-f4af-40b5-852f-1fa1bce695c1",
+    "hydrocortisone": "a3c9cb17-6369-4102-b74d-7c7c81f8f8ff",
+    "hydroxycarbamide": "652668a4-4dcd-4271-8592-7696385cf0b8",
+    "hydroxyurea": "954ba383-290f-4bbe-be00-53f646b2114b",
+    "metformin": "03dea98f-3544-4b29-b419-47bede6553fa",
+    "metformine": "611be1d6-d666-494b-8355-9a9c4ea16619",
+    "glyburide": "815f6224-56fd-4d92-a98f-1ba05a34ad1a",
+    "acarbose": "a6b93770-8705-4556-972e-8c0d40297911",
+    "ibuprofen": "8baf21dd-402d-4ee2-b209-6aea0c78ce79",
+    "acetaminophen": "3854d3fd-f876-4bc4-b226-2197277c8faa",
+    "codeine": "e1134133-6c71-44ab-a3ac-69a3806a0daf",
+    "codéine": "a50ec2b3-ec76-4b3b-9b22-cfe2d9844916",
+    "medrogestone": "07a55ef8-1b39-40d0-a1bc-395770d42c33"
+  },
+  "lignes": [
+    {
+      "cas": "a",
+      "id": "4e1c949d-3faf-4a0e-9021-ba6903cd1d50",
+      "nom": "DEPAKINE 500 MG, Comprimé gastro-résistant",
+      "dci_avant": "SODIUM (VALPROATE DE)",
+      "dci": "SODIUM (VALPROATE DE)",
+      "ingredients_avant": [
+        "sodium"
+      ],
+      "ingredients": [
+        "valproate",
+        "valproic acid"
+      ]
+    },
+    {
+      "cas": "a",
+      "id": "0ef72794-66f1-4d33-af5f-18c4b6f04e8f",
+      "nom": "DEPAKINE CHRONO 500 MG, Comprimé pelliculé",
+      "dci_avant": "SODIUM (VALPROATE DE)",
+      "dci": "SODIUM (VALPROATE DE)",
+      "ingredients_avant": [
+        "sodium"
+      ],
+      "ingredients": [
+        "valproate",
+        "valproic acid"
+      ]
+    },
+    {
+      "cas": "a",
+      "id": "b98668a4-68ae-47d1-9368-84e57e2ca05a",
+      "nom": "DEPAKINE 200 MG / ML, Solution buvable",
+      "dci_avant": "SODIUM (VALPROATE DE)",
+      "dci": "SODIUM (VALPROATE DE)",
+      "ingredients_avant": [
+        "sodium"
+      ],
+      "ingredients": [
+        "valproate",
+        "valproic acid"
+      ]
+    },
+    {
+      "cas": "a",
+      "id": "2cbde5c2-a561-4116-9b70-bde57004b289",
+      "nom": "DEPAKINE, Sirop",
+      "dci_avant": "SODIUM (VALPROATE DE)",
+      "dci": "SODIUM (VALPROATE DE)",
+      "ingredients_avant": [
+        "sodium"
+      ],
+      "ingredients": [
+        "valproate",
+        "valproic acid"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "47b63255-e1d9-43b3-8ea4-8e0ed7f2c757",
+      "nom": "HYALGAN 20 MG / 2 ML, Solution Injectable pour usage intra-articulaire en seringue pré-remplie",
+      "dci_avant": "SODIUM (HYALURONATE DE)",
+      "dci": "SODIUM (HYALURONATE DE)",
+      "ingredients_avant": [
+        "sodium"
+      ],
+      "ingredients": [
+        "hyaluronic acid"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "47838bc8-e444-42f9-91c3-bd32ba0c9976",
+      "nom": "AGUETTANT 100 MG",
+      "dci_avant": "FOLINATE DE CALCIUM",
+      "dci": "FOLINATE DE CALCIUM",
+      "ingredients_avant": [
+        "calcium"
+      ],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "afdf9660-660f-412f-aaa5-15a3399f0740",
+      "nom": "FOLINATE DE CALCIUM AGUETTANT 100 MG, Lyophilisat injectable",
+      "dci_avant": "FOLINATE DE CALCIUM",
+      "dci": "FOLINATE DE CALCIUM",
+      "ingredients_avant": [
+        "calcium"
+      ],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "2894f0a9-4da2-4698-b53d-9ab01c7fef2c",
+      "nom": "FOLINATE DE CALCIUM AGUETTANT 50 MG, Lyophilisat injectable",
+      "dci_avant": "FOLINATE DE CALCIUM",
+      "dci": "FOLINATE DE CALCIUM",
+      "ingredients_avant": [
+        "calcium"
+      ],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "cbca7c8d-abb1-4d5c-aaee-c283556e7760",
+      "nom": "ELVORINE SOLUTION A DILUER POUR 1 BOITE 1 FLACON 4",
+      "dci_avant": "FOLINATE DE CALCIUM",
+      "dci": "FOLINATE DE CALCIUM",
+      "ingredients_avant": [
+        "calcium"
+      ],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "5773dfb6-fb49-4f85-b406-9451871a1e13",
+      "nom": "FOLINATE DE CALCIUM POUDRE POUR SOLUTION 1 BOITE 10 FLACON",
+      "dci_avant": "FOLINATE DE CALCIUM",
+      "dci": "FOLINATE DE CALCIUM",
+      "ingredients_avant": [
+        "calcium"
+      ],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "82c4b654-badb-4121-9af8-7a4dbd7e8b6e",
+      "nom": "CAFONATE",
+      "dci_avant": "LEUCOVORINE CALCIQUE (FOLINATE DE CALCIUM)",
+      "dci": "LEUCOVORINE CALCIQUE (FOLINATE DE CALCIUM)",
+      "ingredients_avant": [],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "ef808aea-604a-4f15-940f-5a8e27a18d69",
+      "nom": "LEDERFOLINE TION INJECTABLE à 5 MG 1 BOITE 1 AMPOULE",
+      "dci_avant": "FOLINATE DE CALCIUM SOLU",
+      "dci": "FOLINATE DE CALCIUM SOLU",
+      "ingredients_avant": [],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "41bbdfd4-f8e4-4d6f-9413-f93b3a575288",
+      "nom": "LEDERFOLINE RIME à 5 MG 1 BOITE 20 COMPRIME",
+      "dci_avant": "FOLINATE DE CALCIUM COMP",
+      "dci": "FOLINATE DE CALCIUM COMP",
+      "ingredients_avant": [
+        "leucovorin"
+      ],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "124b8d40-99b4-4712-a3ba-c097283acb3a",
+      "nom": "LEDERFOLINE RIME SECABLE à 15 MG 1 BOITE 10 COMPRIME",
+      "dci_avant": "FOLINATE DE CALCIUM COMP",
+      "dci": "FOLINATE DE CALCIUM COMP",
+      "ingredients_avant": [
+        "leucovorin"
+      ],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "b",
+      "id": "7b4b9103-1641-4284-9eaa-30220334b099",
+      "nom": "LEDERFOLINE RIME SECABLE à 25 MG 1 BOITE 6 COMPRIME",
+      "dci_avant": "FOLINATE DE CALCIUM COMP",
+      "dci": "FOLINATE DE CALCIUM COMP",
+      "ingredients_avant": [
+        "leucovorin"
+      ],
+      "ingredients": [
+        "acide folinique",
+        "leucovorin"
+      ]
+    },
+    {
+      "cas": "c",
+      "id": "d7d80805-2dc2-42c9-9c2a-32e36e00ad64",
+      "nom": "KOGENATE 1000 UI COMPRIME ENROBE à 250 MG 1 BOITE 12 COMPRIME",
+      "dci_avant": "CLARITHROMYCINE",
+      "dci": "OCTOCOG ALFA",
+      "ingredients_avant": [
+        "clarithromycin",
+        "clarithromycine"
+      ],
+      "ingredients": [
+        "octocog alfa"
+      ]
+    },
+    {
+      "cas": "c",
+      "id": "84e7ba6e-47a9-4611-a565-8312dbbf018b",
+      "nom": "KOGENATE 250 UI ENROBE",
+      "dci_avant": "CLARITHROMYCINE",
+      "dci": "OCTOCOG ALFA",
+      "ingredients_avant": [
+        "clarithromycin",
+        "clarithromycine"
+      ],
+      "ingredients": [
+        "octocog alfa"
+      ]
+    },
+    {
+      "cas": "c",
+      "id": "dd8e9c4d-4c17-41c8-9fc5-8279cad2405e",
+      "nom": "KOGENATE 500 UI",
+      "dci_avant": "CLARITHROMYCINE",
+      "dci": "OCTOCOG ALFA",
+      "ingredients_avant": [
+        "clarithromycin",
+        "clarithromycine"
+      ],
+      "ingredients": [
+        "octocog alfa"
+      ]
+    },
+    {
+      "cas": "d",
+      "id": "8f9a5d06-0fbf-4a9e-bdca-85349041d398",
+      "nom": "KLONOPIN",
+      "dci_avant": "CLARITHROMYCINE",
+      "dci": null,
+      "ingredients_avant": [
+        "clarithromycin",
+        "clarithromycine"
+      ],
+      "ingredients": []
+    },
+    {
+      "cas": "e",
+      "id": "33c0c901-0d5f-438a-a5e7-8a18e42ffedd",
+      "nom": "COLCHICINE MG",
+      "dci_avant": "HYDROCHLOROTHIAZIDE MG /",
+      "dci": "COLCHICINE",
+      "ingredients_avant": [
+        "hydrochlorothiazide"
+      ],
+      "ingredients": [
+        "colchicine"
+      ]
+    },
+    {
+      "cas": "f",
+      "id": "20580b06-7a4c-4362-a956-fa65d8939b39",
+      "nom": "HYDREA",
+      "dci_avant": "HYDROCORTISONE",
+      "dci": "HYDROXYCARBAMIDE",
+      "ingredients_avant": [
+        "hydrocortisone"
+      ],
+      "ingredients": [
+        "hydroxycarbamide",
+        "hydroxyurea"
+      ]
+    },
+    {
+      "cas": "f",
+      "id": "cc1e3059-8b30-4dce-8417-a89b2ffad41c",
+      "nom": "HYDREA GELULE à 500 MG 1 BOITE 20 GELULE",
+      "dci_avant": "HYDROXYCARBAMIDE",
+      "dci": "HYDROXYCARBAMIDE",
+      "ingredients_avant": [
+        "hydroxycarbamide"
+      ],
+      "ingredients": [
+        "hydroxycarbamide",
+        "hydroxyurea"
+      ]
+    },
+    {
+      "cas": "g",
+      "id": "35abe92d-1519-4a8b-aed4-b1fb834e47c1",
+      "nom": "GLUCOPHAGE 850 MG, Comprimé pelliculé",
+      "dci_avant": "CHLORHYDRATE DE METFORMINE",
+      "dci": "CHLORHYDRATE DE METFORMINE",
+      "ingredients_avant": [
+        "metformin"
+      ],
+      "ingredients": [
+        "metformin",
+        "metformine"
+      ]
+    },
+    {
+      "cas": "g",
+      "id": "8f6bb892-eaa1-4067-86d6-3e60bacd6949",
+      "nom": "GLUCOPHAGE 500 MG, Comprimé pelliculé",
+      "dci_avant": "CHLORHYDRATE DE METFORMINE",
+      "dci": "CHLORHYDRATE DE METFORMINE",
+      "ingredients_avant": [
+        "metformin"
+      ],
+      "ingredients": [
+        "metformin",
+        "metformine"
+      ]
+    },
+    {
+      "cas": "g",
+      "id": "38b5dcdf-fd20-4b59-a856-3a13cd58a3d8",
+      "nom": "GLUCOPHAGE 1000 MG, Comprimé pelliculé",
+      "dci_avant": "CHLORHYDRATE DE METFORMINE",
+      "dci": "CHLORHYDRATE DE METFORMINE",
+      "ingredients_avant": [
+        "metformin"
+      ],
+      "ingredients": [
+        "metformin",
+        "metformine"
+      ]
+    },
+    {
+      "cas": "h",
+      "id": "d7b5dce9-1233-473b-be9c-ce0ae6e9cc56",
+      "nom": "COLCHICINE COOPER",
+      "dci_avant": "COLCHICINE CRISTALLISEE",
+      "dci": "COLCHICINE CRISTALLISEE",
+      "ingredients_avant": [],
+      "ingredients": [
+        "colchicine"
+      ]
+    },
+    {
+      "cas": "A",
+      "id": "0f8e8ae8-4e5b-4c5d-bc09-b1d1eb4b5abe",
+      "nom": "GLUCOVANCE 1000 MG / 5 MG, Comprimé pelliculé",
+      "dci_avant": "GLIBENCLAMIDE",
+      "dci": "METFORMINE / GLIBENCLAMIDE",
+      "ingredients_avant": [
+        "glyburide"
+      ],
+      "ingredients": [
+        "glyburide",
+        "metformin",
+        "metformine"
+      ]
+    },
+    {
+      "cas": "A",
+      "id": "9709d445-f876-4d5f-adb7-277b2cbf6ace",
+      "nom": "GLUCOVANCE 500 MG / 2.5MG, Comprimé pelliculé",
+      "dci_avant": "GLIBENCLAMIDE",
+      "dci": "METFORMINE / GLIBENCLAMIDE",
+      "ingredients_avant": [
+        "glyburide"
+      ],
+      "ingredients": [
+        "glyburide",
+        "metformin",
+        "metformine"
+      ]
+    },
+    {
+      "cas": "A",
+      "id": "53d5c408-873d-49f7-b3ac-3bf739c45bc2",
+      "nom": "GLUCOVANCE 500 MG / 5 MG, Comprimé pelliculé",
+      "dci_avant": "GLIBENCLAMIDE",
+      "dci": "METFORMINE / GLIBENCLAMIDE",
+      "ingredients_avant": [
+        "glyburide"
+      ],
+      "ingredients": [
+        "glyburide",
+        "metformin",
+        "metformine"
+      ]
+    },
+    {
+      "cas": "A",
+      "id": "7fabccab-b037-4503-b22e-04e741be5323",
+      "nom": "GLUCOVANCE",
+      "dci_avant": "ACARBOSE",
+      "dci": null,
+      "ingredients_avant": [
+        "acarbose"
+      ],
+      "ingredients": []
+    },
+    {
+      "cas": "B",
+      "id": "e3cec812-660e-40ad-8b39-7ed4c6a5f712",
+      "nom": "NO-DOL CODEINE, Comprimé",
+      "dci_avant": "PARACETAMOL // CODEINE",
+      "dci": "PARACETAMOL // CODEINE",
+      "ingredients_avant": [
+        "ibuprofen"
+      ],
+      "ingredients": [
+        "acetaminophen",
+        "codeine",
+        "codéine"
+      ]
+    },
+    {
+      "cas": "C",
+      "id": "a024f3dd-8d52-4a04-b3bc-7cbdd1653b0a",
+      "nom": "COLPRONE",
+      "dci_avant": "HYDROCHLOROTHIAZIDE MG /",
+      "dci": null,
+      "ingredients_avant": [
+        "hydrochlorothiazide"
+      ],
+      "ingredients": []
+    },
+    {
+      "cas": "C",
+      "id": "63bf2d33-bf2c-4513-827f-63bfc8bba74c",
+      "nom": "COLPRONE COMPRIME SECABLE à 1 MG SECABLE",
+      "dci_avant": "COLCHICINE",
+      "dci": null,
+      "ingredients_avant": [
+        "colchicine"
+      ],
+      "ingredients": []
+    },
+    {
+      "cas": "C",
+      "id": "bf742897-eabf-4ad5-88e4-c3edbd37e0cd",
+      "nom": "COLPRONE COMPRIME SECABLE à 400 / 20 1 BOITE 16 COMPRIM",
+      "dci_avant": "PARACETAMOL /",
+      "dci": null,
+      "ingredients_avant": [],
+      "ingredients": []
+    },
+    {
+      "cas": "C",
+      "id": "db862c6f-d3d3-4560-87eb-d9d1da8a56b6",
+      "nom": "COLPRONE MG / MG",
+      "dci_avant": null,
+      "dci": null,
+      "ingredients_avant": [
+        "codeine"
+      ],
+      "ingredients": []
+    },
+    {
+      "cas": "C",
+      "id": "1ba2ed59-528d-46ba-b4eb-76b63306796e",
+      "nom": "COLPRONE 1 BOITE 40 COMPRIM",
+      "dci_avant": "MEDROGESTONE",
+      "dci": "MEDROGESTONE",
+      "ingredients_avant": [
+        "codeine"
+      ],
+      "ingredients": [
+        "medrogestone"
+      ]
+    }
+  ]
+}
