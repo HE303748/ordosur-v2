@@ -92,11 +92,21 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   ne lisent ni n'alimentent le moteur de sécurité. PDF : `src/lib/lettrePdf.ts`.
 - Mapping médicament → ingrédients (Sprint BDD-0) : les interactions (`check_interactions_v2(p_med_ids)`) passent
   UNIQUEMENT par `medicament_ingredients` ; les CI, le canal rénal et le canal tératogène lisent le TEXTE (DCI, nom,
-  `dci_canonique`) — corriger un lien sans corriger une DCI fausse ne suffit donc pas. Jumeaux FR/EN dans `ingredients`
-  (metformin/metformine, valproic acid/valproate, hydroxycarbamide/hydroxyurea… : ANSM sur l'un, DDInter sur l'autre) :
-  non fusionnés, une spécialité est reliée AUX DEUX. Correctifs ponctuels : source unique
+  `dci_canonique`) — corriger un lien sans corriger une DCI fausse ne suffit donc pas. Correctifs ponctuels : source unique
   `scripts/gen_bdd0_mapping_fixes.mjs` (migration gardée par l'état de départ + empreinte base = source). Rapports de
   revue hors dépôt : `../sprint2b/revue/bdd0_incoherences.csv`, `bdd0_jumeaux.csv`.
+- Référentiel de substances unique (Sprint BDD-1) : `ingredients.canonical_id` relie les entités d'une même molécule
+  (jumeaux FR/EN — metformin/metformine, valproic acid/valproate… —, DCI/USAN, sel, hydrate, promédicament) à UN canonique,
+  qui pointe vers lui-même (NULL = hors groupe ; trigger `ingredients_canonical_guard` : jamais de chaîne). Rien n'est
+  fusionné ni supprimé : `check_interactions_v2` élargit chaque ingrédient à tout son groupe (ANSM, DDInter, cumul),
+  compare les CANONIQUES (jamais les ids bruts : deux jumeaux ne s'opposent pas), rend UNE carte DDInter par paire de
+  substances (la plus sévère) et conserve une carte DDInter strictement plus sévère que la carte ANSM de la paire.
+  **Toute nouvelle substance ajoutée à `ingredients` doit être rattachée à son canonique** (nouvelle migration générée
+  depuis `scripts/gen_bdd1_equivalences.mjs`, empreinte base = source). Jamais dans un même groupe : énantiomères
+  (ésoméprazole/oméprazole…), HBPM/héparine, anticorps nu/conjugué, associations, fiches « topical / nasal / ophthalmic »,
+  identifiants `ddinterNNNN` (liste `INTERDITS` testée). `interactions_ingredients.revue_requise` = ligne rédigée à la
+  main, à relire : comparée sur les liens DIRECTS, jamais propagée au groupe. Candidats non appliqués et lignes à relire
+  hors dépôt : `../sprint2b/revue/bdd1_groupes.csv`, `bdd1_ddinter_manuelles.csv`.
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).

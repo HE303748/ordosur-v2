@@ -1,0 +1,2755 @@
+{
+  "empreinte": "3cfb7538a18df91430a457e2c84e82bd",
+  "lignes_revue_attendues": 53,
+  "groupes": [
+    {
+      "canonique": "diclofenac",
+      "membres": [
+        "diclofénac"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "diclofénac"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "omeprazole",
+      "membres": [
+        "oméprazole"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "oméprazole"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "metronidazole",
+      "membres": [
+        "métronidazole"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "métronidazole"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "paroxetine",
+      "membres": [
+        "paroxétine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "paroxétine"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "furosemide",
+      "membres": [
+        "furosémide"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "furosémide"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "fluoxetine",
+      "membres": [
+        "fluoxétine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "fluoxétine"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "carbamazepine",
+      "membres": [
+        "carbamazépine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "carbamazépine"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "codeine",
+      "membres": [
+        "codéine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "codéine"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "enalapril",
+      "membres": [
+        "énalapril"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "énalapril"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "fenofibrate",
+      "membres": [
+        "fénofibrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "fénofibrate"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent (acide fénofibrique exclu : autre spécialité)"
+        }
+      ]
+    },
+    {
+      "canonique": "methotrexate",
+      "membres": [
+        "méthotrexate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "méthotrexate"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "diazepam",
+      "membres": [
+        "diazépam"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "diazépam"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "lorazepam",
+      "membres": [
+        "lorazépam"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "lorazépam"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "verapamil",
+      "membres": [
+        "vérapamil"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "vérapamil"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "metoprolol",
+      "membres": [
+        "métoprolol"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "métoprolol"
+          ],
+          "confiance": "certain",
+          "type": "accent",
+          "justification": "Même nom, accent"
+        }
+      ]
+    },
+    {
+      "canonique": "amoxicilline",
+      "membres": [
+        "amoxicillin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "amoxicillin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "ciprofloxacine",
+      "membres": [
+        "ciprofloxacin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ciprofloxacin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "metformine",
+      "membres": [
+        "metformin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "metformin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "atorvastatine",
+      "membres": [
+        "atorvastatin",
+        "atorvastatin trihydrate",
+        "atorvastatin propylene glycol solvate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "atorvastatin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        },
+        {
+          "membres": [
+            "atorvastatin trihydrate",
+            "atorvastatin propylene glycol solvate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Hydrate / solvate de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "clarithromycine",
+      "membres": [
+        "clarithromycin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "clarithromycin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "simvastatine",
+      "membres": [
+        "simvastatin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "simvastatin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "digoxine",
+      "membres": [
+        "digoxin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "digoxin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "warfarine",
+      "membres": [
+        "warfarin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "warfarin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "amphotericine b",
+      "membres": [
+        "amphotericin b"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "amphotericin b"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in (formes lipidiques exclues)"
+        }
+      ]
+    },
+    {
+      "canonique": "polymyxine b",
+      "membres": [
+        "polymyxin b"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "polymyxin b"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "erythromycin",
+      "membres": [
+        "érythromycine",
+        "erythromycin ethylsuccinate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "érythromycine"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ine/-in + accent"
+        },
+        {
+          "membres": [
+            "erythromycin ethylsuccinate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Ester de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "phenytoin",
+      "membres": [
+        "phénytoïne"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "phénytoïne"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ïne/-in + accent (fosphénytoïne exclue)"
+        }
+      ]
+    },
+    {
+      "canonique": "insuline",
+      "membres": [
+        "insulin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "insulin"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "Terme générique des deux côtés"
+        }
+      ]
+    },
+    {
+      "canonique": "insuline glargine",
+      "membres": [
+        "insulin glargine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "insulin glargine"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "Même analogue"
+        }
+      ]
+    },
+    {
+      "canonique": "insuline lispro",
+      "membres": [
+        "insulin lispro"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "insulin lispro"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "Même analogue (lispro protamine exclue)"
+        }
+      ]
+    },
+    {
+      "canonique": "insuline degludec",
+      "membres": [
+        "insulin degludec"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "insulin degludec"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "Même analogue"
+        }
+      ]
+    },
+    {
+      "canonique": "insuline asparte",
+      "membres": [
+        "insulin aspart"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "insulin aspart"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "Même analogue"
+        }
+      ]
+    },
+    {
+      "canonique": "ibuprofen",
+      "membres": [
+        "ibuprofène"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ibuprofène"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ène/-en"
+        }
+      ]
+    },
+    {
+      "canonique": "trimethoprim",
+      "membres": [
+        "triméthoprime"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "triméthoprime"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ime/-im"
+        }
+      ]
+    },
+    {
+      "canonique": "isoniazide",
+      "membres": [
+        "isoniazid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "isoniazid"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ide/-id"
+        }
+      ]
+    },
+    {
+      "canonique": "sulfamethizol",
+      "membres": [
+        "sulfamethizole"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sulfamethizole"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "-ol/-ole"
+        }
+      ]
+    },
+    {
+      "canonique": "vitamine a",
+      "membres": [
+        "vitamin a"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "vitamin a"
+          ],
+          "confiance": "certain",
+          "type": "suffixe",
+          "justification": "vitamine/vitamin"
+        }
+      ]
+    },
+    {
+      "canonique": "cafeine",
+      "membres": [
+        "caffeine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "caffeine"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "caféine/caffeine"
+        }
+      ]
+    },
+    {
+      "canonique": "aciclovir",
+      "membres": [
+        "acyclovir"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "acyclovir"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "i/y (acyclovir topical exclu)"
+        }
+      ]
+    },
+    {
+      "canonique": "valaciclovir",
+      "membres": [
+        "valacyclovir"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "valacyclovir"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "i/y"
+        }
+      ]
+    },
+    {
+      "canonique": "indometacine",
+      "membres": [
+        "indomethacin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "indomethacin"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "t/th + -ine/-in"
+        }
+      ]
+    },
+    {
+      "canonique": "chlortalidone",
+      "membres": [
+        "chlorthalidone"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "chlorthalidone"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "t/th"
+        }
+      ]
+    },
+    {
+      "canonique": "tiabendazole",
+      "membres": [
+        "thiabendazole"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "thiabendazole"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "t/th"
+        }
+      ]
+    },
+    {
+      "canonique": "aspirin",
+      "membres": [
+        "aspirine",
+        "acetylsalicylic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "aspirine",
+            "acetylsalicylic acid"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Aspirine = acide acétylsalicylique (3 entités)"
+        }
+      ]
+    },
+    {
+      "canonique": "rifampicine",
+      "membres": [
+        "rifampicin",
+        "rifampin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "rifampicin",
+            "rifampin"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "rifampin = nom USAN de la rifampicine (3 entités)"
+        }
+      ]
+    },
+    {
+      "canonique": "acide fusidique",
+      "membres": [
+        "fusidic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "fusidic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide ascorbique",
+      "membres": [
+        "ascorbic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ascorbic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide zoledronique",
+      "membres": [
+        "zoledronic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "zoledronic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide folique",
+      "membres": [
+        "folic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "folic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid (acide lévoméfolique exclu)"
+        }
+      ]
+    },
+    {
+      "canonique": "acide alendronique",
+      "membres": [
+        "alendronic acid",
+        "alendronate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "alendronic acid",
+            "alendronate"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid ; alendronate = son sel"
+        }
+      ]
+    },
+    {
+      "canonique": "acide mefenamique",
+      "membres": [
+        "mefenamic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "mefenamic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide acetohydroxamique",
+      "membres": [
+        "acetohydroxamic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "acetohydroxamic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide cholique",
+      "membres": [
+        "cholic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "cholic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide etidronique",
+      "membres": [
+        "etidronic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "etidronic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide pamidronique",
+      "membres": [
+        "pamidronic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "pamidronic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide risedronique",
+      "membres": [
+        "risedronic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "risedronic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide tiludronique",
+      "membres": [
+        "tiludronic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "tiludronic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid"
+        }
+      ]
+    },
+    {
+      "canonique": "acide ibandronique",
+      "membres": [
+        "ibandronate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ibandronate"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide ibandronique / ibandronate (son sel)"
+        }
+      ]
+    },
+    {
+      "canonique": "acide ursodesoxycholique",
+      "membres": [
+        "ursodeoxycholic acid",
+        "ursodiol"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ursodeoxycholic acid",
+            "ursodiol"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide X / X acid ; ursodiol = nom USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "acide amidotrizoique",
+      "membres": [
+        "diatrizoate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "diatrizoate"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "amidotrizoate = diatrizoate (DCI / USAN)"
+        }
+      ]
+    },
+    {
+      "canonique": "acide folinique",
+      "membres": [
+        "leucovorin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "leucovorin"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "acide folinique = leucovorin (lévoleucovorine exclue : énantiomère)"
+        }
+      ]
+    },
+    {
+      "canonique": "acide nicotinique",
+      "membres": [
+        "niacin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "niacin"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "acide nicotinique = niacine (nicotinamide exclu)"
+        }
+      ]
+    },
+    {
+      "canonique": "valproic acid",
+      "membres": [
+        "valproate",
+        "divalproex"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "valproate"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "acide valproïque / valproate (valpromide exclu : entrée ANSM propre)"
+        },
+        {
+          "membres": [
+            "divalproex"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Divalproate de sodium = valproate + acide valproïque"
+        }
+      ]
+    },
+    {
+      "canonique": "clorazepate",
+      "membres": [
+        "clorazepic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "clorazepic acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "clorazépate / acide clorazépique"
+        }
+      ]
+    },
+    {
+      "canonique": "sodium (picosulfate de)",
+      "membres": [
+        "picosulfuric acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "picosulfuric acid"
+          ],
+          "confiance": "certain",
+          "type": "acide",
+          "justification": "picosulfate de sodium / acide picosulfurique"
+        }
+      ]
+    },
+    {
+      "canonique": "hydroxycarbamide",
+      "membres": [
+        "hydroxyurea"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "hydroxyurea"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "salbutamol",
+      "membres": [
+        "albuterol"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "albuterol"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN (lévosalbutamol exclu)"
+        }
+      ]
+    },
+    {
+      "canonique": "chlorphenamine",
+      "membres": [
+        "chlorpheniramine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "chlorpheniramine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN (dexchlorphéniramine exclue : énantiomère)"
+        }
+      ]
+    },
+    {
+      "canonique": "colestyramine",
+      "membres": [
+        "cholestyramine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "cholestyramine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "ethinylestradiol",
+      "membres": [
+        "ethinyl estradiol"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ethinyl estradiol"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "Même nom, espace"
+        }
+      ]
+    },
+    {
+      "canonique": "norethisterone",
+      "membres": [
+        "norethindrone"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "norethindrone"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "isoprenaline",
+      "membres": [
+        "isoproterenol"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "isoproterenol"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "methylergometrine",
+      "membres": [
+        "methylergonovine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "methylergonovine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "mesalazine",
+      "membres": [
+        "mesalamine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "mesalamine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "glycopyrronium",
+      "membres": [
+        "glycopyrrolate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "glycopyrrolate"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN (forme topique exclue)"
+        }
+      ]
+    },
+    {
+      "canonique": "benzatropine",
+      "membres": [
+        "benztropine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "benztropine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "levomepromazine",
+      "membres": [
+        "methotrimeprazine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "methotrimeprazine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN (Nozinan)"
+        }
+      ]
+    },
+    {
+      "canonique": "leuproreline",
+      "membres": [
+        "leuprolide"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "leuprolide"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "suxamethonium",
+      "membres": [
+        "succinylcholine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "succinylcholine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "torasemide",
+      "membres": [
+        "torsemide"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "torsemide"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "trometamol",
+      "membres": [
+        "tromethamine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "tromethamine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "tetracosactide",
+      "membres": [
+        "cosyntropin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "cosyntropin"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "fampridine",
+      "membres": [
+        "dalfampridine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "dalfampridine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN (amifampridine exclue : autre molécule)"
+        }
+      ]
+    },
+    {
+      "canonique": "sulfafurazol",
+      "membres": [
+        "sulfisoxazole"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sulfisoxazole"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN (acétylsulfafurazol exclu)"
+        }
+      ]
+    },
+    {
+      "canonique": "diprophylline",
+      "membres": [
+        "dyphylline"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "dyphylline"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "trientine",
+      "membres": [
+        "triethylenetetramine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "triethylenetetramine"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "somatropin",
+      "membres": [
+        "somatotropin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "somatotropin"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Somatropine (somatrem / somatrogon / somapacitan exclus)"
+        }
+      ]
+    },
+    {
+      "canonique": "phylloquinone",
+      "membres": [
+        "phytonadione"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "phytonadione"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Vitamine K1, DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "chenodeoxycholic acid",
+      "membres": [
+        "chenodiol"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "chenodiol"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "DCI / USAN"
+        }
+      ]
+    },
+    {
+      "canonique": "glycerol",
+      "membres": [
+        "glycerin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "glycerin"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "alcool",
+      "membres": [
+        "alcohol",
+        "ethanol"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "alcohol",
+            "ethanol"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Éthanol (3 entités)"
+        }
+      ]
+    },
+    {
+      "canonique": "mitomycine c",
+      "membres": [
+        "mitomycin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "mitomycin"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Mitomycine C"
+        }
+      ]
+    },
+    {
+      "canonique": "charbon active",
+      "membres": [
+        "activated charcoal"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "activated charcoal"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Traduction (charbon végétal officinal laissé à part : entrée ANSM propre)"
+        }
+      ]
+    },
+    {
+      "canonique": "bleu de methylene",
+      "membres": [
+        "methylene blue"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "methylene blue"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Traduction"
+        }
+      ]
+    },
+    {
+      "canonique": "millepertuis",
+      "membres": [
+        "st john s wort",
+        "st. john's wort"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "st john s wort",
+            "st. john's wort"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Traduction (2 écritures EN)"
+        }
+      ]
+    },
+    {
+      "canonique": "reglisse",
+      "membres": [
+        "licorice"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "licorice"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Traduction"
+        }
+      ]
+    },
+    {
+      "canonique": "fer",
+      "membres": [
+        "iron"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "iron"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Traduction (sels ferreux et fers injectables exclus)"
+        }
+      ]
+    },
+    {
+      "canonique": "estrogenes conjugues",
+      "membres": [
+        "conjugated estrogens"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "conjugated estrogens"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Traduction (forme topique exclue)"
+        }
+      ]
+    },
+    {
+      "canonique": "ginkgo",
+      "membres": [
+        "ginkgo biloba"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ginkgo biloba"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même plante"
+        }
+      ]
+    },
+    {
+      "canonique": "peg-interferon alfa-2a",
+      "membres": [
+        "peginterferon alfa-2a"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "peginterferon alfa-2a"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "Même nom, tiret"
+        }
+      ]
+    },
+    {
+      "canonique": "salmon calcitonin",
+      "membres": [
+        "calcitonin salmon"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "calcitonin salmon"
+          ],
+          "confiance": "certain",
+          "type": "orthographe",
+          "justification": "Même nom, ordre des mots"
+        }
+      ]
+    },
+    {
+      "canonique": "dinitrate d'isosorbide",
+      "membres": [
+        "isosorbide dinitrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "isosorbide dinitrate"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même sel (mononitrate exclu)"
+        }
+      ]
+    },
+    {
+      "canonique": "sodium (bicarbonate de)",
+      "membres": [
+        "sodium bicarbonate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sodium bicarbonate"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même sel"
+        }
+      ]
+    },
+    {
+      "canonique": "sodium (citrate de)",
+      "membres": [
+        "sodium citrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sodium citrate"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même sel"
+        }
+      ]
+    },
+    {
+      "canonique": "sodium (chlorure de)",
+      "membres": [
+        "sodium chloride"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sodium chloride"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même sel"
+        }
+      ]
+    },
+    {
+      "canonique": "sodium (docusate de)",
+      "membres": [
+        "docusate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "docusate"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Docusate sodique"
+        }
+      ]
+    },
+    {
+      "canonique": "sodium (nitroprussiate de)",
+      "membres": [
+        "nitroprusside"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "nitroprusside"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Nitroprussiate de sodium"
+        }
+      ]
+    },
+    {
+      "canonique": "potassium (citrate de)",
+      "membres": [
+        "potassium citrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "potassium citrate"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même sel"
+        }
+      ]
+    },
+    {
+      "canonique": "magnesium (hydroxyde de)",
+      "membres": [
+        "magnesium hydroxide"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "magnesium hydroxide"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même sel"
+        }
+      ]
+    },
+    {
+      "canonique": "polystyrene sulfonate de sodium",
+      "membres": [
+        "sodium polystyrene sulfonate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sodium polystyrene sulfonate"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même sel (sel de calcium exclu)"
+        }
+      ]
+    },
+    {
+      "canonique": "oxybate de sodium",
+      "membres": [
+        "sodium oxybate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sodium oxybate"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même sel"
+        }
+      ]
+    },
+    {
+      "canonique": "dimethyle ( fumarate de)",
+      "membres": [
+        "dimethyl fumarate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "dimethyl fumarate"
+          ],
+          "confiance": "certain",
+          "type": "traduction",
+          "justification": "Même molécule (diroximel / monométhyl fumarate exclus)"
+        }
+      ]
+    },
+    {
+      "canonique": "liothyronine sodique",
+      "membres": [
+        "liothyronine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "liothyronine"
+          ],
+          "confiance": "certain",
+          "type": "sel",
+          "justification": "Même substance, sel sodique"
+        }
+      ]
+    },
+    {
+      "canonique": "dalteparine sodique",
+      "membres": [
+        "dalteparin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "dalteparin"
+          ],
+          "confiance": "certain",
+          "type": "sel",
+          "justification": "Même HBPM, sel sodique"
+        }
+      ]
+    },
+    {
+      "canonique": "danaparoide sodique",
+      "membres": [
+        "danaparoid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "danaparoid"
+          ],
+          "confiance": "certain",
+          "type": "sel",
+          "justification": "Même substance, sel sodique"
+        }
+      ]
+    },
+    {
+      "canonique": "heparine sodique",
+      "membres": [
+        "heparine calcique",
+        "heparin"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "heparine calcique",
+            "heparin"
+          ],
+          "confiance": "certain",
+          "type": "sel",
+          "justification": "Héparine non fractionnée, sels sodique et calcique (HBPM et « heparin flush » exclus)"
+        }
+      ]
+    },
+    {
+      "canonique": "perindopril",
+      "membres": [
+        "perindopril tert-butylamine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "perindopril tert-butylamine"
+          ],
+          "confiance": "certain",
+          "type": "sel",
+          "justification": "Même molécule, sel de tert-butylamine (2 entrées ANSM)"
+        }
+      ]
+    },
+    {
+      "canonique": "abciximab (c 7e3b fab)",
+      "membres": [
+        "abciximab"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "abciximab"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Même anticorps"
+        }
+      ]
+    },
+    {
+      "canonique": "alteplase recombinante",
+      "membres": [
+        "alteplase"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "alteplase"
+          ],
+          "confiance": "certain",
+          "type": "synonyme",
+          "justification": "Même protéine"
+        }
+      ]
+    },
+    {
+      "canonique": "lanthane",
+      "membres": [
+        "lanthanum carbonate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "lanthanum carbonate"
+          ],
+          "confiance": "certain",
+          "type": "sel",
+          "justification": "Seule forme existante du lanthane médicament"
+        }
+      ]
+    },
+    {
+      "canonique": "azithromycin",
+      "membres": [
+        "azithromycin dihydrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "azithromycin dihydrate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Hydrate de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "ampicillin",
+      "membres": [
+        "ampicillin trihydrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ampicillin trihydrate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Hydrate de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "doxycycline",
+      "membres": [
+        "doxycycline hyclate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "doxycycline hyclate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "dextromethorphan",
+      "membres": [
+        "dextromethorphan hydrobromide"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "dextromethorphan hydrobromide"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "eltrombopag",
+      "membres": [
+        "eltrombopag olamine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "eltrombopag olamine"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "fluticasone",
+      "membres": [
+        "fluticasone propionate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "fluticasone propionate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Ester de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "ketorolac",
+      "membres": [
+        "ketorolac tromethamine"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "ketorolac tromethamine"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "lisdexamfetamine",
+      "membres": [
+        "lisdexamfetamine dimesylate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "lisdexamfetamine dimesylate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "lithium",
+      "membres": [
+        "lithium carbonate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "lithium carbonate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Carbonate de lithium"
+        }
+      ]
+    },
+    {
+      "canonique": "medroxyprogesterone",
+      "membres": [
+        "medroxyprogesterone acetate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "medroxyprogesterone acetate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Acétate (forme utilisée)"
+        }
+      ]
+    },
+    {
+      "canonique": "megestrol",
+      "membres": [
+        "megestrol acetate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "megestrol acetate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Acétate (forme utilisée)"
+        }
+      ]
+    },
+    {
+      "canonique": "mometasone",
+      "membres": [
+        "mometasone furoate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "mometasone furoate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Furoate (forme utilisée)"
+        }
+      ]
+    },
+    {
+      "canonique": "neostigmine",
+      "membres": [
+        "neostigmine methylsulfate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "neostigmine methylsulfate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "norepinephrine",
+      "membres": [
+        "norepinephrine bitartrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "norepinephrine bitartrate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "pemetrexed",
+      "membres": [
+        "pemetrexed disodium hemipentahydrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "pemetrexed disodium hemipentahydrate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "pramipexole",
+      "membres": [
+        "pramipexole dihydrochloride"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "pramipexole dihydrochloride"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "rizatriptan",
+      "membres": [
+        "rizatriptan benzoate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "rizatriptan benzoate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "rucaparib",
+      "membres": [
+        "rucaparib camsylate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "rucaparib camsylate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "salmeterol",
+      "membres": [
+        "salmeterol xinafoate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "salmeterol xinafoate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "sapropterin",
+      "membres": [
+        "sapropterin dihydrochloride"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sapropterin dihydrochloride"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "sevelamer",
+      "membres": [
+        "sevelamer carbonate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "sevelamer carbonate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "triamcinolone",
+      "membres": [
+        "triamcinolone acetonide"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "triamcinolone acetonide"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Acétonide (forme utilisée)"
+        }
+      ]
+    },
+    {
+      "canonique": "benzylpenicillin",
+      "membres": [
+        "benzylpenicillin potassium",
+        "benzylpenicillin sodium"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "benzylpenicillin potassium",
+            "benzylpenicillin sodium"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sels de la même molécule (benzathine exclue)"
+        }
+      ]
+    },
+    {
+      "canonique": "dapagliflozin",
+      "membres": [
+        "dapagliflozin propanediol"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "dapagliflozin propanediol"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Solvate de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "carbidopa",
+      "membres": [
+        "carbidopa hydrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "carbidopa hydrate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Hydrate de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "testosterone",
+      "membres": [
+        "testosterone cypionate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "testosterone cypionate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Ester de la même hormone"
+        }
+      ]
+    },
+    {
+      "canonique": "balsalazide",
+      "membres": [
+        "balsalazide disodium"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "balsalazide disodium"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Sel de la même molécule"
+        }
+      ]
+    },
+    {
+      "canonique": "magnesium sulfate",
+      "membres": [
+        "magnesium heptahydrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "magnesium heptahydrate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Nom tronqué : sulfate de magnésium heptahydraté"
+        }
+      ]
+    },
+    {
+      "canonique": "dicitrate trimagnesien",
+      "membres": [
+        "magnesium citrate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "magnesium citrate"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Citrate de magnésium"
+        }
+      ]
+    },
+    {
+      "canonique": "p a s sodique",
+      "membres": [
+        "aminosalicylic acid"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "aminosalicylic acid"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Para-aminosalicylate de sodium"
+        }
+      ]
+    },
+    {
+      "canonique": "piroxicam",
+      "membres": [
+        "piroxicam-betadex"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "piroxicam-betadex"
+          ],
+          "confiance": "probable",
+          "type": "sel",
+          "justification": "Complexe bêta-cyclodextrine du piroxicam (2 entrées ANSM)"
+        }
+      ]
+    },
+    {
+      "canonique": "dabigatran",
+      "membres": [
+        "dabigatran etexilate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "dabigatran etexilate"
+          ],
+          "confiance": "probable",
+          "type": "promedicament",
+          "justification": "Pradaxa : seule forme orale du dabigatran"
+        }
+      ]
+    },
+    {
+      "canonique": "candesartan cilexetil",
+      "membres": [
+        "candesartan"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "candesartan"
+          ],
+          "confiance": "probable",
+          "type": "promedicament",
+          "justification": "Seule forme administrée"
+        }
+      ]
+    },
+    {
+      "canonique": "azilsartan",
+      "membres": [
+        "azilsartan medoxomil",
+        "azilsartan kamedoxomil"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "azilsartan medoxomil",
+            "azilsartan kamedoxomil"
+          ],
+          "confiance": "probable",
+          "type": "promedicament",
+          "justification": "Seules formes administrées"
+        }
+      ]
+    },
+    {
+      "canonique": "olmesartan",
+      "membres": [
+        "olmesartan medoxomil"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "olmesartan medoxomil"
+          ],
+          "confiance": "probable",
+          "type": "promedicament",
+          "justification": "Seule forme administrée"
+        }
+      ]
+    },
+    {
+      "canonique": "adefovir",
+      "membres": [
+        "adefovir dipivoxil"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "adefovir dipivoxil"
+          ],
+          "confiance": "probable",
+          "type": "promedicament",
+          "justification": "Seule forme administrée"
+        }
+      ]
+    },
+    {
+      "canonique": "isavuconazole",
+      "membres": [
+        "isavuconazonium"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "isavuconazonium"
+          ],
+          "confiance": "probable",
+          "type": "promedicament",
+          "justification": "Seule forme administrée"
+        }
+      ]
+    },
+    {
+      "canonique": "cefuroxime",
+      "membres": [
+        "cefuroxime axetil"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "cefuroxime axetil"
+          ],
+          "confiance": "probable",
+          "type": "promedicament",
+          "justification": "Forme orale du céfuroxime"
+        }
+      ]
+    },
+    {
+      "canonique": "colistin",
+      "membres": [
+        "colistimethate"
+      ],
+      "origines": [
+        {
+          "membres": [
+            "colistimethate"
+          ],
+          "confiance": "probable",
+          "type": "promedicament",
+          "justification": "Colistiméthate = forme injectable de la colistine"
+        }
+      ]
+    }
+  ],
+  "interdits": [
+    [
+      "omeprazole",
+      "esomeprazole"
+    ],
+    [
+      "cetirizine",
+      "levocetirizine"
+    ],
+    [
+      "citalopram",
+      "escitalopram"
+    ],
+    [
+      "ketoprofen",
+      "dexketoprofene trometamol"
+    ],
+    [
+      "ibuprofen",
+      "dexibuprofen"
+    ],
+    [
+      "lansoprazole",
+      "dexlansoprazole"
+    ],
+    [
+      "ofloxacin",
+      "levofloxacin"
+    ],
+    [
+      "salbutamol",
+      "levosalbutamol"
+    ],
+    [
+      "amlodipine",
+      "levamlodipine"
+    ],
+    [
+      "leucovorin",
+      "levoleucovorin"
+    ],
+    [
+      "acide folique",
+      "levomefolic acid"
+    ],
+    [
+      "bupivacaine",
+      "levobupivacaine"
+    ],
+    [
+      "ketamine",
+      "esketamine"
+    ],
+    [
+      "milnacipran",
+      "levomilnacipran"
+    ],
+    [
+      "methylphenidate",
+      "dexmethylphenidate"
+    ],
+    [
+      "chlorphenamine",
+      "dexchlorpheniramine"
+    ],
+    [
+      "brompheniramine",
+      "dexbrompheniramine"
+    ],
+    [
+      "modafinil",
+      "armodafinil"
+    ],
+    [
+      "zopiclone",
+      "eszopiclone"
+    ],
+    [
+      "formoterol",
+      "arformoterol"
+    ],
+    [
+      "epinephrine",
+      "racepinephrine"
+    ],
+    [
+      "levothyroxine",
+      "dextrothyroxine"
+    ],
+    [
+      "amphetamine",
+      "dextroamphetamine"
+    ],
+    [
+      "betaxolol",
+      "levobetaxolol ophthalmic"
+    ],
+    [
+      "oxcarbazepine",
+      "eslicarbazepine"
+    ],
+    [
+      "carbamazepine",
+      "oxcarbazepine"
+    ],
+    [
+      "heparin",
+      "enoxaparin"
+    ],
+    [
+      "heparin",
+      "dalteparin"
+    ],
+    [
+      "heparin",
+      "tinzaparin"
+    ],
+    [
+      "trastuzumab",
+      "trastuzumab emtansine"
+    ],
+    [
+      "trastuzumab",
+      "trastuzumab deruxtecan"
+    ],
+    [
+      "phenytoin",
+      "fosphenytoin"
+    ],
+    [
+      "valproic acid",
+      "valpromide"
+    ],
+    [
+      "fenofibrate",
+      "fenofibric acid"
+    ],
+    [
+      "hydralazine",
+      "dihydralazine"
+    ],
+    [
+      "quinidine",
+      "hydroquinidine"
+    ],
+    [
+      "acide nicotinique",
+      "nicotinamide"
+    ],
+    [
+      "insuline glargine",
+      "insuline lispro"
+    ],
+    [
+      "insuline",
+      "insuline glargine"
+    ]
+  ]
+}
