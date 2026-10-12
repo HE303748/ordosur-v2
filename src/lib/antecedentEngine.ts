@@ -46,6 +46,8 @@ export interface EngineMed {
   dci_canonique?: string | null;
   /** Noms d'ingrédients (fallback medicament_ingredients), déjà normalisés ou non. */
   ingredients?: string[];
+  /** Sprint 2d — forme galénique de la fiche (« Crème », « Comprimé effervescent ») ; inconnue → voie générale supposée. */
+  forme?: string | null;
 }
 
 /** Antécédent tel que stocké (table antecedents) — champs utiles au moteur. */
@@ -92,6 +94,8 @@ export interface RegleAntecedent {
 export interface RegleClasse {
   classe: string;
   dci_motif: string;
+  /** Sprint 2d — 'generale' : les formes à action locale n'entrent pas dans la classe. Absent = toutes voies. */
+  voie?: string | null;
 }
 
 // ─── Sortie ──────────────────────────────────────────────────────────────────
@@ -109,6 +113,8 @@ export interface AntecedentAlert {
   titre: string;
   conduite: string;
   source: string;
+  /** Sprint 2d — lignes « Également » de la carte (association AINS + corticoïde chez ce patient). */
+  also?: string[];
 }
 
 // ─── Normalisation (identique au moteur existant) ────────────────────────────
@@ -188,6 +194,15 @@ function criteresMatch(criteres: RegleCriteres | null, facts: Record<string, str
 
 // ─── Évaluation ──────────────────────────────────────────────────────────────
 
+// Sprint 2d — formes à action LOCALE : un corticoïde en crème, en collyre ou en gouttes auriculaires n'est pas
+// une corticothérapie générale. Forme absente ou non reconnue → voie générale (zéro fausse réassurance).
+const FORME_LOCALE_RE = /\b(creme|pommade|gel|lotion|mousse|emulsion|shampo\w*|collyre|ophtalm\w*|intravitre\w*|auricul\w*|nasal\w*|inhal\w*|cutane\w*|dermi\w*|suppositoire|rectal\w*|vaginal\w*|ovule|bain de bouche)\b/;
+
+/** La forme (ou le nom, qui la porte souvent : « DIPROSONE CREME ») désigne une action locale. */
+export function isLocalForm(forme: string | null | undefined, nom?: string | null): boolean {
+  return FORME_LOCALE_RE.test(normEngine(`${forme ?? ''} ${nom ?? ''}`));
+}
+
 /** Classes d'un médicament : motif ⊆ norm(dci + nom + dci_canonique [+ ingrédients]). */
 export function medClasses(med: EngineMed, classes: RegleClasse[]): Set<string> {
   const hay = [
@@ -200,10 +215,20 @@ export function medClasses(med: EngineMed, classes: RegleClasse[]): Set<string> 
   for (const c of classes) {
     const motif = normEngine(c.dci_motif);
     if (motif.length < 3) continue;
+    if (c.voie === 'generale' && isLocalForm(med.forme, med.nom)) continue;
     if (hay.some(h => h.includes(motif))) out.add(c.classe);
   }
   return out;
 }
+
+/**
+ * Sprint 2d — associations qui majorent le risque digestif chez un patient porteur d'un antécédent
+ * analysé : la carte d'un médicament de la classe `de` mentionne les médicaments de la classe `avec`.
+ */
+export const ASSOCIATIONS_DIGESTIVES: ReadonlyArray<{ de: string; avec: string; libelle: string }> = [
+  { de: 'corticoide', avec: 'ains', libelle: 'un AINS' },
+  { de: 'ains', avec: 'corticoide', libelle: 'un corticoïde' },
+];
 
 /**
  * Alertes du canal antécédents. Une alerte au plus par (médicament, antécédent) :
@@ -252,6 +277,17 @@ export function evaluateAntecedents(
         conduite: best.conduite,
         source: best.source,
       });
+    }
+  }
+  // Sprint 2d — AINS + corticoïde chez ce patient : chaque carte mentionne l'association.
+  if (alerts.length > 0) {
+    const classesParMed = new Map(meds.map(m => [m.id, medClasses(m, classes)]));
+    for (const al of alerts) {
+      for (const asso of ASSOCIATIONS_DIGESTIVES) {
+        if (al.classe !== asso.de) continue;
+        const autres = meds.filter(m => m.id !== al.medId && classesParMed.get(m.id)?.has(asso.avec)).map(m => m.nom);
+        if (autres.length > 0) al.also = [...(al.also ?? []), `association avec ${asso.libelle} (${[...new Set(autres)].join(', ')}) : risque digestif majoré`];
+      }
     }
   }
   return alerts;
@@ -310,6 +346,8 @@ export function mergeWithExisting<E extends ExistingAlertLike>(
     const list = alsoByIndex.get(target) ?? [];
     const line = `antécédent de ${aa.conditionLabel}`;
     if (!list.includes(line)) list.push(line);
+    // Sprint 2d — l'association AINS + corticoïde reste dite quand l'alerte est absorbée.
+    for (const extra of aa.also ?? []) if (!list.includes(extra)) list.push(extra);
     alsoByIndex.set(target, list);
   }
   return { standalone, alsoByIndex };

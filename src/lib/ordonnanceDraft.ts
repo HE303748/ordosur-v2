@@ -252,3 +252,30 @@ export function clearAllDrafts(): void {
     keys.forEach(k => s.removeItem(k));
   } catch { /* ignore */ }
 }
+
+// ─── Sprint 2d — Un brouillon n'est proposé qu'UNE fois par visite ───────────
+
+/** Au-delà, un brouillon n'est plus proposé : il est supprimé. (Le stockage, lui, expire déjà à 24 h.) */
+export const DRAFT_OFFER_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** Identité d'UNE version du brouillon : un brouillon ré-enregistré depuis (nouveau travail) est une autre version. */
+export function draftOfferKey(d: Pick<OrdonnanceDraft, 'patientId' | 'savedAt'>): string {
+  return `${d.patientId}:${d.savedAt}`;
+}
+
+export type DraftOfferDecision =
+  | 'offer'     // à proposer (bandeau)
+  | 'skip'      // déjà proposé pendant cette visite : pas de second bandeau
+  | 'discard';  // vide, ou trop ancien : à supprimer
+
+/**
+ * Faut-il proposer ce brouillon ? `alreadyOffered` : versions déjà proposées, reprises ou
+ * supprimées depuis l'ouverture de la page (mémoire de la visite, jamais persistée).
+ */
+export function draftOfferDecision(
+  draft: OrdonnanceDraft | null | undefined, alreadyOffered: ReadonlySet<string>, now: number = Date.now(),
+): DraftOfferDecision {
+  if (!isDraftWorthOffering(draft)) return 'discard';
+  if (now - draft.savedAt > DRAFT_OFFER_MAX_AGE_MS) return 'discard';
+  return alreadyOffered.has(draftOfferKey(draft)) ? 'skip' : 'offer';
+}

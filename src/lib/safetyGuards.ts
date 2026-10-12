@@ -248,3 +248,30 @@ export function verdictTitle(severity: VerdictSeverity, custom?: string | null):
 export function greenLineAllowed(s: { severity: VerdictSeverity; cartes: number; fondExclus: number; reserves: number }): boolean {
   return s.severity === 'safe' && s.cartes === 0 && s.fondExclus === 0 && s.reserves === 0;
 }
+
+// ─── Sprint 2d — Libellé d'une contre-indication rétrogradée ─────────────────
+
+/**
+ * Carte rétrogradée par le matching des conditions (« À évaluer », ou sévérité conservée « à
+ * préciser ») : la précision exigée par la CI n'est PAS renseignée chez le patient. Le texte ne doit
+ * donc pas affirmer « CI absolue » comme si elle s'appliquait : il dit « Contre-indication absolue
+ * SI [qualificatif] ».
+ *   titre       « Si infection évolutive ou sévère (patient : « Infection urinaire ») »
+ *   description « CI absolue : les corticoïdes suppriment l'immunité… »
+ *   →           « Contre-indication absolue si infection évolutive ou sévère (patient : « Infection
+ *                urinaire »). Les corticoïdes suppriment l'immunité… »
+ * Un titre qui n'est pas une condition (« Préciser le stade ou saisir une créatinine ») est gardé
+ * tel quel, suivi de « Contre-indication absolue si la condition est confirmée ».
+ */
+export function descriptionConditionnelle(condTitre: string, ciSeverite: string | null | undefined, description: string | null | undefined): string {
+  const niveau = ciSeverite === 'absolue' ? 'absolue' : 'relative';
+  const titre = condTitre.trim().replace(/[.\s]+$/, '');
+  // L'affirmation en tête de la description (« CI absolue : », « Contre-indication formelle — ») est retirée.
+  const reste = (description ?? '').trim()
+    .replace(/^(?:CI|contre[- ]indication)(?:\s+(?:absolue|relative|formelle|stricte))?\s*[:—–-]\s*/i, '')
+    .replace(/^./u, c => c.toLocaleUpperCase('fr-FR'));
+  const tete = /^si\s/i.test(titre)
+    ? `Contre-indication ${niveau} ${titre.charAt(0).toLocaleLowerCase('fr-FR')}${titre.slice(1)}`
+    : `${titre}. Contre-indication ${niveau} si la condition est confirmée`;
+  return reste ? `${tete}. ${reste}` : `${tete}.`;
+}

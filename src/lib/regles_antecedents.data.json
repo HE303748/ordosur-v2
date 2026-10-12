@@ -1,4 +1,8 @@
 {
+  "empreinte": {
+    "regles": "7a820f4bf68d42037a9643b70cadc851",
+    "classes": "d04bb535ae86b9fd2ef8d657200daadf"
+  },
   "classes": [
     {
       "classe": "ains",
@@ -195,6 +199,36 @@
     {
       "classe": "anticoagulant",
       "dci_motif": "fondaparinux"
+    },
+    {
+      "classe": "corticoide",
+      "dci_motif": "prednisolone",
+      "voie": "generale"
+    },
+    {
+      "classe": "corticoide",
+      "dci_motif": "prednisone",
+      "voie": "generale"
+    },
+    {
+      "classe": "corticoide",
+      "dci_motif": "methylprednisolone",
+      "voie": "generale"
+    },
+    {
+      "classe": "corticoide",
+      "dci_motif": "dexamethasone",
+      "voie": "generale"
+    },
+    {
+      "classe": "corticoide",
+      "dci_motif": "betamethasone",
+      "voie": "generale"
+    },
+    {
+      "classe": "corticoide",
+      "dci_motif": "hydrocortisone",
+      "voie": "generale"
     }
   ],
   "regles": [
@@ -703,6 +737,101 @@
       "severite": "precaution",
       "titre": "Antécédent d’hémorragie digestive ou d’ulcère",
       "conduite": "Risque hémorragique majoré — évaluer bénéfice/risque, discuter un IPP, surveillance.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "C1",
+      "ordre": 250,
+      "classe": "corticoide",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "oui"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Corticothérapie et lésion digestive évolutive",
+      "conduite": "Corticothérapie : risque digestif majoré, protection gastrique à discuter.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "C1",
+      "ordre": 260,
+      "classe": "corticoide",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "evolutif"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Corticothérapie et lésion digestive évolutive",
+      "conduite": "Corticothérapie : risque digestif majoré, protection gastrique à discuter.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "C1b",
+      "ordre": 270,
+      "classe": "corticoide",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "inconnu"
+            ]
+          }
+        ]
+      },
+      "severite": "a_evaluer",
+      "titre": "Corticothérapie et ulcère gastroduodénal — statut à préciser",
+      "conduite": "Corticothérapie : risque digestif majoré, protection gastrique à discuter. Préciser dans le profil si l'ulcère est évolutif ou cicatrisé.",
+      "source": "Ajout Ordosur (zéro fausse réassurance : critère non renseigné) — à valider"
+    },
+    {
+      "code": "C2",
+      "ordre": 280,
+      "classe": "corticoide",
+      "antecedent_type": "hemorragie_digestive",
+      "criteres": {
+        "any_of": [
+          {
+            "en_cours": [
+              "non"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Corticothérapie et antécédent d’ulcère ou d’hémorragie digestive",
+      "conduite": "Corticothérapie : risque digestif majoré, protection gastrique à discuter.",
+      "source": "Proposition Ordosur d'après RCP — à valider"
+    },
+    {
+      "code": "C2",
+      "ordre": 290,
+      "classe": "corticoide",
+      "antecedent_type": "ulcere_gd",
+      "criteres": {
+        "any_of": [
+          {
+            "statut": [
+              "cicatrise"
+            ]
+          }
+        ]
+      },
+      "severite": "precaution",
+      "titre": "Corticothérapie et antécédent d’ulcère ou d’hémorragie digestive",
+      "conduite": "Corticothérapie : risque digestif majoré, protection gastrique à discuter.",
       "source": "Proposition Ordosur d'après RCP — à valider"
     }
   ]

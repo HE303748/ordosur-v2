@@ -66,6 +66,19 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   devient « Aucune interaction cliniquement significative connue » (`safetyGuards.titleForDisplay`).
 - Courbes (Sprint 2b-2) : tous les points convertis dans UNE unité (défaut = unité de référence, `uniteCourbeDefaut`) ; axe jamais
   sous 0 (`axeDomaine`) ; un résultat non convertible n'est pas tracé, il est compté.
+- Sprint 2d — clic sûr, corticoïdes, libellés :
+  · Aucun bandeau en flux au-dessus de la recherche de médicaments : les bandeaux du brouillon sont en SUPERPOSITION
+    (flottants, en bas). Tout nouveau bandeau asynchrone suit la même règle (ou réserve sa hauteur dès le premier rendu).
+    Garde-fou `lib/stableSearch` (`createPositionGuard`, `decideClick`) : un clic dans la liste n'est accepté que si elle
+    est immobile depuis 300 ms, sinon la ligne est surlignée. Après un ajout : « Ajouté : libellé exact » + Annuler 5 s.
+    Un brouillon n'est proposé qu'une fois par visite (`ordonnanceDraft.draftOfferDecision`).
+  · Canal antécédents : classe `corticoide` (voie GÉNÉRALE uniquement — colonne `regles_antecedents_classes.voie`, formes
+    locales écartées par `antecedentEngine.isLocalForm`), règles C1 / C1b / C2, JAMAIS de CI absolue. AINS + corticoïde :
+    mention sur les deux cartes (`ASSOCIATIONS_DIGESTIVES`). Empreintes base = source dans `regles_antecedents.data.json`.
+  · Libellés : carte rétrogradée → « Contre-indication absolue SI … » (`safetyGuards.descriptionConditionnelle`) ; texte
+    ANSM dont le niveau est inséré au milieu de la phrase (import du thésaurus à deux colonnes) recousu à l'affichage
+    (`lib/interactionText.ts`, la base n'est pas modifiée). Limite connue : conduites à tenir de plusieurs lignes encore
+    entremêlées (réimport du thésaurus à prévoir).
 - Lettre d'adressage (Sprint 7) : `confreres` (carnet du médecin, archivage) et `lettres_adressage` (texte, destinataire,
   ligne patient, en-tête et annexe des bilans FIGÉS par trigger à l'enregistrement → réimpression à l'identique, y compris
   par la secrétaire ; seul le suivi évolue : brouillon → envoyee → reponse_recue, annulation motivée ; pour modifier : dupliquer).

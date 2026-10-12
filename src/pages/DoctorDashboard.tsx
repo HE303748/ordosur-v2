@@ -14,7 +14,7 @@ import { supabase, Patient, Medicament } from '../lib/supabase';
 import { PUBLIC_URL } from '../lib/config';
 import { fetchAllRows } from '../lib/fetchAllRows';
 import {
-  saveDraft, loadDraft, clearDraft, getActiveDraftPatientId,
+  saveDraft, loadDraft, clearDraft, getActiveDraftPatientId, draftOfferDecision, draftOfferKey,
   evaluateDraftOffer, isDraftWorthOffering, draftBannerLabel, draftResumeBlockReason, draftBelongsTo, draftLinesForSelection, formHasContent,
   type DraftForm, type OrdonnanceDraft,
 } from '../lib/ordonnanceDraft';
@@ -51,7 +51,8 @@ import { resolveDoctorInfos } from '../lib/doctorNames';
 import { PatientExamStrip } from '../components/exams/PatientExamStrip';
 import { DerogationModal } from '../components/DerogationModal';
 import { searchMedicamentsMA } from '../lib/medSearch';
-import { needsSearch, pickById, searchKey } from '../lib/stableSearch';
+import { texteAnsmLisible } from '../lib/interactionText';
+import { needsSearch, searchKey, pickById, createPositionGuard, decideClick, listSignature, anchorCompensation } from '../lib/stableSearch';
 import { patientEngineSignature } from '../lib/patientEngineSig';
 import { medLabel, dosageManquant, ligneLabel, dosageBlockMessage } from '../lib/medLabel';
 import {
@@ -93,6 +94,7 @@ import {
   excludedFond, fondExclusionLabel, verdictWithFondExclusion, patientFieldLabel, patientMismatchMessage,
   buildInteractionLogRows, applyMergedLines, type MergedChannel,
   reconcileVerdictWithDisplay, isUndocumentedSeverity, verdictTitle, greenLineAllowed, titleForDisplay, undocumentedSectionTitle,
+  descriptionConditionnelle,
 } from '../lib/safetyGuards';
 // Sprint 6B — canal fonction rénale (module pur lib/renalEngine, chargeur dédié hooks/useRenal)
 import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, dfgDoubleLine, type RenalReserve, type RenalStatus } from '../lib/renalEngine';
@@ -212,6 +214,9 @@ type CheckerMed = {
   formeHint?: string | null; label?: string | null; dosageManquant?: boolean;
 };
 const displayNom = (m: { nom: string; label?: string | null }) => m.label || m.nom;
+// Sprint 2d — durée du bouton « Annuler » après un ajout ; ligne retenue par le garde-fou de clic.
+const ADDED_UNDO_MS = 5000;
+const HELD_ROW = 'ring-2 ring-inset ring-[#0A1628] dark:ring-slate-300 bg-slate-50 dark:bg-white/[0.06]';
 
 // Sprint 4d-bis — résultat de recherche hors Maroc (RPC search_medicaments_hors_maroc) :
 // `mappe` = au moins un ingrédient en base (sinon non vérifiable par le moteur).
@@ -1070,6 +1075,105 @@ function CheckerView({
   };
   /** Seul défilement vers le verdict : celui que le médecin demande (clic sur la pastille). */
   const showVerdict = () => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // ── Sprint 2d — Clic sûr dans la liste de suggestions ─────────────────────
+  // 1. La liste est observée à chaque image tant qu'elle est ouverte : un clic n'est pris en compte
+  //    que si elle n'a pas bougé (position à l'écran, contenu) depuis ~300 ms. Sinon la ligne est
+  //    surlignée et rien n'est ajouté (lib/stableSearch : createPositionGuard, decideClick).
+  const medListRef = useRef<HTMLDivElement>(null);
+  const clickGuard = useRef(createPositionGuard()).current;
+  const [heldMedId, setHeldMedId] = useState<string | null>(null);
+  const medDropdownOpen = showMedDropdown && medSearchTerm.length >= 2;
+  const medDropdownOpenRef = useRef(medDropdownOpen);
+  medDropdownOpenRef.current = medDropdownOpen;
+  const medListSignature = (): string | null => {
+    const el = medListRef.current;
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return listSignature(r.top, r.left, [...medSearchResults.map(m => m.id), ...(medSearchForeign ?? []).map(m => m.id)]);
+  };
+  useEffect(() => {
+    if (!medDropdownOpen) { clickGuard.reset(); setHeldMedId(null); return; }
+    let raf = 0;
+    const tick = () => {
+      const s = medListSignature();
+      if (s !== null) clickGuard.observe(s, performance.now());
+      raf = window.requestAnimationFrame(tick);
+    };
+    raf = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(raf);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [medDropdownOpen, medSearchResults, medSearchForeign]);
+
+  // 2. Après chaque ajout : « Ajouté : <libellé exact> » + « Annuler » pendant 5 s (ligne de hauteur fixe).
+  const [addedMed, setAddedMed] = useState<{ id: string; label: string } | null>(null);
+  const addedTimerRef = useRef<number | null>(null);
+  const expectAddRef = useRef(false);
+  const prevSelectedRef = useRef(selectedMeds);
+  useEffect(() => {
+    const prev = prevSelectedRef.current;
+    prevSelectedRef.current = selectedMeds;
+    if (!expectAddRef.current) return;
+    expectAddRef.current = false;
+    const nouveaux = selectedMeds.filter(m => !prev.some(p => p.id === m.id));
+    if (nouveaux.length !== 1) return;
+    setAddedMed({ id: nouveaux[0].id, label: displayNom(nouveaux[0]) });
+    if (addedTimerRef.current !== null) window.clearTimeout(addedTimerRef.current);
+    addedTimerRef.current = window.setTimeout(() => setAddedMed(null), ADDED_UNDO_MS);
+  }, [selectedMeds]);
+  useEffect(() => () => { if (addedTimerRef.current !== null) window.clearTimeout(addedTimerRef.current); }, []);
+  // Le médicament confirmé n'est plus dans la sélection (retiré, patient changé) : la ligne s'efface.
+  const addedVisible = addedMed && selectedMeds.some(m => m.id === addedMed.id) ? addedMed : null;
+  const undoAdded = () => {
+    if (!addedVisible) return;
+    removeMedication(addedVisible.id);
+    setAddedMed(null);
+    focusMedSearchIfPointer();
+  };
+
+  /** Clic sur une ligne de la liste : ajout seulement si la liste est immobile depuis ~300 ms. */
+  const pickMed = (list: readonly Medicament[], id: string | undefined) => {
+    const picked = pickById(list, id);
+    if (!picked) return;
+    const s = medListSignature();
+    if (s !== null && decideClick(clickGuard, s, performance.now()) === 'hold') { setHeldMedId(picked.id); return; }
+    setHeldMedId(null);
+    expectAddRef.current = true;
+    addMedication(picked as Medicament);
+    focusMedSearch();
+  };
+
+  // 3. La liste se rouvre dès la frappe : la fermeture différée d'une perte de focus (clic sur
+  //    « Retirer ») est annulée par toute reprise du champ.
+  const medBlurTimerRef = useRef<number | null>(null);
+  const cancelMedBlur = () => { if (medBlurTimerRef.current !== null) { window.clearTimeout(medBlurTimerRef.current); medBlurTimerRef.current = null; } };
+  useEffect(() => cancelMedBlur, []);
+
+  // 4. Aucun bloc situé AU-DESSUS du champ ne le déplace pendant la saisie : sur mobile (colonne
+  //    unique), quand la carte du patient change de hauteur (bilans, DFG, antécédents, traitement de
+  //    fond chargés après coup), le défilement est compensé du même nombre de pixels.
+  const patientCardRef = useRef<HTMLDivElement>(null);
+  const medAnchorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const anchor = medAnchorRef.current, card = patientCardRef.current;
+    if (!anchor || !card || typeof ResizeObserver === 'undefined') return;
+    let scroller: HTMLElement | null = anchor.parentElement;
+    while (scroller && !/(auto|scroll)/.test(window.getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement;
+    if (!scroller) return;
+    const box = scroller;
+    let lastTop: number | null = null;
+    const onScroll = () => { lastTop = anchor.getBoundingClientRect().top; };
+    box.addEventListener('scroll', onScroll, { passive: true });
+    const ro = new ResizeObserver(() => {
+      const top = anchor.getBoundingClientRect().top;
+      const actif = document.activeElement === medInputRef.current || medDropdownOpenRef.current;
+      const delta = actif ? anchorCompensation(lastTop, top, false) : 0;
+      if (delta !== 0) box.scrollTop += delta;
+      lastTop = anchor.getBoundingClientRect().top;
+    });
+    ro.observe(card);
+    return () => { ro.disconnect(); box.removeEventListener('scroll', onScroll); };
+  }, []);
   // Sprint 4d — cartes, bandeaux et verdict proviennent du MÊME run (instantané du verdict).
   // Pas de verdict → aucune carte (jamais d'alerte partielle ou d'un run précédent).
   const interactionAlerts = result?.alerts ?? [];
@@ -1105,7 +1209,7 @@ function CheckerView({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           {/* ── Patient selector ── */}
-          <div className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)]">
+          <div ref={patientCardRef} className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] shadow-sm overflow-hidden dark:hover:shadow-[0_0_0_1px_rgba(56,189,248,0.12)]">
             {/* Sprint M4 — fix classe Tailwind cassée : bg-gradient-to-r [#00A86B] → bg-[#00A86B] solide */}
             <div className="px-4 lg:px-6 py-3 lg:py-4 border-b border-slate-100 bg-[#00A86B]">
               <h3 className="text-white font-bold text-base">Patient</h3>
@@ -1294,22 +1398,22 @@ function CheckerView({
             </div>
             <div className="p-4 lg:p-6">
               {/* Med search */}
-              <div className="mb-5 flex items-center gap-2">
+              <div ref={medAnchorRef} className="mb-1 flex items-center gap-2">
                 <div className="relative flex-1 min-w-0">
                   <Pill className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
                   <input
                     ref={medInputRef}
                     type="text"
                     value={medSearchTerm}
-                    onChange={e => { const v = e.target.value; setMedSearchTerm(v); setShowMedDropdown(true); searchMedications(v); }}
-                    onFocus={() => { setShowMedDropdown(true); if (medSearchTerm.length >= 2) searchMedications(medSearchTerm, { onlyIfChanged: true }); }}
-                    onBlur={() => setTimeout(() => setShowMedDropdown(false), 300)}
+                    onChange={e => { const v = e.target.value; cancelMedBlur(); setMedSearchTerm(v); setShowMedDropdown(true); searchMedications(v); }}
+                    onFocus={() => { cancelMedBlur(); setShowMedDropdown(true); if (medSearchTerm.length >= 2) searchMedications(medSearchTerm, { onlyIfChanged: true }); }}
+                    onBlur={() => { cancelMedBlur(); medBlurTimerRef.current = window.setTimeout(() => { medBlurTimerRef.current = null; setShowMedDropdown(false); }, 300); }}
                     placeholder="Ex: Doliprane, paracétamol..."
                     className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl text-sm text-slate-900 dark:text-[#E2E8F0] placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/40 focus:border-violet-300 dark:focus:border-violet-500/40 transition-all"
                   />
 
                   {showMedDropdown && medSearchTerm.length >= 2 && (medSearchResults.length > 0 || medSearchLoading || !medSearchLoading) && (
-                    <div className="absolute z-50 w-full mt-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl shadow-xl max-h-72 overflow-y-auto">
+                    <div ref={medListRef} className="absolute z-50 w-full mt-1.5 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-white/[0.1] rounded-xl shadow-xl max-h-72 overflow-y-auto">
                       {medSearchLoading && (
                         <div className="px-4 py-3 text-sm text-slate-400 dark:text-[#475569] text-center">Recherche...</div>
                       )}
@@ -1320,11 +1424,13 @@ function CheckerView({
                           onMouseDown={e => {
                             e.preventDefault();
                             // Sprint 2c — la fiche ajoutée est celle dont l'élément cliqué porte l'identifiant.
-                            const picked = pickById(medSearchResults, e.currentTarget.dataset.medId);
-                            if (picked) { addMedication(picked); focusMedSearch(); }
+                            // Sprint 2d — et seulement si la liste n'a pas bougé juste avant le clic.
+                            pickMed(medSearchResults, e.currentTarget.dataset.medId);
                           }}
-                          className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
+                          aria-describedby={heldMedId === med.id ? 'med-held-note' : undefined}
+                          className={`w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0 ${heldMedId === med.id ? HELD_ROW : ''}`}
                         >
+                          {heldMedId === med.id && <span id="med-held-note" className="block text-[11px] font-semibold text-[#0A1628] dark:text-slate-200 mb-0.5">La liste a bougé — cliquez à nouveau pour ajouter ce médicament</span>}
                           {/* Ligne 1 : nom commercial. Sprint Quick Fixes A — Bug #2 :
                               badge 🇲🇦 MAR retiré (polluait visuellement la recherche méd). */}
                           <div className="flex items-center gap-2 flex-wrap">
@@ -1371,11 +1477,11 @@ function CheckerView({
                               data-med-id={med.id}
                               onMouseDown={e => {
                                 e.preventDefault();
-                                const picked = pickById(medSearchForeign ?? [], e.currentTarget.dataset.medId);
-                                if (picked) { addMedication(picked); focusMedSearch(); }
+                                pickMed(medSearchForeign ?? [], e.currentTarget.dataset.medId);
                               }}
-                              className="w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
+                              className={`w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0 ${heldMedId === med.id ? HELD_ROW : ''}`}
                             >
+                              {heldMedId === med.id && <span className="block text-[11px] font-semibold text-[#0A1628] dark:text-slate-200 mb-0.5">La liste a bougé — cliquez à nouveau pour ajouter ce médicament</span>}
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="font-semibold text-slate-800 dark:text-[#E2E8F0] text-sm leading-tight">{medLabel(med)}</span>
                                 <span className="text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 dark:bg-white/[0.06] dark:border-white/[0.1] dark:text-[#94A3B8]">
@@ -1395,7 +1501,7 @@ function CheckerView({
                       {/* Ajout manuel quand aucun résultat */}
                       {!medSearchLoading && medSearchResults.length === 0 && (
                         <button
-                          onMouseDown={e => { e.preventDefault(); addManualMedication(medSearchTerm); focusMedSearch(); }}
+                          onMouseDown={e => { e.preventDefault(); expectAddRef.current = true; addManualMedication(medSearchTerm); focusMedSearch(); }}
                           className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors flex items-center gap-2"
                         >
                           <span className="text-violet-500 text-base leading-none">✏️</span>
@@ -1415,6 +1521,22 @@ function CheckerView({
                   })}
                   onShowVerdict={showVerdict}
                 />
+              </div>
+
+              {/* Sprint 2d — confirmation de l'ajout : libellé EXACT + « Annuler » 5 s. Hauteur FIXE (rien ne se décale). */}
+              <div className="h-9 mb-2 flex items-center gap-2 min-w-0" role="status" aria-live="polite">
+                {addedVisible && (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-[#00A86B] flex-shrink-0" aria-hidden />
+                    <span className="text-xs text-slate-700 dark:text-[#CBD5E1] truncate min-w-0" title={addedVisible.label}>
+                      Ajouté : <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{addedVisible.label}</span>
+                    </span>
+                    <button type="button" onClick={undoAdded}
+                      className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#0A1628] dark:text-[#E2E8F0] border border-[#E5E5E0] dark:border-white/[0.12] hover:border-[#0A1628] dark:hover:border-white/30 transition-colors">
+                      Annuler
+                    </button>
+                  </>
+                )}
               </div>
 
               {/* Selected meds */}
@@ -1445,7 +1567,7 @@ function CheckerView({
                           </span>
                         )}
                         <button
-                          onClick={() => removeMedication(med.id)}
+                          onClick={() => { removeMedication(med.id); focusMedSearchIfPointer(); }}
                           aria-label={`Retirer ${med.nom}`}
                           className="p-2 lg:p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 rounded-lg transition-colors flex-shrink-0"
                         >
@@ -3436,7 +3558,7 @@ export function DoctorDashboard() {
             { label: 'regles_antecedents' },
           ),
           fetchAllRows<RegleClasse>(
-            (from, to) => supabase.from('regles_antecedents_classes').select('classe, dci_motif').range(from, to),
+            (from, to) => supabase.from('regles_antecedents_classes').select('classe, dci_motif, voie').range(from, to),
             { label: 'regles_antecedents_classes' },
           ),
         ]);
@@ -3660,6 +3782,8 @@ export function DoctorDashboard() {
         dci: t.medicament?.dci ?? null,
         dci_canonique: t.medicament?.dci_canonique ?? null,
         manual: !t.medicament_id,
+        // Sprint 2d — forme de la fiche (voie générale / locale des corticoïdes, canal antécédents).
+        formeHint: t.medicament ? `${t.medicament.forme ?? ''} ${t.medicament.nom ?? ''}`.trim() || null : null,
       });
     }
     const fondIdSet = new Set(fondMeds.map(m => m.id));
@@ -3757,9 +3881,11 @@ export function DoctorDashboard() {
               const sev = (inter.severite as InteractionAlert['severite']) || 'non_classee';
               const pair = [inter.medicament_a, inter.medicament_b].sort().join('+');
               const key = `dd|${pair}|${sev}`;
+              // Sprint 2d — texte ANSM : le niveau inséré au milieu de la phrase à l'import est remis à sa place.
+              const texte = texteAnsmLisible(inter.description).texte;
               const molDesc = (inter.ingredient_a && inter.ingredient_b)
-                ? `${inter.ingredient_a} × ${inter.ingredient_b} — ${inter.description}`
-                : inter.description;
+                ? `${inter.ingredient_a} × ${inter.ingredient_b} — ${texte}`
+                : texte;
               const existing = ddDedup.get(key);
               if (!existing) {
                 ddDedup.set(key, {
@@ -4018,7 +4144,8 @@ export function DoctorDashboard() {
               ? {
                 ...alert,
                 severite: cond.verdict === 'a_evaluer' ? 'a_evaluer' : alert.severite,
-                description: `${condTitre}. ${contra.description}`,
+                // Sprint 2d — « CI absolue SI [qualificatif] » : jamais « CI absolue » comme si elle s'appliquait.
+                description: descriptionConditionnelle(condTitre, contra.severite, contra.description),
               }
               : alert);
           }
@@ -4112,7 +4239,7 @@ export function DoctorDashboard() {
       // thème et de sévérité ≥ → ligne « Également : antécédent de … » sur la carte existante.
       if (selectedPatient && patientAntecedents.length > 0 && antRegles.length > 0) {
         const antAlerts = evaluateAntecedents(
-          analysisMeds.map(m => ({ id: m.id, nom: m.nom, dci: m.dci, dci_canonique: m.dci_canonique, ingredients: ingNamesByMedId.get(m.id) })),
+          analysisMeds.map(m => ({ id: m.id, nom: m.nom, dci: m.dci, dci_canonique: m.dci_canonique, ingredients: ingNamesByMedId.get(m.id), forme: m.formeHint ?? null })),
           patientAntecedents,
           antRegles,
           antClasses,
@@ -4133,6 +4260,7 @@ export function DoctorDashboard() {
             origin: originOfMed(aa.medId),
             channel: 'antecedent',
             ruleSource: aa.source,
+            also: aa.also,
           });
         }
       }
@@ -5315,6 +5443,14 @@ export function DoctorDashboard() {
   const [pendingDraft, setPendingDraft] = useState<OrdonnanceDraft | null>(null);
   const pendingDraftRef = useRef<OrdonnanceDraft | null>(null);
   pendingDraftRef.current = pendingDraft;
+  // Sprint 2d — un brouillon n'est proposé qu'UNE fois par visite (mémoire de la page, jamais persistée) :
+  // déjà proposé, repris ou supprimé → plus de bandeau ; plus de 7 jours → supprimé.
+  const offeredDraftsRef = useRef(new Set<string>());
+  const offerableDraft = (draft: OrdonnanceDraft | null, doctorId: string, patientId: string): OrdonnanceDraft | null => {
+    const decision = draftOfferDecision(draft, offeredDraftsRef.current);
+    if (decision === 'discard' && draft) clearDraft(doctorId, patientId);
+    return decision === 'offer' ? draft : null;
+  };
   useEffect(() => {
     const next = selectedPatient?.id ?? null;
     const prev = prevDraftPatientIdRef.current;
@@ -5335,7 +5471,7 @@ export function DoctorDashboard() {
     setFormResetKey(k => k + 1);
     if (next === null || !doctorProfile?.id) return;
     const stored = loadDraft(doctorProfile.id, next);
-    setPendingDraft(isDraftWorthOffering(stored) ? stored : null);
+    setPendingDraft(offerableDraft(stored, doctorProfile.id, next));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPatient?.id]);
 
@@ -5351,7 +5487,7 @@ export function DoctorDashboard() {
     const draft = loadDraft(doctorId, pid);
     const patient = draft ? patients.find(p => p.id === pid) : undefined;
     if (!isDraftWorthOffering(draft) || !patient) { clearDraft(doctorId, pid); return; }
-    if (!selectedPatientIdRef.current || selectedPatientIdRef.current === pid) setPendingDraft(draft);
+    if (!selectedPatientIdRef.current || selectedPatientIdRef.current === pid) setPendingDraft(offerableDraft(draft, doctorId, pid));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorProfile?.id, dataLoading, patients]);
 
@@ -5362,6 +5498,18 @@ export function DoctorDashboard() {
   const draftOffer = selectedPatient && !draftBelongsTo(pendingDraft, selectedPatient.id)
     ? 'none' as const
     : evaluateDraftOffer(pendingDraft, selectedPatient?.id ?? null, selectedMeds);
+  // Sprint 2d — le bandeau est affiché : cette version du brouillon est notée « proposée ». En quittant le
+  // Vérificateur, un bandeau déjà vu est retiré : il ne réapparaît pas au retour.
+  const draftBannerVisible = activeView === 'checker' && !!pendingDraft && !!pendingDraftPatient && draftOffer !== 'none';
+  useEffect(() => {
+    if (draftBannerVisible && pendingDraft) offeredDraftsRef.current.add(draftOfferKey(pendingDraft));
+  }, [draftBannerVisible, pendingDraft]);
+  useEffect(() => {
+    const d = pendingDraftRef.current;
+    if (activeView !== 'checker' && d && offeredDraftsRef.current.has(draftOfferKey(d))) { pendingDraftRef.current = null; setPendingDraft(null); }
+  }, [activeView]);
+  /** « Plus tard » : le bandeau est retiré pour cette visite ; rien n'est repris ni effacé par ce geste. */
+  const dismissPendingDraft = () => { pendingDraftRef.current = null; setPendingDraft(null); };
 
   /** « Reprendre » : applique le brouillon ; l'analyse repart, le formulaire se rouvre après le verdict. */
   const resumePendingDraft = () => {
@@ -5371,6 +5519,10 @@ export function DoctorDashboard() {
     const refus = draftResumeBlockReason(d, selectedPatient?.id ?? null, pendingDraftPatient.id);
     if (refus) { showToast(refus, 'error'); return; }
     if (evaluateDraftOffer(d, selectedPatient?.id ?? null, selectedMeds) !== 'resume') return;
+    // Sprint 2d — un brouillon repris est consommé : supprimé du stockage (la saisie en cours est
+    // ré-enregistrée d'elle-même), il ne sera plus proposé.
+    offeredDraftsRef.current.add(draftOfferKey(d));
+    if (doctorProfile?.id) clearDraft(doctorProfile.id, d.patientId);
     pendingDraftRef.current = null;
     setPendingDraft(null);
     prevDraftPatientIdRef.current = pendingDraftPatient.id;
@@ -5527,12 +5679,14 @@ export function DoctorDashboard() {
           onScroll={e => { scrollMemRef.current[scrollViewRef.current] = e.currentTarget.scrollTop; }}
           className="flex-1 overflow-auto bg-[#F8FAFC] dark:bg-[#060D1A] pb-20 lg:pb-0"
         >
-          {/* Sprint 4g — bandeau du brouillon : patient et médicaments toujours nommés ; hauteur
-              FIXE (aucun décalage de la page quand la sélection change pendant la saisie). */}
-          {activeView === 'checker' && pendingDraft && pendingDraftPatient && draftOffer !== 'none' && (
+          {/* Sprint 2d — bandeaux du brouillon EN SUPERPOSITION (flottants, en bas) : leur apparition, leur
+              disparition (au verdict, à la reprise) ou un changement de taille ne décale plus la page —
+              c'était l'origine d'un clic tombé sur la mauvaise ligne de la liste de médicaments. */}
+          <div className="fixed z-40 left-1/2 -translate-x-1/2 w-[min(44rem,calc(100vw-1.5rem))] bottom-[calc(5.5rem+env(safe-area-inset-bottom))] lg:bottom-6 flex flex-col gap-2 pointer-events-none">
+          {draftBannerVisible && pendingDraft && pendingDraftPatient && (
             <div
               role="status"
-              className="mx-4 mt-4 lg:mx-6 lg:mt-6 h-[96px] sm:h-[60px] flex flex-col sm:flex-row sm:items-center justify-center gap-2 sm:gap-3 px-4 rounded-2xl overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.1] border-l-4 border-l-[#0A1628] dark:border-l-slate-300"
+              className="pointer-events-auto shadow-xl h-[96px] sm:h-[60px] flex flex-col sm:flex-row sm:items-center justify-center gap-2 sm:gap-3 px-4 rounded-2xl overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/[0.1] border-l-4 border-l-[#0A1628] dark:border-l-slate-300"
             >
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <Clock className="w-4 h-4 text-[#0A1628] dark:text-slate-300 flex-shrink-0" aria-hidden />
@@ -5567,13 +5721,22 @@ export function DoctorDashboard() {
                 >
                   Supprimer
                 </button>
+                <button
+                  type="button"
+                  onClick={dismissPendingDraft}
+                  aria-label="Masquer ce bandeau"
+                  title="Plus tard"
+                  className="h-9 w-9 inline-flex items-center justify-center rounded-xl text-slate-500 dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                >
+                  <X className="w-4 h-4" aria-hidden />
+                </button>
               </div>
             </div>
           )}
           {draftRestored && activeView === 'checker' && !result && (
             <div
               role="status"
-              className="mx-4 mt-4 lg:mx-6 lg:mt-6 flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 rounded-2xl bg-[#E6F4EE] dark:bg-[#00A86B]/[0.1] border border-[#00A86B]/20"
+              className="pointer-events-auto shadow-xl flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3 rounded-2xl bg-[#E6F4EE] dark:bg-[#0B2A20] border border-[#00A86B]/20"
             >
               <div className="flex items-start gap-2.5 flex-1 min-w-0">
                 <Clock className="w-4 h-4 mt-0.5 text-[#00A86B] flex-shrink-0" aria-hidden />
@@ -5603,6 +5766,7 @@ export function DoctorDashboard() {
               </div>
             </div>
           )}
+          </div>
           <ErrorBoundary
             fallbackTitle="Cette vue a rencontré un problème"
             resetKey={activeView}

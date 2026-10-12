@@ -55,3 +55,75 @@ export function indexOfKey(keys: readonly string[], key: string | null): number 
   const i = keys.indexOf(key);
   return i === -1 ? null : i;
 }
+
+// ─── Sprint 2d — Clic sûr : la liste ne doit pas avoir bougé juste avant le clic ─────────────
+//
+// Constat : un bandeau situé au-dessus du champ a changé de hauteur pendant que le pointeur visait
+// « Glucophage 850 » ; la page s'est décalée et le clic a ajouté le Glucophage 500. L'identifiant
+// porté par la ligne (règle 3) garantit que la ligne CLIQUÉE est ajoutée — pas que c'était la ligne
+// VISÉE. Garde-fou : un clic n'est pris en compte que si la liste est immobile depuis ~300 ms ;
+// sinon il est ignoré et la ligne est surlignée (le médecin confirme d'un second clic).
+
+/** Durée d'immobilité exigée avant un clic. */
+export const CLICK_STABLE_MS = 300;
+
+export interface PositionGuard {
+  /** Enregistre l'état observé (position à l'écran + contenu) ; renvoie true s'il a changé. */
+  observe(signature: string, now: number): boolean;
+  /** Dernier changement observé (null : jamais observé). */
+  lastChange(): number | null;
+  /** La liste est immobile depuis au moins `windowMs` — un clic peut être pris en compte. */
+  isStable(now: number, windowMs?: number): boolean;
+  reset(): void;
+}
+
+/**
+ * Suivi de la position d'une liste. `observe` est appelé à chaque image tant que la liste est
+ * ouverte (et juste avant de traiter un clic) : un décalage survenu pendant le geste est donc vu.
+ * La PREMIÈRE observation compte comme un changement : une liste qui vient d'apparaître sous le
+ * pointeur n'est pas cliquable avant 300 ms.
+ */
+export function createPositionGuard(): PositionGuard {
+  let last: string | null = null;
+  let changedAt: number | null = null;
+  return {
+    observe(signature, now) {
+      if (signature === last) return false;
+      last = signature;
+      changedAt = now;
+      return true;
+    },
+    lastChange: () => changedAt,
+    isStable(now, windowMs = CLICK_STABLE_MS) {
+      return changedAt !== null && now - changedAt >= windowMs;
+    },
+    reset() { last = null; changedAt = null; },
+  };
+}
+
+/** Signature d'une liste : position à l'écran (au pixel près) + identifiants affichés, dans l'ordre. */
+export function listSignature(top: number, left: number, ids: readonly string[]): string {
+  return `${Math.round(top)}:${Math.round(left)}:${ids.join(',')}`;
+}
+
+export type ClickDecision = 'accept' | 'hold';
+
+/**
+ * Décision pour un clic sur une ligne. La position est d'abord ré-observée (`signature` = état à
+ * l'instant du clic) : un décalage survenu depuis la dernière image est pris en compte.
+ */
+export function decideClick(guard: PositionGuard, signature: string, now: number, windowMs = CLICK_STABLE_MS): ClickDecision {
+  guard.observe(signature, now);
+  return guard.isStable(now, windowMs) ? 'accept' : 'hold';
+}
+
+/**
+ * Décalage de défilement qui garde un élément à la même place à l'écran quand le contenu situé
+ * AU-DESSUS de lui change de hauteur (bloc asynchrone qui se charge). 0 si l'élément n'a pas bougé
+ * ou si c'est l'utilisateur qui a fait défiler (`scrolledSince`).
+ */
+export function anchorCompensation(previousTop: number | null, currentTop: number, scrolledSince: boolean): number {
+  if (previousTop === null || scrolledSince) return 0;
+  const delta = Math.round(currentTop - previousTop);
+  return Math.abs(delta) >= 1 ? delta : 0;
+}

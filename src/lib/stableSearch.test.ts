@@ -113,8 +113,11 @@ describe('la règle est appliquée à toutes les recherches', () => {
   it('Vérificateur : identifiant porté par l’élément, fiche résolue par identifiant, pas de relance au focus', () => {
     const s = SRC('../pages/DoctorDashboard.tsx');
     expect(s).toContain('data-med-id={med.id}');
-    expect(s).toContain('pickById(medSearchResults, e.currentTarget.dataset.medId)');
-    expect(s).toContain('pickById(medSearchForeign ?? [], e.currentTarget.dataset.medId)');
+    // Sprint 2d — le clic passe par pickMed : même règle (identifiant de la ligne cliquée), plus le garde-fou de position.
+    expect(s).toContain('pickMed(medSearchResults, e.currentTarget.dataset.medId)');
+    expect(s).toContain('pickMed(medSearchForeign ?? [], e.currentTarget.dataset.medId)');
+    expect(s).toContain('const picked = pickById(list, id);');
+    expect(s).toContain("decideClick(clickGuard, s, performance.now()) === 'hold'");
     expect(s).toContain('searchMedications(medSearchTerm, { onlyIfChanged: true })');
     expect(s).toContain('if (opts.onlyIfChanged && !needsSearch(term, medShownKeyRef.current)) return;');
   });
