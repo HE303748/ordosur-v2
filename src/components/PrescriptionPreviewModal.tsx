@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { createActionLock } from '../lib/viewCache';
-import { ArrowLeft, Save, Printer, Download, AlertTriangle, Share2, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Save, Printer, Download, AlertTriangle, Share2, CheckCircle2, Send } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { generateOrdonnancePdf, PdfInteractionAlert, type PdfOrdonnanceData } from '../lib/pdfService';
@@ -31,6 +31,8 @@ interface PrescriptionPreviewModalProps {
   onSave: (opts?: { keepPreview?: boolean }) => Promise<boolean>;
   /** Ordonnance déjà enregistrée : Imprimer / PDF ne réenregistrent pas. */
   isSaved?: boolean;
+  /** Sprint 7 — écran « Ordonnance enregistrée » : ouvre la lettre d'adressage du patient. */
+  onAdresser?: () => void;
   /**
    * Sprint 4d-bis — consultation d'une ordonnance existante (page Ordonnances) : lecture
    * seule, réimpression sans réenregistrer ni redemander de dérogation.
@@ -88,6 +90,7 @@ export function PrescriptionPreviewModal({
   onBack,
   onSave,
   isSaved = false,
+  onAdresser,
   readOnly = false,
   date = null,
   blockedReason = null,
@@ -334,6 +337,12 @@ export function PrescriptionPreviewModal({
               : <Download className="w-4 h-4 mr-2" />}
             {pdfLoading ? 'Génération…' : 'Télécharger PDF'}
           </Button>
+          {confirmation && onAdresser && (
+            <Button onClick={onAdresser} variant="secondary" disabled={busy}>
+              <Send className="w-4 h-4 mr-2" />
+              Adresser à un confrère
+            </Button>
+          )}
           {confirmation && (
             <Button onClick={onClose} variant="primary" disabled={busy}>
               Fermer

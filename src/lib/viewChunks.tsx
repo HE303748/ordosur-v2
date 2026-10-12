@@ -34,6 +34,7 @@ const loaders = {
   aiChat: withRetry(() => import('../components/ui/AIChat')),
   patientImport: withRetry(() => import('../components/PatientImportModal')),
   examRequest: withRetry(() => import('../components/exams/ExamRequestModal')),
+  adressage: withRetry(() => import('../components/adressage/AdressageModal')),
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,6 +48,7 @@ export const EncyclopedieView = pick(loaders.encyclopedie, 'EncyclopedieView');
 export const AIChat = pick(loaders.aiChat, 'AIChat');
 export const PatientImportModal = pick(loaders.patientImport, 'PatientImportModal');
 export const ExamRequestModal = pick(loaders.examRequest, 'ExamRequestModal');
+export const AdressageModal = pick(loaders.adressage, 'AdressageModal');
 export const MonthlyInteractionsChart = pick(loaders.stats, 'MonthlyInteractionsChart');
 export const RiskDistributionChart = pick(loaders.stats, 'RiskDistributionChart');
 export const TopMedicationsSection = pick(loaders.stats, 'TopMedicationsSection');
@@ -61,7 +63,7 @@ export function preloadView(view: string): void {
 
 /** Précharge les vues les plus probables quand le navigateur est au repos. */
 export function preloadLikelyViews(): void {
-  const run = () => { preloadView('agenda'); preloadView('documents'); preloadView('examRequest'); };
+  const run = () => { preloadView('agenda'); preloadView('documents'); preloadView('examRequest'); preloadView('adressage'); };
   const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
   if (w.requestIdleCallback) w.requestIdleCallback(run, { timeout: 4000 });
   else window.setTimeout(run, 2500);

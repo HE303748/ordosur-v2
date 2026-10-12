@@ -6,7 +6,8 @@ import { useEffect, useRef } from 'react';
 import { viewCache } from './viewCache';
 
 // Sprint 2c — « patient » : la fiche (pathologies, allergies, sexe, date de naissance, grossesse, poids) a été modifiée.
-export type SyncTopic = 'ordonnances' | 'rendez_vous' | 'antecedents' | 'examens' | 'bilans' | 'patient';
+// Sprint 7 — « adressages » : lettre créée ou suivie ; « confreres » : carnet modifié.
+export type SyncTopic = 'ordonnances' | 'rendez_vous' | 'antecedents' | 'examens' | 'bilans' | 'patient' | 'adressages' | 'confreres';
 
 const bus = new EventTarget();
 

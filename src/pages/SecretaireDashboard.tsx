@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useViewState } from '../hooks/useViewState';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Calendar, FileText, LogOut, Activity,
   Search, ChevronLeft, ChevronRight,
-  Phone, Mail, User, Clock, Upload,
+  Phone, Mail, User, Clock, Upload, Send,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, Patient } from '../lib/supabase';
@@ -14,6 +14,8 @@ import { PageTransition } from '../components/ui/PageTransition';
 import { ToastManager, type ToastItem } from '../components/ui/Toast';
 import { PatientImportModal } from '../components/PatientImportModal';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+// Sprint 7 — lettres d'adressage : consultation et réimpression (lecture seule), chargées à l'ouverture de la vue.
+const AdressagesListView = lazy(() => import('../components/adressage/AdressagesListView').then(m => ({ default: m.AdressagesListView })));
 
 /* ── Types ──────────────────────────────────────────────────────────────────── */
 interface Ordonnance {
@@ -24,13 +26,14 @@ interface Ordonnance {
   medications?: { nom: string }[];
 }
 
-type ViewType = 'patients' | 'agenda' | 'ordonnances';
+type ViewType = 'patients' | 'agenda' | 'ordonnances' | 'adressages';
 
 /* ── Sidebar secrétaire ─────────────────────────────────────────────────────── */
 const NAV: { id: ViewType; label: string; icon: React.ElementType }[] = [
   { id: 'patients',    label: 'Patients',    icon: Users    },
   { id: 'agenda',      label: 'Agenda',      icon: Calendar },
   { id: 'ordonnances', label: 'Ordonnances', icon: FileText },
+  { id: 'adressages',  label: 'Adressages',  icon: Send     },
 ];
 
 function SecretaireSidebar({
@@ -325,7 +328,7 @@ export function SecretaireDashboard() {
   const { user, clinicProfile, signOut } = useAuth();
   const navigate = useNavigate();
 
-  const SEC_VIEWS = ['patients', 'agenda', 'ordonnances'] as const;
+  const SEC_VIEWS = ['patients', 'agenda', 'ordonnances', 'adressages'] as const;
   const [activeView, setActiveView] = useViewState(SEC_VIEWS, 'agenda');
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     try { return localStorage.getItem('sec-sidebar-collapsed') === 'true'; } catch { return false; }
@@ -407,6 +410,11 @@ export function SecretaireDashboard() {
           )}
           {activeView === 'ordonnances' && (
             <OrdonnancesView key="ordonnances" orgId={user?.org_id || ''} />
+          )}
+          {activeView === 'adressages' && (
+            <Suspense key="adressages" fallback={<div className="p-6 text-sm text-slate-400" role="status">Chargement…</div>}>
+              <AdressagesListView patients={patients} />
+            </Suspense>
           )}
         </AnimatePresence>
         </ErrorBoundary>

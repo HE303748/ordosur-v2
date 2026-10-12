@@ -4,7 +4,7 @@ import {
   Heart, FileText, Syringe, FolderOpen, Activity,
   Phone, Mail, MapPin, Plus, AlertTriangle, User,
   Droplets, Edit, X, Stethoscope, Clock,
-  CheckCircle2, AlertCircle, FlaskConical, LineChart,
+  CheckCircle2, AlertCircle, FlaskConical, LineChart, Send,
 } from 'lucide-react';
 import { PatientAvatar } from './PatientAvatar';
 import { TraitementFondSection } from './TraitementFondSection';
@@ -14,6 +14,8 @@ import { PregnancyStatusEditor } from '../PregnancyStatusEditor';
 import type { Patient as DbPatient } from '../../lib/supabase';
 import { openExamRequest, consumePatientTab, onPatientTabRequest } from '../../lib/examUi';
 import { ExamensSection } from '../exams/ExamensSection';
+import { AdressagesSection } from '../adressage/AdressagesSection';
+import { openAdressage } from '../../lib/adressageUi';
 import { ProchainBilanBadge } from '../exams/PatientExamStrip';
 import { BilansSection } from '../bilans/BilansSection';
 import { ARevoirBadge } from '../bilans/BilanWidgets';
@@ -55,13 +57,14 @@ interface Consultation {
   created_at: string;
 }
 
-type TabId = 'resume' | 'ordonnances' | 'examens' | 'bilans' | 'consultations' | 'documents' | 'vaccination';
+type TabId = 'resume' | 'ordonnances' | 'examens' | 'bilans' | 'adressages' | 'consultations' | 'documents' | 'vaccination';
 
 const TABS: { id: TabId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'resume',       label: 'Résumé',       icon: User       },
   { id: 'ordonnances',  label: 'Ordonnances',  icon: FileText   },
   { id: 'examens',      label: 'Examens',      icon: FlaskConical },
   { id: 'bilans',       label: 'Bilans',       icon: LineChart  },
+  { id: 'adressages',   label: 'Adressages',   icon: Send       },
   { id: 'consultations',label: 'Consultations',icon: Activity   },
   { id: 'documents',    label: 'Documents',    icon: FolderOpen },
   { id: 'vaccination',  label: 'Vaccination',  icon: Syringe    },
@@ -791,6 +794,17 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
                 Examens
               </button>
             )}
+            {/* Sprint 7 — lettre d'adressage auto-remplie */}
+            {doctorId && orgId && (
+              <button
+                onClick={() => openAdressage({ patient: patient as unknown as DbPatient })}
+                title="Adresser à un confrère"
+                className="flex-1 lg:flex-none px-3 py-2.5 lg:py-2 bg-white dark:bg-white/[0.05] border border-[#E5E5E0] dark:border-white/[0.12] hover:border-[#00A86B] text-[#0A1628] dark:text-[#E2E8F0] rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Send className="w-3.5 h-3.5 text-[#00A86B]" aria-hidden />
+                <span className="lg:hidden">Adresser</span><span className="hidden lg:inline">Adresser à un confrère</span>
+              </button>
+            )}
             <button
               onClick={onNavigateToChecker}
               className="flex-1 lg:flex-none px-3 py-2.5 lg:py-2 bg-[#00A86B] hover:bg-[#006B47] active:bg-[#006B47] text-white rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
@@ -852,6 +866,9 @@ export function PatientTabs({ patient, ordonnances, ordonnancesLoading = false, 
             )}
             {activeTab === 'bilans' && (
               <BilansSection patient={patient as unknown as DbPatient} canWrite={!!doctorId && !!orgId} />
+            )}
+            {activeTab === 'adressages' && (
+              <AdressagesSection patient={patient as unknown as DbPatient} canWrite={!!doctorId && !!orgId} />
             )}
             {activeTab === 'consultations' && (
               <ConsultationsTab

@@ -3,6 +3,7 @@
 // Léger : texte vectoriel uniquement + filigrane partagé. Le contenu vient de la fonction
 // pure buildRecap : ce module ne décide de rien, il dessine.
 
+import type { jsPDF } from 'jspdf';
 import {
   drawDocumentHeader, drawPageChrome, loadPdfChromeAssets, stampPageNumbers,
   PDF_COLORS as C, PDF_LAYOUT, type PdfChromeAssets,
@@ -32,17 +33,16 @@ const COLS = [
   { key: 'precedent', label: 'Précédent', x: 144, w: CONTENT_W - 144 },
 ] as const;
 
-export async function buildBilanPdf(
-  groups: RecapGroup[], patientLine: string, header: ExamPdfHeader,
-  opts: { dateIso: string; fileName: string; logoUrl?: string | null; assets?: PdfChromeAssets },
-): Promise<PdfFile> {
-  const { jsPDF: JsPDF } = await import('jspdf');
-  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
-  const assets = opts.assets ?? await loadPdfChromeAssets(opts.logoUrl);
-
+/**
+ * Dessine le récapitulatif sur la page COURANTE du document (et les suivantes si besoin).
+ * Sprint 7 — partagé avec la lettre d'adressage (« Joindre le récapitulatif des bilans »).
+ */
+export function drawBilanRecap(
+  doc: jsPDF, groups: RecapGroup[], patientLine: string, header: ExamPdfHeader, assets: PdfChromeAssets, dateIso: string,
+): void {
   const chrome = () => drawPageChrome(doc, assets.watermark);
   chrome();
-  let y = drawDocumentHeader(doc, { doctor: header.doctor, org: header.org, title: 'BILANS', dateIso: opts.dateIso }, assets.logo);
+  let y = drawDocumentHeader(doc, { doctor: header.doctor, org: header.org, title: 'BILANS', dateIso }, assets.logo);
   const rule = (color = C.DIVIDER, w = 0.4) => { doc.setDrawColor(color); doc.setLineWidth(w); doc.line(MARGIN_L, y, PAGE_W - MARGIN_R, y); };
 
   const tableHead = () => {
@@ -122,7 +122,16 @@ export async function buildBilanPdf(
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(C.INK_FAINT);
   doc.text('Bas / Haut : par rapport aux bornes du laboratoire saisies avec le résultat. « - » : bornes non renseignées.', MARGIN_L, y);
+}
 
+export async function buildBilanPdf(
+  groups: RecapGroup[], patientLine: string, header: ExamPdfHeader,
+  opts: { dateIso: string; fileName: string; logoUrl?: string | null; assets?: PdfChromeAssets },
+): Promise<PdfFile> {
+  const { jsPDF: JsPDF } = await import('jspdf');
+  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+  const assets = opts.assets ?? await loadPdfChromeAssets(opts.logoUrl);
+  drawBilanRecap(doc, groups, patientLine, header, assets, opts.dateIso);
   stampPageNumbers(doc);
   return { blob: doc.output('blob'), fileName: opts.fileName };
 }

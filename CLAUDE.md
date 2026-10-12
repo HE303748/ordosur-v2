@@ -66,6 +66,14 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   devient « Aucune interaction cliniquement significative connue » (`safetyGuards.titleForDisplay`).
 - Courbes (Sprint 2b-2) : tous les points convertis dans UNE unité (défaut = unité de référence, `uniteCourbeDefaut`) ; axe jamais
   sous 0 (`axeDomaine`) ; un résultat non convertible n'est pas tracé, il est compté.
+- Lettre d'adressage (Sprint 7) : `confreres` (carnet du médecin, archivage) et `lettres_adressage` (texte, destinataire,
+  ligne patient, en-tête et annexe des bilans FIGÉS par trigger à l'enregistrement → réimpression à l'identique, y compris
+  par la secrétaire ; seul le suivi évolue : brouillon → envoyee → reponse_recue, annulation motivée ; pour modifier : dupliquer).
+  Texte généré par un modèle DÉTERMINISTE, sans IA : `src/lib/lettreAdressage.ts` (génération + classes thérapeutiques lues
+  dans `regles_doublons` / `regles_allergies` / `regles_renales`, chargé avec la modale) et `src/lib/lettreTexte.ts` (accords,
+  destinataire, texte riche « paragraphes + **gras** », suivi, brouillon — léger). Règle d'or : aucune donnée inventée, une
+  section sans donnée est omise ; un traitement n'est dit « antihypertenseur » que si le patient est hypertendu. Ces modules
+  ne lisent ni n'alimentent le moteur de sécurité. PDF : `src/lib/lettrePdf.ts`.
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).

@@ -5,7 +5,7 @@ import {
   Search, Plus, X, AlertTriangle,
   CheckCircle2, Pill, UserPlus, FileText, Shield, Clock,
   Users, Trash2, CreditCard as Edit,
-  Download, ArrowLeft, ChevronRight, ChevronDown, Info, RotateCcw, History,
+  Download, ArrowLeft, ChevronRight, ChevronDown, Info, RotateCcw, History, Send,
 } from 'lucide-react';
 import { generateOrdonnancePdf } from '../lib/pdfService';
 import { formatAge, getAgeEnMois } from '../lib/ageUtils';
@@ -35,11 +35,14 @@ import { buildExamPages } from '../lib/examDocument';
 import { createDemande, attachOrdonnance, cancelDemande, loadDemandesForOrdonnances } from '../lib/examensApi';
 import { docInputFromDraft, onOpenExamRequest, onPlanRdvRequest, pagesFromDemande, type OpenExamRequest } from '../lib/examUi';
 import type { DemandeExamens } from '../lib/examRequest';
+// Sprint 7 — lettre d'adressage (modale chargée à la demande), carnet de confrères
+import { onOpenAdressage, openAdressage, type OpenAdressage } from '../lib/adressageUi';
+import { ConfreresSettings } from '../components/adressage/ConfreresSettings';
 import { buildOrdonnanceWithExamsPdf, downloadPdf } from '../lib/examPdf';
 import { scrollTargetOnViewChange } from '../lib/uiPlacement';
 // Sprint P — vues et librairies lourdes chargées à la demande (jsPDF, Recharts, SheetJS)
 import {
-  AgendaView, DocumentsView, EncyclopedieView, AIChat, PatientImportModal, ExamRequestModal,
+  AgendaView, DocumentsView, EncyclopedieView, AIChat, PatientImportModal, ExamRequestModal, AdressageModal,
   MonthlyInteractionsChart, RiskDistributionChart, TopMedicationsSection, RecentActivityTimeline, AllMedicationsHistory,
   ViewSkeleton, preloadLikelyViews,
 } from '../lib/viewChunks';
@@ -1174,6 +1177,18 @@ function CheckerView({
                     </div>
                   </div>
 
+                  {/* Sprint 7 — lettre d'adressage auto-remplie (document autonome, sans effet sur l'analyse) */}
+                  {canWritePatient && (
+                    <button
+                      type="button"
+                      onClick={() => openAdressage({ patient: selectedPatient })}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-[#E5E5E0] hover:border-[#00A86B] rounded-xl text-sm font-semibold text-[#0A1628] transition-colors"
+                    >
+                      <Send className="w-4 h-4 text-[#00A86B]" aria-hidden />
+                      Adresser à un confrère
+                    </button>
+                  )}
+
                   {/* Sprint 4e-C — statut grossesse / allaitement : toute modification relance l'analyse */}
                   <PregnancyStatusEditor
                     patient={selectedPatient}
@@ -2145,7 +2160,7 @@ function OrdonnancesView({ onNavigate, doctorId, doctorInfo, orgInfo, logoUrl, p
 
 // ─── SettingsView ─────────────────────────────────────────────────────────────
 
-type SettingsSection = 'profil' | 'cabinet' | 'securite' | 'secretaire';
+type SettingsSection = 'profil' | 'cabinet' | 'securite' | 'secretaire' | 'confreres';
 
 function SettingsView({
   navigate, user, doctorProfile,
@@ -2524,6 +2539,7 @@ function SettingsView({
     { id: 'cabinet',    label: '🏥 Cabinet'    },
     { id: 'securite',   label: '🔒 Sécurité'  },
     { id: 'secretaire', label: '🗂 Secrétaire' },
+    { id: 'confreres',  label: '✉️ Confrères'  },
   ] as const;
 
   // Load secretaires when section becomes active
@@ -2869,6 +2885,9 @@ function SettingsView({
               </div>
             )}
 
+            {/* Sprint 7 — carnet de confrères (lettres d'adressage) */}
+            {activeSection === 'confreres' && <ConfreresSettings />}
+
             {activeSection === 'secretaire' && (
               <div className="space-y-4">
                 {/* Invite form */}
@@ -3144,6 +3163,9 @@ export function DoctorDashboard() {
   // Sprint 5 — modale « Demande d'examens » (document autonome, hors blocage 3b).
   const [examRequest, setExamRequest] = useState<OpenExamRequest | null>(null);
   useEffect(() => onOpenExamRequest(setExamRequest), []);
+  // Sprint 7 — modale « Adresser à un confrère » (profil, Vérificateur, « Ordonnance enregistrée »).
+  const [adressage, setAdressage] = useState<OpenAdressage | null>(null);
+  useEffect(() => onOpenAdressage(setAdressage), []);
   useEffect(() => { preloadLikelyViews(); }, []);
   const [documentsTab, setDocumentsTab] = useState<'certificats' | 'examens'>('certificats');
   // Sprint 5c — position de défilement : chaque vue s'ouvre en haut de page ; le bouton
@@ -5896,6 +5918,13 @@ export function DoctorDashboard() {
             // Sprint 5c — « Fermer » sur l'écran « Ordonnance enregistrée » : l'ordonnance figée est libérée.
             if (savedOrdreNumber === prescriptionOrdreNumber) setPrescriptionData(null);
           }}
+          onAdresser={() => {
+            // Sprint 7 — l'ordonnance est enregistrée : son écran se ferme, la lettre s'ouvre pour le même patient.
+            const p = selectedPatient;
+            setShowPrescriptionPreview(false);
+            if (savedOrdreNumber === prescriptionOrdreNumber) setPrescriptionData(null);
+            openAdressage({ patient: p });
+          }}
           onBack={() => {
             setShowPrescriptionPreview(false);
             setShowPrescriptionForm(true);
@@ -5952,6 +5981,19 @@ export function DoctorDashboard() {
           onClose={() => setExamRequest(null)}
           showToast={showToast}
           onPlanRdv={planRdvControle}
+        />
+        </Suspense>
+      )}
+
+      {/* Sprint 7 — Lettre d'adressage (profil, Vérificateur, « Ordonnance enregistrée ») */}
+      {adressage && (
+        <Suspense fallback={null}>
+        <AdressageModal
+          key={`${adressage.patient.id}:${adressage.duplicateFrom?.id ?? 'new'}`}
+          patient={adressage.patient}
+          duplicateFrom={adressage.duplicateFrom ?? null}
+          onClose={() => setAdressage(null)}
+          showToast={showToast}
         />
         </Suspense>
       )}
