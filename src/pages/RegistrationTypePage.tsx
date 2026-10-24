@@ -1,9 +1,13 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { Building2, Stethoscope, Heart, ArrowLeft } from 'lucide-react';
-import { TRIAL_LABEL, MONTHLY_LABEL } from '../lib/pricing';
+import { TRIAL_LABEL } from '../lib/pricing';
+import { CLINIC_SIGNUP_ENABLED } from '../lib/features';
 
 export function RegistrationTypePage() {
   const navigate = useNavigate();
+
+  // Offre Clinique en pause : un seul type de compte, on va droit au formulaire médecin.
+  if (!CLINIC_SIGNUP_ENABLED) return <Navigate to="/register/doctor" replace />;
 
   return (
     <div className="min-h-screen bg-[#FAFAF7] flex">
@@ -97,10 +101,12 @@ export function RegistrationTypePage() {
             </div>
 
             <p className="mt-6 text-center text-sm text-gray-600">
-              {TRIAL_LABEL}, sans engagement · puis {MONTHLY_LABEL} par médecin.{' '}
+              {TRIAL_LABEL}, sans engagement.
+            </p>
+            <p className="mt-2 text-center">
               <button
                 onClick={() => navigate('/tarifs')}
-                className="font-semibold text-[#00A86B] hover:text-[#006B47] transition-colors"
+                className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors"
               >
                 Voir les tarifs
               </button>

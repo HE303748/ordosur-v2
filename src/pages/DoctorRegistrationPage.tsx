@@ -6,6 +6,7 @@ import { validatePassword, validateEmail, validatePhoneNumber, validateINPENumbe
 import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
 import { Button } from '../components/Button';
 import { SPECIALITES } from '../lib/specialites';
+import { CLINIC_SIGNUP_ENABLED } from '../lib/features';
 
 function RequiredLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -174,7 +175,7 @@ export function DoctorRegistrationPage() {
       <div className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
         <div className="w-full max-w-md">
           <button
-            onClick={() => navigate('/register')}
+            onClick={() => navigate(CLINIC_SIGNUP_ENABLED ? '/register' : '/')}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -411,6 +412,16 @@ export function DoctorRegistrationPage() {
                 )}
               </Button>
             </form>
+
+            <p className="mt-5 text-center">
+              <button
+                type="button"
+                onClick={() => navigate('/tarifs')}
+                className="text-xs text-[#94A3B8] hover:text-[#475569] transition-colors"
+              >
+                Voir les tarifs
+              </button>
+            </p>
           </div>
         </div>
       </div>

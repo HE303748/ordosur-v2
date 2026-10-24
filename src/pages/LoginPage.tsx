@@ -10,7 +10,8 @@ import { validateEmail } from '../lib/validation';
 import { EmailVerificationPrompt } from '../components/EmailVerificationPrompt';
 import { ForgotPasswordModal } from '../components/ForgotPasswordModal';
 import { Logo } from '../components/Logo';
-import { TRIAL_LABEL, MONTHLY_LABEL } from '../lib/pricing';
+import { TRIAL_LABEL } from '../lib/pricing';
+import { CLINIC_SIGNUP_ENABLED } from '../lib/features';
 
 /* ── Feature row ── */
 function Feature({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
@@ -165,7 +166,9 @@ export function LoginPage() {
           >
             <Feature icon={Shield}      title="Vérificateur d'interactions" desc="Base DDInter + plus de 52 000 médicaments" />
             <Feature icon={Stethoscope} title="Assistant IA intégré"       desc="Aide à la prescription basée sur l'IA" />
-            <Feature icon={Building2}   title="Multi-organisations"         desc="Cabinets individuels et cliniques" />
+            {CLINIC_SIGNUP_ENABLED && (
+              <Feature icon={Building2}   title="Multi-organisations"         desc="Cabinets individuels et cliniques" />
+            )}
           </motion.div>
         </div>
       </div>
@@ -338,9 +341,9 @@ export function LoginPage() {
               </p>
               <button
                 onClick={() => navigate('/tarifs')}
-                className="mt-2 text-xs font-medium text-[#475569] hover:text-[#0A1628] transition-colors"
+                className="mt-2 text-xs text-[#94A3B8] hover:text-[#475569] transition-colors"
               >
-                Tarifs : {MONTHLY_LABEL} par médecin, tout inclus
+                Tarifs
               </button>
             </div>
           </div>
