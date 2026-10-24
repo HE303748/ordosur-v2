@@ -116,6 +116,14 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   BDD-1b : 15 contre-indications DDInter du gabarit « A × B — Contre-indication : association déconseillée » qui
   atteignaient de nouvelles paires MA via le groupe (amoxicilline × ésoméprazole magnésium, rifampicine × IPP /
   clopidogrel…) passées en revue_requise (68 lignes) ; liste explicite `scripts/gen_bdd1b_revue_ci.mjs`.
+  BDD-1c (`scripts/gen_bdd1c_neutralisation.mjs`, source unique) : sels regroupés (esomeprazole magnesium [dihydrate] →
+  esomeprazole, vardenafil trihydrate → vardenafil, clopidogrel bisulfate → clopidogrel) — le référentiel COMPLET =
+  fixture BDD-1 + groupes BDD-1c (empreinte vérifiée par la migration) ; tout nouveau groupe part de là.
+  `interactions_ingredients.exclue_motif` (NULL = active) : ligne NEUTRALISÉE, ignorée par `check_interactions_v2` et
+  `v_ingredient_parlant`, jamais supprimée (réversible). 31 « contre-indications » du second import DDInter (gabarit
+  « A × B — Contre-indication : association déconseillée… ») neutralisées car contredites par DDInter d'origine ou ANSM
+  (garde-fou dans la migration), + amoxicilline × ésoméprazole magnésium (RCP, garde-fou assoupli nommément).
+  44 lignes du même gabarit sur les sels regroupés en revue_requise (112 lignes). Revue : `../sprint2b/revue/bdd1c_second_import.csv`.
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).

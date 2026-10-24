@@ -68,7 +68,9 @@ describe('BDD-1 — pièges exclus', () => {
     expect(memeGroupe(a, b)).toBe(false);
   });
 
-  it('les fiches « sel » aux lignes DDInter à relire ne sont pas groupées', () => {
+  // Source BDD-1 uniquement : esomeprazole magnesium, clopidogrel bisulfate et vardenafil trihydrate sont regroupés
+  // ensuite par BDD-1c (scripts/gen_bdd1c_neutralisation.mjs, référentiel complet testé dans bdd1cNeutralisation.test.ts).
+  it('les fiches « sel » aux lignes DDInter à relire ne sont pas groupées par la source BDD-1', () => {
     for (const n of ['esomeprazole magnesium', 'clopidogrel bisulfate', 'vardenafil trihydrate', 'citalopram hydrobromide',
       'paroxetine hemihydrate', 'tenofovir', 'mycophenolic acid']) {
       expect(canoniqueDe.has(n), n).toBe(false);

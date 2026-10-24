@@ -1,0 +1,398 @@
+{
+  "_genere_par": "scripts/gen_bdd1c_neutralisation.mjs",
+  "empreinte_referentiel": "a7f1030569669007938650c04c75865e",
+  "empreinte_neutralisation": "b2168147ddc1b4d874e43dd808ff8b02",
+  "empreinte_revue": "4f32e19fddf3b5fc0b6a4d6a718ce31a",
+  "revue_avant": 68,
+  "revue_apres": 112,
+  "groupes_sels": [
+    {
+      "canonique": "esomeprazole",
+      "membres": [
+        "esomeprazole magnesium",
+        "esomeprazole magnesium dihydrate"
+      ],
+      "justification": "Même molécule (S-oméprazole), sel de magnésium / hydrate"
+    },
+    {
+      "canonique": "vardenafil",
+      "membres": [
+        "vardenafil trihydrate"
+      ],
+      "justification": "Même molécule, hydrate"
+    },
+    {
+      "canonique": "clopidogrel",
+      "membres": [
+        "clopidogrel bisulfate"
+      ],
+      "justification": "Même molécule, sel (hydrogénosulfate)"
+    }
+  ],
+  "revue": [
+    {
+      "a": "antacids",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "aspirin",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "clopidogrel bisulfate",
+      "b": "lansoprazole"
+    },
+    {
+      "a": "clopidogrel bisulfate",
+      "b": "warfarin"
+    },
+    {
+      "a": "dabigatran",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "atazanavir"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "citalopram"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "clopidogrel"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "digoxin"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "itraconazole"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "methotrexate"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "mycophenolate"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "ritonavir"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "tacrolimus"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "warfarin"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "atazanavir"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "citalopram"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "clopidogrel"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "digoxin"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "itraconazole"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "methotrexate"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "mycophenolate"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "ritonavir"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "tacrolimus"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "warfarin"
+    },
+    {
+      "a": "insulin",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "iron",
+      "b": "esomeprazole magnesium"
+    },
+    {
+      "a": "iron",
+      "b": "esomeprazole magnesium dihydrate"
+    },
+    {
+      "a": "ketoconazole",
+      "b": "esomeprazole magnesium"
+    },
+    {
+      "a": "ketoconazole",
+      "b": "esomeprazole magnesium dihydrate"
+    },
+    {
+      "a": "magnesium",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "morphine",
+      "b": "clopidogrel bisulfate"
+    },
+    {
+      "a": "nifedipine",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "nitroglycerin",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "pantoprazole",
+      "b": "clopidogrel bisulfate"
+    },
+    {
+      "a": "ranitidine",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "rifampin",
+      "b": "clopidogrel bisulfate"
+    },
+    {
+      "a": "tamsulosin",
+      "b": "vardenafil trihydrate"
+    },
+    {
+      "a": "vardenafil trihydrate",
+      "b": "alcohol"
+    },
+    {
+      "a": "vardenafil trihydrate",
+      "b": "cimetidine"
+    },
+    {
+      "a": "vardenafil trihydrate",
+      "b": "digoxin"
+    },
+    {
+      "a": "vardenafil trihydrate",
+      "b": "warfarin"
+    },
+    {
+      "a": "voriconazole",
+      "b": "esomeprazole magnesium"
+    },
+    {
+      "a": "voriconazole",
+      "b": "esomeprazole magnesium dihydrate"
+    }
+  ],
+  "neutralisation": [
+    {
+      "a": "alcohol",
+      "b": "sodium oxybate",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "alcohol",
+      "b": "trimethobenzamide",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "clopidogrel bisulfate",
+      "b": "esomeprazole",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "clopidogrel bisulfate",
+      "b": "omeprazole",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "efavirenz",
+      "b": "rifampin",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "efavirenz",
+      "b": "voriconazole",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "escitalopram",
+      "b": "linezolid",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "clarithromycin",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "rifampin",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "clarithromycin",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "esomeprazole magnesium dihydrate",
+      "b": "rifampin",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "itraconazole",
+      "b": "rifampin",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "ketoconazole",
+      "b": "rifampin",
+      "src": "orig+ansm",
+      "motif": "Second import DDInter contredit par DDInter d'origine + ANSM — BDD-1c"
+    },
+    {
+      "a": "linezolid",
+      "b": "paroxetine",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "linezolid",
+      "b": "venlafaxine",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "ranolazine",
+      "b": "carbamazepine",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "ranolazine",
+      "b": "phenobarbital",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "ranolazine",
+      "b": "phenytoin",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "ranolazine",
+      "b": "rifampin",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "rifampin",
+      "b": "clopidogrel",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "rifampin",
+      "b": "haloperidol",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "rifampin",
+      "b": "lansoprazole",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "rifampin",
+      "b": "omeprazole",
+      "src": "orig",
+      "motif": "Second import DDInter contredit par DDInter d'origine — BDD-1c"
+    },
+    {
+      "a": "rifampin",
+      "b": "theophylline",
+      "src": "orig+ansm",
+      "motif": "Second import DDInter contredit par DDInter d'origine + ANSM — BDD-1c"
+    },
+    {
+      "a": "rifampin",
+      "b": "ticagrelor",
+      "src": "orig+ansm",
+      "motif": "Second import DDInter contredit par DDInter d'origine + ANSM — BDD-1c"
+    },
+    {
+      "a": "rifampin",
+      "b": "warfarin",
+      "src": "orig+ansm",
+      "motif": "Second import DDInter contredit par DDInter d'origine + ANSM — BDD-1c"
+    },
+    {
+      "a": "sertraline",
+      "b": "linezolid",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "st. john's wort",
+      "b": "lansoprazole",
+      "src": "orig+ansm",
+      "motif": "Second import DDInter contredit par DDInter d'origine + ANSM — BDD-1c"
+    },
+    {
+      "a": "voriconazole",
+      "b": "ritonavir",
+      "src": "ansm",
+      "motif": "Second import DDInter contredit par ANSM — BDD-1c"
+    },
+    {
+      "a": "amoxicillin",
+      "b": "esomeprazole magnesium",
+      "src": "rcp",
+      "motif": "Contredit par le RCP de l'ésoméprazole (indication éradication H. pylori en association avec amoxicilline) et par DDInter d'origine sur les autres IPP — BDD-1c"
+    },
+    {
+      "a": "amoxicillin",
+      "b": "esomeprazole magnesium dihydrate",
+      "src": "rcp",
+      "motif": "Contredit par le RCP de l'ésoméprazole (indication éradication H. pylori en association avec amoxicilline) et par DDInter d'origine sur les autres IPP — BDD-1c"
+    }
+  ]
+}
