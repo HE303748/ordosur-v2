@@ -1,0 +1,98 @@
+{
+  "_genere_par": "scripts/gen_bdd1b_revue_ci.mjs",
+  "empreinte": "daefebe53d9a847e7d4c2a60d30ebf23",
+  "revue_avant": 53,
+  "revue_apres": 68,
+  "lignes": [
+    {
+      "a": "amoxicillin",
+      "b": "esomeprazole magnesium",
+      "paires_ma_avant": 672,
+      "paires_ma_apres": 1470
+    },
+    {
+      "a": "ciprofloxacin",
+      "b": "tizanidine",
+      "paires_ma_avant": 51,
+      "paires_ma_apres": 95
+    },
+    {
+      "a": "efavirenz",
+      "b": "rifampin",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 45
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "clarithromycin",
+      "paires_ma_avant": 114,
+      "paires_ma_apres": 192
+    },
+    {
+      "a": "esomeprazole magnesium",
+      "b": "rifampin",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 54
+    },
+    {
+      "a": "iron",
+      "b": "deferasirox",
+      "paires_ma_avant": 12,
+      "paires_ma_apres": 30
+    },
+    {
+      "a": "ketoconazole",
+      "b": "rifampin",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 18
+    },
+    {
+      "a": "rifampin",
+      "b": "clopidogrel",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 135
+    },
+    {
+      "a": "rifampin",
+      "b": "haloperidol",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 54
+    },
+    {
+      "a": "rifampin",
+      "b": "lansoprazole",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 198
+    },
+    {
+      "a": "rifampin",
+      "b": "omeprazole",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 621
+    },
+    {
+      "a": "rifampin",
+      "b": "sofosbuvir",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 27
+    },
+    {
+      "a": "rifampin",
+      "b": "theophylline",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 18
+    },
+    {
+      "a": "rifampin",
+      "b": "ticagrelor",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 18
+    },
+    {
+      "a": "voriconazole",
+      "b": "rifampin",
+      "paires_ma_avant": 0,
+      "paires_ma_apres": 63
+    }
+  ]
+}

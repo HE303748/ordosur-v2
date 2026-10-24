@@ -107,6 +107,9 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   identifiants `ddinterNNNN` (liste `INTERDITS` testée). `interactions_ingredients.revue_requise` = ligne rédigée à la
   main, à relire : comparée sur les liens DIRECTS, jamais propagée au groupe. Candidats non appliqués et lignes à relire
   hors dépôt : `../sprint2b/revue/bdd1_groupes.csv`, `bdd1_ddinter_manuelles.csv`.
+  BDD-1b : 15 contre-indications DDInter du gabarit « A × B — Contre-indication : association déconseillée » qui
+  atteignaient de nouvelles paires MA via le groupe (amoxicilline × ésoméprazole magnésium, rifampicine × IPP /
+  clopidogrel…) passées en revue_requise (68 lignes) ; liste explicite `scripts/gen_bdd1b_revue_ci.mjs`.
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).
