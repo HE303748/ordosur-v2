@@ -10,6 +10,7 @@ import { validateEmail } from '../lib/validation';
 import { EmailVerificationPrompt } from '../components/EmailVerificationPrompt';
 import { ForgotPasswordModal } from '../components/ForgotPasswordModal';
 import { Logo } from '../components/Logo';
+import { TRIAL_LABEL, MONTHLY_LABEL } from '../lib/pricing';
 
 /* ── Feature row ── */
 function Feature({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
@@ -332,9 +333,15 @@ export function LoginPage() {
                   onClick={() => navigate('/register')}
                   className="font-bold text-[#00A86B] hover:text-[#006B47] transition-colors"
                 >
-                  Essai gratuit 14 jours →
+                  {TRIAL_LABEL} →
                 </button>
               </p>
+              <button
+                onClick={() => navigate('/tarifs')}
+                className="mt-2 text-xs font-medium text-[#475569] hover:text-[#0A1628] transition-colors"
+              >
+                Tarifs : {MONTHLY_LABEL} par médecin, tout inclus
+              </button>
             </div>
           </div>
 

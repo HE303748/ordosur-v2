@@ -2,6 +2,7 @@
   Ordosur — Email "Confirmation d'inscription" (= welcome + confirm)
   Template Supabase Auth → Authentication > Email Templates > Confirm signup
   Variables disponibles : {{ .ConfirmationURL }}, {{ .Email }}, {{ .Data.prenom }}
+  Durée d'essai : doit rester égale à TRIAL_DAYS (src/lib/pricing.ts) — HTML statique, à recopier à la main.
 -->
 <!DOCTYPE html>
 <html lang="fr">
@@ -47,7 +48,7 @@
                 La plateforme de prescription médicale conçue au Maroc, pour les médecins du Maroc.
               </p>
               <p style="margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#475569;">
-                Pour activer votre compte et démarrer votre essai de 14 jours, confirmez votre adresse email&nbsp;:
+                Pour activer votre compte et démarrer votre essai gratuit de 30&nbsp;jours, confirmez votre adresse email&nbsp;:
               </p>
               <!-- CTA -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
@@ -60,7 +61,7 @@
                 </tr>
               </table>
               <p style="margin:0 0 16px 0;font-size:15px;line-height:1.6;color:#475569;">
-                Pendant ces 14 jours, vous avez accès à toutes les fonctionnalités sans engagement ni carte bancaire requise.
+                Pendant ces 30&nbsp;jours, vous avez accès à toutes les fonctionnalités sans engagement ni carte bancaire requise.
               </p>
               <p style="margin:0 0 8px 0;font-size:15px;line-height:1.6;color:#475569;">
                 Pour commencer en 5 minutes&nbsp;:

@@ -12,6 +12,7 @@ import { AuthCallbackPage } from './pages/AuthCallbackPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { MandatoryPasswordResetPage } from './pages/MandatoryPasswordResetPage';
 import { AcceptInvitationPage } from './pages/AcceptInvitationPage';
+import { PricingPage } from './pages/PricingPage';
 
 // Sprint P — tableaux de bord chargés à la demande : la page de connexion ne télécharge plus
 // l'application entière.
@@ -33,6 +34,7 @@ function App() {
         <Routes>
           {/* Routes publiques */}
           <Route path="/" element={<LoginPage />} />
+          <Route path="/tarifs" element={<PricingPage />} />
           <Route path="/register" element={<RegistrationTypePage />} />
           <Route path="/register/doctor" element={<DoctorRegistrationPage />} />
           <Route path="/register/clinic" element={<ClinicRegistrationPage />} />

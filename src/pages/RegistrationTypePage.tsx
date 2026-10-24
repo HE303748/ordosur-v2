@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Building2, Stethoscope, Heart, ArrowLeft } from 'lucide-react';
+import { TRIAL_LABEL, MONTHLY_LABEL } from '../lib/pricing';
 
 export function RegistrationTypePage() {
   const navigate = useNavigate();
@@ -94,6 +95,16 @@ export function RegistrationTypePage() {
                 </div>
               </button>
             </div>
+
+            <p className="mt-6 text-center text-sm text-gray-600">
+              {TRIAL_LABEL}, sans engagement · puis {MONTHLY_LABEL} par médecin.{' '}
+              <button
+                onClick={() => navigate('/tarifs')}
+                className="font-semibold text-[#00A86B] hover:text-[#006B47] transition-colors"
+              >
+                Voir les tarifs
+              </button>
+            </p>
           </div>
         </div>
       </div>

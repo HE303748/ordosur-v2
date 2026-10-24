@@ -9,6 +9,9 @@ import {
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Logo } from '../components/Logo';
+import {
+  PLAN_LABEL, PLAN_MONTHLY_HT, PRICE_MONTHLY_HT, PRICE_YEARLY_HT, formatDhHt, type BillingPlan,
+} from '../lib/pricing';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -22,7 +25,8 @@ interface OrgRow {
   doctor_count: number;
   patient_count: number;
   last_activity: string | null;
-  plan: 'starter' | 'pro' | 'clinique' | null;
+  plan: BillingPlan | null;
+  trial_ends_at: string | null;
   last_payment_at: string | null;
   next_due_date: string | null;
   is_overdue: boolean;
@@ -74,17 +78,10 @@ const STATUS_CLS: Record<string, string> = {
   suspended: 'bg-red-50 text-[#DC2626] border-red-200',
 };
 
-const PLAN_LABEL: Record<string, string> = {
-  starter:  'Starter',
-  pro:      'Pro',
-  clinique: 'Clinique',
-};
-
-const PLAN_PRICE: Record<string, number> = {
-  starter:  190,
-  pro:      390,
-  clinique: 990,
-};
+/** Montant HT mensuel facturé à l'organisation (offre unique × nb médecins) — même calcul que admin_billing_summary. */
+function orgMonthlyHt(org: Pick<OrgRow, 'plan' | 'doctor_count'>): number {
+  return org.plan ? PLAN_MONTHLY_HT[org.plan] * org.doctor_count : 0;
+}
 
 const TABLE_HEADERS: { label: string; sortKey?: SortKey }[] = [
   { label: 'Organisation' },
@@ -314,7 +311,7 @@ export function AdminDashboard() {
     else {
       showToast(
         plan
-          ? `${org.name} — plan : ${PLAN_LABEL[plan]} (${PLAN_PRICE[plan]} MAD/mois)`
+          ? `${org.name} — plan : ${PLAN_LABEL[plan as BillingPlan]} (${formatDhHt(orgMonthlyHt({ plan: plan as BillingPlan, doctor_count: org.doctor_count }))} / mois)`
           : `${org.name} — plan retiré`,
         'success',
       );
@@ -352,7 +349,7 @@ export function AdminDashboard() {
 
   const exportCsv = () => {
     const headers = [
-      'Organisation', 'Type', 'Statut', 'Plan', 'Prix mensuel (MAD)',
+      'Organisation', 'Type', 'Statut', 'Fin d\'essai', 'Plan', 'Montant mensuel (DH HT)',
       'Médecins', 'Patients', 'Dernier paiement', 'Prochaine échéance',
       'En retard', 'Dernière activité', 'Créé le',
     ];
@@ -360,8 +357,9 @@ export function AdminDashboard() {
       csvCell(o.name),
       csvCell(o.type),
       csvCell(STATUS_LABEL[o.status] ?? o.status),
+      csvCell(o.status === 'trial' ? fmtDate(o.trial_ends_at) : ''),
       csvCell(o.plan ? PLAN_LABEL[o.plan] : ''),
-      csvCell(o.plan ? PLAN_PRICE[o.plan] : 0),
+      csvCell(Math.round(orgMonthlyHt(o) * 100) / 100),
       csvCell(o.doctor_count),
       csvCell(o.patient_count),
       csvCell(fmtDate(o.last_payment_at)),
@@ -450,7 +448,7 @@ export function AdminDashboard() {
                   : (
                     <p className="text-2xl font-bold text-[#0A1628] tracking-tight">
                       {fmtMrr(billing?.mrr ?? 0)}
-                      <span className="text-sm font-medium text-[#475569] ml-1">MAD/mois</span>
+                      <span className="text-sm font-medium text-[#475569] ml-1">DH HT/mois</span>
                     </p>
                   )
                 }
@@ -708,6 +706,11 @@ export function AdminDashboard() {
                                   <option value="comp">Offert</option>
                                   <option value="suspended">Suspendu</option>
                                 </select>
+                                {org.status === 'trial' && org.trial_ends_at && (
+                                  <p className="mt-1 text-[11px] text-[#94A3B8] whitespace-nowrap">
+                                    Fin d'essai : {fmtDate(org.trial_ends_at)}
+                                  </p>
+                                )}
                               </td>
 
                               {/* Plan */}
@@ -725,9 +728,8 @@ export function AdminDashboard() {
                                   `}
                                 >
                                   <option value="">— Aucun</option>
-                                  <option value="starter">Starter — 190 MAD</option>
-                                  <option value="pro">Pro — 390 MAD</option>
-                                  <option value="clinique">Clinique — 990 MAD</option>
+                                  <option value="mensuel">{PLAN_LABEL.mensuel} — {formatDhHt(PRICE_MONTHLY_HT)}/méd.</option>
+                                  <option value="annuel">{PLAN_LABEL.annuel} — {formatDhHt(PRICE_YEARLY_HT)}/méd.</option>
                                 </select>
                               </td>
 
@@ -892,6 +894,7 @@ export function AdminDashboard() {
                   <p className="text-xs text-[#475569] mt-0.5 capitalize">
                     {detailOrg.type} · {detailOrg.doctor_count} médecin{detailOrg.doctor_count !== 1 ? 's' : ''}
                     {detailOrg.plan && ` · ${PLAN_LABEL[detailOrg.plan]}`}
+                    {detailOrg.status === 'trial' && detailOrg.trial_ends_at && ` · fin d'essai le ${fmtDate(detailOrg.trial_ends_at)}`}
                   </p>
                 </div>
                 <button
