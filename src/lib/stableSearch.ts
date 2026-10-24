@@ -84,12 +84,14 @@ export interface PositionGuard {
  * pointeur n'est pas cliquable avant 300 ms.
  */
 export function createPositionGuard(): PositionGuard {
-  let last: string | null = null;
+  // Sprint 2e — référence = état au dernier changement (dernier rendu stable), pas la dernière
+  // image : une dérive lente (1 px par image) finit par compter, un arrondi de sous-pixel jamais.
+  let ref: string | null = null;
   let changedAt: number | null = null;
   return {
     observe(signature, now) {
-      if (signature === last) return false;
-      last = signature;
+      if (ref !== null && sameListPlace(signature, ref)) return false;
+      ref = signature;
       changedAt = now;
       return true;
     },
@@ -97,7 +99,7 @@ export function createPositionGuard(): PositionGuard {
     isStable(now, windowMs = CLICK_STABLE_MS) {
       return changedAt !== null && now - changedAt >= windowMs;
     },
-    reset() { last = null; changedAt = null; },
+    reset() { ref = null; changedAt = null; },
   };
 }
 
@@ -126,4 +128,103 @@ export function anchorCompensation(previousTop: number | null, currentTop: numbe
   if (previousTop === null || scrolledSince) return 0;
   const delta = Math.round(currentTop - previousTop);
   return Math.abs(delta) >= 1 ? delta : 0;
+}
+
+// ─── Sprint 2e — Liste de suggestions fiable ────────────────────────────────────────────────
+//
+// Constats en production (Vérificateur) : après un retrait (« Annuler » ou ✕), le garde-fou
+// retenait presque chaque clic alors que la liste semblait immobile ; la liste restait ouverte et
+// le clic suivant (destiné à « Annuler » ou ✕, situés dessous) ajoutait un AUTRE produit. Causes :
+//   • un retrait vide le verdict et raccourcit la page : quand elle est défilée vers le bas, le
+//     navigateur ramène le défilement et TOUT remonte, liste comprise ;
+//   • la compensation de défilement (Sprint 2d) agissait aussi sur deux colonnes, avec une position
+//     de référence périmée : elle déplaçait la page quand la carte patient, voisine, changeait.
+// Règles : le garde-fou ne compte que les mouvements RÉELS de la liste (au-delà d'un arrondi de
+// sous-pixel) ; la page ne raccourcit pas pendant la saisie ; la compensation ne s'applique que si
+// la carte patient est AU-DESSUS du champ ; après chaque clic dans la liste, elle se ferme.
+
+/** Écart de position (px) en dessous duquel la liste n'a pas bougé (arrondis de sous-pixel). */
+export const MOVE_TOLERANCE_PX = 2;
+
+function parseSignature(s: string): { top: number; left: number; ids: string } | null {
+  const m = /^(-?\d+):(-?\d+):(.*)$/.exec(s);
+  return m ? { top: Number(m[1]), left: Number(m[2]), ids: m[3] } : null;
+}
+
+/** Même place et même contenu (identifiants dans le même ordre), à `tolerancePx` près. */
+export function sameListPlace(a: string, b: string, tolerancePx = MOVE_TOLERANCE_PX): boolean {
+  if (a === b) return true;
+  const x = parseSignature(a), y = parseSignature(b);
+  if (!x || !y) return false;
+  return x.ids === y.ids && Math.abs(x.top - y.top) < tolerancePx && Math.abs(x.left - y.left) < tolerancePx;
+}
+
+/**
+ * Hauteur minimale réservée à la vue pendant la saisie : elle ne fait que croître tant que le champ
+ * est actif (focus ou liste ouverte), puis est libérée (null). Un verdict vidé, un médicament
+ * retiré ne raccourcissent donc pas la page sous le pointeur.
+ */
+export function reservedMinHeight(previous: number | null, currentHeight: number, active: boolean): number | null {
+  if (!active) return null;
+  return Math.max(previous ?? 0, Math.ceil(currentHeight));
+}
+
+/**
+ * Défilement qui garde le champ à la même place quand la carte patient change de hauteur. Seulement
+ * si la carte est AU-DESSUS du champ (colonne unique) et que la saisie est active ; sur deux
+ * colonnes, rien ne bouge. Calculé d'après la variation de hauteur de la carte elle-même.
+ */
+export function cardCompensation(previousHeight: number | null, newHeight: number, cardAboveField: boolean, active: boolean): number {
+  if (!active || !cardAboveField || previousHeight === null) return 0;
+  const delta = Math.round(newHeight - previousHeight);
+  return Math.abs(delta) >= 1 ? delta : 0;
+}
+
+// ── Doublon : un médicament déjà sélectionné n'est jamais ajouté une 2e fois par erreur ──
+
+/** Libellé comparé : accents, casse et espaces ignorés. */
+export function labelKey(s: string | null | undefined): string {
+  return (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+export interface DuplicateMatch<T> {
+  /** `meme_fiche` : la même fiche (identifiant) ; `meme_libelle` : une autre fiche au libellé identique. */
+  kind: 'meme_fiche' | 'meme_libelle';
+  existing: T;
+}
+
+/**
+ * Le candidat est-il déjà dans la sélection ? Même identifiant, ou même libellé affiché (marque +
+ * dosage + forme : deux fiches de la base pour « Solupred 20 mg, comprimé »).
+ */
+export function findDuplicate<T extends { id: string; nom: string; label?: string | null }>(
+  selected: readonly T[], candidate: { id: string; label: string },
+): DuplicateMatch<T> | null {
+  const same = selected.find(s => s.id === candidate.id);
+  if (same) return { kind: 'meme_fiche', existing: same };
+  const key = labelKey(candidate.label);
+  if (!key) return null;
+  const twin = selected.find(s => labelKey(s.label || s.nom) === key);
+  return twin ? { kind: 'meme_libelle', existing: twin } : null;
+}
+
+/**
+ * Issue d'un clic dans la liste (la liste se ferme dans tous les cas) :
+ *   • `deja`              : la même fiche est déjà sélectionnée — rien à ajouter ;
+ *   • `confirmer_liste`   : la liste a bougé juste avant le clic — « ajouter « X » ? » ;
+ *   • `confirmer_doublon` : même libellé déjà sélectionné — « ajouter quand même ? » ;
+ *   • `ajouter`.
+ * Après confirmation de `confirmer_liste`, rappeler avec `decision = 'accept'`.
+ */
+export type PickOutcome = 'ajouter' | 'confirmer_liste' | 'confirmer_doublon' | 'deja';
+export function pickOutcome(decision: ClickDecision, duplicate: DuplicateMatch<unknown> | null): PickOutcome {
+  if (duplicate?.kind === 'meme_fiche') return 'deja';
+  if (decision === 'hold') return 'confirmer_liste';
+  return duplicate ? 'confirmer_doublon' : 'ajouter';
+}
+
+/** Un clic (pointeur enfoncé) hors du champ et de la liste ferme la liste. */
+export function isOutside(target: Node | null, ...inside: (Node | null | undefined)[]): boolean {
+  if (!target) return true;
+  return !inside.some(el => el && el.contains(target));
 }

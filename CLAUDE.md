@@ -75,6 +75,12 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
     Garde-fou `lib/stableSearch` (`createPositionGuard`, `decideClick`) : un clic dans la liste n'est accepté que si elle
     est immobile depuis 300 ms, sinon la ligne est surlignée. Après un ajout : « Ajouté : libellé exact » + Annuler 5 s.
     Un brouillon n'est proposé qu'une fois par visite (`ordonnanceDraft.draftOfferDecision`).
+  · Sprint 2e — le garde-fou ne compte que les mouvements RÉELS de la liste (≥ 2 px ou contenu changé, mesurés
+    depuis le dernier état stable : `sameListPlace`). Après CHAQUE clic dans la liste elle se ferme et le champ se vide ;
+    liste qui a bougé ou doublon (même fiche / même libellé, `findDuplicate`, `pickOutcome`) → question dans la ligne
+    d'état à hauteur fixe. Pendant la saisie la vue ne raccourcit pas (`reservedMinHeight`) ; compensation de défilement
+    seulement si la carte patient est au-dessus du champ (`cardCompensation`). Focus rendu au champ de façon SYNCHRONE
+    avant tout retrait (✕, Annuler) ; Échap / clic extérieur ferment la liste (`data-esc-own`).
   · Canal antécédents : classe `corticoide` (voie GÉNÉRALE uniquement — colonne `regles_antecedents_classes.voie`, formes
     locales écartées par `antecedentEngine.isLocalForm`), règles C1 / C1b / C2, JAMAIS de CI absolue. AINS + corticoïde :
     mention sur les deux cartes (`ASSOCIATIONS_DIGESTIVES`). Empreintes base = source dans `regles_antecedents.data.json`.

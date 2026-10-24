@@ -117,7 +117,9 @@ describe('la règle est appliquée à toutes les recherches', () => {
     expect(s).toContain('pickMed(medSearchResults, e.currentTarget.dataset.medId)');
     expect(s).toContain('pickMed(medSearchForeign ?? [], e.currentTarget.dataset.medId)');
     expect(s).toContain('const picked = pickById(list, id);');
-    expect(s).toContain("decideClick(clickGuard, s, performance.now()) === 'hold'");
+    // Sprint 2e — le verdict du garde-fou passe par resolvePick (liste fermée, question si la liste a bougé).
+    expect(s).toContain("return s === null ? 'accept' : decideClick(clickGuard, s, performance.now());");
+    expect(s).toContain('resolvePick({ med: picked as Medicament }, clickDecision());');
     expect(s).toContain('searchMedications(medSearchTerm, { onlyIfChanged: true })');
     expect(s).toContain('if (opts.onlyIfChanged && !needsSearch(term, medShownKeyRef.current)) return;');
   });

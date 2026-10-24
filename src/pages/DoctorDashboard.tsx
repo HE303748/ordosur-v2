@@ -52,7 +52,10 @@ import { PatientExamStrip } from '../components/exams/PatientExamStrip';
 import { DerogationModal } from '../components/DerogationModal';
 import { searchMedicamentsMA } from '../lib/medSearch';
 import { texteAnsmLisible } from '../lib/interactionText';
-import { needsSearch, searchKey, pickById, createPositionGuard, decideClick, listSignature, anchorCompensation } from '../lib/stableSearch';
+import {
+  needsSearch, searchKey, pickById, createPositionGuard, decideClick, listSignature,
+  cardCompensation, reservedMinHeight, findDuplicate, pickOutcome, isOutside, type ClickDecision,
+} from '../lib/stableSearch';
 import { patientEngineSignature } from '../lib/patientEngineSig';
 import { medLabel, dosageManquant, ligneLabel, dosageBlockMessage } from '../lib/medLabel';
 import {
@@ -214,9 +217,8 @@ type CheckerMed = {
   formeHint?: string | null; label?: string | null; dosageManquant?: boolean;
 };
 const displayNom = (m: { nom: string; label?: string | null }) => m.label || m.nom;
-// Sprint 2d — durée du bouton « Annuler » après un ajout ; ligne retenue par le garde-fou de clic.
+// Sprint 2d — durée du bouton « Annuler » après un ajout.
 const ADDED_UNDO_MS = 5000;
-const HELD_ROW = 'ring-2 ring-inset ring-[#0A1628] dark:ring-slate-300 bg-slate-50 dark:bg-white/[0.06]';
 
 // Sprint 4d-bis — résultat de recherche hors Maroc (RPC search_medicaments_hors_maroc) :
 // `mappe` = au moins un ingrédient en base (sinon non vérifiable par le moteur).
@@ -1065,8 +1067,11 @@ function CheckerView({
   // Saisie fluide — aucun défilement automatique vers le verdict : après un ajout, le focus
   // revient dans le champ de recherche (vidé) pour enchaîner le médicament suivant.
   const medInputRef = useRef<HTMLInputElement>(null);
+  // Sprint 2e — focus SYNCHRONE (même correctif que la saisie rapide des bilans, 6A-bis) : différé
+  // d'une image, il arrivait après la suppression de la ligne cliquée (✕) et les lettres tapées
+  // entre-temps partaient dans le vide.
   const focusMedSearch = () => {
-    window.requestAnimationFrame(() => medInputRef.current?.focus({ preventScroll: true }));
+    medInputRef.current?.focus({ preventScroll: true });
   };
   // Statut grossesse / case du traitement de fond : même règle (pas de défilement). Le focus
   // ne revient au champ que sur ordinateur : sur écran tactile il ouvrirait le clavier.
@@ -1082,7 +1087,6 @@ function CheckerView({
   //    surlignée et rien n'est ajouté (lib/stableSearch : createPositionGuard, decideClick).
   const medListRef = useRef<HTMLDivElement>(null);
   const clickGuard = useRef(createPositionGuard()).current;
-  const [heldMedId, setHeldMedId] = useState<string | null>(null);
   const medDropdownOpen = showMedDropdown && medSearchTerm.length >= 2;
   const medDropdownOpenRef = useRef(medDropdownOpen);
   medDropdownOpenRef.current = medDropdownOpen;
@@ -1093,7 +1097,7 @@ function CheckerView({
     return listSignature(r.top, r.left, [...medSearchResults.map(m => m.id), ...(medSearchForeign ?? []).map(m => m.id)]);
   };
   useEffect(() => {
-    if (!medDropdownOpen) { clickGuard.reset(); setHeldMedId(null); return; }
+    if (!medDropdownOpen) { clickGuard.reset(); return; }
     let raf = 0;
     const tick = () => {
       const s = medListSignature();
@@ -1126,22 +1130,54 @@ function CheckerView({
   const addedVisible = addedMed && selectedMeds.some(m => m.id === addedMed.id) ? addedMed : null;
   const undoAdded = () => {
     if (!addedVisible) return;
+    // Sprint 2e — focus d'abord (synchrone), retrait ensuite : aucune frappe perdue.
+    focusMedSearchIfPointer();
     removeMedication(addedVisible.id);
     setAddedMed(null);
-    focusMedSearchIfPointer();
   };
 
-  /** Clic sur une ligne de la liste : ajout seulement si la liste est immobile depuis ~300 ms. */
+  // Sprint 2e — après CHAQUE clic dans la liste (ajout accepté ou retenu), la liste se ferme et le
+  // champ se vide : elle ne reste jamais ouverte au-dessus de « Annuler » ou des ✕. Une liste qui a
+  // bougé, ou un médicament déjà sélectionné, donnent une question dans la ligne d'état (hauteur fixe).
+  type PickTarget = { med: Medicament } | { manual: string };
+  const [pendingPick, setPendingPick] = useState<{ kind: 'confirmer_liste' | 'confirmer_doublon' | 'deja'; label: string; target: PickTarget } | null>(null);
+  const clearMedSearch = () => {
+    cancelMedBlur();
+    setMedSearchTerm('');
+    setShowMedDropdown(false);
+    searchMedications('');
+  };
+  const commitPick = (target: PickTarget) => {
+    setPendingPick(null);
+    expectAddRef.current = true;
+    if ('med' in target) addMedication(target.med); else addManualMedication(target.manual);
+    focusMedSearch();
+  };
+  const resolvePick = (target: PickTarget, decision: ClickDecision) => {
+    const label = 'med' in target ? (medLabel(target.med) || target.med.nom_commercial || target.med.nom) : target.manual.trim();
+    const outcome = pickOutcome(decision, findDuplicate(selectedMeds, { id: 'med' in target ? target.med.id : '', label }));
+    if (outcome === 'ajouter') { commitPick(target); return; }
+    clearMedSearch();
+    setPendingPick({ kind: outcome, label, target });
+    focusMedSearch();
+  };
+  /** Clic sur une ligne : ajout direct seulement si la liste est immobile depuis ~300 ms. */
+  const clickDecision = (): ClickDecision => {
+    const s = medListSignature();
+    return s === null ? 'accept' : decideClick(clickGuard, s, performance.now());
+  };
   const pickMed = (list: readonly Medicament[], id: string | undefined) => {
     const picked = pickById(list, id);
     if (!picked) return;
-    const s = medListSignature();
-    if (s !== null && decideClick(clickGuard, s, performance.now()) === 'hold') { setHeldMedId(picked.id); return; }
-    setHeldMedId(null);
-    expectAddRef.current = true;
-    addMedication(picked as Medicament);
-    focusMedSearch();
+    resolvePick({ med: picked as Medicament }, clickDecision());
   };
+  const confirmPending = () => {
+    if (!pendingPick) return;
+    if (pendingPick.kind === 'confirmer_liste') resolvePick(pendingPick.target, 'accept');
+    else if (pendingPick.kind === 'confirmer_doublon') commitPick(pendingPick.target);
+    else setPendingPick(null);
+  };
+  const dismissPending = () => { setPendingPick(null); focusMedSearchIfPointer(); };
 
   // 3. La liste se rouvre dès la frappe : la fermeture différée d'une perte de focus (clic sur
   //    « Retirer ») est annulée par toute reprise du champ.
@@ -1152,8 +1188,11 @@ function CheckerView({
   // 4. Aucun bloc situé AU-DESSUS du champ ne le déplace pendant la saisie : sur mobile (colonne
   //    unique), quand la carte du patient change de hauteur (bilans, DFG, antécédents, traitement de
   //    fond chargés après coup), le défilement est compensé du même nombre de pixels.
+  //    Sprint 2e — compensation calculée d'après la variation de hauteur de la carte, et seulement si
+  //    elle est AU-DESSUS du champ : sur deux colonnes (carte voisine), la page ne bouge plus.
   const patientCardRef = useRef<HTMLDivElement>(null);
   const medAnchorRef = useRef<HTMLDivElement>(null);
+  const medActive = () => document.activeElement === medInputRef.current || medDropdownOpenRef.current;
   useEffect(() => {
     const anchor = medAnchorRef.current, card = patientCardRef.current;
     if (!anchor || !card || typeof ResizeObserver === 'undefined') return;
@@ -1161,19 +1200,55 @@ function CheckerView({
     while (scroller && !/(auto|scroll)/.test(window.getComputedStyle(scroller).overflowY)) scroller = scroller.parentElement;
     if (!scroller) return;
     const box = scroller;
-    let lastTop: number | null = null;
-    const onScroll = () => { lastTop = anchor.getBoundingClientRect().top; };
-    box.addEventListener('scroll', onScroll, { passive: true });
+    let lastHeight: number | null = null;
     const ro = new ResizeObserver(() => {
-      const top = anchor.getBoundingClientRect().top;
-      const actif = document.activeElement === medInputRef.current || medDropdownOpenRef.current;
-      const delta = actif ? anchorCompensation(lastTop, top, false) : 0;
+      const r = card.getBoundingClientRect();
+      const above = r.bottom <= anchor.getBoundingClientRect().top + 1;
+      const delta = cardCompensation(lastHeight, r.height, above, medActive());
       if (delta !== 0) box.scrollTop += delta;
-      lastTop = anchor.getBoundingClientRect().top;
+      lastHeight = r.height;
     });
     ro.observe(card);
-    return () => { ro.disconnect(); box.removeEventListener('scroll', onScroll); };
+    return () => ro.disconnect();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 5. Sprint 2e — pendant la saisie (champ actif ou liste ouverte), la vue ne raccourcit jamais :
+  //    un retrait ou un verdict vidé ne fait plus remonter la page (et la liste) sous le pointeur.
+  //    La hauteur réservée est libérée quand la saisie s'arrête.
+  const viewRef = useRef<HTMLDivElement>(null);
+  const reserveRef = useRef<{ height: number | null; apply: () => void }>({ height: null, apply: () => {} });
+  useEffect(() => {
+    const el = viewRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const apply = () => {
+      const next = reservedMinHeight(reserveRef.current.height, el.getBoundingClientRect().height, medActive());
+      if (next === reserveRef.current.height) return;
+      reserveRef.current.height = next;
+      el.style.minHeight = next === null ? '' : `${next}px`;
+    };
+    reserveRef.current.apply = apply;
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    const input = medInputRef.current;
+    const later = () => window.setTimeout(apply, 0);
+    input?.addEventListener('focus', apply);
+    input?.addEventListener('blur', later);
+    return () => { ro.disconnect(); input?.removeEventListener('focus', apply); input?.removeEventListener('blur', later); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => { reserveRef.current.apply(); }, [medDropdownOpen]);
+
+  // 6. Sprint 2e — un clic à l'extérieur (champ et liste exclus) ferme la liste.
+  useEffect(() => {
+    if (!medDropdownOpen) return;
+    const onDown = (e: PointerEvent) => {
+      if (isOutside(e.target as Node | null, medListRef.current, medInputRef.current)) { cancelMedBlur(); setShowMedDropdown(false); }
+    };
+    document.addEventListener('pointerdown', onDown, true);
+    return () => document.removeEventListener('pointerdown', onDown, true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [medDropdownOpen]);
   // Sprint 4d — cartes, bandeaux et verdict proviennent du MÊME run (instantané du verdict).
   // Pas de verdict → aucune carte (jamais d'alerte partielle ou d'un run précédent).
   const interactionAlerts = result?.alerts ?? [];
@@ -1201,7 +1276,7 @@ function CheckerView({
 
   return (
     <PageTransition>
-      <div className="p-4 lg:p-6 max-w-[1400px]">
+      <div ref={viewRef} className="p-4 lg:p-6 max-w-[1400px]">
         <div className="mb-4 lg:mb-6">
           <h2 className="text-xl font-bold text-slate-900 dark:text-[#E2E8F0] tracking-tight">Vérificateur d'interactions</h2>
           <p className="text-slate-500 dark:text-[#94A3B8] text-sm mt-0.5">Analysez les interactions médicamenteuses avant de prescrire</p>
@@ -1405,7 +1480,19 @@ function CheckerView({
                     ref={medInputRef}
                     type="text"
                     value={medSearchTerm}
-                    onChange={e => { const v = e.target.value; cancelMedBlur(); setMedSearchTerm(v); setShowMedDropdown(true); searchMedications(v); }}
+                    data-esc-own={medDropdownOpen || pendingPick ? '1' : undefined}
+                    onChange={e => { const v = e.target.value; cancelMedBlur(); setPendingPick(null); setMedSearchTerm(v); setShowMedDropdown(true); searchMedications(v); }}
+                    onKeyDown={e => {
+                      // Sprint 2e — Échap ferme UNIQUEMENT l'élément le plus haut (la liste, sinon la
+                      // question en attente) ; l'événement ne remonte ni au formulaire ni au tableau de bord.
+                      if (e.key !== 'Escape') return;
+                      if (medDropdownOpen) { cancelMedBlur(); setShowMedDropdown(false); }
+                      else if (pendingPick) setPendingPick(null);
+                      else return;
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.nativeEvent.stopImmediatePropagation();
+                    }}
                     onFocus={() => { cancelMedBlur(); setShowMedDropdown(true); if (medSearchTerm.length >= 2) searchMedications(medSearchTerm, { onlyIfChanged: true }); }}
                     onBlur={() => { cancelMedBlur(); medBlurTimerRef.current = window.setTimeout(() => { medBlurTimerRef.current = null; setShowMedDropdown(false); }, 300); }}
                     placeholder="Ex: Doliprane, paracétamol..."
@@ -1427,10 +1514,8 @@ function CheckerView({
                             // Sprint 2d — et seulement si la liste n'a pas bougé juste avant le clic.
                             pickMed(medSearchResults, e.currentTarget.dataset.medId);
                           }}
-                          aria-describedby={heldMedId === med.id ? 'med-held-note' : undefined}
-                          className={`w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0 ${heldMedId === med.id ? HELD_ROW : ''}`}
+                          className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                         >
-                          {heldMedId === med.id && <span id="med-held-note" className="block text-[11px] font-semibold text-[#0A1628] dark:text-slate-200 mb-0.5">La liste a bougé — cliquez à nouveau pour ajouter ce médicament</span>}
                           {/* Ligne 1 : nom commercial. Sprint Quick Fixes A — Bug #2 :
                               badge 🇲🇦 MAR retiré (polluait visuellement la recherche méd). */}
                           <div className="flex items-center gap-2 flex-wrap">
@@ -1479,9 +1564,8 @@ function CheckerView({
                                 e.preventDefault();
                                 pickMed(medSearchForeign ?? [], e.currentTarget.dataset.medId);
                               }}
-                              className={`w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0 ${heldMedId === med.id ? HELD_ROW : ''}`}
+                              className="w-full px-4 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors border-b border-slate-50 dark:border-white/[0.04] last:border-b-0"
                             >
-                              {heldMedId === med.id && <span className="block text-[11px] font-semibold text-[#0A1628] dark:text-slate-200 mb-0.5">La liste a bougé — cliquez à nouveau pour ajouter ce médicament</span>}
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="font-semibold text-slate-800 dark:text-[#E2E8F0] text-sm leading-tight">{medLabel(med)}</span>
                                 <span className="text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 dark:bg-white/[0.06] dark:border-white/[0.1] dark:text-[#94A3B8]">
@@ -1501,7 +1585,7 @@ function CheckerView({
                       {/* Ajout manuel quand aucun résultat */}
                       {!medSearchLoading && medSearchResults.length === 0 && (
                         <button
-                          onMouseDown={e => { e.preventDefault(); expectAddRef.current = true; addManualMedication(medSearchTerm); focusMedSearch(); }}
+                          onMouseDown={e => { e.preventDefault(); if (medSearchTerm.trim()) resolvePick({ manual: medSearchTerm }, clickDecision()); }}
                           className="w-full px-4 py-2.5 text-left hover:bg-violet-50 dark:hover:bg-violet-500/[0.08] transition-colors flex items-center gap-2"
                         >
                           <span className="text-violet-500 text-base leading-none">✏️</span>
@@ -1523,15 +1607,35 @@ function CheckerView({
                 />
               </div>
 
-              {/* Sprint 2d — confirmation de l'ajout : libellé EXACT + « Annuler » 5 s. Hauteur FIXE (rien ne se décale). */}
+              {/* Sprint 2d — confirmation de l'ajout : libellé EXACT + « Annuler » 5 s. Hauteur FIXE (rien ne se décale).
+                  Sprint 2e — même ligne pour les questions : liste qui a bougé, médicament déjà sélectionné. */}
               <div className="h-9 mb-2 flex items-center gap-2 min-w-0" role="status" aria-live="polite">
-                {addedVisible && (
+                {pendingPick ? (
+                  <>
+                    <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" aria-hidden />
+                    <span className="text-xs text-slate-700 dark:text-[#CBD5E1] truncate min-w-0" title={pendingPick.label}>
+                      {pendingPick.kind === 'confirmer_liste' && <>La liste a bougé — ajouter <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{pendingPick.label}</span> ?</>}
+                      {pendingPick.kind === 'confirmer_doublon' && <>Déjà dans la sélection — ajouter quand même <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{pendingPick.label}</span> ?</>}
+                      {pendingPick.kind === 'deja' && <><span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{pendingPick.label}</span> est déjà dans la sélection</>}
+                    </span>
+                    {pendingPick.kind !== 'deja' && (
+                      <button type="button" onMouseDown={e => e.preventDefault()} onClick={confirmPending}
+                        className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-white bg-[#00A86B] hover:bg-[#00965F] transition-colors">
+                        Ajouter
+                      </button>
+                    )}
+                    <button type="button" onMouseDown={e => e.preventDefault()} onClick={dismissPending}
+                      className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#0A1628] dark:text-[#E2E8F0] border border-[#E5E5E0] dark:border-white/[0.12] hover:border-[#0A1628] dark:hover:border-white/30 transition-colors">
+                      {pendingPick.kind === 'deja' ? 'OK' : 'Non'}
+                    </button>
+                  </>
+                ) : addedVisible && (
                   <>
                     <CheckCircle2 className="w-4 h-4 text-[#00A86B] flex-shrink-0" aria-hidden />
                     <span className="text-xs text-slate-700 dark:text-[#CBD5E1] truncate min-w-0" title={addedVisible.label}>
                       Ajouté : <span className="font-semibold text-[#0A1628] dark:text-[#E2E8F0]">{addedVisible.label}</span>
                     </span>
-                    <button type="button" onClick={undoAdded}
+                    <button type="button" onMouseDown={e => e.preventDefault()} onClick={undoAdded}
                       className="flex-shrink-0 px-2.5 py-1 rounded-lg text-xs font-semibold text-[#0A1628] dark:text-[#E2E8F0] border border-[#E5E5E0] dark:border-white/[0.12] hover:border-[#0A1628] dark:hover:border-white/30 transition-colors">
                       Annuler
                     </button>
@@ -1567,7 +1671,8 @@ function CheckerView({
                           </span>
                         )}
                         <button
-                          onClick={() => { removeMedication(med.id); focusMedSearchIfPointer(); }}
+                          onMouseDown={e => e.preventDefault()}
+                          onClick={() => { focusMedSearchIfPointer(); removeMedication(med.id); }}
                           aria-label={`Retirer ${med.nom}`}
                           className="p-2 lg:p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 rounded-lg transition-colors flex-shrink-0"
                         >
