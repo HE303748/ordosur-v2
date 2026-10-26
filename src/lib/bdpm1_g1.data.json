@@ -1,0 +1,306 @@
+{
+  "empreinte": "b7c8ac9285c84bca20dba619e8c60c82",
+  "ingredients": {
+    "hydrochlorothiazide": "07076f7e-26a3-4286-932a-201894abb400",
+    "cyclophosphamide": "2182893d-36a8-452f-8695-40df26060328",
+    "fer": "dce8fd43-96c6-4020-a392-107642117c7b",
+    "acide fusidique": "49356406-d47f-44ab-9e9a-ebaf1100e834",
+    "hydrocortisone": "a3c9cb17-6369-4102-b74d-7c7c81f8f8ff",
+    "rilmenidine": "7addb55b-d696-47a5-9b3c-2706c5a43588",
+    "ciprofloxacine": "17238269-7635-42c2-946e-7de505d4da64",
+    "ciprofloxacin": "1b69cef5-3b05-4026-86b7-8d9a49260589",
+    "calcium carbonate": "8a9b5ba6-d326-4d85-b17a-da2f94872f7c",
+    "cholecalciferol": "3db9db92-9181-4d73-b3d3-259498828796",
+    "trimebutine": "5dcf35db-57a6-4454-adf7-7cafacd79e98",
+    "sitagliptin": "4ed0a014-31ec-4700-b377-d583fc41d563",
+    "metformine": "611be1d6-d666-494b-8355-9a9c4ea16619",
+    "olanzapine": "130b366f-5527-4e29-9a9d-43f137f83334",
+    "methylprednisolone": "d9aa2d4b-82cf-43cf-ad28-84f1c0009e6b",
+    "escitalopram": "53ecb9ff-77bf-427d-bc74-de708583e6b7",
+    "acebutolol": "34fa1d80-6136-429c-b585-20150a776af5",
+    "metronidazole": "14abbc09-5fb0-4ef4-b617-8295cae49046",
+    "tiotropium": "ffa1ea40-06a9-4c32-af17-e705f455c534",
+    "tianeptine": "3cf64c16-0209-4656-89e5-d29d2f6a9719"
+  },
+  "lignes": [
+    {
+      "marque": "ENDOXAN",
+      "id": "65fa1a36-bc52-4c43-8623-3b4e3c6ec875",
+      "nom": "ENDOXAN 1 G / MG SECABLE",
+      "preuve": "poudre injectable IV 200 mg / 1 g : cyclophosphamide (l’hydrochlorothiazide n’existe pas sous cette forme)",
+      "dci_avant": "HYDROCHLOROTHIAZIDE MG",
+      "dci": "CYCLOPHOSPHAMIDE",
+      "ingredients_avant": [
+        "hydrochlorothiazide"
+      ],
+      "ingredients": [
+        "cyclophosphamide"
+      ],
+      "quarantaine": [
+        "hydrochlorothiazide"
+      ]
+    },
+    {
+      "marque": "ENDOXAN",
+      "id": "10a83535-7942-4fa2-9697-495e8b966e8e",
+      "nom": "ENDOXAN 200 MG",
+      "preuve": "poudre injectable IV 200 mg / 1 g : cyclophosphamide (l’hydrochlorothiazide n’existe pas sous cette forme)",
+      "dci_avant": "HYDROCHLOROTHIAZIDE MG",
+      "dci": "CYCLOPHOSPHAMIDE",
+      "ingredients_avant": [
+        "hydrochlorothiazide"
+      ],
+      "ingredients": [
+        "cyclophosphamide"
+      ],
+      "quarantaine": [
+        "hydrochlorothiazide"
+      ]
+    },
+    {
+      "marque": "ENDOXAN",
+      "id": "c20c8949-ce1e-43eb-968a-ff23a06ac173",
+      "nom": "ENDOXAN 200 MG, Poudre pour injectable I.V et perfusion",
+      "preuve": "poudre injectable IV 200 mg / 1 g : cyclophosphamide (l’hydrochlorothiazide n’existe pas sous cette forme)",
+      "dci_avant": "HYDROCHLOROTHIAZIDE MG",
+      "dci": "CYCLOPHOSPHAMIDE",
+      "ingredients_avant": [
+        "hydrochlorothiazide"
+      ],
+      "ingredients": [
+        "cyclophosphamide"
+      ],
+      "quarantaine": [
+        "hydrochlorothiazide"
+      ]
+    },
+    {
+      "marque": "FUCIDINE",
+      "id": "d2293d05-525d-4817-9a0f-b3e51c991488",
+      "nom": "FUCIDINE ENFANT",
+      "preuve": "suspension buvable 250 mg / 5 mL : acide fusidique",
+      "dci_avant": "FER",
+      "dci": "ACIDE FUSIDIQUE",
+      "ingredients_avant": [
+        "fer"
+      ],
+      "ingredients": [
+        "acide fusidique"
+      ],
+      "quarantaine": [
+        "fer"
+      ]
+    },
+    {
+      "marque": "HYPERIUM",
+      "id": "7b04c484-27c3-4be0-a8e0-cf3f891b6a5c",
+      "nom": "HYPERIUM",
+      "preuve": "comprimé 1 mg, Servier : rilménidine",
+      "dci_avant": "HYDROCORTISONE",
+      "dci": "RILMENIDINE",
+      "ingredients_avant": [
+        "hydrocortisone"
+      ],
+      "ingredients": [
+        "rilmenidine"
+      ],
+      "quarantaine": [
+        "hydrocortisone"
+      ]
+    },
+    {
+      "marque": "IDEOS",
+      "id": "9ab39d64-89f9-4e82-b25a-76332e770839",
+      "nom": "IDEOS",
+      "preuve": "comprimé à croquer 500 mg / 400 UI : calcium + vitamine D3",
+      "dci_avant": "CIPROFLOXACINE",
+      "dci": "CARBONATE DE CALCIUM / CHOLECALCIFEROL",
+      "ingredients_avant": [
+        "ciprofloxacin",
+        "ciprofloxacine"
+      ],
+      "ingredients": [
+        "calcium carbonate",
+        "cholecalciferol"
+      ],
+      "quarantaine": [
+        "ciprofloxacin",
+        "ciprofloxacine"
+      ]
+    },
+    {
+      "marque": "INFANRIX",
+      "id": "4c210c59-d99c-4fa4-9160-ff8b847d0e32",
+      "nom": "INFANRIX HEXA 1 BOITE 1 FLACON",
+      "preuve": "vaccin hexavalent GSK ; aucun ingrédient vaccinal au référentiel : fiche laissée sans ingrédient (signal honnête)",
+      "dci_avant": "TRIMEBUTINE",
+      "dci": "VACCIN DIPHTERIQUE, TETANIQUE, COQUELUCHEUX ACELLULAIRE, POLIOMYELITIQUE INACTIVE, HEPATITE B ET HAEMOPHILUS INFLUENZAE B",
+      "ingredients_avant": [
+        "trimebutine"
+      ],
+      "ingredients": [],
+      "quarantaine": [
+        "trimebutine"
+      ]
+    },
+    {
+      "marque": "JANUMET",
+      "id": "62553140-49a7-4c54-8606-c8ed1720d398",
+      "nom": "JANUMET 50 / 1000 MG, Comprimé",
+      "preuve": "association sitagliptine + metformine (50 / 850, 50 / 1000)",
+      "dci_avant": "PHOSPHATE DE SITAGLIPTINE MONOHYDRATÉ",
+      "dci": "SITAGLIPTINE / METFORMINE",
+      "ingredients_avant": [
+        "sitagliptin"
+      ],
+      "ingredients": [
+        "metformine",
+        "sitagliptin"
+      ],
+      "quarantaine": []
+    },
+    {
+      "marque": "JANUMET",
+      "id": "31ce6392-09c9-494a-8659-7ad9b2222f4d",
+      "nom": "JANUMET 50 / 850 MG, Comprimé",
+      "preuve": "association sitagliptine + metformine (50 / 850, 50 / 1000)",
+      "dci_avant": "PHOSPHATE DE SITAGLIPTINE MONOHYDRATÉ",
+      "dci": "SITAGLIPTINE / METFORMINE",
+      "ingredients_avant": [
+        "sitagliptin"
+      ],
+      "ingredients": [
+        "metformine",
+        "sitagliptin"
+      ],
+      "quarantaine": []
+    },
+    {
+      "marque": "JANUMET",
+      "id": "cd1ce7ee-fced-4c17-ab43-2ebd92fb0a31",
+      "nom": "JANUMET COMPRIME PELLICULE à 50 / 1000 1 BOITE 56 COMPR",
+      "preuve": "association sitagliptine + metformine (50 / 850, 50 / 1000)",
+      "dci_avant": "SITAGLIPTINE /",
+      "dci": "SITAGLIPTINE / METFORMINE",
+      "ingredients_avant": [
+        "sitagliptin"
+      ],
+      "ingredients": [
+        "metformine",
+        "sitagliptin"
+      ],
+      "quarantaine": []
+    },
+    {
+      "marque": "MEDROL",
+      "id": "62e69988-fe04-42f6-8f2b-c33ace0bb5f1",
+      "nom": "MEDROL",
+      "preuve": "comprimé sécable 4 mg, Pfizer : méthylprednisolone (l’olanzapine n’existe pas à 4 mg)",
+      "dci_avant": "OLANZAPINE",
+      "dci": "METHYLPREDNISOLONE",
+      "ingredients_avant": [
+        "olanzapine"
+      ],
+      "ingredients": [
+        "methylprednisolone"
+      ],
+      "quarantaine": [
+        "olanzapine"
+      ]
+    },
+    {
+      "marque": "SECTRAL",
+      "id": "43670d5d-5414-4072-89df-e22e69724fdd",
+      "nom": "SECTRAL",
+      "preuve": "comprimé pelliculé 200 mg : acébutolol (l’escitalopram n’existe pas à 200 mg)",
+      "dci_avant": "ESCITALOPRAM",
+      "dci": "ACEBUTOLOL",
+      "ingredients_avant": [
+        "escitalopram"
+      ],
+      "ingredients": [
+        "acebutolol"
+      ],
+      "quarantaine": [
+        "escitalopram"
+      ]
+    },
+    {
+      "marque": "SPIRIVA",
+      "id": "36040c36-c101-4b87-8d62-0d8f03c5fec9",
+      "nom": "SPIRIVA 1 BOITE 16 COMPRIME",
+      "preuve": "dosage 18 µg : tiotropium (le métronidazole se dose en centaines de mg)",
+      "dci_avant": "METRONIDAZOLE",
+      "dci": "TIOTROPIUM",
+      "ingredients_avant": [
+        "metronidazole"
+      ],
+      "ingredients": [
+        "tiotropium"
+      ],
+      "quarantaine": [
+        "metronidazole"
+      ]
+    },
+    {
+      "marque": "STABLON",
+      "id": "ede0d1dc-f6f2-415f-bc97-da3017d87c41",
+      "nom": "STABLON COMPRIME PELLICULE à 0.75 /",
+      "preuve": "comprimé pelliculé 12,5 mg, Servier : tianeptine",
+      "dci_avant": "TIOTROPIUM",
+      "dci": "TIANEPTINE",
+      "ingredients_avant": [
+        "tiotropium"
+      ],
+      "ingredients": [
+        "tianeptine"
+      ],
+      "quarantaine": [
+        "tiotropium"
+      ]
+    }
+  ],
+  "non_appliquees": [
+    {
+      "marque": "ANDROCUR",
+      "id": "e4e67a49-1170-44a7-9b11-5bdb49367bd9",
+      "raison": "comprimé effervescent 1 g, Maphar, classe analgésique : paracétamol (Androcur = cyprotérone 50 mg)"
+    },
+    {
+      "marque": "ESPERAL",
+      "id": "61ad238c-5a0e-46ef-8b3d-40f8d33f6064",
+      "raison": "comprimés pelliculés 25 / 100 / 200 / 300 mg, classe psychiatrie : quétiapine (Esperal = disulfirame 500 mg)"
+    },
+    {
+      "marque": "ESPERAL",
+      "id": "38271b7c-674f-41e2-879f-daf994818621",
+      "raison": "comprimés pelliculés 25 / 100 / 200 / 300 mg, classe psychiatrie : quétiapine (Esperal = disulfirame 500 mg)"
+    },
+    {
+      "marque": "ESPERAL",
+      "id": "8d8794cc-e040-44c1-92ca-96dd50c22991",
+      "raison": "comprimés pelliculés 25 / 100 / 200 / 300 mg, classe psychiatrie : quétiapine (Esperal = disulfirame 500 mg)"
+    },
+    {
+      "marque": "ESPERAL",
+      "id": "f045c1b9-ff85-4481-bb37-9469e4ccd3cc",
+      "raison": "comprimés pelliculés 25 / 100 / 200 / 300 mg, classe psychiatrie : quétiapine (Esperal = disulfirame 500 mg)"
+    },
+    {
+      "marque": "KEPPRA",
+      "id": "bcf7c203-0fd4-4f8a-823d-e69a6fecbd84",
+      "raison": "poudre pour solution 500 mg, classe céphalosporine : céfotaxime plausible (Keppra IV = solution à diluer) — doute, non tranché"
+    },
+    {
+      "marque": "LOCAPRED",
+      "id": "9a1a1473-408b-42c4-bbcc-84789b9f7859",
+      "raison": "sachet buvable 100 mg (aspirine) mais classe dermatologie (Locapred = désonide crème) — doute, non tranché"
+    }
+  ],
+  "synonyme": {
+    "id": "a01a4c7e-dc9c-4b01-b899-e5daefbd37df",
+    "nom": "État de stress post-traumatique",
+    "avant": "ESPT, PTSD, stress post traumatique, trauma",
+    "apres": "ESPT, PTSD, stress post traumatique"
+  }
+}

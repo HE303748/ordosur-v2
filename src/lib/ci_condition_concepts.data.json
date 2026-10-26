@@ -1,7 +1,7 @@
 {
  "empreinte": {
   "concepts": "bd1dd28caa7c01fcd3263e2598ee99ae",
-  "curees": "41bdb489d8b10716d10d89b1dccc8647"
+  "curees": "24e3557742b394272ccb0c9c47dd2358"
  },
  "familles": [
   "diabete",
@@ -4685,7 +4685,7 @@
   },
   {
    "nom_fr": "État de stress post-traumatique",
-   "synonymes": "ESPT, PTSD, stress post traumatique, trauma"
+   "synonymes": "ESPT, PTSD, stress post traumatique"
   },
   {
    "nom_fr": "Œdème",
