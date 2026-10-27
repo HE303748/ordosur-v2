@@ -301,6 +301,16 @@ const T = [
   ['Varicelle ou zona actif (patient non immunisé)', C('Varicelle', fam('varicelle'), lib('Varicelle')), C('Zona', etat('actif'), lib('zona actif'))],
 ];
 
+// Sprint BDPM-1 G3 — formulations lues dans les RCP (concept existant, qualificatif lu à côté du concept). Même liste que
+// la migration 20261031140000_bdpm1_g3a_ci.sql (source : scripts/data/bdpm1_g3.json, bdpm/scripts/construire_g3.py).
+const G3 = JSON.parse(readFileSync(new URL('./data/bdpm1_g3.json', import.meta.url), 'utf8')).formulations_nouvelles;
+for (const f of G3) {
+  const o = [];
+  if (f.famille) o.push(fam(f.famille));
+  if (f.qualificatif) o.push(f.qualificatif_type === 'etat' ? etat(f.qualificatif) : grav(f.qualificatif));
+  T.push([f.condition_valeur, C(f.concept, ...o, { note: 'BDPM-1 G3 : formulation lue dans un RCP' })]);
+}
+
 // Familles reconnues par le moteur (membres déclarés dans conditionMatcher.ts, vérifiés par ses tests).
 const FAMILLES = ['diabete', 'ulcere_gastroduodenal', 'hta', 'hepatite_virale', 'migraine', 'depression', 'asthme', 'varicelle',
   'infection_urinaire', 'trouble_rythme', 'coronaropathie', 'dyslipidemie', 'hyperthyroidie', 'psychose', 'neuropathie',

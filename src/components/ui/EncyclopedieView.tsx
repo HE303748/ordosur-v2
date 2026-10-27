@@ -151,6 +151,7 @@ function MedDetail({ med, onClose }: { med: Medicament; onClose: () => void }) {
       const [cRes, iRes] = await Promise.all([
         supabase.from('contraindications')
           .select('condition_type, condition_valeur, severite, description, mecanisme_fr, conduite_fr')
+          .is('exclue_motif', null)
           .ilike('dci_pattern', `%${dciLower}%`)
           .limit(80),
         supabase.from('drug_interactions')
@@ -449,6 +450,7 @@ function PathDetail({ path, onClose }: { path: Pathologie; onClose: () => void }
       const searchTerm = path.nom_fr.split(' ')[0];
       const { data } = await supabase.from('contraindications')
         .select('condition_type, condition_valeur, severite, description, mecanisme_fr, conduite_fr')
+        .is('exclue_motif', null)
         .ilike('condition_valeur', `%${searchTerm}%`).limit(30);
 
       // Dédoublonnage

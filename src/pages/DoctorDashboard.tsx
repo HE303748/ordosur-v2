@@ -4519,8 +4519,9 @@ export function DoctorDashboard() {
     // Bug critique — la limite 1000 par défaut de Supabase tronquait le chargement
     // (1421 CI en base → seules 1000 chargées → ~30% des contre-indications muettes).
     // fetchAllRows pagine par .range() pour charger l'intégralité, robuste à la croissance.
+    // BDPM-1 G3 — une ligne neutralisée (exclue_motif renseigné, réversible) n'est jamais chargée.
     const allCI = await fetchAllRows<DbContraindication>(
-      (from, to) => supabase.from('contraindications').select('*').range(from, to),
+      (from, to) => supabase.from('contraindications').select('*').is('exclue_motif', null).range(from, to),
       { label: 'loadInteractionDb' },
     );
     setAllContraindications(allCI);
