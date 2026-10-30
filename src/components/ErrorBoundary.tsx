@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle, RotateCw, Home } from 'lucide-react';
+import { captureError } from '../lib/sentry';
 
 /**
  * ErrorBoundary — filet de sécurité anti « page blanche ».
@@ -49,6 +50,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log complet réservé au debug — jamais exposé à l'utilisateur.
     console.error('[ErrorBoundary]', error, errorInfo);
+    captureError(error, errorInfo);
   }
 
   componentDidUpdate(prevProps: ErrorBoundaryProps) {
