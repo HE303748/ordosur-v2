@@ -130,6 +130,12 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   Matching médicament : pattern ⊆ norm(dci + nom + dci_canonique). Matching condition :
   `conditionMatcher.ts` (concepts, familles, stades rénaux, qualificatifs → « À évaluer » ou sévérité conservée « à préciser »).
 
+## Superpowers — règles Ordosur
+- Utiliser : systematic-debugging, verification-before-completion, writing-plans, test-driven-development.
+- Ne PAS utiliser : using-git-worktrees, finishing-a-development-branch, dispatching-parallel-agents, subagent-driven-development.
+- Toujours travailler directement sur main, un commit par livraison, jamais de branche ni de worktree.
+- Le format des prompts Ordosur (diagnostic, ⛔ STOP avant migration moteur, validation, commit) prime sur les skills.
+
 ## Workflow
 - 1 sprint = 1 session Claude Code = 1 push. Fermer la session après le push.
 - Structure d'un sprint : Diagnostic (lecture seule) → Rapport → Correction → Validation → Commit.
