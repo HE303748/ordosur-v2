@@ -10,7 +10,7 @@ Cœur du produit : vérificateur d'interactions médicamenteuses et contre-indic
 - Déploiement : push sur `main` → auto-deploy Vercel sur ordosur.com. Toujours `npm run build` avant commit.
 - ⚠️ Vite NE type-check PAS au build : une variable hors scope passe le build et crashe en prod.
   Vérifier soigneusement les scopes (composant racine vs sous-composants). `npm run typecheck` existe
-  (erreurs pré-existantes connues : MandatoryPasswordResetPage, RegisterPage, SecretaireDashboard).
+  (erreurs pré-existantes connues : 11 erreurs — MandatoryPasswordResetPage, RegisterPage, SecretaireDashboard ; ne pas dépasser ce seuil).
 
 ## Règles critiques (à ne JAMAIS violer)
 1. **doctor_id = id de la ligne `doctors`** du médecin connecté (PAS `auth.uid()`) pour tout INSERT

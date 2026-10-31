@@ -200,6 +200,8 @@ interface InteractionAlert {
   alsoChannels?: MergedChannel[];
   // Sprint 4f — tératogène majeur : exigence de contraception, alerte ferme + dérogation.
   preventionGrossesse?: boolean;
+  // Moteur-2 — source secondaire pour les paires couvertes par l'ANSM.
+  aussi_signale?: string | null;
 }
 
 // Sprint 4bc — sévérité d'une règle d'antécédent → sévérité d'alerte.
@@ -770,6 +772,7 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
               <p><span className="font-semibold text-slate-700 dark:text-slate-300">Condition patient :</span> {alert.condition}</p>
             )}
             <p className="whitespace-pre-wrap leading-relaxed">{desc}</p>
+            {alert.aussi_signale && <p className="text-[11px] text-slate-400 dark:text-[#64748B]">Également signalé par {alert.aussi_signale}</p>}
             {alert.ruleSource && <p className="text-[11px] text-slate-400 dark:text-[#64748B]">Source : {alert.ruleSource}</p>}
           </div>
         )}
@@ -1694,7 +1697,7 @@ function CheckerView({
                   variant="primary"
                   size="lg"
                   loading={selectedMeds.length > 0 && (analysisRunning || analysisPending)}
-                  disabled={selectedMeds.length < 1 || !selectedPatient}
+                  disabled={selectedMeds.length < 1}
                   className="flex-1 whitespace-nowrap"
                 >
                   {/* Un seul pictogramme : le spinner du bouton remplace le bouclier pendant le calcul */}
@@ -1713,13 +1716,13 @@ function CheckerView({
         {selectedMeds.length >= 1 && (
           <div ref={resultsRef} className="mt-4 lg:mt-6 space-y-3">
             {/* 0. Sprint 4d — pas de verdict : ni carte ni bouton, seulement l'état de l'analyse */}
-            {!result && !selectedPatient && (
+            {!result && selectedMeds.length === 0 && !selectedPatient && (
               <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-[#94A3B8] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-xl px-4 py-3">
                 <Info className="w-4 h-4 flex-shrink-0" />
-                Sélectionnez un patient pour lancer l'analyse (interactions et contre-indications).
+                Sélectionnez un patient pour analyser aussi les contre-indications, allergies et fonction rénale.
               </p>
             )}
-            {!result && selectedPatient && analysisFailed && (
+            {!result && analysisFailed && (
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 dark:bg-amber-500/[0.08] dark:border-amber-500/20 dark:text-amber-300">
                 <span className="flex items-center gap-2 flex-1">
                   <AlertTriangle className="w-4 h-4 flex-shrink-0" />
@@ -1728,7 +1731,7 @@ function CheckerView({
                 <button onClick={rerunAnalysis} className="font-semibold underline underline-offset-2 text-left">Relancer l'analyse</button>
               </div>
             )}
-            {!result && selectedPatient && !analysisFailed && (
+            {!result && !analysisFailed && selectedMeds.length > 0 && (
               <div role="status" aria-live="polite" className="bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-white/[0.06] p-4 lg:p-5 space-y-3">
                 <p className="flex items-center gap-2 text-sm font-semibold text-[#0A1628] dark:text-[#E2E8F0]">
                   <span className="w-4 h-4 border-2 border-slate-300 border-t-[#00A86B] rounded-full animate-spin" aria-hidden />
@@ -1759,6 +1762,14 @@ function CheckerView({
                 </div>
               );
             })()}
+
+            {/* Moteur-2 Part 3 — bandeau info quand résultat sans patient */}
+            {result && !selectedPatient && (
+              <p className="flex items-center gap-2 text-sm text-slate-600 dark:text-[#94A3B8] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-xl px-4 py-3">
+                <Info className="w-4 h-4 flex-shrink-0" />
+                Sans patient sélectionné, les contre-indications pathologiques, allergies croisées et données de fonction rénale ne sont pas analysées.
+              </p>
+            )}
 
             {/* 1. Bandeau verdict */}
             {result && (
@@ -3974,6 +3985,7 @@ export function DoctorDashboard() {
                 medicament_a: string; medicament_b: string;
                 ingredient_a: string | null; ingredient_b: string | null;
                 severite: string | null; description: string;
+                aussi_signale: string | null;
               }>;
               medicaments_verifies: string[];
               medicaments_non_verifiables: string[];
@@ -3999,6 +4011,7 @@ export function DoctorDashboard() {
                   description: molDesc,
                   involved: [inter.medicament_a, inter.medicament_b],
                   origin: pairOrigin(inter.medicament_a, inter.medicament_b),
+                  aussi_signale: inter.aussi_signale ?? null,
                 });
               } else {
                 existing.description = mergeDescriptions(existing.description, molDesc);
@@ -4199,7 +4212,7 @@ export function DoctorDashboard() {
             const key = `ci|${med.nom}|${contra.condition_valeur.slice(0, 30)}`;
             const alert: InteractionAlert = {
               type: 'contraindication',
-              severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
+              severite: contra.severite === 'absolue' ? 'contre_indication' : 'a_evaluer',
               description: contra.description,
               involved: [med.nom],
               condition: contra.condition_valeur, // Volet 2 — libellé brut exact pour affichage
@@ -4322,7 +4335,7 @@ export function DoctorDashboard() {
               seen.add(key);
               alerts.push({
                 type: 'contraindication',
-                severite: contra.severite === 'absolue' ? 'contre_indication' : 'majeure',
+                severite: contra.severite === 'absolue' ? 'contre_indication' : 'a_evaluer',
                 description: contra.description,
                 involved: [med.nom],
                 condition: conditionLabel,
@@ -5128,7 +5141,7 @@ export function DoctorDashboard() {
     setMedSearchTerm(''); setMedSearchResults([]); setShowMedDropdown(false);
   };
 
-  const removeMedication = (medId: string) => setSelectedMeds(selectedMeds.filter(m => m.id !== medId));
+  const removeMedication = (medId: string) => setSelectedMeds(prev => prev.filter(m => m.id !== medId));
 
   // Sprint 3 — Traitement de fond dans le Vérificateur
   const toggleFond = (traitementId: string) => {
@@ -5243,7 +5256,7 @@ export function DoctorDashboard() {
   useEffect(() => {
     if (!verdictWantedRef.current || refreshingRef.current || analysisPending || analysisFailed) return;
     if (alertsRunId !== runSeqRef.current) return;
-    if (!selectedPatient || selectedMeds.length === 0) return;
+    if (selectedMeds.length === 0) return;
     verdictWantedRef.current = false;
     computeVerdictRef.current();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -5251,12 +5264,11 @@ export function DoctorDashboard() {
 
   // Sprint 4d-bis — dérivé de analysisValid (calculé pendant le rendu) : dès que la sélection
   // change, le verdict précédent disparaît dans le MÊME rendu (plus de flash d'anciennes cartes).
-  const analysisRunning = !!selectedPatient && selectedMeds.length > 0 && !analysisValid && !analysisFailed;
+  const analysisRunning = selectedMeds.length > 0 && !analysisValid && !analysisFailed;
 
   /** « Relancer l'analyse » : run complet forcé (RPC + rechargements + verdict). */
   const rerunAnalysis = () => {
     if (selectedMeds.length < 1) { showToast('Sélectionnez au moins 1 médicament', 'error'); return; }
-    if (!selectedPatient) { showToast('Sélectionnez un patient pour analyser les contre-indications', 'error'); return; }
     setRerunTick(t => t + 1);
   };
 
@@ -5319,7 +5331,7 @@ export function DoctorDashboard() {
     const preexistingCount = dedupClinicalAlerts(verdictAlerts.filter(a => a.origin === 'fond')).length;
     const firmAlerts = currentAlerts.filter(a => !a.pregnancyContext);
     // Seules les CI conditionnelles NON écartées interdisent le vert.
-    const pregnancyCtxCount = currentAlerts.filter(a => a.pregnancyContext && !a.pregnancyReassured).length;
+    const pregnancyCtxCount = dedupClinicalAlerts(currentAlerts.filter(a => a.pregnancyContext && !a.pregnancyReassured)).length;
     const pregnancyReassuredCount = currentAlerts.filter(a => a.pregnancyContext && a.pregnancyReassured).length;
     const pregnancyStale = pregCtx.aConfirmer
       ? ' — statut « enceinte » à confirmer'
