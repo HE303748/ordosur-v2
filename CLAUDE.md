@@ -1,5 +1,14 @@
 # CLAUDE.md — Contexte permanent Ordosur
 
+## CONTRAT QUALITÉ DONNÉES (obligatoire, non négociable)
+1. Aucune écriture sur une table du moteur (contraindications, interactions_ingredients, interactions_rcp, ansm_regles, ansm_classe_membres, ingredients, medicament_ingredients, medicaments, ci_condition_concepts, pathologies_curees) via execute_sql. Uniquement via un fichier de migration dans project/supabase/migrations/, généré depuis un fichier source, avec contrôle d’empreinte base = source DANS la migration.
+2. Une ligne ne porte une source RCP que si elle a CIS + URL + date + citation exacte de SA molécule. Interdit : une étiquette de source sur une ligne de groupe (dci_pattern multi-molécules).
+3. Une CI ou une interaction ne baisse jamais de sévérité sans citation qui le justifie. Jamais de baisse silencieuse : liste exhaustive dans le rapport.
+4. Toute écriture dans le moteur est précédée d’un ⛔ STOP avec rapport, et suivie de : banc --reel, banc conditions, contrôles cliniques du sprint, npm test, build, typecheck (commande officielle : celle-ci → `npm run typecheck` (= `tsc --noEmit -p tsconfig.app.json`), seuil : 61 erreurs (mesuré le 2026-11-09)).
+5. Fin de sprint : exécute les « REQUÊTES DE PREUVE » fournies dans le prompt et colle leur sortie BRUTE dans le rapport. Pas de ✅ sans sortie brute.
+6. Commits uniquement dans project/ sur main, push, preuve git log origin/main -3. Jamais master. ETAT.md à jour après chaque étape.
+7. Si une étape prévue n’est pas faite (ex. éclatement par molécule), dis-le explicitement en tête du rapport. Ne la remplace jamais par un raccourci.
+
 ## Produit
 SaaS médical pour médecins marocains francophones (ordosur.com). UI 100% français.
 Cœur du produit : vérificateur d'interactions médicamenteuses et contre-indications
