@@ -1,0 +1,10288 @@
+{
+"sprint": "BDPM-2c (appliquée hors migration le 2026-11-09) — état exact relevé le 2026-11-09",
+"formule": "md5(string_agg(id||'|'||severite||'|'||coalesce(exclue_motif,'')||'|'||array_to_string(sources,' ¤ '), '#' order by id))",
+"lots": {
+"A": {
+"lignes": 745,
+"empreinte": "bc9fb294b6a9d226bdf1d06b47286694",
+"etat": [
+{
+"id": "004ebf94-7576-4117-a2f4-bcd7851e4a63",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "00d95bf1-db02-415f-99b9-8d6415ff0182",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0261605a-b2b7-43e6-a92b-fbb6c5e4cfa6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "02815216-a4ef-44e7-b27a-481c8d5d0540",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "02978163-0a31-4df8-bcfc-f6b22d2b8165",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "02a3f1be-66a8-4841-9b63-8f1e3c69a01e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "03472a6d-c7a0-42a3-a2cd-7bfd700ef8b9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "03e576f0-12a5-4bbd-8631-ab5cd3664531",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 1acd7371-4f7d-468a-99f9-e82d25e4a0f4 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "03fa96c3-1c0c-47b1-a185-47e3ee0c7445",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "048b7c69-cfe5-47f8-b76d-6dd49573abb6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0513a1b2-a687-43e5-bf7d-01eaac458901",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "05382edf-0d5f-4f1b-beda-85106c45b1bb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "06225a21-3966-45ac-a735-2d94e33e7250",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "06cbdb7b-9002-46dc-8cb7-cbb35b1e07f7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "06edb518-67f5-4397-88a8-e172eeabe2a9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0741fc61-aaba-4c0b-816e-8aaca86c87b6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "07bf7e34-f17e-49bb-bfc1-9221a3bf0579",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "07fe1ae9-4255-46f9-acfa-ffa44557ba91",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "084f989c-738c-493c-a750-dac2792552d1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0850abe9-ba6f-4b12-96cc-e7d412b63845",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "08631abf-a077-4716-80c4-488364a00a5b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "090cc796-5f6f-4c83-99a9-78e1bb64491b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "09c4805c-b6ac-44fb-95d9-fc04c6442ada",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0a03e7e9-a2cc-4390-9fa2-f503a2b9d71d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0a2be712-b126-4872-a5e2-a00119f091e6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0a3afd87-0205-4c74-9f3e-59557bc0b8a9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0a67c82c-7192-4998-856e-127ea9e27473",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0abdfe30-048e-445b-b6b8-d9ea7fecd4a7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0b210776-bd32-44c4-948c-2e43ae0e61e5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0b870e8d-7d0a-4a82-94e5-5cf52aca67c2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0b9d733c-c413-4b60-9a4d-7afc8c744f15",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0bd04b5b-d2d0-45d2-b62c-374ad9a4d8be",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0c77ef11-b7f2-459c-8ed3-ccbc0d859ce2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0cf05e24-38f6-41f9-bb43-2c4c6a089dd8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0d2cb389-5f2e-4e2e-ba08-7416535892b5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0d5e6355-9830-4531-b71d-4b7403ac5a92",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0da19833-70c8-456c-a916-74a73168d460",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0df2fd13-6720-4fab-96b7-2079f7d52611",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0e094efc-774d-4150-8fac-845881324704",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0e291945-e7e4-42b5-9a13-5fb8aed99ccd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0e299e57-164a-4b31-a2ee-4ef943637e27",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0e442813-11f8-4359-83cc-8bb54a3f9393",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0ecda993-5774-417e-8630-d9995bbc4f01",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0ef56c85-50b4-4ad8-94e7-2da1b0bc1c4a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0f765ba5-7046-404b-87ec-c7c1e7b57f2b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0fd47ced-2fac-44cd-ac2f-ee9d6adbad87",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "11bd4877-d5ac-4219-86b4-d29de62ce66f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "11f7f3eb-0e53-4739-a14a-d5bd7dd64a1f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "120033cd-284b-4c7e-95d7-fdacad67732b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "126759b9-7bdc-4ddd-a4c9-ec6c5a5c4f4a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1273fc1d-b88c-401e-90d0-6caf54ed5547",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "129f25c2-c7d7-40b6-a90d-c2aa702766fc",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "12b17191-a442-4a57-8061-a4e3d48ca3f6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "12d6bd57-20ff-4bea-a7d3-fe928066840f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1306c1e8-cab1-4727-b5f7-fdf88772d05b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "131b7430-3140-4545-8924-7a07b6970e70",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "135a809e-af2f-4610-a9ab-4f2508a00d18",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "139e1a79-cb43-4dca-a6b9-0040c668b31e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "13c5f198-eae8-4871-821c-9e000272d5fb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1407fc95-981f-43cf-8da4-93460d4a03fa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "145b333d-a697-45b6-a104-248eb4688c2a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "147b34c3-f692-486d-aad6-c8bceb6ad1df",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "150658ef-0f97-4d42-bb80-8ad21cbb8402",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "16406fc8-a4f7-46b9-989c-48fcf8dbe5c8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "167001de-3b96-4832-b680-fc16271affa5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "17f44ec9-435f-44d5-869b-5f3d3b43acbd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "18417aeb-9286-49d7-b7ca-3d25cca4cbb1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "187d6381-d01d-4800-8fc4-89d6c03cfa59",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "188ebe74-d779-41cf-8844-e38e2036f7ca",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "189cbb7f-a9bb-49a6-a561-bd3812353c65",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "18f65c3e-86eb-4725-940e-fd3807dd8408",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "193b28c0-5671-4b22-9c19-e0421c9215a2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "19803c9f-382b-43df-aa2c-3d8a35d5c4d7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "19f4c0ea-3084-4ab6-b90e-8e621c83ea37",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1a00b41d-2444-4e6d-bb03-d896a5eeb276",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1a46c638-75ca-406a-9762-42a2a63cac71",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1ad5fda4-604a-4d2e-9e93-a382369516c2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1ae3a617-c0ae-4b7c-80e4-ac83642815b4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1b6c7d7e-8354-48a5-b22e-4ac72fd24fa6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1c00e9fa-437e-4895-92c2-49ed4614dedd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1c2e8b70-3199-4ba5-a2e0-eb2369d563de",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1d6f5040-d580-455c-acbe-d7f1eb6eab84",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1d89598d-d667-410e-9faf-06aa96cd08e2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1da34f9a-e605-44d2-8ba3-c278e264520b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1dec8e76-be12-436a-82a3-da5e12ec09fa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1decc26e-47c7-4acc-b5fd-fdf734ac9a6b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1ea790a5-7548-41c6-9879-a49aeca35806",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1f404d65-5b4b-46ff-b585-700ffcb44b38",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1f64185a-bbf0-411d-9449-9d0e52c40f77",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1f8fd8a5-8860-4d72-83a2-5932ea638d21",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1fdf9b58-4b67-4f49-95dd-040f9b9edb32",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2097200a-b604-437d-940a-093a0a1bce12",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "20d86570-b0d3-4aae-ac42-7bbbf45616ab",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "21520c8a-3d21-4bb1-a975-9b303e4d0b81",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "21937112-fffb-4d8c-a650-c5e249947892",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "21af2f71-7a89-41ae-a610-58479b40b047",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2214344f-d12a-4127-aff3-8c734483e983",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "225584c5-a5a1-4e24-baf3-de5d280a6f7e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2360beb7-5820-49e0-9df8-ee2ff062ea2f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "246557df-b355-48d9-b02a-75aaac0b06d5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "249a0a17-04fc-4b5d-bb8e-caae1b606bbf",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "24ace87b-1467-42e1-8151-b867102fd225",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "25b1a90d-afde-4f2a-a97c-a5977150c0ec",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "267eb289-13d0-4ce0-88e6-f80e61010010",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "26b1d657-14d5-43e1-a131-aa0ccbb219b3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "277b7ee1-656a-46a5-9852-85882c78280a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "27b4db4a-13a3-4ef5-a96e-950f322f01ea",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "27c36fbb-6f43-451c-8c4e-f4fce4e4f98c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "288197ce-929c-42ba-b636-8d8860a95325",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "28bc3b9a-d3f0-4ecb-813e-24d04f24ad3d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "28d75b66-748d-441d-8f23-4a6c49b9e475",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2974459b-3864-4d87-8df8-714b86294ffb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "29bd0e75-16ac-4fa0-8d05-fcb5e79931ca",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "29cd59c3-4318-461f-822d-0af7bc6cfdf9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2a13f461-0ad5-415b-9519-7ca0aa46ee43",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2a8a5dc7-555c-42bd-b8ed-109323004297",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2a9793d0-da48-46c9-896c-d48fee65ae59",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2aaa2bd7-6cb3-4466-9b05-0a1359d75ead",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2b26e16a-c656-460f-90ce-fd4013274baa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2b5e4bff-48e9-4221-871b-77ba5709eabd",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2bbdf4ee-844b-4878-bd16-f9ca20a918f4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2be3652c-9c48-4414-84ff-5d36e91df49b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2c39f95b-3edd-43c4-96cb-2aa5fceec308",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2cbeb7b3-fa67-4c8f-a5db-f35d79c1dc9d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2d2044f1-25b9-47d5-9471-5ff2254ae38c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2d468a38-20fc-4f04-80dd-bcd00dba4f8a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2d66e49d-c9cf-472b-8ab8-9b432af8e443",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2d6a3ecc-32d0-4bb6-bc34-8e4e824a15eb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2da085b8-af7f-4ad3-8f4e-784bb7fb9e77",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2e47a69f-fdf3-4665-b409-d41909105b0e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2f58882c-cc1e-4fa7-9e88-9d775db7f273",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2f865972-d15a-42fa-a804-53a8772cb0ec",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2f8a0ffa-813d-46ae-88f2-744764ab23cf",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "304b1d60-5a6c-45a8-9bf3-cf55cc94efb7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3063742f-e643-4e4e-a1fa-6ccbd1d20c18",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "30854f1e-4308-43a6-9755-30775fba4155",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "31327098-1393-4298-af48-f0ff88045b4f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3195891b-6b32-4a1e-a134-71ce96b51312",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "31ebca87-bfde-43ac-9968-41395651deda",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "325bc019-da09-4e30-be23-4b2f0886cfb5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "327235a5-5aeb-414d-9642-fe1c14ac0466",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "329e397b-79e9-4763-bb6a-10468052fe82",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "333c5c54-b992-4f7e-b6e1-a812b40dcd46",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "33dbea5a-e4a0-40fd-9081-827efa18679d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3428c0ad-54a9-4dfa-a7ae-91ca7cde4940",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3476e7ea-9ab4-40ff-9e85-8c1a435941e3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "34ca2670-93bd-40c3-9223-5314fa2f0bc9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "34d24477-ec01-4707-b10c-0081eae9ceff",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "34d29ecb-2a99-408c-ae2f-2a2f503e761a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "351901fa-48c8-4eaa-8ede-b6ba0c0a5ff6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "35b8c468-0bf0-465f-bdb1-72dd75fa2ed2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "35d2d8d5-63af-46a3-9423-ab478785da25",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "35f00748-2889-4c30-8604-69d6ceee61dc",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "35f2ad7f-1e20-4719-b519-987a01f19c00",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "36763544-886f-400a-a628-ecb6e51d7a9b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "36a26173-cfa7-43c4-994c-d449532d2e40",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "36f39208-143b-4e39-ac5c-7cbcf8325420",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "379d3525-517f-4bfa-8938-3873c5c23ade",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "379df335-ffef-478c-bdba-9bf0248b0103",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "37bc740b-1ee0-4db6-9caf-0d1f11892255",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "37e8c798-6f04-42e1-96fa-afc80fe885f3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "38217018-0410-4e65-aa3f-327735122e33",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "38396d3d-b2cd-4070-8a7d-63d325d757f7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "383cba29-8a65-4b1d-9b91-9c72fbdfbc8e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "38ddea3d-e904-42a6-9f58-e17c46125397",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "38fa6d67-4da0-40d9-9f3b-1fae7ec8af91",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "39044b71-93eb-47fb-b984-eea3762cc17c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "39500fb3-5c52-41c9-a8d0-a60023dadd56",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "39e6352b-0064-4860-a2d2-9eef4b998ed1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3a48ae9a-a16a-417b-a848-ba4bdb65dddb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3a6e16ba-f200-489f-a8dc-345f59ff6f1f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3c0f76f4-4c89-4830-b5d3-05952571e5b8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3c1b674d-6d0a-4193-ad7a-0ca92851ed2a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3cb9e8e1-aa79-4406-8acc-184d81edfaeb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3d07e864-d47f-49bb-aad0-549c6a3c89ba",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3d0a7264-0836-467d-b447-dab14716a2c0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3d4d8b11-3ce8-48a8-a231-21f66ce7e049",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3d543bef-a7be-44d5-82e8-4ae2fb3ad840",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3ddcc5b1-b4b6-4599-9036-e7160e696728",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3eca0dd0-cff9-4845-a3a9-3ded6eec67fe",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3ee6bcc2-5263-44b1-96a6-8c25e3862ed4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3facc9a2-151f-421a-bd44-c68f3dd375de",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3fd6a65e-ce26-45dc-a6e6-7fdf5c7e8961",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "410f8a19-902e-417e-b5a3-939f79c090e3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "41630c2a-767e-425e-a4eb-e78f30454ea7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "417e3f14-c82a-471e-9767-70aa43f58fb2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4209ba0b-b463-456f-951d-8899e54b16a4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "42e93a13-0b00-4570-9f17-9eaf885a5d85",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "42f4b6e8-1958-46f8-89ff-54752e47e521",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4325f582-6382-4d42-b06f-a522662aabbd",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4363db8e-682d-4a9a-819c-46cdf8fd5e24",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 1acd7371-4f7d-468a-99f9-e82d25e4a0f4 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "43b35aee-c9a3-4e3d-ab60-db23d79f5320",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "43bb962f-2b51-4feb-b03e-48978c28f34a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "43dba9e3-a40b-4ecb-8ca1-1a922a83609f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "44c7a982-069c-4a6e-b41b-2916a020e371",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "453317a9-ab4b-4425-8b43-d1712d0973f3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "45adf977-84d3-426b-8588-06b231b1af1e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "45bfbe0a-1576-44da-b228-6da2f4992a29",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "463d5e34-467a-42e6-9346-b87f28b65ee0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "467132af-b936-4ec8-b2b4-e87b7d200829",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "478e0609-9f7a-4883-974c-79424a1a6560",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "47fad05f-b92f-416e-bad4-01652f865659",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "48c9af27-7fd1-4301-b267-d546db375b94",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "491f759c-870d-4ec0-8133-e56ee33fbcb8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "49d97ae8-c0ba-44f8-9379-13b7b9b93088",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "49f712d8-2cba-448b-8f15-ac32342eaeb2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4a06cef9-125b-454f-8e40-c4e8d76714bc",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4a232958-7a7f-45a9-8cdf-cbe8426a1114",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4a8304cb-c6f2-41c4-a04a-41ce91f0bea1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4adeef35-a97a-4cac-aad7-075d2c5bb923",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4b50f015-7ed5-4c6d-b01b-88b92a791efa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4bd31b18-f223-43b5-ad2b-22bbfe917d41",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4cb0e032-0081-4714-8307-013d997fbbe1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4cdf30d2-fa65-4afb-83b1-d63d920d6fb0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4cf8c8dc-3dd8-47e8-9e04-c3a352115b3a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4cfcac87-0021-4153-a978-d64accf05017",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4d3041a0-360d-4f50-9593-92498241035d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4d32e3ac-9afc-426e-af34-88ff3c553269",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4d5d11c8-fb49-45b7-a441-aaa256739977",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4d99e259-7c8c-40e2-ad8e-108b3084ebc4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4da832da-8c00-43dd-be67-4b3e8348a141",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4ded9b26-20c9-4647-8ffc-eb57e1272759",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4e04c647-9290-49af-9834-62146c644c8e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4e96b5d6-2614-408b-8c8c-86d83f371255",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4fffb6c1-b44e-4f57-8045-7b377094c74e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "503a8eaf-ba68-4209-8933-b0c3fe25ea07",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5099dfd7-85e6-4022-b759-b614c8718d4a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "510c1055-9f91-43bf-b009-de1ea306f19c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "512e4c4d-ac2d-4b9c-b269-2cda0edf33f6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5159eccd-ee22-4ae0-836d-cb7d4c966e4d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "522b11d1-4303-4141-b1ce-aa99c4658397",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "52eea7b7-0774-4cab-9eb1-ef21ccf5e9df",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5363f222-5c36-4f6c-9ec7-eac3679354a5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "541f3c02-80f4-470d-99ee-88b048aece43",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5431e6dc-7ba8-4480-be29-2867efa660c2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5454e549-26ef-4bf6-ad75-61043be0dbea",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "54a63567-9ac0-41aa-9ced-098864be4344",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "555156db-469d-4df1-88cb-fbace4bf83f9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "56055378-1115-4e68-9562-8899060c2f92",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "560cd4f7-e84e-4ced-8464-3d230432d742",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "565d2f91-8493-41e6-bab5-c26b35ffa0d5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "56770fd4-5793-41b3-92a3-228818672f83",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "56d605db-77ba-4705-8eca-92e75860b26e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "570c948f-e70a-4d4f-b5ea-d5677d2a7926",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5745a353-2c1e-4c92-a86e-4893ecb21218",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "57e41832-10f7-474b-9162-0d3625379e68",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "58291b02-a488-4e92-8cd9-11cc0dbeefa6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "584242ea-30f7-47b4-bbfc-2d6ed78bf315",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5846cc5d-8b02-4085-b7b7-178e110ccfb6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "584b723e-b92d-4a11-9491-60980137c6f9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5879ec53-9df4-4e8e-835b-01ba1e8ca895",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "58f4ad6d-d9e4-4243-807b-aab95b0bb790",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5918aaf4-cb14-498f-b8fe-86cd1e85a1c2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "59739881-2823-43d8-bccd-b817f92cfec8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5a32f36a-7c02-4ccf-b7a9-036b380d8f11",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5ac5d465-cc94-4be7-b919-29a5ce8b1136",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5ad7da97-f3c6-413a-b237-5307218045de",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5af33c67-3c7e-4595-9eab-c65723192d7c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5b248125-8809-4d8d-b47e-b5444981fc52",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5b33cf3e-95ef-428a-864b-f6aec227a617",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5b55e002-6e85-42fb-b951-e2c1d66b7ba0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5b675b22-bb48-456e-84e6-fbeac41a462b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5bd42099-1aae-407f-823a-92389fc7048c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5bffd5bf-4266-46a5-84f2-2da14e086614",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5c0509ce-3f6c-4c7a-9727-6b56ce817a2e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5c7e8151-ee9e-4228-862c-38e04a6ea0c8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5d0a9a30-f5c5-4ee5-9035-fe46c10fc3ce",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5d38fac7-b535-4a1c-a364-6877fc011732",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5e04870d-0d60-4261-839e-39e5fda6e0ab",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5eb5045e-fa87-46cd-a322-d857ec9c8c17",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5fdad526-6287-4c88-8ae1-20cc2c43bcb8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6005df6a-f343-41d1-812b-479b4d9560fd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 1acd7371-4f7d-468a-99f9-e82d25e4a0f4 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "60447860-e6d7-4ea2-90b5-75778d6f70e7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "620d0b45-ba81-42ff-bb85-d290dd1e6433",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "623f7c4c-ffad-47b6-ae98-e2d8fcf1749b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "62925b6a-c2c5-45b7-847d-a73bb48a1165",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "62c65b2d-1a9e-4052-ba2e-c2d2003e1541",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6369ebee-8a7f-4cb4-9e2e-2431d07fb9c5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "63c03313-b26a-4bd2-8fd2-ee365b855a9f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "63c28b56-c24b-4fed-9f24-1badc6b0c052",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "643f9560-5dcc-401c-8bc2-2c798f0caae6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6449d49c-8c8b-44c3-96ce-edfafce110db",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "64d2326a-c705-413e-bb17-d61cc61ccdd1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "64f271bc-230a-48ab-959d-67daebc28e89",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "660c1fe8-ba51-42bc-a729-2b7ccccb4bc4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "668334f9-0632-4235-93ae-c5c2c13b34e4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6823976e-8ab2-4269-a5ca-2e27b298099b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "684301f3-dcfc-42ec-8e97-ddafe2b1cc03",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "684ee541-fb81-4a5f-a813-164b95d003c4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "686b10c2-aa04-4458-bac5-e67f36752bc6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6988a00e-deec-41b5-869b-00fef280f523",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "69e03c27-378c-4b1e-b352-8a07d5cad04f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6a0d749f-00bf-4d9f-b1e0-9c7b018bdc66",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6a7c95b1-7fe4-4588-a07f-2f32fb839b73",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6aba52cf-5494-46e3-9382-c9bb284ae9e0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6af8125a-3ab5-48c8-ac66-eb81ad6f720f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "6b65bf32-a6e4-4262-b2a1-c89be93cbbd6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6c1fe220-ec38-4775-987e-5d8f5cd3a840",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6c4c88f3-0114-4879-9d72-ff3e2a0e54c4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6c8aa7fe-8a10-46c7-9a78-63ed2b0eefaf",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6d627af3-d93f-4c55-8a34-791b735d65c8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6d6dd6e7-40c3-46dd-b368-611e77af68b7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6e4e2fc6-ea0a-4a96-86e2-a7182847dcc0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6e524be2-565e-4fb8-9efa-eb324c40d99c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6eb401df-7afe-400b-b8af-064df0ad7d55",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6f05dd0f-1347-4ccf-bb0c-3b0f9344cb8d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6f727ebc-f76a-44ca-8535-72df26bfabc0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6fa22b66-4bb4-42d2-b172-7acbf4d56622",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6fadcb97-16c1-4557-a884-29a637b2a227",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6fcb476d-126a-4674-8f7a-e24b4239329e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "701df427-7c78-4799-825a-d6097ae59277",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "70540265-a250-4c52-b390-84b2f50c17ab",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7058668f-acf3-4cd1-8423-eccfc1431feb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "70caf143-efe5-4229-8afc-ab93177b0f68",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "70ec4709-5d67-4753-bee3-cf6a7dad93dd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "71268617-1301-4edd-82bd-daef9dfd2692",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "72a51279-60a0-4676-8bef-194f9510c35b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "72d295de-019d-44d4-83d5-bb6413cb68e6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "733e9137-7ed6-47a1-a175-cb48fc52120f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "737e53a9-bbd0-4c52-825c-9f09a5a399f1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7387afc3-f27f-4566-bfc5-b4e6f8e51076",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "73965884-2a14-441d-8ee0-b45ab42cb2dc",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "73c86cf4-2156-4590-981b-58a4fc166cb5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7412f4e3-ffe2-40ca-b6af-d163305bdcd9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 97a7c7fb-8655-4d37-abe1-d567554d0c3e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "74817fdc-7067-4610-abad-bd8ea1ebb943",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7521a557-0b58-4ab9-96f5-e1a63d91e0d5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "754b079b-771c-410c-bebc-f3d8266ae216",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "757b039d-4b39-45b6-bcea-958d454562d8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "75a30301-8517-4584-811f-866874233351",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "75b587f0-f7ce-4efb-a5f0-1dfa29be4a29",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "75b88a79-929d-43a8-9a8e-8a18d157d58f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "75d3d712-8f8a-47b9-82fa-19173336b6d6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "762b58c5-1946-4403-9b06-0189b371e9b1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "767a89f0-4d33-400a-b580-5029fdfcbc9c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "767dc6f3-0940-44d6-83a9-eb86c0bdae16",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "76dce717-113e-41fb-bc5b-8f41ec22c9de",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7729324b-229f-450c-b525-af5676abc4a5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "773f3b56-7d34-468f-aab4-b08d59b4e0ae",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7771a776-0cbd-4e6f-81b4-d940be1a0328",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "779e2df2-c87a-4f9f-8c1f-f3fb3b104477",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "77a32c62-e957-400c-8129-b304dcf27f68",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "77c053a9-c78a-47c8-b742-499417d9f8d0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "77d1d47c-c795-4b94-8038-50539b461d49",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7949f63c-5ad1-4ed6-bff5-e78f9f54c4f0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "797cd2da-6163-4068-b3af-f2563532ce6d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "79ea5ad7-cb26-4e56-acc3-831011011d30",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7a5bde3a-bc2c-4503-bc46-13266aabfdbb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7a863157-a957-4421-8d89-1abca5b1e8a1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7a9f3eb9-f945-48e5-a04b-686cc38e7f7c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7b37c8b2-fe20-42c8-ab19-19b8c64a3fb9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7bae445d-1fae-4039-843d-1bc19bb2601a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7bb78550-dfd1-41ee-a9c5-adcad01e5c45",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7bc3103a-d6f3-4a88-a174-2f151a598b87",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7c52da26-6039-493a-a924-423a2dfeeebe",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7c71d768-b038-4fcb-bc08-e04429252461",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7cdafbdb-17c2-4999-a3c5-aab85fdf56de",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7d40a49f-4fd0-409d-b0ce-001fc6c69f6d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7d58b288-3f72-4984-b5d3-61c35dbaa368",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a690c1eb-8e9b-4baf-aa04-3bbde6f993c7 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "7dd00b30-b0c4-4cbc-b0ed-7d2b6a6b7837",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7e231d6f-2842-4c9b-b866-7d14ec0b5241",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7e291795-071d-4b56-bb33-6fed845d2b11",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7e594772-60e8-4a9e-8012-a5d4b043bebd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7e919405-93b3-4703-8efe-be039bade413",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7f95d2cc-b760-489b-9dbd-c2c0848b1b3d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7fd03ac9-6058-4e1f-98eb-4ad8c5eeafa2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7fd1cf61-fddc-4975-b843-4817637fee5e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7fe201f7-03cf-4305-9add-ed849f7a6a09",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "811fe5a0-443a-4ea7-a58b-bf12e515224d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "81c0ae76-0b99-46cd-b662-88f70b3961d4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "81e85ea5-3f49-4db8-846c-d2de461dc0aa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "81f5aa80-85f2-49e8-bf8c-9b6fb2e7b7f5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8253d1ea-7c78-4343-9027-6a9096a8776b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "83621d39-b86e-44e6-ab26-0b378faa5cb0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8375d853-0a5b-4323-912e-b5737d56ddf7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "83b4bc84-4fa0-46eb-96d9-25ee70192d1d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "841cae36-3fea-4dfc-b4cf-bca1d8d492da",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "842f5c3d-7bd9-40ee-92ec-b0b74fb2ceb7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "845b6541-0502-48ed-b54f-25fc6f7ef223",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8489d666-9bca-497c-a532-1a33ee2567d2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "848bc80d-6d55-4778-aeb9-1ef68cb9c4c8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "854a9769-fb71-4fd5-9f66-eb0a3309406f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8553ca06-0e64-4a83-8dea-d7b6c1264320",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "85aca66f-db13-46e1-984e-b0daaa858744",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "85b1fa56-55b4-49cb-883b-800a7e3572c8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "85d64ead-d3ac-4b96-9e91-1e2831aeb22e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "860e16da-2013-4950-b96d-3b682387c2a4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8614ad0f-3f16-46b3-946f-7c4a970bd0d7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "86d76996-49f2-4aa3-8ddb-5f7620efca36",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "871e516d-cd4d-4f01-920c-bff064813efb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "87868c16-a748-4952-b7df-b7e5904b79e9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "87c9e940-11c4-481e-8abd-141559130478",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "88120b14-f54b-4100-bec6-fcc9090060fa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8853519b-fc75-47b1-8377-179aa58b88d2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8875a86a-1296-48d3-8f6d-43b2d7caf825",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "89478add-70d2-48e0-ab50-da74f31f9e67",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "89a0d112-d33e-4363-97b5-0ddec513c6c0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "89bf825b-485f-4775-8c82-eba363d80db7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8a0da1d8-8f7c-4cec-b969-35c60cca4253",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8a38bb5e-cb9a-46ba-a9c6-796e20a791b9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8a582a22-ac00-4171-b599-b6fdef114ded",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8b96a91f-0921-416d-bc9f-13c935363c5c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8c5ab0f1-d697-49c2-8d95-c16a8bce0fab",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8c62bc62-ba16-4d85-8688-830e67cd1a0f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8d13deb9-12dd-42c3-a31f-0d616f6b22c1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8d1c1a0f-5ab8-47d2-a4a3-60e31383ad83",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8de403a6-034d-4d4a-bfcf-4d17242ae1e0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8e3fb46f-5d06-43ba-a8f8-2dc5b49bec48",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8eaf32cb-ccdf-4e4d-ae8d-9b58d039b2c5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8ec684ad-7aba-4e2a-a71f-844ed3935bd3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8ed2c05c-157e-407f-9f7b-1a55268fda26",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8eef30de-fb43-41e8-abdc-422f161dd980",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8f1368f6-65d1-44a1-894b-bb91876005a4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8f61f12d-c166-419c-befa-7b0a74197552",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8f6346eb-81c1-4613-b4e9-8955546c56a4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8f963744-3329-4512-a151-0bd829940cba",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8fc51e04-42da-470a-a61b-05a28812a775",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9002e60d-1598-4b85-b23a-e9f62c26c229",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "90082b1e-e586-436f-995e-66e6a11b9096",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "90c60559-6632-44c7-909f-e1ae3a84cb53",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "90c78819-2269-4034-a759-59c0746af779",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "90e54de0-ebe7-4a2c-aba8-e6c143dddaa7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "91069772-42e3-4fe5-800c-ea7f1134141c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "913a99cb-7668-4ddd-82b1-96b3b2a2a33c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "91425fb5-74b7-4651-8621-75e220dbfdd5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "917d8639-67a4-49b6-9f49-5094c8651f2b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "925be6fd-9cd6-4a3f-899c-c0cea863a55f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "929cdf35-6c3a-4cfc-8712-cbf2ab7e9fb2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "93198b41-7b70-499a-a5b8-e409ece8e0f7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "947f27d0-39b1-4459-856b-d9414318334a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "94a746be-6bcb-48ec-a4b9-635fcf06120d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "94ed9583-26d8-485e-a7fa-89f53948ebf1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "958aaa99-8931-4bfa-ab3c-b0e7485e4e9a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "95f7b8db-8a70-4829-a2a0-7f3a3a951f6b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "96c2d459-a288-44d3-8bfb-7688fc47b349",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9776b6f1-0cb6-40d6-b2f2-edbf1eb5aae4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9815d55a-7616-4083-b7ac-b5ae81d0b9a0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "98548d56-0de9-4acb-9606-1b071dcbecd9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "986e43fb-8e78-4cb8-82c2-8c757eb12b25",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9877a331-4800-4540-bd8f-b05927278ac9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "992a7338-731f-457d-a728-c292457f2af4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "993d6f92-c21a-4aa7-92c7-1083eb606bc9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9951be72-59fc-40cc-9524-56d48bf2bd32",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "999a8d2d-e04d-4b3b-8431-04fb1710a9aa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "99cff53f-f43b-4741-a00f-382b9f614143",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9a0951cc-2192-45db-bcbc-6d1b6761e339",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9a308342-d57d-4116-9ddd-c4efe7aef274",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9a545970-1d1b-40ee-a95e-68d82bf07e59",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9bdb9ced-3ab3-450e-bfde-c1d4e8294506",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9bed51c0-169f-44d7-9549-1be12893ea34",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9c9c0ca9-c50c-481b-80c1-7a4636b4799d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "9cf0097f-fa58-45d5-91d9-881ca8ae4d12",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9d2b70d4-186a-407a-8afd-0143d7106f63",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9db7f0d9-bdd5-4a70-a443-9daf6f9b4de7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9e93b16f-53dc-46a1-98ea-c62a5100d9d9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9eb66cc3-fee0-4b58-a2dc-b7091bb664b5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9ecca1dc-4ba6-4a8e-9a09-38fabacb5c79",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9f8ff5e9-34c2-4dc1-adbe-de8b1bc91c83",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9fa19d4b-cb81-48d9-904f-a659389a491c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a0361c9f-490d-4290-b678-45008edb78a8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a05749ad-5d15-41cf-b309-13ea54e73089",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a089177a-f91d-480f-b248-231c0b299692",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a13f0d5f-f789-4577-be86-6e64ac808fdc",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a1caea80-2514-495b-9380-59f43d3efe74",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a1feb49d-409d-4710-94b9-af8cd72f810e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a22df78b-ca84-4bf8-9836-f49990e7bd30",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "a2abd599-5225-426f-b79e-7a877362bdaa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a33fa322-5c25-46e9-a32f-bbcc421d14d5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a38970d4-ff3b-47a0-82a9-223eac91a559",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a3d63b39-8279-4d3c-a0c9-17faf98b36f5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a4288873-96b6-4645-8348-e325d673205a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a43340e4-d2f2-4bf6-b74b-ec6b6b0dc59c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a4b6545e-4642-45ec-abb0-9f2d9221373c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a4be99ff-a5d5-4333-bb56-6b572ca72c4f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a51bb1f7-dc13-42b4-b899-1e238d939210",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a51cf827-84d6-4966-9ddf-dfc29fc397eb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a5ef3a2b-f47d-41fb-915b-292d13769014",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a621d604-ab7c-48c5-bb3f-33bc4dbe6b41",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a720dc29-3775-48a9-bde2-43beca78ed2a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a73d2b70-8245-4b3c-9f7e-71a460d578f3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a7e064d7-9f35-4665-92e0-b989fe46b2bc",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a8ddd7af-1efe-44d4-a7ad-035c82e03952",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a8eec4af-8512-48c1-abf9-25cce7bec5ef",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a8f81d0a-ac42-456b-b3cd-01a94d4651bd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 1acd7371-4f7d-468a-99f9-e82d25e4a0f4 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "a93975df-357b-4b69-a5a4-87fda18c9477",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a947dceb-a54b-42cf-b5ab-de245a3dbb64",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a998023b-e2b1-4931-8b16-ef5a9e3bd21e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "a9b52c6f-ef6e-4528-883e-1f1426660ab2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a9c2a405-5902-474b-948d-e8a531899e0a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a9e89060-8d34-453f-87df-d8934339b1ac",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "aa46da96-9a11-48ac-991f-82807c4b4bd3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "aa4fd833-836b-4058-8f43-122d36e6ec56",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "aaaacabf-f8c3-49d9-964a-aadefe68ecb1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ab0b2fbc-efec-411b-9b73-7d0588d9c4c8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ab1ffd2b-82ec-449a-8265-07d6d437b0d3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "abad6eb3-f818-4ba2-9662-63bc61363b2c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 1acd7371-4f7d-468a-99f9-e82d25e4a0f4 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "abc44c6d-06d1-41e4-85ff-4dcf3115e74d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "acbb24ed-ecc4-47fd-bf29-e2392fe5e5fc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "ad2a210c-9392-4ed5-af86-cc2a686ce3d5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ae89b68d-bbf7-447e-a43a-e04c5b93c600",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "af3b611f-10db-48e5-aa33-e687d7dc4841",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "afc93d20-c11e-4caf-b057-040d3a59a9cf",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "b00a3b8b-c494-4711-8974-fbf3cc4cc8d6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b00b7343-24ac-45cf-b600-78c54876683e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b00bcd22-f049-4831-a706-76e803331a25",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b0d61467-e85b-4185-bf15-a27afb49131b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b0d995c5-2260-4694-8892-b04a86f5d288",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b1141eb4-afba-4cc9-8876-fe7524643f1d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b1a8eead-ebaf-4428-a1a5-e3adf84f6f1f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b1b809d2-e594-4542-a68b-594c0ece04cb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b1c436b6-dd02-4c75-a9d8-bb55ffad5a08",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b1c9c811-9eeb-4a10-a827-6dae465b9764",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b2020c9f-1251-40f6-9ed8-25c8ef963187",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b21a734b-1040-463d-85c0-929f73cfb8eb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b238be71-9036-44a3-b7ab-99401c217c4d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b2abeaf2-613b-4330-b1e0-740185926413",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b2dc50d8-b253-45f2-933c-4ec9c698417a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b3039632-027b-473a-948f-668a6fd01dac",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b30e0a0c-73e1-4d55-b489-b70c6a68435c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b31509f3-1af5-4e10-96f9-4d8e39ddbd7d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b320e5a6-cdbc-420d-bb35-14f2e66b262f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b3942844-88c7-4ed6-9d26-d80b774a004b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b488b1cc-8f0d-4b8c-bb56-8472e7b0438b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b51c895a-c99d-4222-bed4-c2a018ec9945",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b53fdeb3-79be-4519-9ca3-ffa75f1a0a2d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b5d6302b-bf63-4bf6-bc4f-393c49184182",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b5da7573-99a2-400d-be19-f22499d73e54",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b6e17d55-e70e-4af1-b1a7-8e56d4e54ce0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b78479c1-d94a-4954-9b61-2a451c5f3f29",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b7ceb2e3-30ed-4c2e-9dd1-ec5a8bfebd88",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b7cf1787-dec3-478e-8c18-a87e32d1e275",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b7d50785-ea9c-4140-afb6-9fa01d7e46cd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b7f2a378-01d6-49ba-9e6d-82db1653a2c5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b7f92246-f218-4bea-9c1d-c04ee554fd77",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b9cba0af-77b8-47f2-ac0d-49ff96a35cd7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b9e5e84c-c8ad-4872-9ff3-c51e6aae58a9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ba865fb4-049b-4741-938c-696449ba29af",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bab805a8-34e7-4423-8e0c-733965159d3e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bad6a646-217a-4a1d-86f6-be3686ca1ece",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bb54b646-3a81-4496-9e8e-016e8c3b10fa",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bbd9875f-4c12-4755-80f8-0090c781668e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bbf75f80-fd0c-4e4e-80d9-ab876034b953",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bc782db0-5407-4acc-b450-2f8c133bef3c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bc83c7dc-b0f5-488a-961a-e7edb5a8a7b6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bd29ee59-a70e-4d9a-8eb1-bf8b092d1791",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bd736ae7-ed1a-4d4e-a4c5-321d1c000cf2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "be068a82-0621-499a-9545-73555f564280",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "be17bf97-0bea-4c3b-80b8-986f5aa980f5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "be3b2a69-2637-40a2-9cfd-9c7b25a4e888",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "be5512ab-fee7-41a9-b022-62a0893d37a9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "be6c1cfa-96a6-4439-b49b-af191368cc24",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "be8430b6-2b84-4e7b-ba67-81e350756905",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bedab0c5-a8ca-41fb-9d4e-640385a8c39d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bf6f872f-0994-487d-8323-2ed79d30e7fd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bffe214a-2dee-4f87-866a-cac4ef1e2d02",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c05652c5-4c48-4060-be0e-da5089dac222",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c08a1d90-da31-48cc-94eb-cf2e505d0d99",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c090472c-62f5-45ea-861b-d2dfdb73d8f1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c1120ff0-5a57-4bb4-85db-2b18220a343b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c1925a36-ad3a-4559-8ef5-673a023fad6b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c1fc8118-9fc9-4035-9687-7449bb7bccce",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c26bf65d-001e-4a85-9d62-8bcb83766703",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c28a693a-d8a2-459d-a10a-f2a8f921f912",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c2b035b6-ec13-431f-b676-6a4a67643ff9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c3611e44-af2a-4e9f-86af-7596aec1c9b6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a690c1eb-8e9b-4baf-aa04-3bbde6f993c7 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "c38e69a6-72cd-4b15-af40-7c5563a9cf82",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c394308b-ecf5-4ca4-812d-92bcd10d9e34",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c3c045fa-ff5e-4aa3-b78a-f50a1f1fcfce",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c4002430-a2d3-4440-8fb3-d843909f47fc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne e1b3f317-e7d8-4af0-be97-74c6044a1399 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "c49a0bf8-6a0a-440d-89b1-22c2b8d905a1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c4d7e205-827f-4a77-ad09-cac3cbf22fc3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c4f12340-4510-4fb6-9941-0e3cfb548631",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c5aa358e-6359-478d-966d-b1b282955285",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c5c35913-672e-443f-8a23-4817874ad839",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c6152ff1-e546-4cc1-88ed-6db723335c9e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c652890c-a25f-42b0-9403-a55ccf832da7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "c6b329f6-6ff9-45df-a56a-59463064f378",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c7522f4a-b7bf-49e3-8f29-f78db89916f4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c7b62980-cd76-4541-be6f-41821bd30cd5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c80903f2-ab80-4c3a-8a85-bb01c27932ae",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c840da0b-9e2c-4bd8-ad74-6fe6e962c7fe",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "c8c28e90-1af7-4ed8-aa54-a94ceae59a94",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c8d32490-c63f-41b9-a48c-d839b61bf67a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c919c94d-cb20-4516-9192-3ea8f9c2f3f1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c92bb8ac-bb88-46a0-b643-42f3ac71738b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c9a2283c-4a4b-47cf-b923-36e13ef2702d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c9c7ecf0-4aed-42c5-978f-2d39da97c467",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c9df82ec-6e67-4d9f-9d29-99044d68abc4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "caeeaf65-ac35-49e4-99e9-57fe8b0e46fa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cb01981d-2660-46d0-b5b0-366c5acc4cfb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cb29040f-bc03-40b0-b1e4-cc83e88b58d6",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cb8810a7-e269-47cc-829e-1ca9c301e75b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cba65d3c-ceb8-4598-9fc1-36c74aa063de",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cc2991f5-c1ce-4325-ba14-5106acf330b0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cc581814-8130-4657-aacd-f525368febfd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cc72cb96-18da-4611-beab-c80d871dec25",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ccc80885-1970-4736-872b-233624ac36de",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cccc8ff4-b92a-40b5-a637-1c235f0d447d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a690c1eb-8e9b-4baf-aa04-3bbde6f993c7 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "cd6fb827-3565-4b92-b9b8-0405f71f19a0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cddc2e63-6e28-4665-8727-c0a5517794a7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ce2aca2b-96bb-4242-b3e1-6ba1a689bf79",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cefb7235-5817-4938-9a3b-6a463e898a5c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cf42df66-2230-418b-9fe8-a6ca85955a64",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cfaec1e9-0f62-4ab6-ae1b-a7edcf3161d8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cff9f24e-8854-486a-9cbd-673f836e6df9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d00d4a9f-3edc-488e-acba-84dfd0f5a5bb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d01f371a-3985-4edc-a03f-9c545f55f8a1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d04b9edf-2c0c-4e77-9ea7-16da547415fe",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d06af2d9-a9fe-43a9-8773-2dd1524ecf40",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d0d0efec-b307-4989-8a3c-c3bfeaefaf1e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d19c36e7-cd01-4fd0-bb0b-36b9b9dc372b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d1e92a58-e428-4f3e-9deb-3dfe98e35650",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d2dda52c-1109-408e-af20-a065dccb654f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d33bc5ff-2417-4524-89a8-3a5517a01f2e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d33dec88-c521-44b9-ac26-17ef7cf807ba",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d55c89a3-74e7-45e6-98bc-646604e61b0e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d57581d9-8c24-46b2-a291-939755090b54",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d59d11aa-141d-4124-877a-c9174ed62a09",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d5f4ebd9-bef8-49a9-bcda-20e7074ae619",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d655080a-56ed-4731-aead-edb0c4963d52",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "d6ec4840-001b-466f-bf61-f0f37158a7dd",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d85233f9-6182-4a5b-a57f-8f4c7c0dafd3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d8a7ae94-d810-4147-9578-17326fcd20b5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d933554a-92d5-46c0-a28c-cf4f32fd816e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d9399926-bbb1-4a44-bda4-dc2ffb8d1729",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d9e58f17-3c98-450c-957d-1073177492aa",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d9f01eb4-a163-4942-b729-ac046c98b87a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d9f3a04f-cab1-445c-a51b-09d2e7cfab3b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "da30dfe9-323b-4ba0-91e5-e21144993553",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "da829ec0-6d0a-4007-8208-cb996b47060a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "da8b5e64-926f-44d4-afc7-4ece87886717",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "daaffdbf-35c2-47d6-b496-62b3a17a5bdd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "db24bb8d-ec14-4c15-aecb-095dbdef6285",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "db76dc65-fa5a-4682-887d-22a44f8152f8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 4b7ec1b6-7c95-4c47-a415-67f7cbbaefc8 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "dbd67774-afd4-4f83-94c6-9af033bec8f8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "dc0834d7-6b14-4934-8310-53e594a02d76",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dc5bc9a3-76b7-46c0-8636-cfa9ba696d5f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dc6803f1-9044-4e61-9835-60f85ffcb20c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dcb189a8-9f7f-4c7c-af5e-75b011b41f9b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dcb9ab9b-a1ce-40b9-8f89-c1276ebd9363",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dcd46355-f8aa-48ea-b6a3-6fb73a5d50f3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dcdbc949-eca5-4437-bc60-d9be7658919b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dcefeed7-f3ad-4138-bef2-036c18fecbd0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dd0ad6f3-196e-4f6c-8979-e0fbb58e48c8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dda82121-c8bb-4d41-a7b5-6233b44e0696",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "de199313-e381-4a5d-b80d-48ee0511db72",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "de504732-d840-4202-b82f-8ebdb281607c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dea76385-56ce-4f5c-9454-9cc40de5d2d4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "debb26e6-a8d5-4afe-8e66-68dea2949286",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dedeb995-a534-4c01-87fb-36dff2683ef7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "df59df94-19c9-4eab-a135-71ed9d63d768",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "df67e7a6-1c28-4fa6-be80-7ee155ec61fc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "df839430-88e5-47f0-8d3c-60c26ea6922a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dff77683-8761-4eb4-8403-cc21de94176c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e085199a-82b1-4db0-97d9-f9eaeb5d4983",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e187035d-d2d9-40b1-be7e-5303b3cb7b16",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e21e66f1-8481-4f97-b25a-5c2c9cca00be",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e23b4242-5295-43ab-98a3-e2f8ffb60027",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a690c1eb-8e9b-4baf-aa04-3bbde6f993c7 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "e2b5aa04-6148-433b-bb89-068ac4835fc2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e36ea2cf-b674-44f5-9650-797e4343c5ca",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e3a99eaa-92c9-4b5a-9110-7b990bfbecbc",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e414c054-1c28-4ce9-90d9-6f17305cb93d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e42f18b1-b405-4463-a17b-2624dfba92ca",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e47d4650-8cd7-4482-974b-03aac4f652b2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e4d5dc0b-56e0-4f01-b87e-2aba221b914f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e4fef8fe-f210-4e2e-81de-a7bc18fc7d27",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e5116fbb-d213-46a0-8dc4-dd2bacb6ae4f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e58be189-44aa-4490-8e74-1f44edfcb516",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e5ac0653-3381-4229-a8b1-447fc60f792b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e5ff39f0-22b6-49f3-aeb0-a6d9e5cbe7b0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e641eda4-65f7-4d78-9338-cf17c8cb65fb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e6724488-1b71-4d3e-8410-05274d24ccc4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e6aafb9d-101c-4b71-b7b8-783a526feff0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e7252376-bdfb-4c3e-b878-ad7d82df5f2f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e72ae92f-c925-487b-82e5-b0ad2d71ba87",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e78fe15e-ea3c-4a32-9a51-63ce1ba31f03",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e7b25169-2452-45da-943d-f8f81d02ac21",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e869fe7b-97f6-4b65-8c38-62750a4dc838",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e8edea86-7288-4ad5-b5f2-e7bf80a4a422",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e909ebf9-a216-4e70-8247-ef749539e20d",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e956f20e-238d-40e4-86f2-a4dd7c86d3e7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e99db729-120f-4163-8cbb-9312302dc0f5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e9ff8cbc-de00-46b4-918a-258d17756e08",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ea308c95-397c-4aa7-a9e7-f9b430e7d39e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ea95bb58-b0c3-497d-8be9-dd9675998ddd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ea9dc1d8-875b-46e8-9335-24b90993689b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eab43671-cfd1-4ace-87f0-4bcf4971ebed",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eabb51de-dc8e-4bb2-9dca-fc40a6dfccfe",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eb06389b-8b9a-4b5f-8f12-5b8083da1f78",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eb0c1994-68ad-4442-8674-04ec24f01187",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eb159c49-275c-4035-88c2-90fae1222e7a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "eb6c7b09-938c-424b-9fbf-6962da129f40",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eb92c7ca-6b04-4fcc-b65c-81004749083e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ebded49e-89ed-44de-b5dc-f2af3f343392",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ec1de993-a068-4c8a-a7b0-a0519a98ee13",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ec522db9-9760-40b9-93c5-c012e4a5c1a0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "ed19a8d0-6ebc-4eca-9912-3268a3e78518",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "edb23bae-9483-4d31-a612-70ea62ced534",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "edbabfb0-0c08-4ad2-a496-275ee2e22800",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ee1f62d8-6cd3-4c62-87a1-1fa7648b9121",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ee236148-182f-4115-b175-50e89989af49",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ee42fccf-7df4-4e6c-bae1-a692306409e9",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ee4a765c-d206-4f72-af6d-8425418c3041",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ee57fe3c-3fcb-456f-a2a1-d50fc949b202",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eeb0ce2c-e34c-4821-b90a-9b487fe2a238",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ef08c617-3ae0-4d58-9676-1f38bfc5f559",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f03a0c3e-9afa-4d86-8e9b-61533261ea1f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f0c9b5a1-9ba7-45c7-9f9c-6ff0a9ba3b10",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f0ec5c18-07db-4017-a456-778649e02b0f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f15a0d67-56b1-48a2-8c20-cd5be8afd7e1",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f2048be4-c89a-49b0-98a0-7c603bad2d2f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f219c1d0-672c-4dd8-aad3-562759eb7736",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f27ff16c-2fb5-409c-98f4-83bc1a6373df",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f2e4ec92-b5b0-473f-a3c9-38c184100895",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f4bd715d-de16-4019-b826-b81f37163fe7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f4c43d6d-6786-43d5-8936-b1a4d0f9848b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f4cf36a4-1b9b-4589-8a2a-65db94328beb",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f4e82063-c0c8-4671-b804-6ea24113cb52",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f5285271-0506-40ff-82d4-d80aa0054f2b",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 1acd7371-4f7d-468a-99f9-e82d25e4a0f4 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "f52f9ec5-c2b0-4122-88ea-dd40d76c45a7",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f5b14aa9-e0f3-41a8-a945-bc7da8b9544f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f623868e-13e0-445b-8b1f-ee0c79517721",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f65da38d-7768-4631-919f-602cb26c5e68",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f6a0675d-1f3e-40d8-98b9-44150316060f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f6fd7ed1-ce17-4909-bbe6-b7c08735fff4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f7115226-b57f-4f2b-87ff-ba7777d59586",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f77c666b-53b7-4e06-868b-fa74663fa81c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f7cc9425-55c9-4bab-9f29-e3995c0bc8b0",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f7ebe03d-6190-4f3e-bf2c-e7e695413b9e",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f87b0624-bdc1-4f5c-bb53-0e091b9915e3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f8c6e1e6-6067-488a-8751-f7a5ddbf16ea",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f9798a40-0220-4a41-81b9-fe9a8a350f69",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fa36ee5a-dbdd-4b73-9c50-22eaf794b8cf",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fa3e09ce-9172-4f24-b032-2992a3c5f0a2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fa4f2e04-5d22-4a72-91ab-835440d28edf",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fb2494c9-6a74-44c1-915a-82fbaa96d116",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 43e3ae38-c887-4869-9458-4206df3ff53e (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "fc258dec-c41f-46b5-a207-ea38dc62b2e4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fc62131c-eb52-4df4-a23f-1faafccff36f",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fce5f528-0fd3-4f39-b531-5b9ffc5c1c24",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fd5bfb8e-fbc7-401d-8d7f-76f6b2c4a4b9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fd90560b-4325-401e-879d-e3024add87b3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fdcfeb5e-cd8c-4d34-8036-fd12bd8363bd",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fe6bfb6d-c1ea-49cb-a03e-77c1bdbccb17",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ff0b5df8-2927-460f-8f00-f5862858a3f4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ff75b733-7b6d-4a94-9859-e0c8c004557c",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ffa53b6c-ecce-4b73-97a8-1be1bd0855ec",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+}
+]
+},
+"B": {
+"lignes": 412,
+"empreinte": "9d0ce9ae2a4703dc88622bb53b7f6a51",
+"etat": [
+{
+"id": "006f5524-2582-4363-8ddf-ee7e55b65066",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "01359cd8-5653-41d1-b994-856284fac947",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "016694be-44c2-4e4b-9c3b-fddacaff1fbb",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "022474b9-ece8-40a3-bed2-444607183460",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "03452450-abaf-457f-b448-44feaadd0894",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0348aa25-5ab3-493a-9bf6-9c73b9d12d82",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "035eeae9-0910-48cb-9d53-d58080807b3c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "04589198-4eb9-4bf4-9332-7cab8f4b43f2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0462fbd0-abe5-4780-82d6-3896d900a065",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "064efcc8-216c-400d-825c-7eaf1aeda19d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "07dd137c-bcb6-409c-b13d-175ee4ce610c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "086cb95e-93da-4c0c-9454-01e8ad9b3e6b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0903efb7-b638-4abc-8feb-c78ae556ad85",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 987c222d-ae5e-4ad4-a43b-6242e9934a7f (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "0a435b1e-6612-4467-a473-8f6fde76bf29",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0abe766e-8756-4cca-89b2-94c99a8a84ee",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0ae28b35-4815-409c-8e48-760fa46abbb2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0be1e8ff-5cf5-44c2-a3cc-5d2226ded48c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0c40742b-d3bc-4517-984c-1dc207e3d59e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0d8b52a0-fbb8-4f45-b9bf-5eb0ccbf6003",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0dd3b4ca-4596-450b-8cc0-ffd20c96b174",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0f7315e3-af90-4c69-ad4a-583085e4a2ff",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0fcf7965-3dde-4248-b1eb-bdffbf2f8434",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0fdfa6fc-3943-4a96-925d-f5e3405c2c35",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0fe11b65-0f7d-4545-8a40-a2ab0ceaf436",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1018d2b2-4392-47fd-b2c6-46b0180e30be",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "107cdba1-6134-4419-8767-05cfec5d06b4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "11a9ed0f-f823-4cb9-84f5-9910837d0167",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "11defd1c-508a-4ae4-b91a-00172278f4fb",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "1206bf40-8193-467f-b955-437ac142acba",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "12432fac-7897-4274-8e94-3a4ae9afc170",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "12f31f49-1ad0-4e25-9c22-767f9939ea7e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1453973e-a28f-4613-a7cb-e5e04a8c5f23",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "14a95bcd-78e2-4c50-b9cf-17663e1019b1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "14d3514e-11f6-408f-bf9e-eb6fa945a8ea",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "15b01ee1-f40b-4e98-8e35-e326b733de7f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "16494f02-8421-48af-b4e3-06f32e6f2fea",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "16b360fb-e08e-44ae-a3af-a200e88a6086",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "173dc67d-3b78-4e09-b428-021c889eab2a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "18ab59d1-4d56-44d8-9bab-28b28e886835",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "194d235b-09aa-4813-a15b-2e67b348fd61",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "19f677af-dab2-4f5e-b412-eecf22b49ee5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1a2ee2ad-d64e-47dd-94ce-ece555873a64",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1ab888ff-03bd-4056-b945-25e8fc09a406",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1b61e0ec-1149-4b8a-b918-3438375f0bb2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1c8dbd5f-b036-47f9-92a1-f2c99b1076b6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1cffdfa2-b8cd-4698-88e7-6cdf9982b494",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1d5ae3ad-93d1-456d-85b6-f6d8337aa78d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1ddfc6a3-ab36-4872-b9f9-2dc2c053936f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1e6f6fdc-85a8-47f9-bb5f-735454e616b5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1ee0170a-c3ee-4099-9207-78d682907de5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1f60e537-3208-4358-9165-7da041bba07b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "1ff2642a-4827-4edc-8ef6-fdc063d0d029",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2093d411-ca9a-4faa-b374-2bd2fd3da443",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "20e7591c-0096-46f0-95cf-df9df6760a66",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "21066a0c-1f8c-43ca-9c69-169b472a7825",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "21ae2045-a434-450c-a062-6f5caf50d05f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "22fdf6d9-6198-48e3-b66a-33fc53e12658",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "234e7771-af8e-4a7f-8ece-1fe02e6e2f2c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "240db6b9-1074-401f-84af-fad68a32aa67",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "246c5459-c3cd-4530-951c-6299abcef255",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "24a75fd7-435f-4835-a67e-480a093752c1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "253c7442-96ac-46f9-84a9-f645efdd87bd",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne c80b8c07-ea89-4a64-91a0-fabe0cea0532 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "259e989e-2f31-478b-aaf5-ad13f6743806",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2a9fc009-9d20-4acd-b57c-6af6ccb5f631",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2ad2364c-a454-4c49-984c-29ba21bec5f8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2b08a26d-fa7c-4f28-97a8-9ec94702a4d0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "2b382fec-d480-4509-8a3f-5fb0af34da24",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2b7ba817-dbc6-4503-9972-45695b8e8449",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2be87f1c-6e88-446a-b209-0c08a8d68005",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2c4bbe21-051f-4f41-8f90-c2ede0bbe391",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2c82b274-1357-40e2-a3ff-17d030a42814",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2d9593a4-3e13-4b60-923b-5666fb45d06a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2db4aedb-da9b-4797-81e9-0af7fb2b850d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2ddffbc6-1bbc-4604-aa26-c57d378b2467",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2de20cea-752c-409c-9a70-7093dba29fe2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2eca5b16-68bc-4a0b-9900-5be1c5c67611",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2f5adef9-60d8-4267-ac2d-1d387553c98c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "2f815459-8d9a-4608-b328-1b4e38744e79",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3060eba4-775a-401d-895a-63825c6637a3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3077cf67-88b1-445e-a9ae-cb3d4aa5f95f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "30e91769-f820-4144-ada4-a8f77be0bcff",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "31040127-b520-4dea-ae41-248d02c02cb7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "328c1e69-2423-42a2-83f3-abd8e67a34d2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3339fb86-df7e-4cf6-8771-ce61011a3e7b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "348a48a0-5af6-40fd-9843-c927f177677d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "369a1e4c-93d4-4919-8793-5143096486e0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "36e503d6-22c3-415a-832b-a59f5aefd387",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3910a755-0e29-4934-8c09-0bf923907ad4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "395b62bb-58f6-4f37-96a1-6c61576611b3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "39e9b056-492e-43c2-943b-310488b10cf8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3a25be8c-6e8b-4831-86e6-ce4782220063",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3b27920e-4fb2-4c10-9c78-d89e1f435f07",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3b3add42-f628-4d9c-af7f-f7238107c08e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3d33b5ec-2570-454f-84d8-401e7571e0df",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3e639da4-aedc-4044-b1a0-4ac4094d33b7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3ef888b2-0300-4207-ba00-27be231b707c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3fd7f787-c726-4f4f-803f-2b35bbb530a2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3fe08f21-c613-40e7-8dd9-1d8d0585c5f7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "407bd022-dc52-46b3-b6b1-af7c77d76945",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4164996c-f220-43dd-b273-03f2386b4efc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "416e0b30-c9f2-4576-bc4b-a29ef1e503d0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "417131a6-f40e-4cf5-8598-66e3ff421719",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "42f0a50f-ad21-4677-be7c-bf6b30402ab4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "439501cc-4d76-4a91-aa25-886249bed80f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "44b91f33-d130-40e8-ab08-3ec51c45bcf3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4664f7d1-cd1d-443e-8a78-41efb68c1787",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "46a62d5f-7cda-46e9-9230-d03fa13669c3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "46f473c4-a6db-4a71-ba74-54ff664198bb",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "47699f81-c590-40e0-aa0a-c3af0555e074",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "48b7ad8f-7f53-4167-8ba4-f6a368fbf784",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "48c8e53b-13d8-41fa-8198-4a7568653a20",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4930b4cd-0ccf-4e2d-94d6-92d5fab36e56",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "49e4eb90-957c-4990-a9c8-d051993eee60",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4a680cf1-7902-4300-a280-3db97f6674f1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4aac15be-bbe7-4e26-80f5-9e040043611c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4b167786-95dd-4d4a-afd2-7cc0f43da926",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4b22d4c2-1d37-470a-8f50-6aa73464f8bb",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4b52a9db-77f8-4539-9532-9610729a11b7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4b8778ad-20b4-4c09-b4fc-7bd9037e5af1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4e1f4437-be98-4704-b636-d1f357b29153",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "503c0585-354d-499c-be1b-e26f6842f59d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "508a99ea-3e29-4424-b643-9abd30c48a24",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5156660f-87a3-4ed1-ac1d-863d1579cd03",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "51cd3a4b-0e7c-4322-9043-935b620d5ef9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "52776feb-8458-423c-964f-da15c136306a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "53ef6653-1274-42ec-bb16-c83334f281e0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "54142865-5c68-4b10-a96c-02909db19a0f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "54e82ac6-0261-4b25-9d24-a08b21aaedce",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "554d6d54-c11b-4bd5-8a27-262bf15c9a41",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "558784a8-7013-4389-a721-873181d12aba",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "55d0d504-fccd-4577-aabc-23251cefb38d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "560fc229-f21c-48d3-b365-bec1dd3069a6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5647e150-b205-4da1-ae83-92698e6e918e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "56688082-2f55-473f-b728-305fee1890cc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne c80b8c07-ea89-4a64-91a0-fabe0cea0532 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "56848cf7-7996-4a7e-a833-404b78167d62",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "581392e4-33e6-421f-9e89-27fc357f3e67",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "58c4a87d-4acb-463f-8c11-48ffd258e50c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "594f2ef4-3f64-4fd4-9863-ff86b1f7fb5b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5a4d9fc5-b550-4c5a-b1cf-2c6778b94c2b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5a81d7f7-98e9-4146-84c2-e3f6b8f644c1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5ab4a926-1498-4a0c-a2f7-eee4eac31228",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "5accf457-d385-4ae7-ab6e-8cc470dd6013",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5b7b473c-2094-4097-94e5-d6ed1a157f10",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5be0a965-61c9-4b4b-aaaa-8b0b4ed6c9f7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5bef0b09-92ac-4e48-a336-b23f74855297",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5c986cf9-1d06-4519-9c00-461544213b8b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5cec7513-ca9e-4597-b4ff-2e032247ed8e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5d700204-39a9-4677-bbff-7d7df7593cce",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5d99b4f2-fb33-44e5-9b0c-87e34dacf244",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5dd6fc11-40bf-4316-8041-04229bf6e968",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5e192dfb-28d1-44e1-8456-5e3dc61ceb9a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5f9322b4-6be9-41e1-9145-200a0b5d798d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "611b8586-cc39-47f9-82fa-bba3b20c0e8f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "611e268c-9255-4c90-ac29-9147f0c80d19",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "61ccc4fc-5e19-4d5d-a099-bb5d54748652",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "61d06a3a-bd58-4fc9-8179-79075516be50",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "62757bf3-c9d9-4aa0-ac77-a510934a8f56",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "62e62ee5-5dea-4f5b-9feb-6e8962f834c7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "632ee3e3-07f6-4e8d-aeb0-cc8d206538a5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 987c222d-ae5e-4ad4-a43b-6242e9934a7f (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "63a49572-577c-4191-ba94-fd3db692aa99",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "63a55135-33dc-41df-b34e-dab181de82c7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "64273da1-7929-41c7-9236-bfa0d1308c6f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6461a421-ad2e-428a-989e-b50ca980707a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "64716ae4-8d5b-41bc-bffb-d5b2014505b4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "64bec8c5-28cf-4f7a-a957-21b4197e7f41",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "651205ca-3be5-492c-a5d8-a3678aa811bc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "653a4953-f08d-4754-96b4-46e4e515c710",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "65c36a90-ff71-404e-9274-f4a4cc9866a1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "66b95ad9-4781-42da-8a71-32c1764d7a78",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "670f5da9-695f-4e2a-8c98-d3ad8c16c9d3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "67dc207a-5fcb-4957-8f34-e485b78d74d1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "68395932-2cef-495a-8b16-f7b280675252",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "68fae329-3440-45a9-a3a9-c2d99e24c76b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "694b7196-7db9-4c2e-993d-670532c339f5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6c7739d3-a119-4561-af36-40363519548b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "6c789ba4-282f-4655-8d5c-966f740589f3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne c80b8c07-ea89-4a64-91a0-fabe0cea0532 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "6c7bde54-780e-424c-81c4-d8191059078f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6d266f76-f53a-48f2-9d12-10db6915599b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6d65fe72-a3e6-4cf0-906e-f8c88c4a3d1a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6df4fdc4-7aa8-4ab8-bfd4-58b751e3310b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7069e7f5-c2b2-4096-af1c-71e37af1ea67",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "713d96b6-f782-41b9-b6d8-ae53a3c9864c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "71831afb-63b2-4940-ba9c-2b64796084b6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "72516e81-79ef-4122-91e9-4adb88a6aa43",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "725d5bec-bc39-4186-80ab-d010d18cb7d1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7273a98e-efac-4521-9a71-fc67399db9ad",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "72901e1f-f91e-49be-a009-d901aff938cf",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "72b45875-cb1c-47a8-8144-e0d88ad8535a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7391d015-e95e-4a3d-b445-83dba2a1a998",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "76565a04-3c92-4d7a-bce7-8586d272af42",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "768a79f4-f79f-4dff-be12-24cfcfefc51a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "76a57223-f99f-465c-8af8-5d072ba6cf93",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "76b6cd3c-a6f6-4889-b898-e5b7ff7ce3e2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "76c18571-3bcc-40e6-851a-12009ed0df19",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "770a12e0-2d53-4615-9704-bed070fd2aaa",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7778fc41-14d4-41c7-91ee-46ab777d05c7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "78ca56c6-cf83-45f3-b045-c059069952f5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "793d5348-3878-4d0b-8928-d5753361ec1a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "79c70da6-8426-4d17-9b6f-38557a9ce67a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7a2d9275-2252-4a68-bfd6-10bfd0dc3d98",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7b4a1294-ac70-444c-8032-db2c674f27cc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7e0ff6a7-8cdd-4812-8850-51c5f020fb87",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7eebc3f9-5d54-440a-b5ea-83224dae1c26",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7f3d8136-02d8-4434-964a-470f88dfe529",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "7f47414d-5d34-4126-8f3d-1fadaaab68d5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7fa29593-6376-4dc3-bfaf-267f004d8be3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "7fabd6cc-c37a-46f7-8d35-2ebf7804c2b5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "800045ce-b4bc-4fa0-a1db-72cc05b12cc9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "80080e14-45bc-4b2d-884f-d821c9e5fee1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "808fb843-4bd9-4b83-a9e7-6775a793bb11",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "808fee1b-e41a-435f-a801-e44505ee1047",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "80a655f3-5799-42e9-9088-194a4d7308a1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "80e94e6e-6f10-4a86-9bc3-8fe63c0991da",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "81e635cc-4e76-4f7b-8364-801f3caed920",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "82f73134-b16b-4ccf-ac76-ba1fbbb93f0d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "8334e36c-a1d8-4d11-a53f-2204dbfa1075",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "842023ae-eb03-49ec-8157-f0ab8173b44d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "856a0fcd-8d5f-48cd-b0bb-3f9e7aba63db",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "857146d0-4dc2-45fe-8095-03ebf3c87dc6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "863ab9ca-ae2e-4de5-b600-0790c36a3768",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "870efa2c-2951-428c-9858-ee8090452892",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "88278499-e26f-4baa-a360-898a5822e8d2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "88407de7-661f-4126-aba1-2fd9b5de27f3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8847e132-7c53-4f3b-bacf-3ecefc017671",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "89abe88a-8875-4570-b986-f57cd1ead2c4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "89b7a76f-0a60-4df2-a9a7-3d0036c45b75",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8a9bd5e2-396a-473b-ad70-f199e5472252",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "8ab9ab99-0835-46a5-b275-db68e27b8b2c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8e0746d5-9736-4120-a2ea-ded81acab16d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8e430ffe-2853-4c7c-b418-f3ee38a2f21d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8ef2612f-b16d-4f07-876b-c6d9dd019aa9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8f2cb5b7-aa33-44f2-a0b0-a382c6b082ad",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8f32d9e1-d58d-4f40-97c7-bae8e37bc5cc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8f50bb42-5f82-4737-8217-eec90615fb68",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8fa8c2ec-51f8-40d8-9361-300a0abf4b70",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8fbabc49-aece-468d-95af-2b1bb1dd504e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8fc93366-12d7-4786-8936-4a02091a01a3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "90861c9e-b390-4e7f-8aa8-104b6f50fa22",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "90efe07e-c573-4c41-a4f9-c4452cfaa5a2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "91876d14-8ebf-4313-80cb-df96dfb34cec",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "919e4183-c3c3-44b7-a3dc-a3a602541a6b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9315870e-4850-4521-8f11-7ef096133e50",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "932d4eeb-d503-4f51-ab34-65bfb5734f8f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9492d4ff-9a14-4a2f-9372-9733fe6fe12f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "94ddaf78-eb07-4a65-94d6-d18008485ee5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "95e76e9a-a0e8-4f5f-b747-eba6774706ea",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "97fe7fc2-04be-4d92-a86a-a444730a1667",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "98dea655-f78b-47da-9b13-ea9f5419386d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "98e6f983-fab2-4ec0-a6af-3efa3d1ac020",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "99c09681-869d-4239-97c4-9d2a0a7cd71d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "99c33d97-dd2c-4ccd-bd04-35f104262456",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "9aa0726c-f0ec-4dbe-bd0f-edad125c8b52",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne c80b8c07-ea89-4a64-91a0-fabe0cea0532 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "9b1bd87e-43f7-47d1-8279-2f8528670ac2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9c2e2902-e32d-4bde-a79c-23302b0df17b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9c33da60-9da0-436b-8937-54aab7c4cc51",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9ce21400-d45c-409f-a368-24cbded881f3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9d129cb7-9875-41b0-bdff-b1e20197a421",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9d6e6f79-70a9-46ce-9ed2-835c18b52580",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9f87a49e-e28d-4e00-8a25-68ca725efc6b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9fe2908b-2d32-4010-a33c-39340e3c1355",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a0ec7b9c-c962-4285-aed7-3c62bc55e11b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a3083b03-7777-4f5b-a4e3-3628499b04e4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a33aa731-ce5c-4b75-b516-9e0dc12ab87f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a34592f0-a50c-45f7-82e1-b5aaa0fc912a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a54d5a18-fda6-450c-8b08-b227a364d18e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a5b4e0c9-9d38-41b4-b740-6cb4dc246076",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a62cfb43-f836-45ff-bffa-af0331ad0274",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne c80b8c07-ea89-4a64-91a0-fabe0cea0532 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "a7e0af57-9f1f-403a-8780-866e8cc6900b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "a8292d42-832c-47be-9d42-3b4ca00c2044",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "aaace4eb-0ea3-431d-96af-3a261371ea5c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ab15b6b2-6536-457f-9254-6b78cf01f99a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "abd7d114-26bc-4653-ba21-b8f9935d7cd5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ac4ba08c-9389-4a47-8295-cda4a03846ee",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ad286d49-48de-4bc8-8202-646695d734ff",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ae47ce2f-c4a1-4254-9da8-c99028378172",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "afa1ac55-b9f4-4aed-b74d-c393062bc543",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b002ffcf-6bdb-4140-bfb4-20af84ec7569",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b148a4a3-6910-4aa9-bdc3-9a9b899ae9ae",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b268b6f1-acc1-44ae-aa62-62d868a6c32e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b29b6a7a-891f-46af-85aa-592d20b24214",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b2b94eab-5625-4106-981a-2fc3ce9cbd69",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b3c4ddde-a634-475b-bf2e-442b751ede9d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "b3c5e2b5-794d-4eae-95cc-ea5762192a4d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b4566798-da26-4666-941e-0ee6be87226d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b4809a8a-bcb8-4ca2-8740-cd930d7ecb6e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b5c1d2a8-64fe-4604-aebf-7572af56a663",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b67b5243-ef1f-4e53-b700-1b8aaa194310",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b723f075-fb89-459b-bac0-8ef6da7d6206",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b77f9e7a-f76e-4c71-943c-10148d13ba0c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b7addd31-bffe-4aff-b3e6-fdd9ee0bfaa9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b7cb197d-54ca-48e9-af1e-b9081d1bf480",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b87683d1-dd36-4bf0-90ae-834e4eaf2a1a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b8d9fdaa-9f06-47dd-a7a2-0791e549c05b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b8ee00f3-08a3-471f-9754-c1cf6a593474",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b96b2c35-cc1d-42c0-8082-23c92c79424c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b9a2a188-fb5c-4a93-971b-de59904451e3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "b9e9327d-ff93-497f-946f-b302a21d7d0d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ba3c6c95-333b-401e-a11f-7d511d52e6d3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ba46d450-4485-4b5e-922b-134697ad92be",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "baed4db6-ee26-4324-8dca-2b0e0556a469",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne c80b8c07-ea89-4a64-91a0-fabe0cea0532 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "bb109999-6cb7-4b4b-a5f3-6e264ce23760",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bb2221df-09d4-4a36-b292-7fd84761d54b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "be678c92-09cc-405f-8a45-b0c03b390cde",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bf5eace2-26ca-497e-b471-1bb60f1195e8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bf7b2f08-9813-49b5-b228-11226d03a4fb",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bfb9a69a-b6fa-45cd-8d51-64ef2872d33c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "bff056ce-184c-43a6-aeb9-33c73fa80978",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c0b747e8-8caf-4fa4-bef2-370d77c4f550",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c1df9241-8145-445b-83a6-b50a81e263e6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c1e2ec21-0a8c-4668-9963-93e35eddc808",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c3170120-c5d3-43e5-ad7f-5c303077aa78",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 987c222d-ae5e-4ad4-a43b-6242e9934a7f (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "c356fd32-bfe5-4f53-ac53-8d5a4ed0be25",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c41cf102-3bde-4746-b212-61bb2962d6f4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c453e99c-abe9-4d47-baaa-a5cf9669c8d3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c46368ca-6721-4478-8049-c9f0fabed47e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c469c78b-da8c-4f2a-9377-3b38c5ec3cc6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c4ff2ba4-d7f1-4a32-af0b-9e0291eaa651",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c5d33274-a8c2-4638-aee9-873a38ff21c9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c5da8560-234c-4fc9-9ddf-efc511c8e910",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c5fb570e-2564-485a-8a8a-f29e45bf8d9d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c62b713f-3967-4ede-9b20-bd8096f5e287",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c6bab402-16ec-4a4b-aa88-86de5c954314",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c7423da4-2b62-4404-b6a8-607b9d66b1bd",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c8259c29-9a87-408b-9f23-2db79a514c65",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c94b6a5b-2ce4-43c6-8b2e-cdc642ee8c80",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c9e775af-f49d-4144-8887-b45d112bacc6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cb07d498-1d62-4d08-a409-2d424e98b5a8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cb8a7a31-fb52-486e-bf7a-8989f2085212",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cc4f4fc0-fa1e-4435-8f9d-5c0f5c2757fb",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cc69d273-1847-41c3-a3ab-1b6a7a5b9371",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cd6e4c40-0725-4917-80f2-c3fd584303ee",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ce208920-5ea7-4806-8e8a-94068cf5fee5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ce3a676b-f494-4376-b1f6-7be11d53cec2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ce822385-499d-4f67-9a2d-aa4b21e7eae6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ceb79fc6-5bcb-4cc4-8e69-612050b40b13",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cfac3385-f667-4794-9bf4-c617f3dba821",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cfcf1591-9da6-4d25-8324-ee8473b60e8d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d01cdaf0-de8f-4d7d-95d6-044ec151643b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d0a74a58-37b7-4ec7-b6f4-c8278ad9fb96",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d14c6284-45ed-44b4-9009-0d743a6a9d3f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d1a575cb-f6bd-4dde-b082-6ddad114f5c9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d27332e8-bf3a-470d-9ea9-89fbbc921718",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d275a7bd-577e-4ed8-bd06-72b9f0739438",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d2c835fd-5d87-444b-aa99-101253c92eaa",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d302f4a3-6b75-4041-9abb-33e3a8e70be8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d44665e8-4556-4de6-bc9d-2062bd816248",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 987c222d-ae5e-4ad4-a43b-6242e9934a7f (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "d470f5da-8114-4ab5-aa47-2dc3d146bf0f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d55c6014-79bb-45ef-8971-3e9b9f46466f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d58e6fa5-ff99-474a-a98c-263f4be1b7c7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d5ae3dbf-585e-431c-9d87-4d8dd55c40e8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d5e3fa21-b66f-42fc-8b5d-7c61d261deb5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d62a8597-e854-4202-8021-ab71411e4f81",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "d6622409-a89c-4a4d-9c0d-03d9a2bf6543",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d67819f2-ec46-4e50-bc54-94d2fa1a8f82",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d82f6715-2812-4330-a894-0cd355a3edc5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d88eef55-30b2-4361-bc5d-4d719c3aac9b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "d99d059e-6fdf-4062-8dce-aefc95fc5307",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d9e5abda-f897-4295-a382-5634b2594bda",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "db48edd0-7cec-4e15-b289-d5ea3e9ee4d0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dcc9c635-87d6-4a89-b38b-dcf7896516f6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dd3b0545-3117-4411-91ad-c5f8673bc0c4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dd8e2cd1-6341-4a66-ad61-9ebb3898c212",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ddab2842-6f6c-4424-9e77-8679aea05ef2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "df5496f5-5a8b-466b-8e3a-71236bb2a99c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "dfa094c6-accd-4c08-8240-964d99f98241",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e0f70834-6a2b-4d41-9833-bc3e152444aa",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e2771f3c-1916-4a77-9d9f-51db3e8637ab",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e2c35288-e31a-4cb8-a443-b898eb5b6d72",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e4204315-be7f-49e0-8969-56c9f7d82146",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e456f40a-55b8-4131-acbf-295a8a4fa5cf",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e58e0a84-5d4c-4df1-a39e-ff1173b0e0a6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e7fdc485-30ee-4359-af8e-bd71246c1ecc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "e8f2e160-18d6-4fce-a46b-c0d1bd9bdaa0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e9bc67a6-9e6a-4774-9f14-648058f6cdf2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ea789bd4-548b-4898-b996-97007269fb7f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ea7f7279-a451-4fb7-b541-8114626db2b5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ea8b2581-a6ee-45ca-a718-2b625f107df6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ea9e09e4-4d11-43f6-9ac2-c87edb7f9d75",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eaf46530-9ad6-4d8a-bef9-77e4710489da",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eaf75cc8-667d-41fc-83bb-8d90bf119e21",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "eb98aa08-08c6-4626-88ac-0c01a037b80c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ed0351f7-22eb-48ff-a21f-394571932ab0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ed08efc8-6d4d-40e5-bd98-78190302c666",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ed2af5e2-f5d1-4a9b-8214-5cf62002a8ff",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ee22e3fd-dc4a-4dfa-abee-a3da18228aaf",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ee2951c9-000d-48fc-9366-1b0792ccdf4b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ee5d5bdb-7f81-497a-8456-42083af50aa3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f01dc866-190c-4dd4-8adf-70a6dd00d94f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f1a0832e-dce6-46ec-bb0b-c8619c16868c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f2cddf75-24ec-402d-8519-b1e036d51293",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f3e1398e-4da0-4cf3-8ede-b277940dfeab",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f4fb1cde-7ded-476d-832b-e35e3a902cf3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f50b6766-e21e-4003-a324-5d7027749399",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f6017f0b-baca-4fd3-b83a-14705c3b8b9a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f63660db-5b57-4ca2-8f40-c67d06f9e6e9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f6b0176a-b33e-44f4-bd0c-810e199ec4f9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f6c9a7a6-f73f-4585-bb04-d2fccac16684",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f6e2b35e-9e51-497e-b98b-37ee404206db",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f71f02b9-f619-4022-b48a-f77186111bba",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f78ceccd-7851-4aa4-ac51-119e4763bf60",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f7fbc400-b7d0-4cfb-8b14-088b1aa31374",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "f82be3a5-7114-4ca3-a523-29e63cbbcc9a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f8cc956b-30a0-4d65-a358-a851b553e034",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f8fc11c1-0ee2-4a52-826f-e57cf8d783e9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f90fd071-9d57-4fae-9535-7392e218927c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "f9943308-37fd-43a2-85f4-7758b8519285",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fb281d8b-1f15-48a1-b113-5fa8b0344a6c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fbc9d305-635a-49c7-92bc-958c23e61ecd",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fceca36d-b2ce-4d2e-b6be-bdc5caa428d2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fdc1ff29-f53d-4820-8115-4c0b3d9af924",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "fed07ac2-a2bb-4304-a739-aa627f273b95",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "ff9b8af4-dada-453f-87c7-3bc1bf04c234",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+}
+]
+},
+"BR": {
+"lignes": 76,
+"empreinte": "93462a9812315173ab0a9d6b5bc1849b",
+"etat": [
+{
+"id": "00794857-afbf-45af-ae90-d4f31e4cb2c1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "01533649-b9c6-4d96-a6e3-f92f10e829a6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "08979e0f-928d-490d-8fcd-587ec5959b04",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "0acfe9d7-c8b5-4c7d-88ab-b332bbff1852",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "0fcd4a36-b1fc-481b-bf25-bff092d4a9ed",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "0fe337d3-579e-4325-b467-0e9f80048066",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "12ae55c9-c239-472a-92a6-30d4417fc277",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a690c1eb-8e9b-4baf-aa04-3bbde6f993c7 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "157f97d5-1c5b-4a15-97db-875c04c59f5f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a690c1eb-8e9b-4baf-aa04-3bbde6f993c7 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "16b89899-9811-4e79-b998-9277789544b3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "20ed5ee1-23c0-4308-a0df-77e6f51cf5fb",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2b0ed1e4-142f-460c-bdd4-26210dd87178",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "2e7a6030-b5cb-4a37-b782-90205ddcc330",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "32114c5c-174d-420c-a764-a52104e31ea8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "337fb7e8-ac00-44ce-a77b-2588211b2e02",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "39f2e72d-e357-4604-9529-cafe9c5c0b19",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "3dbfb54c-05ed-4b02-9c59-564da958cb26",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "3e83d635-4a89-4922-bd9f-5287aff444c7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "448b4ef6-68d2-4bb4-b1f1-cd7994db87a1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "46e29f3a-a302-4249-90b3-595e64af5240",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "497101cb-1d7b-4c21-9f20-38509b66b126",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "4d9e714c-16e5-4c44-96c0-15858a1b40df",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "502df97e-319a-400c-9c88-1ff941a48a58",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "51299429-4ba4-435e-8904-84f525c09524",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "53bceb87-a28d-4cc4-8adc-084d5a642026",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "54809b40-5003-4db1-877c-10fde76b4d46",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "5515326c-9ed1-4c9e-ba16-60ba7aed24c5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "56f19e2b-8d28-407a-b6f3-43199cceb93a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "60e97098-0010-412b-b908-0607a2d0df10",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "63adf4b1-47cb-468d-a844-1db38c8a72c5",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "63b469f4-c8f3-46ba-9fff-10f7a3ac734e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "64b5a1df-b810-43f2-9aed-c1519ce79a32",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "680746b7-7d90-4213-8c6a-142e59e1468a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "695ba024-5c25-4889-b95e-99084512bc76",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "6b51205b-282d-4bcf-8212-b130b9d880c8",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 1acd7371-4f7d-468a-99f9-e82d25e4a0f4 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "6f703642-ce9c-4ed1-ab0e-91adfcf0f436",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "6fd0aa11-00ea-4add-bcf3-6e4e8e572af0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "70ad07c3-f3f3-4f97-bd9a-53305c17e747",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "7c665b3c-e947-4bcd-a05d-e88941309de0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "81a59e35-3637-4f81-96ad-9092d3311a3f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "81da26f3-8ba5-4412-8b16-fde98ad89c8d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "85b3f9cc-da01-4b62-8bfe-ad31607d94f7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "8bb6459b-4932-4244-abfb-563ddf6e992a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "8c980b3b-dd80-484e-b87a-45502749ed5b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "901471e6-6b35-4b28-843d-fa06bd63dab2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "9163fbd7-0511-452f-8679-0ae6d82a814c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "9972a276-2882-4700-af05-c672f771aa3c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "a750e8e4-4ef1-4576-a211-cc903cfbfd86",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "a9eb8ca9-ef97-4b2e-b081-4d9dac4dd615",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "ab06fafc-3886-4ea4-b0dd-218ab34c8ef6",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "b07f67d4-11d9-4c35-bb3d-a80bd839abce",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "b3f4dbda-a4af-4d9d-831f-eb273c6d20c2",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "b4ad186b-7b97-4256-b2bd-f017c842626a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "b67e8e08-2124-44b1-a8f4-009837a70198",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 1acd7371-4f7d-468a-99f9-e82d25e4a0f4 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "bec0cf10-8423-473e-b79b-f03776fc16ee",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "bed29893-52b8-4ef3-9fbf-467c10569b1d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c0a1ed06-aaca-42f7-90b6-3f7039bf061e",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c41a69e7-85fc-45df-a299-a941d8991ffe",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "c5562e35-b8d2-4259-90de-55aacfae5d9c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "c9784a52-4efa-4e24-93be-b9980a8fc01c",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "ca78f82a-3762-4df8-b1ff-07ca24b6adb9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "cc3e4fcb-0773-47bf-bda5-7b7873b3543a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d04980ee-cae0-4f65-a60c-8f9cbeec93c4",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d04fc7d5-d497-4516-8e9a-782c6ed9bf58",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d76203b6-0757-48e8-b06f-685e8afdda50",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "d8f76254-f038-4ff9-b88b-fad98d2e7ec7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dc050b0f-b0a5-4b70-a6b1-0003c146a03f",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "dd8d85fc-2314-4a03-ad96-34f4bb7efcb3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne 223c960e-b81d-45ff-affc-5ecf34574dfe (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "ddec22d8-a750-48c2-9053-201dd3d889aa",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "dfc93033-d629-4ab8-80ef-9c8eb8988411",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "e25080aa-c340-4d3e-936c-9609ae1306bc",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "e5645c7e-3866-40b9-9110-5d7cc41ff12b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+},
+{
+"id": "e87a6829-78f3-405c-b501-490ee724a6af",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "f3556d7b-db64-4aae-95bb-4438906216b1",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "f56a6b2e-df8f-41b3-9ccd-21195e3b1b01",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP"
+]
+},
+{
+"id": "f75f8d09-da24-4818-9472-08bbe8cd6e67",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "f87a68f8-79bb-4c92-8806-d6560b5aa3f9",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP"
+]
+}
+]
+},
+"C": {
+"lignes": 7,
+"empreinte": "7db2d1c44b5c4e7557d274e17329d855",
+"etat": [
+{
+"id": "3da7dec9-dbb9-45eb-858a-a545673a3544",
+"severite": "relative",
+"exclue_motif": "RCP autorise",
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "4fbaf40b-ded8-495e-95be-65fc53339506",
+"severite": "relative",
+"exclue_motif": "RCP autorise",
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "63e56d73-6bd6-4685-9dc9-4707e44f412a",
+"severite": "relative",
+"exclue_motif": "RCP autorise",
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne e1b3f317-e7d8-4af0-be97-74c6044a1399 (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "a35275c7-e930-4aab-b430-c157ada61306",
+"severite": "relative",
+"exclue_motif": "RCP autorise",
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "ce34c3f6-737d-4c79-858a-a7bfc8df9ca5",
+"severite": "relative",
+"exclue_motif": "RCP autorise",
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "d33c6e0b-54b6-40df-9331-e6c9f993bc5a",
+"severite": "relative",
+"exclue_motif": "RCP autorise",
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+},
+{
+"id": "e5aa6e01-ac41-4e2b-aafb-795001e4428f",
+"severite": "relative",
+"exclue_motif": "RCP autorise",
+"sources": [
+"BDPM-1 G3 — recréée pour cette molécule depuis la ligne a3890e11-0ffb-4ba5-bad1-6e13613362ea (neutralisée)",
+"BDPM-RCP"
+]
+}
+]
+},
+"D": {
+"lignes": 25,
+"empreinte": "c8983eda2095ab1e61eb9db3734bb115",
+"etat": [
+{
+"id": "0182dd5e-308f-4d87-949a-79987733a5cd",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "0992bb47-6663-420c-be7c-04908d4d6ef0",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "0a663b37-0a45-4452-ac36-b4d6de7f447a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "0dcdade1-22dc-4352-b4ff-a72dcd073905",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "13fb3046-187e-438d-9f0b-041c4991e5c4",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "362d190c-6614-47e7-bc32-9022cbe3848b",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "402eb302-0918-4add-b373-7f64ace6e99a",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "40de7c45-21bb-461f-8a95-634003fcfa22",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "494bb27d-d978-43be-be4d-20a58efe3dde",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "49748a58-2c87-441b-a148-d85ed65dbed5",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "5ccff076-3d72-4b50-a7df-97936f65edc3",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "68753421-4f39-447c-ab2a-30d79bbe0aac",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "699fac0f-d50f-4939-b7a4-4655db353a8a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "6ac3b7e8-dd0b-4031-ae2d-c9801358ce2d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "7b2d4827-ea2f-4d98-bb62-a1359ad2d8eb",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "7f5d1f90-6556-4fd7-a5b0-4419f66de9b7",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "81ad49a1-754b-48cd-9507-d3435ca55ce2",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "b2ec4e88-ca0c-4e91-b854-f0a9aa1103c8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "b6dfef1d-1bc5-409c-8920-6d95e226c45d",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "b8c489b0-9e8c-4ad8-a30b-7473e33cecee",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "bb2c7b87-a832-4721-b03d-c07af3e2ca5a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "c1ab8965-3db2-4e8c-9ef0-e3fe724055e8",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "ca06e244-f6b0-40fb-bc47-3f3e19deac0a",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "dbf4d0eb-da96-4af3-af39-da1814192bd3",
+"severite": "relative",
+"exclue_motif": null,
+"sources": [
+"Ordosur-pharmacien"
+]
+},
+{
+"id": "e7d4e0be-3828-49d2-8dab-347502010634",
+"severite": "absolue",
+"exclue_motif": null,
+"sources": [
+"BDPM-RCP",
+"Ordosur-pharmacien"
+]
+}
+]
+}
+}
+}
