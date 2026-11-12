@@ -45,7 +45,7 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
 
 ## Base de données (Supabase yxzvukryngvlzjgaydqj)
 - Tables clés : medicaments 52 802 (colonne `dci_canonique`) · drug_interactions 163 124 ·
-  pathologies 48 041 · pathologies_curees 475 · contraindications 5 919 (5 662 actives) · ci_condition_concepts 530 ·
+  pathologies 48 041 · pathologies_curees 475 · contraindications 6 009 (5 752 actives) · ci_condition_concepts 530 ·
   allergies_reference 71 (comptes au 2026-11-12, après BDPM-2d).
 - Bilans (Sprint 6A) : `resultats_examens` (valeurs figées ; correction = archivage avec motif + nouvelle ligne ;
   interprétation calculée en base UNIQUEMENT d'après les bornes du labo saisies ; RPC `enregistrer_resultats_examens`).
@@ -147,6 +147,10 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   Motif d'une ligne nouvelle = la molécule exacte ; une fiche MA est admise si elle porte l'ingrédient canonique, ou — lien
   manquant — si son DCI nomme la molécule en mot entier ; jamais un contre-ion, jamais une association par ce biais.
   Non repris par molécule : CI dues à un excipient, CI propres à une dose, CI lues seulement dans le RCP d'une forme locale.
+  **Une ligne étiquetée BDPM-RCP n'a qu'UN jeton dans `dci_pattern`** (une ligne par libellé de DCI d'une même composition) ;
+  un jeton ne doit jamais venir du DCI d'une fiche sans contrôle LEXICAL (il doit nommer la molécule de la ligne : le catalogue
+  contient des fiches au DCI ou au lien d'ingrédient erroné — ENDOXAN ↔ hydrochlorothiazide). Contrôler sur TOUT le catalogue,
+  pas seulement les fiches MA (`bdpm/2d/scripts/controle_lexical_2d.py`, banc médicaments sans `--ma`).
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).
