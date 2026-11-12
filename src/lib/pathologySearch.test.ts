@@ -65,7 +65,9 @@ describe('texte libre : « Non reconnu par le moteur »', () => {
     expect(pathologiesNonReconnues(['Asthme', 'Asthme nocturne sévère du sujet jeune', 'Maladie de Machin'], D, curees)).toEqual([
       { label: 'Maladie de Machin', suggestion: null },
     ]);
-    expect(pathologiesNonReconnues(['Hypertension artérielle pulmonaire'], D, curees)).toEqual([{ label: 'Hypertension artérielle pulmonaire', suggestion: null }]);
+    // BDPM-2d : l'HTAP est devenue un concept du référentiel (reconnue) ; l'hypertension portale reste sans concept, sans suggestion « HTA ».
+    expect(pathologiesNonReconnues(['Hypertension artérielle pulmonaire'], D, curees)).toEqual([]);
+    expect(pathologiesNonReconnues(['Hypertension portale'], D, curees)).toEqual([{ label: 'Hypertension portale', suggestion: null }]);
     expect(pathologiesNonReconnues(["Crise d'asthme nocturne"], D, curees)).toEqual([{ label: "Crise d'asthme nocturne", suggestion: 'Asthme' }]);
     expect(pathologiesNonReconnues(['Suspicion de sclérose en plaques'], D, curees)).toEqual([{ label: 'Suspicion de sclérose en plaques', suggestion: 'Sclérose en plaques' }]);
     expect(BADGE_NON_RECONNU).toBe('Non reconnu par le moteur — choisir dans la liste ?');

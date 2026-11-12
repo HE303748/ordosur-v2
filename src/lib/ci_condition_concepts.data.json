@@ -1,7 +1,7 @@
 {
  "empreinte": {
-  "concepts": "b54401a7237def01c330e57dd10aa517",
-  "curees": "24e3557742b394272ccb0c9c47dd2358"
+  "concepts": "5d0d68564186daffc1966d9dd94353a3",
+  "curees": "41a59d87300bbb822c378766ae02992d"
  },
  "familles": [
   "diabete",
@@ -575,13 +575,13 @@
    "condition_valeur": "Colite infectieuse",
    "ordre": 1,
    "libelle": "Colite infectieuse",
-   "traitement": "sans_concept",
-   "concept": null,
+   "traitement": "concept",
+   "concept": "Colite aiguë",
    "famille": null,
    "qualificatif": null,
    "qualificatif_type": null,
    "stade": null,
-   "note": "aucun concept"
+   "note": null
   },
   {
    "condition_norm": "coronaropathie",
@@ -1212,13 +1212,13 @@
    "condition_valeur": "Hémorragie active",
    "ordre": 1,
    "libelle": "Hémorragie active",
-   "traitement": "sans_concept",
-   "concept": null,
+   "traitement": "concept",
+   "concept": "Hémorragie active",
    "famille": null,
    "qualificatif": null,
    "qualificatif_type": null,
    "stade": null,
-   "note": "saignement en cours : aucun concept"
+   "note": null
   },
   {
    "condition_norm": "hemorragie active coagulopathie severe",
@@ -1303,13 +1303,13 @@
    "condition_valeur": "Hypercalcémie",
    "ordre": 1,
    "libelle": "Hypercalcémie",
-   "traitement": "sans_concept",
-   "concept": null,
+   "traitement": "concept",
+   "concept": "Hypercalcémie",
    "famille": null,
    "qualificatif": null,
    "qualificatif_type": null,
    "stade": null,
-   "note": "anomalie biologique : aucun concept dans pathologies_curees"
+   "note": null
   },
   {
    "condition_norm": "hyperkaliemie",
@@ -1433,26 +1433,26 @@
    "condition_valeur": "Hypocalcémie",
    "ordre": 1,
    "libelle": "Hypocalcémie",
-   "traitement": "sans_concept",
-   "concept": null,
+   "traitement": "concept",
+   "concept": "Hypocalcémie",
    "famille": null,
    "qualificatif": null,
    "qualificatif_type": null,
    "stade": null,
-   "note": "anomalie biologique : aucun concept dans pathologies_curees"
+   "note": null
   },
   {
    "condition_norm": "hypokaliemie",
    "condition_valeur": "Hypokaliémie",
    "ordre": 1,
    "libelle": "Hypokaliémie",
-   "traitement": "sans_concept",
-   "concept": null,
+   "traitement": "concept",
+   "concept": "Hypokaliémie",
    "famille": null,
    "qualificatif": null,
    "qualificatif_type": null,
    "stade": null,
-   "note": "anomalie biologique : aucun concept dans pathologies_curees"
+   "note": null
   },
   {
    "condition_norm": "hypokaliemie severe k 3 0 mmol l",
@@ -1550,13 +1550,13 @@
    "condition_valeur": "Hypovolémie sévère",
    "ordre": 1,
    "libelle": "Hypovolémie sévère",
-   "traitement": "sans_concept",
-   "concept": null,
+   "traitement": "concept",
+   "concept": "Hypovolémie",
    "famille": null,
-   "qualificatif": null,
-   "qualificatif_type": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
    "stade": null,
-   "note": "aucun concept (≠ déshydratation)"
+   "note": null
   },
   {
    "condition_norm": "ileus paralytique",
@@ -4547,6 +4547,2372 @@
    "qualificatif_type": null,
    "stade": null,
    "note": "BDPM-1 G3 : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "etat de choc",
+   "condition_valeur": "État de choc",
+   "ordre": 1,
+   "libelle": "État de choc",
+   "traitement": "concept",
+   "concept": "État de choc",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "syndrome du qt long",
+   "condition_valeur": "Syndrome du QT long",
+   "ordre": 1,
+   "libelle": "Syndrome du QT long",
+   "traitement": "concept",
+   "concept": "Syndrome du QT long",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "thrombo embolie arterielle",
+   "condition_valeur": "Thrombo-embolie artérielle",
+   "ordre": 1,
+   "libelle": "Thrombo-embolie artérielle",
+   "traitement": "concept",
+   "concept": "Thrombo-embolie artérielle",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "syndrome de raynaud",
+   "condition_valeur": "Syndrome de Raynaud",
+   "ordre": 1,
+   "libelle": "Syndrome de Raynaud",
+   "traitement": "concept",
+   "concept": "Syndrome de Raynaud",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypovolemie",
+   "condition_valeur": "Hypovolémie",
+   "ordre": 1,
+   "libelle": "Hypovolémie",
+   "traitement": "concept",
+   "concept": "Hypovolémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "syndrome de brugada",
+   "condition_valeur": "Syndrome de Brugada",
+   "ordre": 1,
+   "libelle": "Syndrome de Brugada",
+   "traitement": "concept",
+   "concept": "Syndrome de Brugada",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "anevrisme arteriel",
+   "condition_valeur": "Anévrisme artériel",
+   "ordre": 1,
+   "libelle": "Anévrisme artériel",
+   "traitement": "concept",
+   "concept": "Anévrisme artériel",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "tamponnade cardiaque",
+   "condition_valeur": "Tamponnade cardiaque",
+   "ordre": 1,
+   "libelle": "Tamponnade cardiaque",
+   "traitement": "concept",
+   "concept": "Tamponnade cardiaque",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "prothese valvulaire cardiaque",
+   "condition_valeur": "Prothèse valvulaire cardiaque",
+   "ordre": 1,
+   "libelle": "Prothèse valvulaire cardiaque",
+   "traitement": "concept",
+   "concept": "Prothèse valvulaire cardiaque",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypertension arterielle pulmonaire",
+   "condition_valeur": "Hypertension artérielle pulmonaire",
+   "ordre": 1,
+   "libelle": "Hypertension artérielle pulmonaire",
+   "traitement": "concept",
+   "concept": "Hypertension artérielle pulmonaire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "coeur pulmonaire chronique",
+   "condition_valeur": "Cœur pulmonaire chronique",
+   "ordre": 1,
+   "libelle": "Cœur pulmonaire chronique",
+   "traitement": "concept",
+   "concept": "Cœur pulmonaire chronique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "oedeme pulmonaire",
+   "condition_valeur": "Œdème pulmonaire",
+   "ordre": 1,
+   "libelle": "Œdème pulmonaire",
+   "traitement": "concept",
+   "concept": "Œdème pulmonaire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "patient dependant d un stimulateur cardiaque",
+   "condition_valeur": "Patient dépendant d’un stimulateur cardiaque",
+   "ordre": 1,
+   "libelle": "Patient dépendant d’un stimulateur cardiaque",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "dispositif implanté"
+  },
+  {
+   "condition_norm": "pontage aorto coronarien periode peri operatoire",
+   "condition_valeur": "Pontage aorto-coronarien (période péri-opératoire)",
+   "ordre": 1,
+   "libelle": "Pontage aorto-coronarien (période péri-opératoire)",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "acte ou circonstance"
+  },
+  {
+   "condition_norm": "circulation extracorporelle",
+   "condition_valeur": "Circulation extracorporelle",
+   "ordre": 1,
+   "libelle": "Circulation extracorporelle",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "acte ou circonstance"
+  },
+  {
+   "condition_norm": "insuffisance medullaire",
+   "condition_valeur": "Insuffisance médullaire",
+   "ordre": 1,
+   "libelle": "Insuffisance médullaire",
+   "traitement": "concept",
+   "concept": "Insuffisance médullaire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "neutropenie",
+   "condition_valeur": "Neutropénie",
+   "ordre": 1,
+   "libelle": "Neutropénie",
+   "traitement": "concept",
+   "concept": "Neutropénie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "agranulocytose",
+   "condition_valeur": "Agranulocytose",
+   "ordre": 1,
+   "libelle": "Agranulocytose",
+   "traitement": "concept",
+   "concept": "Agranulocytose",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "thrombophilie",
+   "condition_valeur": "Thrombophilie",
+   "ordre": 1,
+   "libelle": "Thrombophilie",
+   "traitement": "concept",
+   "concept": "Thrombophilie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "methemoglobinemie",
+   "condition_valeur": "Méthémoglobinémie",
+   "ordre": 1,
+   "libelle": "Méthémoglobinémie",
+   "traitement": "concept",
+   "concept": "Méthémoglobinémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "mastocytose",
+   "condition_valeur": "Mastocytose",
+   "ordre": 1,
+   "libelle": "Mastocytose",
+   "traitement": "concept",
+   "concept": "Mastocytose",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "deficit en iga",
+   "condition_valeur": "Déficit en IgA",
+   "ordre": 1,
+   "libelle": "Déficit en IgA",
+   "traitement": "concept",
+   "concept": "Déficit en IgA",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "erythroblastopenie survenue sous erythropoietine",
+   "condition_valeur": "Érythroblastopénie survenue sous érythropoïétine",
+   "ordre": 1,
+   "libelle": "Érythroblastopénie survenue sous érythropoïétine",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "perforation digestive",
+   "condition_valeur": "Perforation digestive",
+   "ordre": 1,
+   "libelle": "Perforation digestive",
+   "traitement": "concept",
+   "concept": "Perforation digestive",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hemorragie digestive",
+   "condition_valeur": "Hémorragie digestive",
+   "ordre": 1,
+   "libelle": "Hémorragie digestive",
+   "traitement": "concept",
+   "concept": "Hémorragie digestive",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "tumeur hepatique",
+   "condition_valeur": "Tumeur hépatique",
+   "ordre": 1,
+   "libelle": "Tumeur hépatique",
+   "traitement": "concept",
+   "concept": "Tumeur hépatique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "cholestase",
+   "condition_valeur": "Cholestase",
+   "ordre": 1,
+   "libelle": "Cholestase",
+   "traitement": "concept",
+   "concept": "Cholestase",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "obstruction des voies biliaires",
+   "condition_valeur": "Obstruction des voies biliaires",
+   "ordre": 1,
+   "libelle": "Obstruction des voies biliaires",
+   "traitement": "concept",
+   "concept": "Obstruction des voies biliaires",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "elevation des transaminases",
+   "condition_valeur": "Élévation des transaminases",
+   "ordre": 1,
+   "libelle": "Élévation des transaminases",
+   "traitement": "concept",
+   "concept": "Élévation des transaminases",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hyperbilirubinemie",
+   "condition_valeur": "Hyperbilirubinémie",
+   "ordre": 1,
+   "libelle": "Hyperbilirubinémie",
+   "traitement": "concept",
+   "concept": "Hyperbilirubinémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "syndrome de dubin johnson ou de rotor",
+   "condition_valeur": "Syndrome de Dubin-Johnson ou de Rotor",
+   "ordre": 1,
+   "libelle": "Syndrome de Dubin-Johnson ou de Rotor",
+   "traitement": "concept",
+   "concept": "Syndrome de Dubin-Johnson ou de Rotor",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "varices oesophagiennes",
+   "condition_valeur": "Varices œsophagiennes",
+   "ordre": 1,
+   "libelle": "Varices œsophagiennes",
+   "traitement": "concept",
+   "concept": "Varices œsophagiennes",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "megacolon",
+   "condition_valeur": "Mégacôlon",
+   "ordre": 1,
+   "libelle": "Mégacôlon",
+   "traitement": "concept",
+   "concept": "Mégacôlon",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "trouble du transit oesophagien",
+   "condition_valeur": "Trouble du transit œsophagien",
+   "ordre": 1,
+   "libelle": "Trouble du transit œsophagien",
+   "traitement": "concept",
+   "concept": "Trouble du transit œsophagien",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "stenose digestive",
+   "condition_valeur": "Sténose digestive",
+   "ordre": 1,
+   "libelle": "Sténose digestive",
+   "traitement": "concept",
+   "concept": "Sténose digestive",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "lesion anorectale",
+   "condition_valeur": "Lésion anorectale",
+   "ordre": 1,
+   "libelle": "Lésion anorectale",
+   "traitement": "concept",
+   "concept": "Lésion anorectale",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "colite aigue",
+   "condition_valeur": "Colite aiguë",
+   "ordre": 1,
+   "libelle": "Colite aiguë",
+   "traitement": "concept",
+   "concept": "Colite aiguë",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "stomatite",
+   "condition_valeur": "Stomatite",
+   "ordre": 1,
+   "libelle": "Stomatite",
+   "traitement": "concept",
+   "concept": "Stomatite",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "situation a risque de necrose colique",
+   "condition_valeur": "Situation à risque de nécrose colique",
+   "ordre": 1,
+   "libelle": "Situation à risque de nécrose colique",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "ileostomie apres proctocolectomie",
+   "condition_valeur": "Iléostomie après proctocolectomie",
+   "ordre": 1,
+   "libelle": "Iléostomie après proctocolectomie",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent chirurgical"
+  },
+  {
+   "condition_norm": "resection digestive etendue",
+   "condition_valeur": "Résection digestive étendue",
+   "ordre": 1,
+   "libelle": "Résection digestive étendue",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent chirurgical"
+  },
+  {
+   "condition_norm": "ingestion de produits caustiques",
+   "condition_valeur": "Ingestion de produits caustiques",
+   "ordre": 1,
+   "libelle": "Ingestion de produits caustiques",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "acte ou circonstance"
+  },
+  {
+   "condition_norm": "antecedent d atteinte hepatique liee a cette molecule",
+   "condition_valeur": "Antécédent d’atteinte hépatique liée à cette molécule",
+   "ordre": 1,
+   "libelle": "Antécédent d’atteinte hépatique liée à cette molécule",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "antecedent d atteinte hepatique apres un anesthesique halogene",
+   "condition_valeur": "Antécédent d’atteinte hépatique après un anesthésique halogéné",
+   "ordre": 1,
+   "libelle": "Antécédent d’atteinte hépatique après un anesthésique halogéné",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "antecedent de toxicite hepatique ou pulmonaire sous amiodarone",
+   "condition_valeur": "Antécédent de toxicité hépatique ou pulmonaire sous amiodarone",
+   "ordre": 1,
+   "libelle": "Antécédent de toxicité hépatique ou pulmonaire sous amiodarone",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "antecedent d ictere cholestatique ou de pemphigoide de la grossesse",
+   "condition_valeur": "Antécédent d’ictère cholestatique ou de pemphigoïde de la grossesse",
+   "ordre": 1,
+   "libelle": "Antécédent d’ictère cholestatique ou de pemphigoïde de la grossesse",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent obstétrical : aucun concept"
+  },
+  {
+   "condition_norm": "acidose metabolique",
+   "condition_valeur": "Acidose métabolique",
+   "ordre": 1,
+   "libelle": "Acidose métabolique",
+   "traitement": "concept",
+   "concept": "Acidose métabolique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "acidocetose ou coma diabetique",
+   "condition_valeur": "Acidocétose ou coma diabétique",
+   "ordre": 1,
+   "libelle": "Acidocétose ou coma diabétique",
+   "traitement": "concept",
+   "concept": "Diabète décompensé",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypoglycemie",
+   "condition_valeur": "Hypoglycémie",
+   "ordre": 1,
+   "libelle": "Hypoglycémie",
+   "traitement": "concept",
+   "concept": "Hypoglycémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypomagnesemie",
+   "condition_valeur": "Hypomagnésémie",
+   "ordre": 1,
+   "libelle": "Hypomagnésémie",
+   "traitement": "concept",
+   "concept": "Hypomagnésémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypermagnesemie",
+   "condition_valeur": "Hypermagnésémie",
+   "ordre": 1,
+   "libelle": "Hypermagnésémie",
+   "traitement": "concept",
+   "concept": "Hypermagnésémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypercalciurie",
+   "condition_valeur": "Hypercalciurie",
+   "ordre": 1,
+   "libelle": "Hypercalciurie",
+   "traitement": "concept",
+   "concept": "Hypercalciurie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "nephrocalcinose",
+   "condition_valeur": "Néphrocalcinose",
+   "ordre": 1,
+   "libelle": "Néphrocalcinose",
+   "traitement": "concept",
+   "concept": "Néphrocalcinose",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypernatremie",
+   "condition_valeur": "Hypernatrémie",
+   "ordre": 1,
+   "libelle": "Hypernatrémie",
+   "traitement": "concept",
+   "concept": "Hypernatrémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hyperchloremie",
+   "condition_valeur": "Hyperchlorémie",
+   "ordre": 1,
+   "libelle": "Hyperchlorémie",
+   "traitement": "concept",
+   "concept": "Hyperchlorémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hyperphosphatemie",
+   "condition_valeur": "Hyperphosphatémie",
+   "ordre": 1,
+   "libelle": "Hyperphosphatémie",
+   "traitement": "concept",
+   "concept": "Hyperphosphatémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypophosphatemie",
+   "condition_valeur": "Hypophosphatémie",
+   "ordre": 1,
+   "libelle": "Hypophosphatémie",
+   "traitement": "concept",
+   "concept": "Hypophosphatémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hyperosmolarite plasmatique",
+   "condition_valeur": "Hyperosmolarité plasmatique",
+   "ordre": 1,
+   "libelle": "Hyperosmolarité plasmatique",
+   "traitement": "concept",
+   "concept": "Hyperosmolarité plasmatique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hyperoxalurie",
+   "condition_valeur": "Hyperoxalurie",
+   "ordre": 1,
+   "libelle": "Hyperoxalurie",
+   "traitement": "concept",
+   "concept": "Hyperoxalurie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "trouble hydro electrolytique",
+   "condition_valeur": "Trouble hydro-électrolytique",
+   "ordre": 1,
+   "libelle": "Trouble hydro-électrolytique",
+   "traitement": "concept",
+   "concept": "Trouble hydro-électrolytique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypoalbuminemie",
+   "condition_valeur": "Hypoalbuminémie",
+   "ordre": 1,
+   "libelle": "Hypoalbuminémie",
+   "traitement": "concept",
+   "concept": "Hypoalbuminémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypervitaminose d",
+   "condition_valeur": "Hypervitaminose D",
+   "ordre": 1,
+   "libelle": "Hypervitaminose D",
+   "traitement": "concept",
+   "concept": "Hypervitaminose D",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypervitaminose a",
+   "condition_valeur": "Hypervitaminose A",
+   "ordre": 1,
+   "libelle": "Hypervitaminose A",
+   "traitement": "concept",
+   "concept": "Hypervitaminose A",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "phenylcetonurie",
+   "condition_valeur": "Phénylcétonurie",
+   "ordre": 1,
+   "libelle": "Phénylcétonurie",
+   "traitement": "concept",
+   "concept": "Phénylcétonurie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "intolerance hereditaire au fructose",
+   "condition_valeur": "Intolérance héréditaire au fructose",
+   "ordre": 1,
+   "libelle": "Intolérance héréditaire au fructose",
+   "traitement": "concept",
+   "concept": "Intolérance héréditaire au fructose",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "deficit en carnitine",
+   "condition_valeur": "Déficit en carnitine",
+   "ordre": 1,
+   "libelle": "Déficit en carnitine",
+   "traitement": "concept",
+   "concept": "Déficit en carnitine",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "trouble du cycle de l uree",
+   "condition_valeur": "Trouble du cycle de l’urée",
+   "ordre": 1,
+   "libelle": "Trouble du cycle de l’urée",
+   "traitement": "concept",
+   "concept": "Trouble du cycle de l’urée",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "deficit en dihydropyrimidine deshydrogenase",
+   "condition_valeur": "Déficit en dihydropyrimidine déshydrogénase",
+   "ordre": 1,
+   "libelle": "Déficit en dihydropyrimidine déshydrogénase",
+   "traitement": "concept",
+   "concept": "Déficit en dihydropyrimidine déshydrogénase",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "prolactinome",
+   "condition_valeur": "Prolactinome",
+   "ordre": 1,
+   "libelle": "Prolactinome",
+   "traitement": "concept",
+   "concept": "Prolactinome",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hyperprolactinemie",
+   "condition_valeur": "Hyperprolactinémie",
+   "ordre": 1,
+   "libelle": "Hyperprolactinémie",
+   "traitement": "concept",
+   "concept": "Hyperprolactinémie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "tumeur hypophysaire",
+   "condition_valeur": "Tumeur hypophysaire",
+   "ordre": 1,
+   "libelle": "Tumeur hypophysaire",
+   "traitement": "concept",
+   "concept": "Tumeur hypophysaire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "insuffisance hypophysaire",
+   "condition_valeur": "Insuffisance hypophysaire",
+   "ordre": 1,
+   "libelle": "Insuffisance hypophysaire",
+   "traitement": "concept",
+   "concept": "Insuffisance hypophysaire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "insuffisance gonadique primaire",
+   "condition_valeur": "Insuffisance gonadique primaire",
+   "ordre": 1,
+   "libelle": "Insuffisance gonadique primaire",
+   "traitement": "concept",
+   "concept": "Insuffisance gonadique primaire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "syndrome de secretion inappropriee d adh",
+   "condition_valeur": "Syndrome de sécrétion inappropriée d’ADH",
+   "ordre": 1,
+   "libelle": "Syndrome de sécrétion inappropriée d’ADH",
+   "traitement": "concept",
+   "concept": "Syndrome de sécrétion inappropriée d’ADH",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "polydipsie",
+   "condition_valeur": "Polydipsie",
+   "ordre": 1,
+   "libelle": "Polydipsie",
+   "traitement": "concept",
+   "concept": "Polydipsie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "incapacite de respecter une restriction hydrique",
+   "condition_valeur": "Incapacité de respecter une restriction hydrique",
+   "ordre": 1,
+   "libelle": "Incapacité de respecter une restriction hydrique",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "circonstance"
+  },
+  {
+   "condition_norm": "trouble severe du metabolisme du citrate",
+   "condition_valeur": "Trouble sévère du métabolisme du citrate",
+   "ordre": 1,
+   "libelle": "Trouble sévère du métabolisme du citrate",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "hemorragie intracranienne",
+   "condition_valeur": "Hémorragie intracrânienne",
+   "ordre": 1,
+   "libelle": "Hémorragie intracrânienne",
+   "traitement": "concept",
+   "concept": "Hémorragie intracrânienne",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypertension intracranienne",
+   "condition_valeur": "Hypertension intracrânienne",
+   "ordre": 1,
+   "libelle": "Hypertension intracrânienne",
+   "traitement": "concept",
+   "concept": "Hypertension intracrânienne",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "meningiome",
+   "condition_valeur": "Méningiome",
+   "ordre": 1,
+   "libelle": "Méningiome",
+   "traitement": "concept",
+   "concept": "Méningiome",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "tumeur intracranienne",
+   "condition_valeur": "Tumeur intracrânienne",
+   "ordre": 1,
+   "libelle": "Tumeur intracrânienne",
+   "traitement": "concept",
+   "concept": "Tumeur intracrânienne",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "coma",
+   "condition_valeur": "Coma",
+   "ordre": 1,
+   "libelle": "Coma",
+   "traitement": "concept",
+   "concept": "Coma",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "syndrome confusionnel",
+   "condition_valeur": "Syndrome confusionnel",
+   "ordre": 1,
+   "libelle": "Syndrome confusionnel",
+   "traitement": "concept",
+   "concept": "Syndrome confusionnel",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "leucoencephalopathie multifocale progressive",
+   "condition_valeur": "Leucoencéphalopathie multifocale progressive",
+   "ordre": 1,
+   "libelle": "Leucoencéphalopathie multifocale progressive",
+   "traitement": "concept",
+   "concept": "Leucoencéphalopathie multifocale progressive",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "traumatisme cranien",
+   "condition_valeur": "Traumatisme crânien",
+   "ordre": 1,
+   "libelle": "Traumatisme crânien",
+   "traitement": "concept",
+   "concept": "Traumatisme crânien",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "dyskinesie tardive",
+   "condition_valeur": "Dyskinésie tardive",
+   "ordre": 1,
+   "libelle": "Dyskinésie tardive",
+   "traitement": "concept",
+   "concept": "Dyskinésie tardive",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "maladie mitochondriale",
+   "condition_valeur": "Maladie mitochondriale",
+   "ordre": 1,
+   "libelle": "Maladie mitochondriale",
+   "traitement": "concept",
+   "concept": "Maladie mitochondriale",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "ataxie telangiectasie",
+   "condition_valeur": "Ataxie-télangiectasie",
+   "ordre": 1,
+   "libelle": "Ataxie-télangiectasie",
+   "traitement": "concept",
+   "concept": "Ataxie-télangiectasie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "paralysie supranucleaire progressive",
+   "condition_valeur": "Paralysie supranucléaire progressive",
+   "ordre": 1,
+   "libelle": "Paralysie supranucléaire progressive",
+   "traitement": "concept",
+   "concept": "Paralysie supranucléaire progressive",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "maladie de charcot marie tooth",
+   "condition_valeur": "Maladie de Charcot-Marie-Tooth",
+   "ordre": 1,
+   "libelle": "Maladie de Charcot-Marie-Tooth",
+   "traitement": "concept",
+   "concept": "Maladie de Charcot-Marie-Tooth",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "syndrome malin des neuroleptiques",
+   "condition_valeur": "Syndrome malin des neuroleptiques",
+   "ordre": 1,
+   "libelle": "Syndrome malin des neuroleptiques",
+   "traitement": "concept",
+   "concept": "Syndrome malin des neuroleptiques",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hyperthermie maligne",
+   "condition_valeur": "Hyperthermie maligne",
+   "ordre": 1,
+   "libelle": "Hyperthermie maligne",
+   "traitement": "concept",
+   "concept": "Hyperthermie maligne",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "depression du systeme nerveux central",
+   "condition_valeur": "Dépression du système nerveux central",
+   "ordre": 1,
+   "libelle": "Dépression du système nerveux central",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "état aigu : aucun concept"
+  },
+  {
+   "condition_norm": "encephalopathie degenerative ou toxique",
+   "condition_valeur": "Encéphalopathie dégénérative ou toxique",
+   "ordre": 1,
+   "libelle": "Encéphalopathie dégénérative ou toxique",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "trouble moteur preexistant tremblement",
+   "condition_valeur": "Trouble moteur préexistant (tremblement)",
+   "ordre": 1,
+   "libelle": "Trouble moteur préexistant (tremblement)",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "trouble moteur preexistant paresie",
+   "condition_valeur": "Trouble moteur préexistant (parésie)",
+   "ordre": 1,
+   "libelle": "Trouble moteur préexistant (parésie)",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "troubles sensoriels aigus",
+   "condition_valeur": "Troubles sensoriels aigus",
+   "ordre": 1,
+   "libelle": "Troubles sensoriels aigus",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "idees suicidaires",
+   "condition_valeur": "Idées suicidaires",
+   "ordre": 1,
+   "libelle": "Idées suicidaires",
+   "traitement": "concept",
+   "concept": "Idées suicidaires",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "delirium tremens",
+   "condition_valeur": "Delirium tremens",
+   "ordre": 1,
+   "libelle": "Delirium tremens",
+   "traitement": "concept",
+   "concept": "Delirium tremens",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "dependance aux opioides",
+   "condition_valeur": "Dépendance aux opioïdes",
+   "ordre": 1,
+   "libelle": "Dépendance aux opioïdes",
+   "traitement": "concept",
+   "concept": "Dépendance aux opioïdes",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "toxicomanie",
+   "condition_valeur": "Toxicomanie",
+   "ordre": 1,
+   "libelle": "Toxicomanie",
+   "traitement": "concept",
+   "concept": "Toxicomanie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "psychose toxique alcoolique ou medicamenteuse",
+   "condition_valeur": "Psychose toxique (alcoolique ou médicamenteuse)",
+   "ordre": 1,
+   "libelle": "Psychose toxique (alcoolique ou médicamenteuse)",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "forme particulière : non rattachée à « Psychose »"
+  },
+  {
+   "condition_norm": "intoxication alcoolique aigue",
+   "condition_valeur": "Intoxication alcoolique aiguë",
+   "ordre": 1,
+   "libelle": "Intoxication alcoolique aiguë",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "consommation ponctuelle"
+  },
+  {
+   "condition_norm": "intoxication aigue par l alcool ou un depresseur du systeme nerveux central",
+   "condition_valeur": "Intoxication aiguë par l’alcool ou un dépresseur du système nerveux central",
+   "ordre": 1,
+   "libelle": "Intoxication aiguë par l’alcool ou un dépresseur du système nerveux central",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "consommation ponctuelle"
+  },
+  {
+   "condition_norm": "sevrage de l alcool ou des benzodiazepines",
+   "condition_valeur": "Sevrage de l’alcool ou des benzodiazépines",
+   "ordre": 1,
+   "libelle": "Sevrage de l’alcool ou des benzodiazépines",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "circonstance"
+  },
+  {
+   "condition_norm": "patient non tolerant aux opioides",
+   "condition_valeur": "Patient non tolérant aux opioïdes",
+   "ordre": 1,
+   "libelle": "Patient non tolérant aux opioïdes",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "circonstance"
+  },
+  {
+   "condition_norm": "antecedent de comportement complexe du sommeil sous hypnotique",
+   "condition_valeur": "Antécédent de comportement complexe du sommeil sous hypnotique",
+   "ordre": 1,
+   "libelle": "Antécédent de comportement complexe du sommeil sous hypnotique",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "depression respiratoire",
+   "condition_valeur": "Dépression respiratoire",
+   "ordre": 1,
+   "libelle": "Dépression respiratoire",
+   "traitement": "concept",
+   "concept": "Dépression respiratoire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypercapnie",
+   "condition_valeur": "Hypercapnie",
+   "ordre": 1,
+   "libelle": "Hypercapnie",
+   "traitement": "concept",
+   "concept": "Hypercapnie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "immunodepression",
+   "condition_valeur": "Immunodépression",
+   "ordre": 1,
+   "libelle": "Immunodépression",
+   "traitement": "concept",
+   "concept": "Immunodépression",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "infection ou inflammation au point d injection",
+   "condition_valeur": "Infection ou inflammation au point d’injection",
+   "ordre": 1,
+   "libelle": "Infection ou inflammation au point d’injection",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "état local"
+  },
+  {
+   "condition_norm": "hemorragie genitale non diagnostiquee",
+   "condition_valeur": "Hémorragie génitale non diagnostiquée",
+   "ordre": 1,
+   "libelle": "Hémorragie génitale non diagnostiquée",
+   "traitement": "concept",
+   "concept": "Hémorragie génitale non diagnostiquée",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hyperplasie de l endometre",
+   "condition_valeur": "Hyperplasie de l’endomètre",
+   "ordre": 1,
+   "libelle": "Hyperplasie de l’endomètre",
+   "traitement": "concept",
+   "concept": "Hyperplasie de l’endomètre",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "cancer de l endometre",
+   "condition_valeur": "Cancer de l’endomètre",
+   "ordre": 1,
+   "libelle": "Cancer de l’endomètre",
+   "traitement": "concept",
+   "concept": "Cancer de l’endomètre",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "grossesse extra uterine",
+   "condition_valeur": "Grossesse extra-utérine",
+   "ordre": 1,
+   "libelle": "Grossesse extra-utérine",
+   "traitement": "concept",
+   "concept": "Grossesse extra-utérine",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "uterus cicatriciel",
+   "condition_valeur": "Utérus cicatriciel",
+   "ordre": 1,
+   "libelle": "Utérus cicatriciel",
+   "traitement": "concept",
+   "concept": "Utérus cicatriciel",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "situation obstetricale particuliere voir la citation du rcp",
+   "condition_valeur": "Situation obstétricale particulière (voir la citation du RCP)",
+   "ordre": 1,
+   "libelle": "Situation obstétricale particulière (voir la citation du RCP)",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "circonstance obstétricale"
+  },
+  {
+   "condition_norm": "malformation genitale incompatible avec une grossesse",
+   "condition_valeur": "Malformation génitale incompatible avec une grossesse",
+   "ordre": 1,
+   "libelle": "Malformation génitale incompatible avec une grossesse",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "femme non menopausee",
+   "condition_valeur": "Femme non ménopausée",
+   "ordre": 1,
+   "libelle": "Femme non ménopausée",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "statut hormonal"
+  },
+  {
+   "condition_norm": "cystite hemorragique",
+   "condition_valeur": "Cystite hémorragique",
+   "ordre": 1,
+   "libelle": "Cystite hémorragique",
+   "traitement": "concept",
+   "concept": "Cystite hémorragique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "antecedent d orchidectomie",
+   "condition_valeur": "Antécédent d’orchidectomie",
+   "ordre": 1,
+   "libelle": "Antécédent d’orchidectomie",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent chirurgical"
+  },
+  {
+   "condition_norm": "neuropathie optique ischemique anterieure",
+   "condition_valeur": "Neuropathie optique ischémique antérieure",
+   "ordre": 1,
+   "libelle": "Neuropathie optique ischémique antérieure",
+   "traitement": "concept",
+   "concept": "Neuropathie optique ischémique antérieure",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "retinite pigmentaire",
+   "condition_valeur": "Rétinite pigmentaire",
+   "ordre": 1,
+   "libelle": "Rétinite pigmentaire",
+   "traitement": "concept",
+   "concept": "Rétinite pigmentaire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "lesion de la cornee",
+   "condition_valeur": "Lésion de la cornée",
+   "ordre": 1,
+   "libelle": "Lésion de la cornée",
+   "traitement": "concept",
+   "concept": "Lésion de la cornée",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "hypertension oculaire induite par les corticoides",
+   "condition_valeur": "Hypertension oculaire induite par les corticoïdes",
+   "ordre": 1,
+   "libelle": "Hypertension oculaire induite par les corticoïdes",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "pathologie oculaire d origine vasculaire",
+   "condition_valeur": "Pathologie oculaire d’origine vasculaire",
+   "ordre": 1,
+   "libelle": "Pathologie oculaire d’origine vasculaire",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "antecedent de troubles visuels sous clomifene",
+   "condition_valeur": "Antécédent de troubles visuels sous clomifène",
+   "ordre": 1,
+   "libelle": "Antécédent de troubles visuels sous clomifène",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "otosclerose",
+   "condition_valeur": "Otosclérose",
+   "ordre": 1,
+   "libelle": "Otosclérose",
+   "traitement": "concept",
+   "concept": "Otosclérose",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "perforation tympanique",
+   "condition_valeur": "Perforation tympanique",
+   "ordre": 1,
+   "libelle": "Perforation tympanique",
+   "traitement": "concept",
+   "concept": "Perforation tympanique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "chirurgie ou traumatisme nasal recent",
+   "condition_valeur": "Chirurgie ou traumatisme nasal récent",
+   "ordre": 1,
+   "libelle": "Chirurgie ou traumatisme nasal récent",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "acte ou circonstance"
+  },
+  {
+   "condition_norm": "lesion bucco dentaire non cicatrisee",
+   "condition_valeur": "Lésion bucco-dentaire non cicatrisée",
+   "ordre": 1,
+   "libelle": "Lésion bucco-dentaire non cicatrisée",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "état local"
+  },
+  {
+   "condition_norm": "dermatite periorale",
+   "condition_valeur": "Dermatite périorale",
+   "ordre": 1,
+   "libelle": "Dermatite périorale",
+   "traitement": "concept",
+   "concept": "Dermatite périorale",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "application sur peau lesee",
+   "condition_valeur": "Application sur peau lésée",
+   "ordre": 1,
+   "libelle": "Application sur peau lésée",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "état local"
+  },
+  {
+   "condition_norm": "dermatose suintante ou surinfectee",
+   "condition_valeur": "Dermatose suintante ou surinfectée",
+   "ordre": 1,
+   "libelle": "Dermatose suintante ou surinfectée",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "état local"
+  },
+  {
+   "condition_norm": "antecedent de reaction de photosensibilite",
+   "condition_valeur": "Antécédent de réaction de photosensibilité",
+   "ordre": 1,
+   "libelle": "Antécédent de réaction de photosensibilité",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "connectivite",
+   "condition_valeur": "Connectivite",
+   "ordre": 1,
+   "libelle": "Connectivite",
+   "traitement": "concept",
+   "concept": "Connectivite",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "maladie de horton",
+   "condition_valeur": "Maladie de Horton",
+   "ordre": 1,
+   "libelle": "Maladie de Horton",
+   "traitement": "concept",
+   "concept": "Maladie de Horton",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "vascularite",
+   "condition_valeur": "Vascularite",
+   "ordre": 1,
+   "libelle": "Vascularite",
+   "traitement": "concept",
+   "concept": "Vascularite",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": null
+  },
+  {
+   "condition_norm": "immobilisation prolongee ou chirurgie majeure",
+   "condition_valeur": "Immobilisation prolongée ou chirurgie majeure",
+   "ordre": 1,
+   "libelle": "Immobilisation prolongée ou chirurgie majeure",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "acte ou circonstance"
+  },
+  {
+   "condition_norm": "traumatisme ou chirurgie recents",
+   "condition_valeur": "Traumatisme ou chirurgie récents",
+   "ordre": 1,
+   "libelle": "Traumatisme ou chirurgie récents",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "acte ou circonstance"
+  },
+  {
+   "condition_norm": "anesthesie locoregionale peridurale rachianesthesie",
+   "condition_valeur": "Anesthésie locorégionale (péridurale, rachianesthésie)",
+   "ordre": 1,
+   "libelle": "Anesthésie locorégionale (péridurale, rachianesthésie)",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "acte ou circonstance"
+  },
+  {
+   "condition_norm": "etat critique aigu",
+   "condition_valeur": "État critique aigu",
+   "ordre": 1,
+   "libelle": "État critique aigu",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "circonstance"
+  },
+  {
+   "condition_norm": "etat general altere indice de performance oms",
+   "condition_valeur": "État général altéré (indice de performance OMS)",
+   "ordre": 1,
+   "libelle": "État général altéré (indice de performance OMS)",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "circonstance"
+  },
+  {
+   "condition_norm": "incapacite a rester en position verticale 30 a 60 minutes",
+   "condition_valeur": "Incapacité à rester en position verticale (30 à 60 minutes)",
+   "ordre": 1,
+   "libelle": "Incapacité à rester en position verticale (30 à 60 minutes)",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "circonstance"
+  },
+  {
+   "condition_norm": "dose cumulee maximale d anthracyclines atteinte",
+   "condition_valeur": "Dose cumulée maximale d’anthracyclines atteinte",
+   "ordre": 1,
+   "libelle": "Dose cumulée maximale d’anthracyclines atteinte",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent thérapeutique"
+  },
+  {
+   "condition_norm": "antecedent de traitement arsenical ou de radiotherapie",
+   "condition_valeur": "Antécédent de traitement arsenical ou de radiothérapie",
+   "ordre": 1,
+   "libelle": "Antécédent de traitement arsenical ou de radiothérapie",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent thérapeutique"
+  },
+  {
+   "condition_norm": "antecedent de toxicite pulmonaire a la bleomycine",
+   "condition_valeur": "Antécédent de toxicité pulmonaire à la bléomycine",
+   "ordre": 1,
+   "libelle": "Antécédent de toxicité pulmonaire à la bléomycine",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "antecedent de nephropathie interstitielle aux ains",
+   "condition_valeur": "Antécédent de néphropathie interstitielle aux AINS",
+   "ordre": 1,
+   "libelle": "Antécédent de néphropathie interstitielle aux AINS",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "antécédent lié à un médicament : aucun concept"
+  },
+  {
+   "condition_norm": "antecedent de fievre bilieuse hemoglobinurique",
+   "condition_valeur": "Antécédent de fièvre bilieuse hémoglobinurique",
+   "ordre": 1,
+   "libelle": "Antécédent de fièvre bilieuse hémoglobinurique",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "tumeur cavitaire ou envahissant les gros vaisseaux",
+   "condition_valeur": "Tumeur cavitaire ou envahissant les gros vaisseaux",
+   "ordre": 1,
+   "libelle": "Tumeur cavitaire ou envahissant les gros vaisseaux",
+   "traitement": "sans_concept",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "aucun concept"
+  },
+  {
+   "condition_norm": "patient d origine asiatique",
+   "condition_valeur": "Patient d’origine asiatique",
+   "ordre": 1,
+   "libelle": "Patient d’origine asiatique",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "donnée génétique : aucun concept"
+  },
+  {
+   "condition_norm": "genotype aldh2 mute",
+   "condition_valeur": "Génotype ALDH2 muté",
+   "ordre": 1,
+   "libelle": "Génotype ALDH2 muté",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "donnée génétique : aucun concept"
+  },
+  {
+   "condition_norm": "metaboliseur ultra rapide du cyp2d6",
+   "condition_valeur": "Métaboliseur ultra-rapide du CYP2D6",
+   "ordre": 1,
+   "libelle": "Métaboliseur ultra-rapide du CYP2D6",
+   "traitement": "contexte",
+   "concept": null,
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "donnée génétique : aucun concept"
+  },
+  {
+   "condition_norm": "anevrisme de l aorte",
+   "condition_valeur": "Anévrisme de l'aorte",
+   "ordre": 1,
+   "libelle": "Anévrisme de l'aorte",
+   "traitement": "concept",
+   "concept": "Anévrisme de l'aorte",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "bradycardie severe",
+   "condition_valeur": "Bradycardie sévère",
+   "ordre": 1,
+   "libelle": "Bradycardie sévère",
+   "traitement": "concept",
+   "concept": "Bradycardie",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "cancer de la thyroide",
+   "condition_valeur": "Cancer de la thyroïde",
+   "ordre": 1,
+   "libelle": "Cancer de la thyroïde",
+   "traitement": "concept",
+   "concept": "Cancer de la thyroïde",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "cancer du foie",
+   "condition_valeur": "Cancer du foie",
+   "ordre": 1,
+   "libelle": "Cancer du foie",
+   "traitement": "concept",
+   "concept": "Cancer du foie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "choc anaphylactique",
+   "condition_valeur": "Choc anaphylactique",
+   "ordre": 1,
+   "libelle": "Choc anaphylactique",
+   "traitement": "concept",
+   "concept": "Choc anaphylactique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "cholestase severe",
+   "condition_valeur": "Cholestase sévère",
+   "ordre": 1,
+   "libelle": "Cholestase sévère",
+   "traitement": "concept",
+   "concept": "Cholestase",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "dyspepsie",
+   "condition_valeur": "Dyspepsie",
+   "ordre": 1,
+   "libelle": "Dyspepsie",
+   "traitement": "concept",
+   "concept": "Dyspepsie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "deficit en g6pd severe",
+   "condition_valeur": "Déficit en G6PD sévère",
+   "ordre": 1,
+   "libelle": "Déficit en G6PD sévère",
+   "traitement": "concept",
+   "concept": "Déficit en G6PD",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "degenerescence maculaire liee a l age",
+   "condition_valeur": "Dégénérescence maculaire liée à l'âge",
+   "ordre": 1,
+   "libelle": "Dégénérescence maculaire liée à l'âge",
+   "traitement": "concept",
+   "concept": "Dégénérescence maculaire liée à l'âge",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "depression respiratoire severe",
+   "condition_valeur": "Dépression respiratoire sévère",
+   "ordre": 1,
+   "libelle": "Dépression respiratoire sévère",
+   "traitement": "concept",
+   "concept": "Dépression respiratoire",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "hypertension arterielle secondaire",
+   "condition_valeur": "Hypertension artérielle secondaire",
+   "ordre": 1,
+   "libelle": "Hypertension artérielle secondaire",
+   "traitement": "concept",
+   "concept": "Hypertension artérielle secondaire",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "hypokaliemie severe",
+   "condition_valeur": "Hypokaliémie sévère",
+   "ordre": 1,
+   "libelle": "Hypokaliémie sévère",
+   "traitement": "concept",
+   "concept": "Hypokaliémie",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "hyponatremie severe",
+   "condition_valeur": "Hyponatrémie sévère",
+   "ordre": 1,
+   "libelle": "Hyponatrémie sévère",
+   "traitement": "concept",
+   "concept": "Hyponatrémie",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "hemophilie",
+   "condition_valeur": "Hémophilie",
+   "ordre": 1,
+   "libelle": "Hémophilie",
+   "traitement": "concept",
+   "concept": "Hémophilie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "immunodepression severe",
+   "condition_valeur": "Immunodépression sévère",
+   "ordre": 1,
+   "libelle": "Immunodépression sévère",
+   "traitement": "concept",
+   "concept": "Immunodépression",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "insuffisance medullaire severe",
+   "condition_valeur": "Insuffisance médullaire sévère",
+   "ordre": 1,
+   "libelle": "Insuffisance médullaire sévère",
+   "traitement": "concept",
+   "concept": "Insuffisance médullaire",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "insuffisance respiratoire chronique decompensee",
+   "condition_valeur": "Insuffisance respiratoire chronique décompensée",
+   "ordre": 1,
+   "libelle": "Insuffisance respiratoire chronique décompensée",
+   "traitement": "concept",
+   "concept": "Insuffisance respiratoire chronique",
+   "famille": null,
+   "qualificatif": "décompensée",
+   "qualificatif_type": "etat",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "lesion anorectale recente",
+   "condition_valeur": "Lésion anorectale récente",
+   "ordre": 1,
+   "libelle": "Lésion anorectale récente",
+   "traitement": "concept",
+   "concept": "Lésion anorectale",
+   "famille": null,
+   "qualificatif": "récente",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "mastocytose severe",
+   "condition_valeur": "Mastocytose sévère",
+   "ordre": 1,
+   "libelle": "Mastocytose sévère",
+   "traitement": "concept",
+   "concept": "Mastocytose",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "mastopathie",
+   "condition_valeur": "Mastopathie",
+   "ordre": 1,
+   "libelle": "Mastopathie",
+   "traitement": "concept",
+   "concept": "Mastopathie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "megacolon severe",
+   "condition_valeur": "Mégacôlon sévère",
+   "ordre": 1,
+   "libelle": "Mégacôlon sévère",
+   "traitement": "concept",
+   "concept": "Mégacôlon",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "neutropenie severe",
+   "condition_valeur": "Neutropénie sévère",
+   "ordre": 1,
+   "libelle": "Neutropénie sévère",
+   "traitement": "concept",
+   "concept": "Neutropénie",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "psychose severe",
+   "condition_valeur": "Psychose sévère",
+   "ordre": 1,
+   "libelle": "Psychose sévère",
+   "traitement": "concept",
+   "concept": "Psychose",
+   "famille": "psychose",
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "retrecissement aortique",
+   "condition_valeur": "Rétrécissement aortique",
+   "ordre": 1,
+   "libelle": "Rétrécissement aortique",
+   "traitement": "concept",
+   "concept": "Rétrécissement aortique",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "schizophrenie",
+   "condition_valeur": "Schizophrénie",
+   "ordre": 1,
+   "libelle": "Schizophrénie",
+   "traitement": "concept",
+   "concept": "Schizophrénie",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "septicemie severe",
+   "condition_valeur": "Septicémie sévère",
+   "ordre": 1,
+   "libelle": "Septicémie sévère",
+   "traitement": "concept",
+   "concept": "Septicémie",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "trouble anxieux generalise",
+   "condition_valeur": "Trouble anxieux généralisé",
+   "ordre": 1,
+   "libelle": "Trouble anxieux généralisé",
+   "traitement": "concept",
+   "concept": "Trouble anxieux généralisé",
+   "famille": null,
+   "qualificatif": null,
+   "qualificatif_type": null,
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "trouble hydro electrolytique severe",
+   "condition_valeur": "Trouble hydro-électrolytique sévère",
+   "ordre": 1,
+   "libelle": "Trouble hydro-électrolytique sévère",
+   "traitement": "concept",
+   "concept": "Trouble hydro-électrolytique",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
+  },
+  {
+   "condition_norm": "etat de choc severe",
+   "condition_valeur": "État de choc sévère",
+   "ordre": 1,
+   "libelle": "État de choc sévère",
+   "traitement": "concept",
+   "concept": "État de choc",
+   "famille": null,
+   "qualificatif": "sévère",
+   "qualificatif_type": "gravite",
+   "stade": null,
+   "note": "BDPM-2d : formulation lue dans un RCP"
   }
  ],
  "curees": [
@@ -6037,6 +8403,418 @@
   {
    "nom_fr": "Œsophagite",
    "synonymes": "esophagitis, oesophagite"
+  },
+  {
+   "nom_fr": "État de choc",
+   "synonymes": "choc cardiogénique, choc hypovolémique, choc septique, collapsus cardiovasculaire"
+  },
+  {
+   "nom_fr": "Syndrome du QT long",
+   "synonymes": "QT long, allongement du QT, allongement de l’intervalle QT, torsades de pointes"
+  },
+  {
+   "nom_fr": "Thrombo-embolie artérielle",
+   "synonymes": "accident thrombo-embolique artériel, thrombose artérielle, embolie artérielle"
+  },
+  {
+   "nom_fr": "Syndrome de Raynaud",
+   "synonymes": "maladie de Raynaud, phénomène de Raynaud"
+  },
+  {
+   "nom_fr": "Hypovolémie",
+   "synonymes": "déplétion volémique, hypovolémie sévère"
+  },
+  {
+   "nom_fr": "Syndrome de Brugada",
+   "synonymes": "Brugada"
+  },
+  {
+   "nom_fr": "Anévrisme artériel",
+   "synonymes": "anévrisme vasculaire, anévrisme cérébral"
+  },
+  {
+   "nom_fr": "Tamponnade cardiaque",
+   "synonymes": "tamponnade"
+  },
+  {
+   "nom_fr": "Prothèse valvulaire cardiaque",
+   "synonymes": "valve cardiaque prothétique, valve mécanique, prothèse valvulaire"
+  },
+  {
+   "nom_fr": "Hypertension artérielle pulmonaire",
+   "synonymes": "HTAP, hypertension pulmonaire"
+  },
+  {
+   "nom_fr": "Cœur pulmonaire chronique",
+   "synonymes": "coeur pulmonaire, insuffisance cardiaque droite d’origine pulmonaire"
+  },
+  {
+   "nom_fr": "Œdème pulmonaire",
+   "synonymes": "œdème aigu du poumon, OAP, oedème pulmonaire"
+  },
+  {
+   "nom_fr": "Insuffisance médullaire",
+   "synonymes": "aplasie médullaire, myélosuppression, hypoplasie médullaire, dépression médullaire"
+  },
+  {
+   "nom_fr": "Neutropénie",
+   "synonymes": "polynucléaires neutrophiles bas, granulopénie, granulocytopénie"
+  },
+  {
+   "nom_fr": "Agranulocytose",
+   "synonymes": "agranulocytosis"
+  },
+  {
+   "nom_fr": "Thrombophilie",
+   "synonymes": "déficit en protéine C, déficit en protéine S, déficit en antithrombine, mutation du facteur V Leiden, résistance à la protéine C activée"
+  },
+  {
+   "nom_fr": "Hémorragie active",
+   "synonymes": "saignement actif, saignement en cours, hémorragie en cours, hémorragie évolutive"
+  },
+  {
+   "nom_fr": "Méthémoglobinémie",
+   "synonymes": "méthémoglobinémie congénitale"
+  },
+  {
+   "nom_fr": "Mastocytose",
+   "synonymes": "mastocytose systémique"
+  },
+  {
+   "nom_fr": "Déficit en IgA",
+   "synonymes": "déficit sélectif en IgA"
+  },
+  {
+   "nom_fr": "Perforation digestive",
+   "synonymes": "perforation gastro-intestinale, perforation intestinale, perforation gastrique"
+  },
+  {
+   "nom_fr": "Hémorragie digestive",
+   "synonymes": "saignement digestif, hémorragie gastro-intestinale, méléna, hématémèse, rectorragie"
+  },
+  {
+   "nom_fr": "Tumeur hépatique",
+   "synonymes": "tumeur du foie, adénome hépatique, tumeur hépatique bénigne"
+  },
+  {
+   "nom_fr": "Cholestase",
+   "synonymes": "cholestase hépatique, ictère cholestatique, cholostase"
+  },
+  {
+   "nom_fr": "Obstruction des voies biliaires",
+   "synonymes": "obstruction biliaire, obstacle biliaire"
+  },
+  {
+   "nom_fr": "Élévation des transaminases",
+   "synonymes": "cytolyse hépatique, transaminases élevées, hypertransaminasémie"
+  },
+  {
+   "nom_fr": "Hyperbilirubinémie",
+   "synonymes": "bilirubine élevée"
+  },
+  {
+   "nom_fr": "Syndrome de Dubin-Johnson ou de Rotor",
+   "synonymes": "maladie de Dubin-Johnson, syndrome de Rotor"
+  },
+  {
+   "nom_fr": "Varices œsophagiennes",
+   "synonymes": "varices oesophagiennes, varices de l’œsophage"
+  },
+  {
+   "nom_fr": "Mégacôlon",
+   "synonymes": "mégacôlon toxique"
+  },
+  {
+   "nom_fr": "Trouble du transit œsophagien",
+   "synonymes": "achalasie, sténose œsophagienne, rétrécissement de l’œsophage"
+  },
+  {
+   "nom_fr": "Sténose digestive",
+   "synonymes": "sténose intestinale, sténose du pylore, rétrécissement digestif"
+  },
+  {
+   "nom_fr": "Lésion anorectale",
+   "synonymes": "anite, rectite, lésion du rectum"
+  },
+  {
+   "nom_fr": "Colite aiguë",
+   "synonymes": "colite évolutive, colite infectieuse, entérocolite infectieuse, colite pseudomembraneuse"
+  },
+  {
+   "nom_fr": "Stomatite",
+   "synonymes": "ulcérations buccales, mucite buccale"
+  },
+  {
+   "nom_fr": "Acidose métabolique",
+   "synonymes": "acidose lactique"
+  },
+  {
+   "nom_fr": "Hypoglycémie",
+   "synonymes": "glycémie basse"
+  },
+  {
+   "nom_fr": "Hypokaliémie",
+   "synonymes": "potassium bas, kaliémie basse"
+  },
+  {
+   "nom_fr": "Hypomagnésémie",
+   "synonymes": "magnésium bas"
+  },
+  {
+   "nom_fr": "Hypermagnésémie",
+   "synonymes": "magnésium élevé"
+  },
+  {
+   "nom_fr": "Hypercalcémie",
+   "synonymes": "calcium élevé"
+  },
+  {
+   "nom_fr": "Hypocalcémie",
+   "synonymes": "calcium bas"
+  },
+  {
+   "nom_fr": "Hypercalciurie",
+   "synonymes": "calciurie élevée"
+  },
+  {
+   "nom_fr": "Néphrocalcinose",
+   "synonymes": "calcinose rénale"
+  },
+  {
+   "nom_fr": "Hypernatrémie",
+   "synonymes": "sodium élevé"
+  },
+  {
+   "nom_fr": "Hyperchlorémie",
+   "synonymes": "chlore élevé"
+  },
+  {
+   "nom_fr": "Hyperphosphatémie",
+   "synonymes": "hyperphosphorémie, phosphore élevé"
+  },
+  {
+   "nom_fr": "Hypophosphatémie",
+   "synonymes": "hypophosphorémie, phosphore bas"
+  },
+  {
+   "nom_fr": "Hyperosmolarité plasmatique",
+   "synonymes": "état hyperosmolaire, hyperosmolarité"
+  },
+  {
+   "nom_fr": "Hyperoxalurie",
+   "synonymes": "oxalurie élevée"
+  },
+  {
+   "nom_fr": "Trouble hydro-électrolytique",
+   "synonymes": "déséquilibre électrolytique, trouble électrolytique, déplétion électrolytique"
+  },
+  {
+   "nom_fr": "Hypoalbuminémie",
+   "synonymes": "albumine basse"
+  },
+  {
+   "nom_fr": "Hypervitaminose D",
+   "synonymes": "intoxication à la vitamine D, surdosage en vitamine D"
+  },
+  {
+   "nom_fr": "Hypervitaminose A",
+   "synonymes": "intoxication à la vitamine A"
+  },
+  {
+   "nom_fr": "Phénylcétonurie",
+   "synonymes": "PCU"
+  },
+  {
+   "nom_fr": "Intolérance héréditaire au fructose",
+   "synonymes": "fructosémie"
+  },
+  {
+   "nom_fr": "Déficit en carnitine",
+   "synonymes": "carence en carnitine"
+  },
+  {
+   "nom_fr": "Trouble du cycle de l’urée",
+   "synonymes": "déficit du cycle de l’urée, déficit en ornithine transcarbamylase"
+  },
+  {
+   "nom_fr": "Déficit en dihydropyrimidine déshydrogénase",
+   "synonymes": "déficit en DPD"
+  },
+  {
+   "nom_fr": "Prolactinome",
+   "synonymes": "adénome à prolactine"
+  },
+  {
+   "nom_fr": "Hyperprolactinémie",
+   "synonymes": "prolactine élevée"
+  },
+  {
+   "nom_fr": "Tumeur hypophysaire",
+   "synonymes": "adénome hypophysaire"
+  },
+  {
+   "nom_fr": "Insuffisance hypophysaire",
+   "synonymes": "hypopituitarisme, panhypopituitarisme, insuffisance antéhypophysaire"
+  },
+  {
+   "nom_fr": "Insuffisance gonadique primaire",
+   "synonymes": "insuffisance ovarienne primaire, insuffisance testiculaire primaire"
+  },
+  {
+   "nom_fr": "Syndrome de sécrétion inappropriée d’ADH",
+   "synonymes": "SIADH"
+  },
+  {
+   "nom_fr": "Polydipsie",
+   "synonymes": "potomanie, polydipsie psychogène"
+  },
+  {
+   "nom_fr": "Hémorragie intracrânienne",
+   "synonymes": "hémorragie cérébrale, hémorragie intracérébrale, hématome intracrânien, hémorragie méningée"
+  },
+  {
+   "nom_fr": "Hypertension intracrânienne",
+   "synonymes": "HTIC"
+  },
+  {
+   "nom_fr": "Méningiome",
+   "synonymes": "antécédent de méningiome"
+  },
+  {
+   "nom_fr": "Tumeur intracrânienne",
+   "synonymes": "tumeur cérébrale, tumeur du système nerveux central, néoplasie intracrânienne"
+  },
+  {
+   "nom_fr": "Coma",
+   "synonymes": "état comateux"
+  },
+  {
+   "nom_fr": "Syndrome confusionnel",
+   "synonymes": "confusion mentale, état confusionnel aigu"
+  },
+  {
+   "nom_fr": "Leucoencéphalopathie multifocale progressive",
+   "synonymes": "LEMP"
+  },
+  {
+   "nom_fr": "Traumatisme crânien",
+   "synonymes": "traumatisme cranio-cérébral"
+  },
+  {
+   "nom_fr": "Dyskinésie tardive",
+   "synonymes": "dyskinésies tardives"
+  },
+  {
+   "nom_fr": "Maladie mitochondriale",
+   "synonymes": "mutation POLG, syndrome d’Alpers-Huttenlocher, cytopathie mitochondriale"
+  },
+  {
+   "nom_fr": "Ataxie-télangiectasie",
+   "synonymes": "syndrome de Louis-Bar"
+  },
+  {
+   "nom_fr": "Paralysie supranucléaire progressive",
+   "synonymes": "maladie de Steele-Richardson-Olszewski"
+  },
+  {
+   "nom_fr": "Maladie de Charcot-Marie-Tooth",
+   "synonymes": "neuropathie héréditaire sensitivo-motrice"
+  },
+  {
+   "nom_fr": "Syndrome malin des neuroleptiques",
+   "synonymes": "antécédent de syndrome malin des neuroleptiques"
+  },
+  {
+   "nom_fr": "Hyperthermie maligne",
+   "synonymes": "susceptibilité à l’hyperthermie maligne, antécédent d’hyperthermie maligne"
+  },
+  {
+   "nom_fr": "Idées suicidaires",
+   "synonymes": "idéation suicidaire, risque suicidaire, tentative de suicide"
+  },
+  {
+   "nom_fr": "Delirium tremens",
+   "synonymes": "délire alcoolique aigu"
+  },
+  {
+   "nom_fr": "Dépendance aux opioïdes",
+   "synonymes": "addiction aux opiacés, dépendance aux opiacés"
+  },
+  {
+   "nom_fr": "Toxicomanie",
+   "synonymes": "pharmacodépendance, dépendance aux drogues, addiction aux drogues"
+  },
+  {
+   "nom_fr": "Dépression respiratoire",
+   "synonymes": "hypoventilation alvéolaire, dépression respiratoire sévère"
+  },
+  {
+   "nom_fr": "Hypercapnie",
+   "synonymes": "rétention de dioxyde de carbone"
+  },
+  {
+   "nom_fr": "Immunodépression",
+   "synonymes": "déficit immunitaire, immunodéficience"
+  },
+  {
+   "nom_fr": "Hémorragie génitale non diagnostiquée",
+   "synonymes": "saignement vaginal inexpliqué, métrorragies non explorées, saignement génital inexpliqué"
+  },
+  {
+   "nom_fr": "Hyperplasie de l’endomètre",
+   "synonymes": "hyperplasie endométriale"
+  },
+  {
+   "nom_fr": "Cancer de l’endomètre",
+   "synonymes": "cancer du corps de l’utérus, adénocarcinome de l’endomètre"
+  },
+  {
+   "nom_fr": "Grossesse extra-utérine",
+   "synonymes": "GEU, grossesse ectopique"
+  },
+  {
+   "nom_fr": "Utérus cicatriciel",
+   "synonymes": "cicatrice utérine, antécédent de césarienne"
+  },
+  {
+   "nom_fr": "Cystite hémorragique",
+   "synonymes": "toxicité urothéliale"
+  },
+  {
+   "nom_fr": "Neuropathie optique ischémique antérieure",
+   "synonymes": "NOIAN, NOIA, neuropathie optique ischémique antérieure non artéritique"
+  },
+  {
+   "nom_fr": "Rétinite pigmentaire",
+   "synonymes": "rétinopathie pigmentaire, dystrophie rétinienne héréditaire"
+  },
+  {
+   "nom_fr": "Lésion de la cornée",
+   "synonymes": "ulcère cornéen, dystrophie cornéenne, lésion cornéenne"
+  },
+  {
+   "nom_fr": "Otosclérose",
+   "synonymes": "otospongiose"
+  },
+  {
+   "nom_fr": "Perforation tympanique",
+   "synonymes": "perforation du tympan"
+  },
+  {
+   "nom_fr": "Dermatite périorale",
+   "synonymes": "dermite périorale"
+  },
+  {
+   "nom_fr": "Connectivite",
+   "synonymes": "collagénose, connectivite mixte"
+  },
+  {
+   "nom_fr": "Maladie de Horton",
+   "synonymes": "artérite temporale, artérite à cellules géantes"
+  },
+  {
+   "nom_fr": "Vascularite",
+   "synonymes": "angéite, vascularite systémique"
   }
  ]
 }

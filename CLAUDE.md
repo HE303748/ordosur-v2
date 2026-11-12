@@ -2,7 +2,7 @@
 
 ## CONTRAT QUALITÉ DONNÉES (obligatoire, non négociable)
 1. Aucune écriture sur une table du moteur (contraindications, interactions_ingredients, interactions_rcp, ansm_regles, ansm_classe_membres, ingredients, medicament_ingredients, medicaments, ci_condition_concepts, pathologies_curees) via execute_sql. Uniquement via un fichier de migration dans project/supabase/migrations/, généré depuis un fichier source, avec contrôle d’empreinte base = source DANS la migration.
-2. Une ligne ne porte une source RCP que si elle a CIS + URL + date + citation exacte de SA molécule. Interdit : une étiquette de source sur une ligne de groupe (dci_pattern multi-molécules).
+2. Une ligne ne porte une source RCP que si elle a CIS (BDPM) OU numéro de produit EMA (EPAR), + URL + date + citation exacte de SA molécule (amendé le 2026-11-11 : source EMA autorisée, colonne `ci_sources_rcp.ema_produit`). Interdit : une étiquette de source sur une ligne de groupe (dci_pattern multi-molécules).
 3. Une CI ou une interaction ne baisse jamais de sévérité sans citation qui le justifie. Jamais de baisse silencieuse : liste exhaustive dans le rapport.
 4. Toute écriture dans le moteur est précédée d’un ⛔ STOP avec rapport, et suivie de : banc --reel, banc conditions, contrôles cliniques du sprint, npm test, build, typecheck (commande officielle : celle-ci → `npm run typecheck` (= `tsc --noEmit -p tsconfig.app.json`), seuil : 61 erreurs (mesuré le 2026-11-09)).
 5. Fin de sprint : exécute les « REQUÊTES DE PREUVE » fournies dans le prompt et colle leur sortie BRUTE dans le rapport. Pas de ✅ sans sortie brute.
@@ -45,7 +45,8 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
 
 ## Base de données (Supabase yxzvukryngvlzjgaydqj)
 - Tables clés : medicaments 52 802 (colonne `dci_canonique`) · drug_interactions 163 124 ·
-  pathologies 48 041 · pathologies_curees 372 · contraindications 1 467 · ci_condition_concepts 245 · allergies_reference 71.
+  pathologies 48 041 · pathologies_curees 475 · contraindications 5 919 (5 662 actives) · ci_condition_concepts 530 ·
+  allergies_reference 71 (comptes au 2026-11-12, après BDPM-2d).
 - Bilans (Sprint 6A) : `resultats_examens` (valeurs figées ; correction = archivage avec motif + nouvelle ligne ;
   interprétation calculée en base UNIQUEMENT d'après les bornes du labo saisies ; RPC `enregistrer_resultats_examens`).
   Règles pures : `src/lib/resultatsLogic.ts`. Conversions d'unités : uniquement `examens_reference.unites`.
@@ -133,6 +134,19 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   « A × B — Contre-indication : association déconseillée… ») neutralisées car contredites par DDInter d'origine ou ANSM
   (garde-fou dans la migration), + amoxicilline × ésoméprazole magnésium (RCP, garde-fou assoupli nommément).
   44 lignes du même gabarit sur les sels regroupés en revue_requise (112 lignes). Revue : `../sprint2b/revue/bdd1c_second_import.csv`.
+- Sources des contre-indications (BDPM-2c-bis, BDPM-2d) : `ci_sources_rcp` (ligne → molécule, CIS ou produit EMA, URL, date,
+  rubrique 4.3 / 4.4 / 4.6, citation exacte ; nature `source` | `indice` | `autorise`). Étiquettes de `contraindications.sources` :
+  « BDPM-RCP » (exige un lien `source` complet), « Ordosur — à valider par un pharmacien », « Ordosur — motif ambigu… » (ligne de
+  groupe restreinte). Plus aucune ligne active sans source ni étiquette. Une ligne n'est écrite que par migration générée
+  (`bdpm/2d/scripts/gen_migrations_2d.py` → `scripts/data/bdpm2d.json`, données dans `bdpm2d_staging`, empreintes vérifiées).
+  BDPM-2d : 103 concepts ajoutés à `pathologies_curees` (475) pour les conditions de RCP sans concept (État de choc, Syndrome du
+  QT long, Hypokaliémie, Neutropénie…) ; les circonstances (acte, antécédent iatrogène, génétique) sont des formulations
+  `contexte` / `sans_concept`. **Tout nouveau concept passe par `pathologies_curees.snapshot.json` + `gen_ci_condition_concepts.mjs`**
+  (la fixture `ci_condition_concepts.data.json` est embarquée dans l'application : base et fixture ont la même empreinte).
+  Un synonyme d'un seul mot ou un sigle est vérifié contre tous les autres concepts (leçon « trauma »).
+  Motif d'une ligne nouvelle = la molécule exacte ; une fiche MA est admise si elle porte l'ingrédient canonique, ou — lien
+  manquant — si son DCI nomme la molécule en mot entier ; jamais un contre-ion, jamais une association par ce biais.
+  Non repris par molécule : CI dues à un excipient, CI propres à une dose, CI lues seulement dans le RCP d'une forme locale.
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).

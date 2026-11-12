@@ -1486,5 +1486,417 @@
  {
   "nom_fr": "Œsophagite",
   "synonymes": "esophagitis, oesophagite"
+ },
+ {
+  "nom_fr": "État de choc",
+  "synonymes": "choc cardiogénique, choc hypovolémique, choc septique, collapsus cardiovasculaire"
+ },
+ {
+  "nom_fr": "Syndrome du QT long",
+  "synonymes": "QT long, allongement du QT, allongement de l’intervalle QT, torsades de pointes"
+ },
+ {
+  "nom_fr": "Thrombo-embolie artérielle",
+  "synonymes": "accident thrombo-embolique artériel, thrombose artérielle, embolie artérielle"
+ },
+ {
+  "nom_fr": "Syndrome de Raynaud",
+  "synonymes": "maladie de Raynaud, phénomène de Raynaud"
+ },
+ {
+  "nom_fr": "Hypovolémie",
+  "synonymes": "déplétion volémique, hypovolémie sévère"
+ },
+ {
+  "nom_fr": "Syndrome de Brugada",
+  "synonymes": "Brugada"
+ },
+ {
+  "nom_fr": "Anévrisme artériel",
+  "synonymes": "anévrisme vasculaire, anévrisme cérébral"
+ },
+ {
+  "nom_fr": "Tamponnade cardiaque",
+  "synonymes": "tamponnade"
+ },
+ {
+  "nom_fr": "Prothèse valvulaire cardiaque",
+  "synonymes": "valve cardiaque prothétique, valve mécanique, prothèse valvulaire"
+ },
+ {
+  "nom_fr": "Hypertension artérielle pulmonaire",
+  "synonymes": "HTAP, hypertension pulmonaire"
+ },
+ {
+  "nom_fr": "Cœur pulmonaire chronique",
+  "synonymes": "coeur pulmonaire, insuffisance cardiaque droite d’origine pulmonaire"
+ },
+ {
+  "nom_fr": "Œdème pulmonaire",
+  "synonymes": "œdème aigu du poumon, OAP, oedème pulmonaire"
+ },
+ {
+  "nom_fr": "Insuffisance médullaire",
+  "synonymes": "aplasie médullaire, myélosuppression, hypoplasie médullaire, dépression médullaire"
+ },
+ {
+  "nom_fr": "Neutropénie",
+  "synonymes": "polynucléaires neutrophiles bas, granulopénie, granulocytopénie"
+ },
+ {
+  "nom_fr": "Agranulocytose",
+  "synonymes": "agranulocytosis"
+ },
+ {
+  "nom_fr": "Thrombophilie",
+  "synonymes": "déficit en protéine C, déficit en protéine S, déficit en antithrombine, mutation du facteur V Leiden, résistance à la protéine C activée"
+ },
+ {
+  "nom_fr": "Hémorragie active",
+  "synonymes": "saignement actif, saignement en cours, hémorragie en cours, hémorragie évolutive"
+ },
+ {
+  "nom_fr": "Méthémoglobinémie",
+  "synonymes": "méthémoglobinémie congénitale"
+ },
+ {
+  "nom_fr": "Mastocytose",
+  "synonymes": "mastocytose systémique"
+ },
+ {
+  "nom_fr": "Déficit en IgA",
+  "synonymes": "déficit sélectif en IgA"
+ },
+ {
+  "nom_fr": "Perforation digestive",
+  "synonymes": "perforation gastro-intestinale, perforation intestinale, perforation gastrique"
+ },
+ {
+  "nom_fr": "Hémorragie digestive",
+  "synonymes": "saignement digestif, hémorragie gastro-intestinale, méléna, hématémèse, rectorragie"
+ },
+ {
+  "nom_fr": "Tumeur hépatique",
+  "synonymes": "tumeur du foie, adénome hépatique, tumeur hépatique bénigne"
+ },
+ {
+  "nom_fr": "Cholestase",
+  "synonymes": "cholestase hépatique, ictère cholestatique, cholostase"
+ },
+ {
+  "nom_fr": "Obstruction des voies biliaires",
+  "synonymes": "obstruction biliaire, obstacle biliaire"
+ },
+ {
+  "nom_fr": "Élévation des transaminases",
+  "synonymes": "cytolyse hépatique, transaminases élevées, hypertransaminasémie"
+ },
+ {
+  "nom_fr": "Hyperbilirubinémie",
+  "synonymes": "bilirubine élevée"
+ },
+ {
+  "nom_fr": "Syndrome de Dubin-Johnson ou de Rotor",
+  "synonymes": "maladie de Dubin-Johnson, syndrome de Rotor"
+ },
+ {
+  "nom_fr": "Varices œsophagiennes",
+  "synonymes": "varices oesophagiennes, varices de l’œsophage"
+ },
+ {
+  "nom_fr": "Mégacôlon",
+  "synonymes": "mégacôlon toxique"
+ },
+ {
+  "nom_fr": "Trouble du transit œsophagien",
+  "synonymes": "achalasie, sténose œsophagienne, rétrécissement de l’œsophage"
+ },
+ {
+  "nom_fr": "Sténose digestive",
+  "synonymes": "sténose intestinale, sténose du pylore, rétrécissement digestif"
+ },
+ {
+  "nom_fr": "Lésion anorectale",
+  "synonymes": "anite, rectite, lésion du rectum"
+ },
+ {
+  "nom_fr": "Colite aiguë",
+  "synonymes": "colite évolutive, colite infectieuse, entérocolite infectieuse, colite pseudomembraneuse"
+ },
+ {
+  "nom_fr": "Stomatite",
+  "synonymes": "ulcérations buccales, mucite buccale"
+ },
+ {
+  "nom_fr": "Acidose métabolique",
+  "synonymes": "acidose lactique"
+ },
+ {
+  "nom_fr": "Hypoglycémie",
+  "synonymes": "glycémie basse"
+ },
+ {
+  "nom_fr": "Hypokaliémie",
+  "synonymes": "potassium bas, kaliémie basse"
+ },
+ {
+  "nom_fr": "Hypomagnésémie",
+  "synonymes": "magnésium bas"
+ },
+ {
+  "nom_fr": "Hypermagnésémie",
+  "synonymes": "magnésium élevé"
+ },
+ {
+  "nom_fr": "Hypercalcémie",
+  "synonymes": "calcium élevé"
+ },
+ {
+  "nom_fr": "Hypocalcémie",
+  "synonymes": "calcium bas"
+ },
+ {
+  "nom_fr": "Hypercalciurie",
+  "synonymes": "calciurie élevée"
+ },
+ {
+  "nom_fr": "Néphrocalcinose",
+  "synonymes": "calcinose rénale"
+ },
+ {
+  "nom_fr": "Hypernatrémie",
+  "synonymes": "sodium élevé"
+ },
+ {
+  "nom_fr": "Hyperchlorémie",
+  "synonymes": "chlore élevé"
+ },
+ {
+  "nom_fr": "Hyperphosphatémie",
+  "synonymes": "hyperphosphorémie, phosphore élevé"
+ },
+ {
+  "nom_fr": "Hypophosphatémie",
+  "synonymes": "hypophosphorémie, phosphore bas"
+ },
+ {
+  "nom_fr": "Hyperosmolarité plasmatique",
+  "synonymes": "état hyperosmolaire, hyperosmolarité"
+ },
+ {
+  "nom_fr": "Hyperoxalurie",
+  "synonymes": "oxalurie élevée"
+ },
+ {
+  "nom_fr": "Trouble hydro-électrolytique",
+  "synonymes": "déséquilibre électrolytique, trouble électrolytique, déplétion électrolytique"
+ },
+ {
+  "nom_fr": "Hypoalbuminémie",
+  "synonymes": "albumine basse"
+ },
+ {
+  "nom_fr": "Hypervitaminose D",
+  "synonymes": "intoxication à la vitamine D, surdosage en vitamine D"
+ },
+ {
+  "nom_fr": "Hypervitaminose A",
+  "synonymes": "intoxication à la vitamine A"
+ },
+ {
+  "nom_fr": "Phénylcétonurie",
+  "synonymes": "PCU"
+ },
+ {
+  "nom_fr": "Intolérance héréditaire au fructose",
+  "synonymes": "fructosémie"
+ },
+ {
+  "nom_fr": "Déficit en carnitine",
+  "synonymes": "carence en carnitine"
+ },
+ {
+  "nom_fr": "Trouble du cycle de l’urée",
+  "synonymes": "déficit du cycle de l’urée, déficit en ornithine transcarbamylase"
+ },
+ {
+  "nom_fr": "Déficit en dihydropyrimidine déshydrogénase",
+  "synonymes": "déficit en DPD"
+ },
+ {
+  "nom_fr": "Prolactinome",
+  "synonymes": "adénome à prolactine"
+ },
+ {
+  "nom_fr": "Hyperprolactinémie",
+  "synonymes": "prolactine élevée"
+ },
+ {
+  "nom_fr": "Tumeur hypophysaire",
+  "synonymes": "adénome hypophysaire"
+ },
+ {
+  "nom_fr": "Insuffisance hypophysaire",
+  "synonymes": "hypopituitarisme, panhypopituitarisme, insuffisance antéhypophysaire"
+ },
+ {
+  "nom_fr": "Insuffisance gonadique primaire",
+  "synonymes": "insuffisance ovarienne primaire, insuffisance testiculaire primaire"
+ },
+ {
+  "nom_fr": "Syndrome de sécrétion inappropriée d’ADH",
+  "synonymes": "SIADH"
+ },
+ {
+  "nom_fr": "Polydipsie",
+  "synonymes": "potomanie, polydipsie psychogène"
+ },
+ {
+  "nom_fr": "Hémorragie intracrânienne",
+  "synonymes": "hémorragie cérébrale, hémorragie intracérébrale, hématome intracrânien, hémorragie méningée"
+ },
+ {
+  "nom_fr": "Hypertension intracrânienne",
+  "synonymes": "HTIC"
+ },
+ {
+  "nom_fr": "Méningiome",
+  "synonymes": "antécédent de méningiome"
+ },
+ {
+  "nom_fr": "Tumeur intracrânienne",
+  "synonymes": "tumeur cérébrale, tumeur du système nerveux central, néoplasie intracrânienne"
+ },
+ {
+  "nom_fr": "Coma",
+  "synonymes": "état comateux"
+ },
+ {
+  "nom_fr": "Syndrome confusionnel",
+  "synonymes": "confusion mentale, état confusionnel aigu"
+ },
+ {
+  "nom_fr": "Leucoencéphalopathie multifocale progressive",
+  "synonymes": "LEMP"
+ },
+ {
+  "nom_fr": "Traumatisme crânien",
+  "synonymes": "traumatisme cranio-cérébral"
+ },
+ {
+  "nom_fr": "Dyskinésie tardive",
+  "synonymes": "dyskinésies tardives"
+ },
+ {
+  "nom_fr": "Maladie mitochondriale",
+  "synonymes": "mutation POLG, syndrome d’Alpers-Huttenlocher, cytopathie mitochondriale"
+ },
+ {
+  "nom_fr": "Ataxie-télangiectasie",
+  "synonymes": "syndrome de Louis-Bar"
+ },
+ {
+  "nom_fr": "Paralysie supranucléaire progressive",
+  "synonymes": "maladie de Steele-Richardson-Olszewski"
+ },
+ {
+  "nom_fr": "Maladie de Charcot-Marie-Tooth",
+  "synonymes": "neuropathie héréditaire sensitivo-motrice"
+ },
+ {
+  "nom_fr": "Syndrome malin des neuroleptiques",
+  "synonymes": "antécédent de syndrome malin des neuroleptiques"
+ },
+ {
+  "nom_fr": "Hyperthermie maligne",
+  "synonymes": "susceptibilité à l’hyperthermie maligne, antécédent d’hyperthermie maligne"
+ },
+ {
+  "nom_fr": "Idées suicidaires",
+  "synonymes": "idéation suicidaire, risque suicidaire, tentative de suicide"
+ },
+ {
+  "nom_fr": "Delirium tremens",
+  "synonymes": "délire alcoolique aigu"
+ },
+ {
+  "nom_fr": "Dépendance aux opioïdes",
+  "synonymes": "addiction aux opiacés, dépendance aux opiacés"
+ },
+ {
+  "nom_fr": "Toxicomanie",
+  "synonymes": "pharmacodépendance, dépendance aux drogues, addiction aux drogues"
+ },
+ {
+  "nom_fr": "Dépression respiratoire",
+  "synonymes": "hypoventilation alvéolaire, dépression respiratoire sévère"
+ },
+ {
+  "nom_fr": "Hypercapnie",
+  "synonymes": "rétention de dioxyde de carbone"
+ },
+ {
+  "nom_fr": "Immunodépression",
+  "synonymes": "déficit immunitaire, immunodéficience"
+ },
+ {
+  "nom_fr": "Hémorragie génitale non diagnostiquée",
+  "synonymes": "saignement vaginal inexpliqué, métrorragies non explorées, saignement génital inexpliqué"
+ },
+ {
+  "nom_fr": "Hyperplasie de l’endomètre",
+  "synonymes": "hyperplasie endométriale"
+ },
+ {
+  "nom_fr": "Cancer de l’endomètre",
+  "synonymes": "cancer du corps de l’utérus, adénocarcinome de l’endomètre"
+ },
+ {
+  "nom_fr": "Grossesse extra-utérine",
+  "synonymes": "GEU, grossesse ectopique"
+ },
+ {
+  "nom_fr": "Utérus cicatriciel",
+  "synonymes": "cicatrice utérine, antécédent de césarienne"
+ },
+ {
+  "nom_fr": "Cystite hémorragique",
+  "synonymes": "toxicité urothéliale"
+ },
+ {
+  "nom_fr": "Neuropathie optique ischémique antérieure",
+  "synonymes": "NOIAN, NOIA, neuropathie optique ischémique antérieure non artéritique"
+ },
+ {
+  "nom_fr": "Rétinite pigmentaire",
+  "synonymes": "rétinopathie pigmentaire, dystrophie rétinienne héréditaire"
+ },
+ {
+  "nom_fr": "Lésion de la cornée",
+  "synonymes": "ulcère cornéen, dystrophie cornéenne, lésion cornéenne"
+ },
+ {
+  "nom_fr": "Otosclérose",
+  "synonymes": "otospongiose"
+ },
+ {
+  "nom_fr": "Perforation tympanique",
+  "synonymes": "perforation du tympan"
+ },
+ {
+  "nom_fr": "Dermatite périorale",
+  "synonymes": "dermite périorale"
+ },
+ {
+  "nom_fr": "Connectivite",
+  "synonymes": "collagénose, connectivite mixte"
+ },
+ {
+  "nom_fr": "Maladie de Horton",
+  "synonymes": "artérite temporale, artérite à cellules géantes"
+ },
+ {
+  "nom_fr": "Vascularite",
+  "synonymes": "angéite, vascularite systémique"
  }
 ]

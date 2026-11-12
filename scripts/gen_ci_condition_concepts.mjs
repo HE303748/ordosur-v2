@@ -311,6 +311,27 @@ for (const f of G3) {
   T.push([f.condition_valeur, C(f.concept, ...o, { note: 'BDPM-1 G3 : formulation lue dans un RCP' })]);
 }
 
+// Sprint BDPM-2d — concepts créés pour les contre-indications de RCP dont la condition manquait au référentiel, formulations
+// lues dans les RCP et circonstances sans concept. Même liste que la migration bdpm2d_referentiel (source :
+// scripts/data/bdpm2d.json, bdpm/2d/scripts/gen_migrations_2d.py). Les concepts sont dans pathologies_curees.snapshot.json.
+const B2D = JSON.parse(readFileSync(new URL('./data/bdpm2d.json', import.meta.url), 'utf8'));
+for (const r of B2D.rattachements) {          // formulation « sans concept » déjà en base, rattachée à un concept créé
+  const t = T.find(x => x[0] === r.condition_valeur);
+  if (!t) throw new Error(`BDPM-2d, rattachement : formulation absente (${r.condition_valeur})`);
+  t.splice(1, t.length - 1, C(r.concept, ...(r.qualificatif ? [grav(r.qualificatif)] : [])));
+}
+for (const f of B2D.formulations) {
+  if (f.traitement === 'concept') {
+    const o = [];
+    if (f.famille) o.push(fam(f.famille));
+    if (f.qualificatif) o.push(f.qualificatif_type === 'etat' ? etat(f.qualificatif) : grav(f.qualificatif));
+    if (f.note) o.push({ note: f.note });
+    T.push([f.condition_valeur, C(f.concept, ...o)]);
+  } else {
+    T.push([f.condition_valeur, f.traitement === 'contexte' ? CTX(f.note ?? null) : SANS(f.note ?? null)]);
+  }
+}
+
 // Familles reconnues par le moteur (membres déclarés dans conditionMatcher.ts, vérifiés par ses tests).
 const FAMILLES = ['diabete', 'ulcere_gastroduodenal', 'hta', 'hepatite_virale', 'migraine', 'depression', 'asthme', 'varicelle',
   'infection_urinaire', 'trouble_rythme', 'coronaropathie', 'dyslipidemie', 'hyperthyroidie', 'psychose', 'neuropathie',

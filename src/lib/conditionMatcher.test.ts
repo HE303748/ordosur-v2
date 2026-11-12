@@ -169,7 +169,9 @@ describe('règle 3 — le concept d’une CI vient de la table, jamais de son te
   it('libellé du patient qui écarte lui-même la maladie', () => {
     expect(analysePatientTerm('Pas de diabète de type 2', 'pathologie', D).concepts).toEqual([]);
     expect(analysePatientTerm('ATCD familial de cancer du sein', 'pathologie', D).concepts).toEqual([]);
-    expect(analysePatientTerm('Hypertension artérielle pulmonaire', 'pathologie', D).concepts).toEqual([]);
+    // BDPM-2d : l'HTAP est devenue un concept propre (CI lues dans les RCP) — elle ne doit toujours pas valoir « Hypertension artérielle ».
+    expect(analysePatientTerm('Hypertension artérielle pulmonaire', 'pathologie', D).concepts).toEqual(['Hypertension artérielle pulmonaire']);
+    expect(analysePatientTerm('Hypertension portale', 'pathologie', D).concepts).toEqual([]);
   });
 });
 
