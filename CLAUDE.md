@@ -151,14 +151,17 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   un jeton ne doit jamais venir du DCI d'une fiche sans contrôle LEXICAL (il doit nommer la molécule de la ligne : le catalogue
   contient des fiches au DCI ou au lien d'ingrédient erroné — ENDOXAN ↔ hydrochlorothiazide). Contrôler sur TOUT le catalogue,
   pas seulement les fiches MA (`bdpm/2d/scripts/controle_lexical_2d.py`, banc médicaments sans `--ma`).
-- Interactions des RCP (BDPM-2b, BDPM-2d) : `interactions_rcp` 36 554 lignes, 33 887 actives (2026-11-15). Une ligne vient TOUJOURS
+- Interactions des RCP (BDPM-2b, BDPM-2d) : `interactions_rcp` 36 554 lignes, 33 886 actives (2026-11-16). Une ligne vient TOUJOURS
   de `bdpm_interactions_staging` (statuts `relu` / `auto` seulement) par migration avec empreinte. `exclue_motif` (NULL = active)
   neutralise une ligne sans la supprimer : lignes « RCP EMA » dont la phrase est négative ou coupée sans verbe (2 352, à
   ré-extraire — les PDF EMA ont été découpés en lignes physiques), partenaires parasites du référentiel (« contraceptif »,
   « par extrapolation » : 233). **Jamais de prose non relue dans le moteur** : statuts de staging `a_relire_prose_fr` (643) et
   `a_reextraire_ema` (782) en attente d'un lot dédié (erreur mesurée 13 % et ≥ 20 %, seuil 5 %). Élément de liste = niveau du
-  titre du RCP ; on ne descend que sur une phrase complète citée. Un titre de niveau ne se reporte PAS sur la prose qui suit la
-  liste (leçon trétinoïne ; à vérifier pour la clozapine). Doses : `conditions_dose` + `dose_cible` (AVK × aspirine = découpage
+  titre du RCP ; on ne descend que sur une phrase complète citée. **Un intertitre non reconnu remet le niveau à zéro** : ce qui
+  suit n'hérite jamais du titre précédent et part « à vérifier » (BDPM-2e, 2026-11-16 : la clozapine était « contre-indiquée » avec
+  la caféine, l'oméprazole, les benzodiazépines… — 217 lignes corrigées ; analyseur corrigé, `bdpm/scripts/analyse_interactions.py`
+  `intertitre_non_reconnu`, contrôle `bdpm/2e/scripts/test_analyseur.py`). Reste à relire : 509 lignes sous un intertitre de
+  section aux niveaux déconseillé / précaution / à prendre en compte (`bdpm/2e/titres_tous.csv`). Doses : `conditions_dose` + `dose_cible` (AVK × aspirine = découpage
   ANSM 1 000 / 500 / 50 mg). Résolution des partenaires : référentiel à jour obligatoire (`bdpm/2d/scripts/ref_int_2d.py`).
   `bdpm_rcp_sections.texte` est NULL depuis le 2026-11-15 (archive hors base `bdpm/archive_rcp_sections/`, manifeste md5).
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
