@@ -1,0 +1,627 @@
+{
+ "empreinte": "2fd8ac7995fbe975c99413f6b4ebe29c",
+ "corrections": [
+  {
+   "id": "90118027-d595-48e0-8682-f4a5f23c2b21",
+   "nom": "SERETIDE",
+   "marque": "SERETIDE",
+   "dci_avant": "FLUOXETINE",
+   "dci": "FLUTICASONE / SALMETEROL",
+   "preuve": "suspension pour inhalation 50 µg / 25 µg, GSK : fluticasone + salmétérol (la fluoxétine ne s’inhale pas)",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "0304a195-ae6a-47f2-b2b6-16fa2a9520dc",
+    "a314eba9-67c1-4e72-a03d-674e1e944193"
+   ],
+   "ingredients": [
+    "0304a195-ae6a-47f2-b2b6-16fa2a9520dc",
+    "a314eba9-67c1-4e72-a03d-674e1e944193"
+   ]
+  },
+  {
+   "id": "ec208df8-d948-4f55-8941-814bdbe4f6fc",
+   "nom": "ENGERIX-B (ADULTE) 1 BOITE 10 FLACON",
+   "marque": "ENGERIX",
+   "dci_avant": "CYCLOPHOSPHAMIDE",
+   "dci": "VACCIN DE L'HEPATITE B (ANTIGENE HBs RECOMBINANT)",
+   "preuve": "ENGERIX-B adulte, boîte de 10 flacons : vaccin de l’hépatite B ; aucun ingrédient vaccinal au référentiel, fiche laissée sans ingrédient",
+   "avant": [
+    "2182893d-36a8-452f-8695-40df26060328"
+   ],
+   "retirer": [
+    "2182893d-36a8-452f-8695-40df26060328"
+   ],
+   "ajouter": [],
+   "ingredients": []
+  },
+  {
+   "id": "a0e056c8-6193-4b9e-9063-354b61e65a42",
+   "nom": "ESTRACYT",
+   "marque": "ESTRACYT",
+   "dci_avant": "ERYTHROMYCINE",
+   "dci": "ESTRAMUSTINE",
+   "preuve": "gélule 140 mg, Pfizer : estramustine (l’érythromycine n’existe pas à 140 mg)",
+   "avant": [
+    "811894a9-e319-4cef-910f-0874d6869787"
+   ],
+   "retirer": [
+    "811894a9-e319-4cef-910f-0874d6869787"
+   ],
+   "ajouter": [
+    "5a3a4872-0b31-4a76-b7d2-0b958cd6ad21"
+   ],
+   "ingredients": [
+    "5a3a4872-0b31-4a76-b7d2-0b958cd6ad21"
+   ]
+  },
+  {
+   "id": "029360f4-8680-44bb-9d9f-dff7f7c7162e",
+   "nom": "FRAXODI",
+   "marque": "FRAXODI",
+   "dci_avant": "ACIDE FUSIDIQUE",
+   "dci": "NADROPARINE CALCIQUE",
+   "preuve": "solution injectable 11 400 UI anti-Xa : nadroparine (l’acide fusidique ne se dose pas en UI anti-Xa)",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "7bffac60-6bb2-40e2-85f7-ecec96af141d"
+   ],
+   "ingredients": [
+    "7bffac60-6bb2-40e2-85f7-ecec96af141d"
+   ]
+  },
+  {
+   "id": "82b091bb-cf3c-471d-a9c1-c97719a3df26",
+   "nom": "INNOHEP 10 000 UI ANTI- 1 BOITE 2 SERINGUE",
+   "marque": "INNOHEP",
+   "dci_avant": "AMLODIPINE",
+   "dci": "TINZAPARINE SODIQUE",
+   "preuve": "10 000 UI anti-Xa, boîte de 2 seringues : tinzaparine",
+   "avant": [
+    "10d1b3f7-6c13-4328-a3d0-e08367b6bd46"
+   ],
+   "retirer": [
+    "10d1b3f7-6c13-4328-a3d0-e08367b6bd46"
+   ],
+   "ajouter": [
+    "ed738831-6253-4677-9f11-55be73a33916"
+   ],
+   "ingredients": [
+    "ed738831-6253-4677-9f11-55be73a33916"
+   ]
+  },
+  {
+   "id": "8701b45e-74ec-4c08-9b0e-2c3f945693d1",
+   "nom": "LOVENOX",
+   "marque": "LOVENOX",
+   "dci_avant": "LOSARTAN",
+   "dci": "ENOXAPARINE SODIQUE",
+   "preuve": "solution injectable 4 000 UI anti-Xa, Sanofi : énoxaparine (le losartan est un comprimé)",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "a81f8752-5c0d-426c-819d-2fb223e62630"
+   ],
+   "ingredients": [
+    "a81f8752-5c0d-426c-819d-2fb223e62630"
+   ]
+  },
+  {
+   "id": "82c5dcf8-f968-428b-8316-74491c444524",
+   "nom": "SOLIAN PELLICULE",
+   "marque": "SOLIAN",
+   "dci_avant": "INDAPAMIDE",
+   "dci": "AMISULPRIDE",
+   "preuve": "comprimé pelliculé 200 mg, Sanofi : amisulpride (l’indapamide ne dépasse pas 2,5 mg)",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "790014f4-7651-469a-97f2-06bbde2037be"
+   ],
+   "ingredients": [
+    "790014f4-7651-469a-97f2-06bbde2037be"
+   ]
+  },
+  {
+   "id": "65fad93e-2aa3-41c3-8e1a-d9e4e05d1639",
+   "nom": "SOLIAN POUDRE POUR SUSPENSION PELLICULE",
+   "marque": "SOLIAN",
+   "dci_avant": "INDAPAMIDE",
+   "dci": "AMISULPRIDE",
+   "preuve": "200 mg, Sanofi : amisulpride (l’indapamide ne dépasse pas 2,5 mg)",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "790014f4-7651-469a-97f2-06bbde2037be"
+   ],
+   "ingredients": [
+    "790014f4-7651-469a-97f2-06bbde2037be"
+   ]
+  },
+  {
+   "id": "617eec75-33e6-43ff-9caa-3b8c9fbd4537",
+   "nom": "TIENAM",
+   "marque": "TIENAM",
+   "dci_avant": "DIPROPHYLLINE",
+   "dci": "IMIPENEME / CILASTATINE",
+   "preuve": "poudre pour perfusion 500 mg, MSD : imipénème + cilastatine",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "a8a901ae-d94d-494b-b1d0-528f5fb30efd",
+    "bf858398-6a72-49ea-94d7-9a3de32c64d4"
+   ],
+   "ingredients": [
+    "a8a901ae-d94d-494b-b1d0-528f5fb30efd",
+    "bf858398-6a72-49ea-94d7-9a3de32c64d4"
+   ]
+  },
+  {
+   "id": "6ddb8afa-6484-4a32-a027-f62e9e25ae34",
+   "nom": "VENOFER 100 MG/5ML FER SOLUTION INJECTABLE IV à 100 / 5 AMPOULE 5 ML",
+   "marque": "VENOFER",
+   "dci_avant": "VENLAFAXINE",
+   "dci": "FER (COMPLEXE D'HYDROXYDE FERRIQUE - SACCHAROSE)",
+   "preuve": "solution injectable IV 100 mg / 5 mL de fer : fer saccharose (la venlafaxine n’est pas injectable)",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "77d7504f-5069-41fd-a389-bf341e48e500"
+   ],
+   "ingredients": [
+    "77d7504f-5069-41fd-a389-bf341e48e500"
+   ]
+  },
+  {
+   "id": "7a36b36c-b249-4c99-aa8b-b9d6cd7606f4",
+   "nom": "XALACOM COLLYRE à 50 / 5 µG / MG 1 FLACON 2,5 ML",
+   "marque": "XALACOM",
+   "dci_avant": "CELECOXIB",
+   "dci": "LATANOPROST / TIMOLOL",
+   "preuve": "collyre 50 µg / 5 mg par mL, flacon de 2,5 mL : latanoprost + timolol (le célécoxib n’existe pas en collyre)",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "838c3dd5-3440-407f-9284-580511c9e92b",
+    "f95d56b7-556e-4e0e-96d6-97e4b1675764"
+   ],
+   "ingredients": [
+    "838c3dd5-3440-407f-9284-580511c9e92b",
+    "f95d56b7-556e-4e0e-96d6-97e4b1675764"
+   ]
+  },
+  {
+   "id": "730e2d1d-8e7a-47c6-887f-30e28106460e",
+   "nom": "XYLOCAINE 2%",
+   "marque": "XYLOCAINE",
+   "dci_avant": "OXALIPLATINE",
+   "dci": "LIDOCAINE",
+   "preuve": "gel à 2 % : lidocaïne (l’oxaliplatine est une solution pour perfusion)",
+   "avant": [
+    "62fd292b-c18b-4193-a977-e6e5a0038f9a"
+   ],
+   "retirer": [
+    "62fd292b-c18b-4193-a977-e6e5a0038f9a"
+   ],
+   "ajouter": [
+    "03046ed3-65bb-4578-9b4b-a80dd1a1454e"
+   ],
+   "ingredients": [
+    "03046ed3-65bb-4578-9b4b-a80dd1a1454e"
+   ]
+  },
+  {
+   "id": "05f2657b-e23d-4426-9ef1-53653cc0a7ee",
+   "nom": "ZOMETA",
+   "marque": "ZOMETA",
+   "dci_avant": "SERTRALINE",
+   "dci": "ACIDE ZOLEDRONIQUE",
+   "preuve": "solution pour perfusion 4 mg, Novartis : acide zolédronique",
+   "avant": [
+    "34ff789c-5313-4d38-98c3-7c62bf99447d"
+   ],
+   "retirer": [
+    "34ff789c-5313-4d38-98c3-7c62bf99447d"
+   ],
+   "ajouter": [
+    "198b3755-0e02-46bd-b392-c061a2c0323c"
+   ],
+   "ingredients": [
+    "198b3755-0e02-46bd-b392-c061a2c0323c"
+   ]
+  },
+  {
+   "id": "448e9d76-b9a5-4973-b368-c0c57b39ea46",
+   "nom": "BECLOJET 1 FLACON 200 DOSE",
+   "marque": "BECLOJET",
+   "dci_avant": "DEXAMETHASONE",
+   "dci": "BECLOMETASONE",
+   "preuve": "flacon de 200 doses : béclométasone (la dexaméthasone n’existe pas en flacon doseur)",
+   "avant": [
+    "a8104c9a-8402-4de3-950a-8bd818d98eb3"
+   ],
+   "retirer": [
+    "a8104c9a-8402-4de3-950a-8bd818d98eb3"
+   ],
+   "ajouter": [
+    "ff5f0ec1-0d88-452c-9784-5b378d7ad149"
+   ],
+   "ingredients": [
+    "ff5f0ec1-0d88-452c-9784-5b378d7ad149"
+   ]
+  },
+  {
+   "id": "1fe76b27-c32b-4b52-95b5-005662d0b0b6",
+   "nom": "HALDOL FORT BUVABLES à 2 MG",
+   "marque": "HALDOL",
+   "dci_avant": "MODIFIEE",
+   "dci": "HALOPERIDOL",
+   "preuve": "solution buvable à 2 mg : halopéridol (la DCI « MODIFIEE » est un reste de « gélatine fluide modifiée »)",
+   "avant": [],
+   "retirer": [],
+   "ajouter": [
+    "6f31eec6-78d8-4c3b-925e-17f50ecb26af"
+   ],
+   "ingredients": [
+    "6f31eec6-78d8-4c3b-925e-17f50ecb26af"
+   ]
+  },
+  {
+   "id": "4284db0c-398e-4a37-89ee-da20cbef2a7a",
+   "nom": "ROVAMYCINE LYOPHILISAT POUR SUSPENSION 1 BOITE 1 FLACON",
+   "marque": "ROVAMYCINE",
+   "dci_avant": "VACCIN",
+   "dci": "SPIRAMYCINE",
+   "preuve": "lyophilisat 1,5 MUI, Maphar : spiramycine injectable (déjà reliée ; seule la DCI « VACCIN » était fausse)",
+   "avant": [
+    "14fb45c0-b119-464f-b531-051dbfb93f71"
+   ],
+   "retirer": [],
+   "ajouter": [],
+   "ingredients": [
+    "14fb45c0-b119-464f-b531-051dbfb93f71"
+   ]
+  }
+ ],
+ "masquages": [
+  {
+   "id": "1f7564f4-a4e4-4619-8e53-ed30178b74f2",
+   "nom": "ACTONEL POUDRE POUR SUSPENSION 1 SERINGUE 0,5 ML",
+   "marque": "ACTONEL",
+   "dci": "VACCIN ANTI-",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : ACTONEL (risédronate, comprimé) avec une forme de vaccin (seringue 0,5 mL) et la DCI « VACCIN ANTI- »"
+  },
+  {
+   "id": "edec608a-eafe-4437-9c80-6128aa78dd1c",
+   "nom": "DUPHASTON COMPRIME PELLICULE à 150 / 300 1 BOITE 60 COMPRIM",
+   "marque": "DUPHASTON",
+   "dci": "LAMIVUDINE /",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : DUPHASTON (dydrogestérone 10 mg) avec la forme 150 / 300 et la DCI de la lamivudine / zidovudine"
+  },
+  {
+   "id": "d309f254-9368-4e06-9ef4-b7047a492ba1",
+   "nom": "ESTRACYT BUVABLE à 500 MG",
+   "marque": "ESTRACYT",
+   "dci": "ERYTHROMYCINE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : ESTRACYT (estramustine, gélule 140 mg) avec une forme buvable 500 mg et la DCI érythromycine"
+  },
+  {
+   "id": "f2f1ff79-b5af-44f0-ba29-0fc57b2740f9",
+   "nom": "ESTRACYT COMPRIME à 500 MG 1 BOITE 100 GELULE",
+   "marque": "ESTRACYT",
+   "dci": "ERYTHROMYCINE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : ESTRACYT (estramustine, gélule 140 mg) avec un comprimé 500 mg et la DCI érythromycine"
+  },
+  {
+   "id": "09c6cce4-b76e-46b0-bfb0-3c694b735cb0",
+   "nom": "ESTRACYT GRANULE POUR SOLUTION",
+   "marque": "ESTRACYT",
+   "dci": "ERYTHROMYCINE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : ESTRACYT (estramustine, gélule) avec un granulé pour solution et la DCI érythromycine"
+  },
+  {
+   "id": "0eb549bc-c0b1-4b15-9a85-d4cee096c863",
+   "nom": "ESTRACYT MPRIME SECABLE à 25 MG",
+   "marque": "ESTRACYT",
+   "dci": "HYDROCHLOROTHIAZIDE CO",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : ESTRACYT (estramustine) avec un comprimé sécable 25 mg et la DCI hydrochlorothiazide"
+  },
+  {
+   "id": "0865be31-27d4-49a1-9292-fe28722a7a22",
+   "nom": "LEDERFOLINE COMPRIME SECABLE à 500 MG 1 BOITE 50 COMPRIME",
+   "marque": "LEDERFOLINE",
+   "dci": "FUROSEMIDE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : LEDERFOLINE (folinate, 5 à 25 mg) avec un comprimé sécable 500 mg et la DCI furosémide"
+  },
+  {
+   "id": "cbfba396-85fe-4f83-a6ed-773196213a0c",
+   "nom": "LOVENOX COMPRIME PELLICULE SECABLE 1 BOITE 20 COMPRIME",
+   "marque": "LOVENOX",
+   "dci": "LOSARTAN",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : LOVENOX (énoxaparine injectable) avec la forme « comprimé pelliculé sécable » et la DCI losartan"
+  },
+  {
+   "id": "7c123280-bf37-4d3d-bfce-fffddd5ec7cf",
+   "nom": "LOVENOX COMPRIME PELLICULE SECABLE 1 BOITE 30 COMPRIME",
+   "marque": "LOVENOX",
+   "dci": "LOSARTAN",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : LOVENOX (énoxaparine injectable) avec la forme « comprimé pelliculé sécable » et la DCI losartan"
+  },
+  {
+   "id": "aa2617a8-aff3-4fb4-aef3-28e1549e50f6",
+   "nom": "LOVENOX à 100 MG PELLICULE",
+   "marque": "LOVENOX",
+   "dci": "LOSARTAN",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : LOVENOX (énoxaparine injectable) avec un comprimé pelliculé 100 mg et la DCI losartan"
+  },
+  {
+   "id": "97f45ae7-b3d2-442a-9b05-e1420f96480b",
+   "nom": "LOVENOX à 50 MG PELLICULE",
+   "marque": "LOVENOX",
+   "dci": "LOSARTAN",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : LOVENOX (énoxaparine injectable) avec un comprimé pelliculé 50 mg et la DCI losartan"
+  },
+  {
+   "id": "dee2a851-03fe-45b9-9c31-8c962106900b",
+   "nom": "PREVENAR 13 COMPRIME PELLICULE à 0.625 / 1 BOITE 30 COMPRIM",
+   "marque": "PREVENAR",
+   "dci": "INDAPAMIDE /",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : PREVENAR 13 (vaccin) avec un comprimé pelliculé et la DCI indapamide"
+  },
+  {
+   "id": "329fd014-77f8-4a0e-a913-083eb36fb721",
+   "nom": "PROZAC BUVABLE à 2 G",
+   "marque": "PROZAC",
+   "dci": "STRONTIUM",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : PROZAC (fluoxétine 20 mg) avec une forme buvable 2 g et la DCI strontium"
+  },
+  {
+   "id": "c50f6b87-05ca-46f8-8a34-efc0af4f32a2",
+   "nom": "ZOMIG SOLUTION A DILUER POUR 1 BOITE 1 FLACON",
+   "marque": "ZOMIG",
+   "dci": "ACIDE ZOLEDRONIQUE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : ZOMIG (zolmitriptan 2,5 mg, comprimé) avec une solution à diluer pour perfusion et la DCI acide zolédronique"
+  },
+  {
+   "id": "74810e82-dc7b-433f-848c-db0d79e58446",
+   "nom": "ANCOTIL MG PELLICULE",
+   "marque": "ANCOTIL",
+   "dci": "HYDROCHLOROTHIAZIDE MG /",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : ANCOTIL (flucytosine) avec la DCI hydrochlorothiazide, forme tronquée"
+  },
+  {
+   "id": "e828768a-dcbf-405b-9c56-09f3b070866b",
+   "nom": "AUGMENTIN PAR NEBULISEUR à 0.5 MG/2ML UNIDOSE",
+   "marque": "AUGMENTIN",
+   "dci": "IPRATROPIUM",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : AUGMENTIN (amoxicilline + acide clavulanique) avec une forme pour nébuliseur 0,5 mg / 2 mL et la DCI ipratropium"
+  },
+  {
+   "id": "3e389031-0f6c-4965-8ca2-9abed79a923a",
+   "nom": "BACTRIM ENROBE",
+   "marque": "BACTRIM",
+   "dci": "CIPROFLOXACINE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : BACTRIM (sulfaméthoxazole + triméthoprime) avec la DCI ciprofloxacine, forme tronquée"
+  },
+  {
+   "id": "1ef0da7a-c990-47a0-861a-3e81add3f854",
+   "nom": "BICNU SOLUTE CONCENTRE 1 BIDON 10 L",
+   "marque": "BICNU",
+   "dci": "CONCENTRE POUR",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : BICNU (carmustine) avec un soluté concentré en bidon de 10 L (dialyse)"
+  },
+  {
+   "id": "fa38edaf-a35c-43f1-9494-6984c8ab6230",
+   "nom": "BREXIN PERFUSION à 6 MG",
+   "marque": "BREXIN",
+   "dci": "ACIDE IBANDRONIQUE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : BREXIN (piroxicam) avec une perfusion à 6 mg et la DCI acide ibandronique"
+  },
+  {
+   "id": "e436db48-8ee5-4015-a77e-38ae62d2fd39",
+   "nom": "HALDOL FORT SOLUTION POUR PERFUSION 1 FLACON 15 ML",
+   "marque": "HALDOL",
+   "dci": "GELATINE FLUIDE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : HALDOL FORT (halopéridol) avec une solution pour perfusion et la DCI gélatine fluide"
+  },
+  {
+   "id": "f3a750f0-f2f7-45a4-b98b-20f5062df5bd",
+   "nom": "INDOBIOTIC SUSPENSION POUR INHALATION 1 FLACON 200 DOSE",
+   "marque": "INDOBIOTIC",
+   "dci": "SALBUTAMOL",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : INDOBIOTIC (indométacine + gentamicine, collyre) avec une suspension pour inhalation et la DCI salbutamol"
+  },
+  {
+   "id": "0e17cd61-1b1d-43ce-9f4b-f8afd799e5b2",
+   "nom": "NOZINAN DRE POUR SOLUTION",
+   "marque": "NOZINAN",
+   "dci": "EPTACOG ALPHA ACTIVE POU",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : NOZINAN (lévomépromazine) avec la DCI eptacog alpha activé"
+  },
+  {
+   "id": "4091c595-f696-41fc-b1be-c296707c62b1",
+   "nom": "RISORDAN AURICULAIRE à 2 MUI 1 BOITE 60 COMPRIME",
+   "marque": "RISORDAN",
+   "dci": "RIFAMYCINE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : RISORDAN (isosorbide dinitrate) avec une forme auriculaire en MUI et la DCI rifamycine"
+  },
+  {
+   "id": "aa362657-30da-407b-a4cd-2e83d87f6c55",
+   "nom": "TERLOMEXIN MG",
+   "marque": "TERLOMEXIN",
+   "dci": "IMMUNOGLOBULINE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : TERLOMEXIN (fenticonazole) avec la DCI immunoglobuline, forme tronquée"
+  },
+  {
+   "id": "16aa6534-4119-451b-8bad-84d3cc4fa8e7",
+   "nom": "VISKEN QUINZE",
+   "marque": "VISKEN",
+   "dci": "SALBUTAMOL",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : VISKEN QUINZE (pindolol 15 mg) avec la DCI salbutamol, sans forme ni dosage pour trancher"
+  },
+  {
+   "id": "653e7cd7-5bf3-4b50-85ff-319329e3da2a",
+   "nom": "ACETATE EM 142 COMPRIME à 4 / 1.25 MG / MG 1 BOITE 28 COMPRIME",
+   "marque": "ACETATE",
+   "dci": "INDAPAMIDE",
+   "motif": "MOTEUR-3 — marque et DCI contradictoires, non tranché : nom d’un soluté de dialyse (ACETATE EM 142) avec un comprimé 4 / 1,25 mg et la DCI indapamide"
+  }
+ ],
+ "deja_masquees": [
+  "e4e67a49",
+  "61ad238c",
+  "38271b7c",
+  "8d8794cc",
+  "f045c1b9",
+  "ca8625d8",
+  "bcf7c203",
+  "9a1a1473"
+ ],
+ "faux_positifs": [
+  {
+   "id": "9e4ed2f5-0520-4097-8602-f0e3b8b021e8",
+   "nom": "ACETATE SLF117 SOLUTE CONCENTRE 1 BIDON 5 L",
+   "dci": "CONCENTRE POUR",
+   "marque": "ACETATE"
+  },
+  {
+   "id": "40a7d3d1-c1d3-4455-b95f-59e23f332433",
+   "nom": "ACIDE DEXTROSE D1 EM CONC SOLUTE CONCENTRE 1 BIDON 5 L",
+   "dci": "ENTRE POUR",
+   "marque": "ACIDE"
+  },
+  {
+   "id": "e882fa38-fcf9-4467-a0e9-3ecfad1b642e",
+   "nom": "ACIDE DEXTROSE EM 80 CONC SOLUTE CONCENTRE 1 BIDON 5 L",
+   "dci": "ENTRE POUR",
+   "marque": "ACIDE"
+  },
+  {
+   "id": "f4b0da8a-adc8-4754-8572-5224816f7df9",
+   "nom": "ARNIGEL, Gel",
+   "dci": "HOMEO",
+   "marque": "ARNIGEL"
+  },
+  {
+   "id": "dfb13422-06e6-4af5-824d-85dd9fd97954",
+   "nom": "AVENOC, Pommade",
+   "dci": "HOMEO",
+   "marque": "AVENOC"
+  },
+  {
+   "id": "9bf5d479-e326-4586-ac02-6463e17141ff",
+   "nom": "DRILL EXPECTORANT ADULTE",
+   "dci": "CARBOCISTEINE",
+   "marque": "DRILL"
+  },
+  {
+   "id": "cbca7c8d-abb1-4d5c-aaee-c283556e7760",
+   "nom": "ELVORINE SOLUTION A DILUER POUR 1 BOITE 1 FLACON 4",
+   "dci": "FOLINATE DE CALCIUM",
+   "marque": "ELVORINE"
+  },
+  {
+   "id": "20c0e195-8870-48db-a1c5-b1e59904bba7",
+   "nom": "EPREX 10000 UI/ML",
+   "dci": "ERYTHROPOIETINE",
+   "marque": "EPREX"
+  },
+  {
+   "id": "1ef00cc9-5dbf-4b94-a8df-a19a85b5b631",
+   "nom": "GAVISCON NOURRISSON BICAR",
+   "dci": "BONATE DE",
+   "marque": "GAVISCON"
+  },
+  {
+   "id": "ef407ba7-39a0-41c8-b468-2fef3f717199",
+   "nom": "GAVISCON NOURRISSON BICAR 267 MG / MG",
+   "dci": "BONATE DE",
+   "marque": "GAVISCON"
+  },
+  {
+   "id": "af313f47-3821-45cf-9eaa-75969aa1fcee",
+   "nom": "HOMEOVOX, Dragée",
+   "dci": "HOMEO",
+   "marque": "HOMEOVOX"
+  },
+  {
+   "id": "0752ec7c-7b13-4906-8133-60fc98a34682",
+   "nom": "INFANRIX IPV / HIB POUDRE ET SOLVANT POUR LYOPHIL",
+   "dci": "VACCIN D.T.COQ.P.HIB",
+   "marque": "INFANRIX"
+  },
+  {
+   "id": "de463d2a-7716-4ddb-93b4-e7ee6b14359e",
+   "nom": "INFANRIX IPV 1 BOITE 1 SERINGUE",
+   "dci": "VACCIN D.T.COQ.P",
+   "marque": "INFANRIX"
+  },
+  {
+   "id": "6628ca0a-1963-436f-8065-2abdf5e1f8af",
+   "nom": "INFANRIX IPV SUSPENSION INJECTABLE 1 BOITE 1 SERINGUE",
+   "dci": "VACCIN D.T.COQ.P",
+   "marque": "INFANRIX"
+  },
+  {
+   "id": "2b256c1b-1fe4-4214-8a67-09df9969e1fa",
+   "nom": "PEGASYS",
+   "dci": "PEGYLE",
+   "marque": "PEGASYS"
+  },
+  {
+   "id": "735c43b4-8340-43cc-933a-2faf87e1c1cb",
+   "nom": "PEGASYS SOLUTION INJECTABLE à 135 µG 1 BOITE 1 SERINGUE",
+   "dci": "INTERFERON ALFA-2A",
+   "marque": "PEGASYS"
+  },
+  {
+   "id": "f077f939-e849-4193-b266-dbe70f53102c",
+   "nom": "PRIORIX PREPARATION INJECTABLE 1 BOITE 1 FLACON",
+   "dci": "VACCIN R.O.R",
+   "marque": "PRIORIX"
+  },
+  {
+   "id": "15aee872-c959-4757-8db9-4afa8dbcec9c",
+   "nom": "SOLUTION D'ALBUMINE HUMAINE-CNTS",
+   "dci": "ALBUMINE HUMAINE",
+   "marque": "SOLUTION"
+  },
+  {
+   "id": "043d10ee-8e47-4124-9120-32b77be423b1",
+   "nom": "SOMATULINE LP 120 MG LANR SOLUTION INJECTABLE LP à 120 1 BOITE 1 SERINGUE",
+   "dci": "EOTIDE",
+   "marque": "SOMATULINE"
+  },
+  {
+   "id": "4cc6b995-2646-42b6-86bc-539316130c6e",
+   "nom": "SOMATULINE LP 30 MG LANRE SOLUTION INJECTABLE à 30 MG 1 BOITE 1 FLACON",
+   "dci": "OTIDE",
+   "marque": "SOMATULINE"
+  },
+  {
+   "id": "2491c29b-1d52-4779-8ef3-246f82253d4d",
+   "nom": "SOMATULINE LP 90 MG LANRE",
+   "dci": "OTIDE",
+   "marque": "SOMATULINE"
+  },
+  {
+   "id": "0cf2e615-6705-4462-bc52-23fd0f703fe9",
+   "nom": "TAXOTERE 20 MG/0.5 ML DOC SOLUTION A DILUER POUR 1 FLACON 0,5 ML",
+   "dci": "ETAXEL",
+   "marque": "TAXOTERE"
+  },
+  {
+   "id": "de75075d-4b0d-49c3-af7f-a03048a399bf",
+   "nom": "VAXIGRIP NSION INJECTABLE",
+   "dci": "VACCIN ANTIGRIPPAL SUSPE",
+   "marque": "VAXIGRIP"
+  },
+  {
+   "id": "76e113ec-73c8-413b-a57f-50be2419cb0d",
+   "nom": "VAXIGRIP RATION INJECTABLE 1 BOITE 20 SERINGU",
+   "dci": "VACCIN ANTIGRIPPAL PREPA",
+   "marque": "VAXIGRIP"
+  }
+ ]
+}
