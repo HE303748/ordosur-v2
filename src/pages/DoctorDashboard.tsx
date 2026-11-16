@@ -102,6 +102,8 @@ import {
 // Sprint 6B — canal fonction rénale (module pur lib/renalEngine, chargeur dédié hooks/useRenal)
 import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, dfgDoubleLine, type RenalReserve, type RenalStatus } from '../lib/renalEngine';
 import { useRenalChannel } from '../hooks/useRenal';
+// MOTEUR-3 — voie d'administration : une forme locale ne reçoit que les règles de sa voie (module pur lib/voieEngine)
+import { regleApplicable, ficheFiltree, type FicheVoie } from '../lib/voieEngine';
 import {
   buildConditionMatcher, preparePatient, matchCondition, conditionTitre, incoherenceIrcDfg,
   type CiConceptRow, type PathologieCuree,
@@ -153,6 +155,9 @@ interface DbContraindication {
   age_min_mois?: number | null;
   // Sprint 2 — 'F' = femme uniquement, 'M' = homme uniquement, NULL = tous.
   sexe_applicable?: 'F' | 'M' | null;
+  // MOTEUR-3 — voie du RCP de la règle ; voie_stricte : ne vaut que pour une fiche de cette voie.
+  voie?: string | null;
+  voie_stricte?: boolean | null;
 }
 
 // Sprint 2 — CI « femme » relevant du bloc conditionnel « Grossesse, allaitement, procréation ».
@@ -4085,6 +4090,21 @@ export function DoctorDashboard() {
           }
         }
       }
+      // MOTEUR-3 — voie et portée de chaque fiche (requête filtrée par UUID). Une fiche absente de la
+      // carte (médicament saisi à la main, lecture échouée) est traitée comme systémique : rien n'est retiré.
+      const voieById = new Map<string, FicheVoie>();
+      if (allDbMedIds.length > 0) {
+        const { data: voieRows } = await supabase
+          .from('medicaments')
+          .select('id, voie_administration, voie_portee, voie_rcp_lu')
+          .in('id', allDbMedIds);
+        if (cancelled) return;
+        type VoieRow = { id: string; voie_administration: string | null; voie_portee: string | null; voie_rcp_lu: boolean | null };
+        for (const r of (voieRows as VoieRow[] | null) ?? []) {
+          voieById.set(r.id, { voie: r.voie_administration, portee: r.voie_portee, rcpLu: r.voie_rcp_lu === true });
+        }
+      }
+
       // Sprint 4e-A — nom en base de chaque médicament (la RPC nomme ses paires par
       // medicaments.nom) : sert à fusionner un doublon avec l'interaction existante de la même
       // paire. Réutilise la correspondance déjà chargée ; sinon une requête filtrée par UUID.
@@ -4198,7 +4218,8 @@ export function DoctorDashboard() {
           // "acétylsalicylate de lysine" → canonique "aspirine ..."). Additif, '' si absent.
           // Fallback ingrédients (4e source) — méds marocains avec dci null : on cherche
           // via medicament_ingredients → ingredients.name_en (chargé avant ce bloc).
-          const matched = matchMeds(dciParts);
+          // MOTEUR-3 — voie : une forme locale ne reçoit que les règles de sa voie (lib/voieEngine).
+          const matched = matchMeds(dciParts).filter(m => regleApplicable(contra, voieById.get(m.id)));
           if (matched.length === 0) continue;
 
           // Le patient a-t-il la condition contre-indiquée ? Verdict du module :
@@ -4305,7 +4326,8 @@ export function DoctorDashboard() {
           if (contra.age_max_mois == null && contra.age_min_mois == null) continue;
 
           const dciParts = contra.dci_pattern.split('|').map(p => norm(p.trim())).filter(p => p.length > 2);
-          const matched = matchMeds(dciParts);
+          // MOTEUR-3 — voie : une forme locale ne reçoit que les règles de sa voie (lib/voieEngine).
+          const matched = matchMeds(dciParts).filter(m => regleApplicable(contra, voieById.get(m.id)));
           if (matched.length === 0) continue;
 
           hasAgeCICandidate = true;
@@ -4463,8 +4485,10 @@ export function DoctorDashboard() {
       // « IRC » affichée alors que le DFG est normal reçoit seulement « DFG actuel … ».
       let reserves: RenalReserve[] = [];
       if (selectedPatient && renal.regles.length > 0) {
+        // MOTEUR-3 — les seuils rénaux sont ceux de la voie générale : une forme locale filtrée n'y est pas soumise.
         const r = evaluateRenal(
-          analysisMeds.map(m => ({ id: m.id, nom: m.nom, dci: m.dci, dci_canonique: m.dci_canonique, ingredients: ingNamesByMedId.get(m.id) })),
+          analysisMeds.filter(m => !ficheFiltree(voieById.get(m.id)))
+            .map(m => ({ id: m.id, nom: m.nom, dci: m.dci, dci_canonique: m.dci_canonique, ingredients: ingNamesByMedId.get(m.id) })),
           renal.status, allContraindications, renal.regles, renal.classes,
         );
         const mergedRenal = mergeRenalWithExisting(alerts, r.alerts, renal.status);
