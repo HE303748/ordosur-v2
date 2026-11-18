@@ -164,6 +164,17 @@ responsive mobile irréprochable (objectif : meilleure app médicale mobile du M
   section aux niveaux déconseillé / précaution / à prendre en compte (`bdpm/2e/titres_tous.csv`). Doses : `conditions_dose` + `dose_cible` (AVK × aspirine = découpage
   ANSM 1 000 / 500 / 50 mg). Résolution des partenaires : référentiel à jour obligatoire (`bdpm/2d/scripts/ref_int_2d.py`).
   `bdpm_rcp_sections.texte` est NULL depuis le 2026-11-15 (archive hors base `bdpm/archive_rcp_sections/`, manifeste md5).
+- Voie d'administration (MOTEUR-3, 2026-11-16 → 18) : `medicaments.voie_administration` (7 167 fiches MA ; 475 formes illisibles = NULL),
+  `voie_portee` (locale / systemique) et `voie_rcp_lu`. Une fiche n'est filtrée que si elle est LOCALE ET que le RCP de sa voie a été lu
+  (376 fiches) : elle ne reçoit alors que les allergies et les règles de sa voie (`contraindications.voie`, `interactions_rcp.voie`) ;
+  toute autre fiche garde toutes ses règles. Patchs transdermiques, formes rectales, sublinguales = systémiques. `contraindications.voie_stricte`
+  (lot « voies locales », 62 lignes) : la règle ne vaut QUE pour la même voie. ANSM : une forme locale ne reçoit que les entités de
+  `ansm_entites_voies` (bêta-bloquants « y compris collyres », éconazole…). Client : module pur `src/lib/voieEngine.ts` (CI, CI d'âge, canal
+  rénal) ; base : `check_interactions_v2` (DDInter et cumul jamais pour une forme filtrée). Toute nouvelle règle lue dans un RCP doit porter sa voie.
+- Excipients à effet notoire (MOTEUR-3) : `medicament_excipients` (aspartam, amidon de blé, arachide, soja, lactose) — une ligne = fiche MA ×
+  phrase EXACTE 4.3 (absolue) / 4.4 (à évaluer) du RCP français de la MÊME spécialité (même marque, forme, dosage ; jamais un générique) ;
+  canal `src/lib/excipientEngine.ts` (terrains lus comme le moteur : concepts + libellés d'allergie), carte « Excipient à effet notoire »,
+  journalisation `source = 'excipient'`. Sources : `bdpm/moteur3/scripts/e5_plan.py` (relecture `moteur3/e5_relecture.json`).
 - RPC : `search_medicaments(search_term, limit_count)` (expose dci_canonique, tri Maroc d'abord) ·
   `check_drug_interactions_for_meds(p_med_strings text[])` · `drug_name_normalize(p_text)`.
 - Moteur CI : client-side dans DoctorDashboard.tsx (`runCheck`, `loadInteractionDb` via fetchAllRows).
