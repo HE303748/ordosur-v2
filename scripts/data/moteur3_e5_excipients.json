@@ -1,0 +1,3043 @@
+{
+ "empreintes": {
+  "staging": "b0581a9b725e2ff9adfb36b7578009b0",
+  "table": "b221e4e27ccf5402de361c108d2c312b"
+ },
+ "lignes": [
+  {
+   "medicament_id": "024d83d6-7dfe-4a06-b856-7fcca363808e",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60260497",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60260497/extrait",
+   "date_rcp": "2025-01-17",
+   "citation": "Les patients présentant des problèmes héréditaires rares d’intolérance au galactose, de déficit total en lactase ou de syndrome de malabsorption du glucose ou du galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "RISPERDAL 2 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "03eb54eb-7bff-40d3-ae3d-3759f6e36fcd",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "61923059",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61923059/extrait",
+   "date_rcp": "2024-11-05",
+   "citation": "• En raison de la présence d’aspartam, ce médicament est contre-indiqué en cas de phénylcétonurie.",
+   "specialite_fr": "ORELOX ENFANTS ET NOURRISSONS 40 mg/5 ml, granulés pour suspension buvable"
+  },
+  {
+   "medicament_id": "03eb54eb-7bff-40d3-ae3d-3759f6e36fcd",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61923059",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61923059/extrait",
+   "date_rcp": "2024-11-05",
+   "citation": "L’aspartam est une source de phenylalanine et peut être dangereux pour les personnes atteintes de phénylcétonurie (PCU) (voir rubrique 4.3).",
+   "specialite_fr": "ORELOX ENFANTS ET NOURRISSONS 40 mg/5 ml, granulés pour suspension buvable"
+  },
+  {
+   "medicament_id": "03eb54eb-7bff-40d3-ae3d-3759f6e36fcd",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61923059",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61923059/extrait",
+   "date_rcp": "2024-11-05",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "ORELOX ENFANTS ET NOURRISSONS 40 mg/5 ml, granulés pour suspension buvable"
+  },
+  {
+   "medicament_id": "0586793f-dc02-45d5-8059-e4da23a01cc7",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61217812",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61217812/extrait",
+   "date_rcp": "2026-03-17",
+   "citation": "Comme PROGRAF contient du lactose, les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "PROGRAF 1 mg, gélule"
+  },
+  {
+   "medicament_id": "0586793f-dc02-45d5-8059-e4da23a01cc7",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61217812",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61217812/extrait",
+   "date_rcp": "2026-03-17",
+   "citation": "Chez les patients hypersensibles à l’arachide ou au soja, le risque et la gravité de l’hypersensibilité doivent être évalués au regard du bénéfice de l’utilisation de PROGRAF.",
+   "specialite_fr": "PROGRAF 1 mg, gélule"
+  },
+  {
+   "medicament_id": "06eaa946-1c57-4e86-b500-bb5b8c4e9526",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "66153192",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66153192/extrait",
+   "date_rcp": "2022-01-14",
+   "citation": "Ce médicament est contre indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "ESIDREX 25 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "06eaa946-1c57-4e86-b500-bb5b8c4e9526",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66153192",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66153192/extrait",
+   "date_rcp": "2022-01-14",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "ESIDREX 25 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "0745e75f-043f-4fc4-8e06-67df7e0f8acc",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64371242",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64371242/extrait",
+   "date_rcp": "2025-12-08",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "RENITEC 5 mg, comprimé"
+  },
+  {
+   "medicament_id": "095de857-6a36-49a3-a84d-cdcf2c9f4dc8",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62906109",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62906109/extrait",
+   "date_rcp": "2026-06-15",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "TIORFAN 100 mg, gélule"
+  },
+  {
+   "medicament_id": "0a65601f-d969-4dbf-8e54-cd7f845ff1c9",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67273757",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67273757/extrait",
+   "date_rcp": "2026-08-25",
+   "citation": "Intolérance au lactose :",
+   "specialite_fr": "CRESTOR 20 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "0a65601f-d969-4dbf-8e54-cd7f845ff1c9",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67273757",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67273757/extrait",
+   "date_rcp": "2026-08-25",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "CRESTOR 20 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "0afce46d-3a12-4cdf-9420-8f23661ea6fb",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "67229344",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67229344/extrait",
+   "date_rcp": "2024-10-16",
+   "citation": "• phénylcétonurie (en raison de la présence d'aspartam).",
+   "specialite_fr": "BREXIN 20 mg, comprimé effervescent"
+  },
+  {
+   "medicament_id": "0afce46d-3a12-4cdf-9420-8f23661ea6fb",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67229344",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67229344/extrait",
+   "date_rcp": "2024-10-16",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "BREXIN 20 mg, comprimé effervescent"
+  },
+  {
+   "medicament_id": "104c1175-18a3-47b5-b7e5-32df4f444440",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64408662",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64408662/extrait",
+   "date_rcp": "2025-06-05",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "CORDARONE 200 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "10f06870-4af9-453d-ab10-663d4b4fd190",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61217812",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61217812/extrait",
+   "date_rcp": "2026-03-17",
+   "citation": "Comme PROGRAF contient du lactose, les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "PROGRAF 1 mg, gélule"
+  },
+  {
+   "medicament_id": "10f06870-4af9-453d-ab10-663d4b4fd190",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61217812",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61217812/extrait",
+   "date_rcp": "2026-03-17",
+   "citation": "Chez les patients hypersensibles à l’arachide ou au soja, le risque et la gravité de l’hypersensibilité doivent être évalués au regard du bénéfice de l’utilisation de PROGRAF.",
+   "specialite_fr": "PROGRAF 1 mg, gélule"
+  },
+  {
+   "medicament_id": "117895ef-c1e8-4cc1-bec1-45a68aae1e96",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66150367",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66150367/extrait",
+   "date_rcp": "2025-09-12",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CELEBREX 200 mg, gélule"
+  },
+  {
+   "medicament_id": "125cd2a2-7c4c-4159-8b50-74406b67d163",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "• Chez les patients présentant une allergie au blé (autre que la maladie cœliaque),",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "125cd2a2-7c4c-4159-8b50-74406b67d163",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament.",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "125cd2a2-7c4c-4159-8b50-74406b67d163",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "130235be-457f-4da6-be33-14255615d080",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64539416",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64539416/extrait",
+   "date_rcp": "2026-09-18",
+   "citation": "Ce médicament doit être utilisé avec précaution chez les patients atteints de phénylcétonurie.",
+   "specialite_fr": "CLAMOXYL 1 g, comprimé dispersible"
+  },
+  {
+   "medicament_id": "14113385-47f6-46b6-aee0-90329d0af09f",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67702384",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67702384/extrait",
+   "date_rcp": "2025-04-22",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "KERLONE 20 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "157044ba-3657-420f-8948-aaddf596d5d1",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64144419",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64144419/extrait",
+   "date_rcp": "2025-04-25",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ACTONEL 5 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "15a68b08-8af9-4ee6-a8b9-ee9cc594d979",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66394873",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66394873/extrait",
+   "date_rcp": "2025-02-06",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZANIDIP 10 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "18e0bcba-29a0-4641-b04f-517941933b12",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61510352",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61510352/extrait",
+   "date_rcp": "2025-06-20",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "SINTROM 4 mg, comprimé quadrisécable"
+  },
+  {
+   "medicament_id": "194e399e-7582-4fab-a517-c926aa22e216",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67214342",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67214342/extrait",
+   "date_rcp": "2024-09-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "FELDENE DISPERSIBLE 20 mg, comprimé dispersible sécable"
+  },
+  {
+   "medicament_id": "19726777-9a92-4c66-93f4-1c600f14a457",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64822656",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64822656/extrait",
+   "date_rcp": "2023-04-20",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CEFALINE HAUTH 500mg/50mg, poudre orale en sachet"
+  },
+  {
+   "medicament_id": "1ba2ed59-528d-46ba-b4eb-76b63306796e",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69346531",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69346531/extrait",
+   "date_rcp": "2026-08-07",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "COLPRONE 5 mg, comprimé"
+  },
+  {
+   "medicament_id": "1bc92e5b-a0e7-4758-8cdc-ffa2f02cf59a",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64539416",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64539416/extrait",
+   "date_rcp": "2026-09-18",
+   "citation": "Ce médicament doit être utilisé avec précaution chez les patients atteints de phénylcétonurie.",
+   "specialite_fr": "CLAMOXYL 1 g, comprimé dispersible"
+  },
+  {
+   "medicament_id": "1db72c78-390e-4799-b26d-9f31a2ce7450",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61510352",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61510352/extrait",
+   "date_rcp": "2025-06-20",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "SINTROM 4 mg, comprimé quadrisécable"
+  },
+  {
+   "medicament_id": "20580b06-7a4c-4362-a956-fa65d8939b39",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69700567",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69700567/extrait",
+   "date_rcp": "2026-02-04",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "HYDREA 500 mg, gélule"
+  },
+  {
+   "medicament_id": "206a687a-c3d5-478d-879f-a8eb50b761e5",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65681906",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65681906/extrait",
+   "date_rcp": "2024-04-25",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "INSPRA 50 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "21995f70-e50b-441a-ab58-6ffaec43f09f",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60470499",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60470499/extrait",
+   "date_rcp": "2024-12-12",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZYLORIC 300 mg, comprimé"
+  },
+  {
+   "medicament_id": "227a665e-0719-4d73-9502-81c4205ec189",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "• Chez les patients présentant une allergie au blé (autre que la maladie cœliaque),",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "227a665e-0719-4d73-9502-81c4205ec189",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament.",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "227a665e-0719-4d73-9502-81c4205ec189",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "22afd7c1-8a84-4053-8407-c923204ed03c",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67949737",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67949737/extrait",
+   "date_rcp": "2024-12-13",
+   "citation": "Les patients présentant des troubles héréditaires rares tels qu’intolérance au galactose, déficit total en lactase ou malabsorption du glucose-galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CASODEX 50 mg, comprimé enrobé"
+  },
+  {
+   "medicament_id": "23e6bf42-ae00-4075-9931-6aeeca0325b2",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62390849",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62390849/extrait",
+   "date_rcp": "2026-01-30",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "CORTANCYL 20 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "2411bc2c-0086-4c60-b55e-27f1446652e3",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65324797",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65324797/extrait",
+   "date_rcp": "2026-01-05",
+   "citation": "Cela peut être dangereux pour les patients atteints de phénylcétonurie.",
+   "specialite_fr": "SINGULAIR 5 mg, comprimé à croquer"
+  },
+  {
+   "medicament_id": "2464490a-8ba1-474c-82ab-6a435ee9d7b6",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68429141",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68429141/extrait",
+   "date_rcp": "2025-04-22",
+   "citation": "INTOLERANCE AU LACTOSE",
+   "specialite_fr": "RIVOTRIL 2 mg, comprimé quadrisécable"
+  },
+  {
+   "medicament_id": "2464490a-8ba1-474c-82ab-6a435ee9d7b6",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68429141",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68429141/extrait",
+   "date_rcp": "2025-04-22",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "RIVOTRIL 2 mg, comprimé quadrisécable"
+  },
+  {
+   "medicament_id": "26c4d615-8b81-485e-8cd4-dd9819c08f0c",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68831670",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68831670/extrait",
+   "date_rcp": "2023-06-05",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares).",
+   "specialite_fr": "DIAMICRON 60 mg, comprimé sécable à libération modifiée"
+  },
+  {
+   "medicament_id": "2b1a44e1-7f81-43db-a976-8636f84145ee",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65217119",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65217119/extrait",
+   "date_rcp": "2026-03-02",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MOBIC 15 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "2c1e5c75-7ac4-4478-b97b-44c88ae2ce73",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "68693244",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68693244/extrait",
+   "date_rcp": "2026-01-15",
+   "citation": "Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "DIAMOX 250 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "2dc0fd2d-7c54-41c9-8476-0911fef537af",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64726693",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64726693/extrait",
+   "date_rcp": "2023-07-01",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "SOLIAN 200 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "2e58f816-f33e-41ca-a1dc-5ad7e48b7ef3",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64726693",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64726693/extrait",
+   "date_rcp": "2023-07-01",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "SOLIAN 200 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "339dd4e0-1a3a-46f3-9347-1180617f7575",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63179285",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63179285/extrait",
+   "date_rcp": "2024-02-08",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "STILNOX 10 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "366ced1a-b210-4837-83b6-5c08628b69a5",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "64000931",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64000931/extrait",
+   "date_rcp": "2026-08-18",
+   "citation": "Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "SECTRAL 400 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "366ced1a-b210-4837-83b6-5c08628b69a5",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64000931",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64000931/extrait",
+   "date_rcp": "2026-08-18",
+   "citation": "Si vous avez une allergie au blé (différente de la maladie cœliaque), vous ne devez pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "SECTRAL 400 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "366ced1a-b210-4837-83b6-5c08628b69a5",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64000931",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64000931/extrait",
+   "date_rcp": "2026-08-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "SECTRAL 400 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "384f0136-69ec-4135-b57e-e73e6aec900d",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60683198",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60683198/extrait",
+   "date_rcp": "2025-12-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZOLOFT 50 mg, gélule"
+  },
+  {
+   "medicament_id": "39439382-aa03-4db4-bc02-06ecd98623a7",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67140810",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67140810/extrait",
+   "date_rcp": "2026-09-18",
+   "citation": "Ce médicament doit être utilisé avec précaution chez les patients atteints de phénylcétonurie.",
+   "specialite_fr": "CLAMOXYL 250 mg/5 ml, poudre pour suspension buvable"
+  },
+  {
+   "medicament_id": "39d40a4c-2789-4c40-a53b-cc63c1d2fdca",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66394873",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66394873/extrait",
+   "date_rcp": "2025-02-06",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZANIDIP 10 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "3aa44b94-ac28-42b4-b27f-986db123223b",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60260497",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60260497/extrait",
+   "date_rcp": "2025-01-17",
+   "citation": "Les patients présentant des problèmes héréditaires rares d’intolérance au galactose, de déficit total en lactase ou de syndrome de malabsorption du glucose ou du galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "RISPERDAL 2 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "3d129349-07eb-4cd2-8005-0be23b88b7aa",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67841804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67841804/extrait",
+   "date_rcp": "2026-06-17",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "TILCOTIL 20 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "3e8685de-540b-454b-9344-2fcf587c7ab5",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65217119",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65217119/extrait",
+   "date_rcp": "2026-03-02",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MOBIC 15 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "3f1c67d5-e6bc-4856-8ec2-0ee948c9ee55",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67214342",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67214342/extrait",
+   "date_rcp": "2024-09-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "FELDENE DISPERSIBLE 20 mg, comprimé dispersible sécable"
+  },
+  {
+   "medicament_id": "420aaa41-e4e2-4edc-b0fc-f51e06ef1fe2",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65565944",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65565944/extrait",
+   "date_rcp": "2026-07-06",
+   "citation": "Les patients présentant un syndrome de malabsorption du glucose et du galactose (maladie héréditaire rare) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZENTEL 400 mg, comprimé"
+  },
+  {
+   "medicament_id": "420aaa41-e4e2-4edc-b0fc-f51e06ef1fe2",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65565944",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65565944/extrait",
+   "date_rcp": "2026-07-06",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZENTEL 400 mg, comprimé"
+  },
+  {
+   "medicament_id": "42ea6f46-a558-4144-b95f-5585e51d7108",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61255738",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61255738/extrait",
+   "date_rcp": "2024-11-05",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ANDROCUR 50 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "44947d43-a40a-4014-871a-68f2fcbee09d",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68626690",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68626690/extrait",
+   "date_rcp": "2025-08-07",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "BREXIN 20 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "44c40c41-9768-4a79-b002-73ce2ec6a8d1",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65528337",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65528337/extrait",
+   "date_rcp": "2024-11-05",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "ORELOX 100 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "456c41d5-7597-45c1-ae23-928586444e87",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66150367",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66150367/extrait",
+   "date_rcp": "2025-09-12",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CELEBREX 200 mg, gélule"
+  },
+  {
+   "medicament_id": "47548ebf-df4a-4534-b8a8-80a1df4f7256",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66854318",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66854318/extrait",
+   "date_rcp": "2024-05-23",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament,",
+   "specialite_fr": "PRIMALAN 10 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "48c88dc9-9598-4973-a9b5-e8aa2cc6d7c1",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66150367",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66150367/extrait",
+   "date_rcp": "2025-09-12",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CELEBREX 200 mg, gélule"
+  },
+  {
+   "medicament_id": "4c9ec47a-144e-45e5-bea3-a9b6efa6fb58",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62303214",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62303214/extrait",
+   "date_rcp": "2025-11-25",
+   "citation": "Les patientes souffrant de maladies héréditaires rares telles qu’une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose-galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ARIMIDEX 1 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "4e996bc3-ef89-48b4-94e4-d7fffd598b11",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62431527",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62431527/extrait",
+   "date_rcp": "2025-07-25",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "VOLTARENE 50 mg, comprimé enrobé gastro-résistant"
+  },
+  {
+   "medicament_id": "4ee02d03-3e83-4b70-a1b4-aa74a29cfd75",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60470499",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60470499/extrait",
+   "date_rcp": "2024-12-12",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZYLORIC 300 mg, comprimé"
+  },
+  {
+   "medicament_id": "4f0f5378-7577-4f69-a674-9385768d34f7",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67917629",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67917629/extrait",
+   "date_rcp": "2026-08-04",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "TEMESTA 1 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "4f410ba7-ac3e-4e6e-a669-dae9d1d95307",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63964446",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63964446/extrait",
+   "date_rcp": "2024-06-28",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ARCOXIA 60 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "4fd83e4d-9c18-4e08-bb21-26277508a18c",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60683198",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60683198/extrait",
+   "date_rcp": "2025-12-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZOLOFT 50 mg, gélule"
+  },
+  {
+   "medicament_id": "53c77ec0-0ee4-4836-b876-8914591d53bb",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64906556",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64906556/extrait",
+   "date_rcp": "2024-12-24",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares).",
+   "specialite_fr": "DANATROL 200 mg, gélule"
+  },
+  {
+   "medicament_id": "53d5c408-873d-49f7-b3ac-3bf739c45bc2",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65940127",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65940127/extrait",
+   "date_rcp": "2025-04-28",
+   "citation": "Les patients présentant des problèmes héréditaires rares d’intolérance au galactose, de déficit en lactase totale ou de malabsorption du glucose-galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "GLUCOVANCE 500 mg/5 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "57da3769-ef08-45cc-bf7d-e219fa4c92b7",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "64768525",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64768525/extrait",
+   "date_rcp": "2025-12-18",
+   "citation": "Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "TOPREC 25 mg, comprimé"
+  },
+  {
+   "medicament_id": "57da3769-ef08-45cc-bf7d-e219fa4c92b7",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64768525",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64768525/extrait",
+   "date_rcp": "2025-12-18",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "TOPREC 25 mg, comprimé"
+  },
+  {
+   "medicament_id": "57da3769-ef08-45cc-bf7d-e219fa4c92b7",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64768525",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64768525/extrait",
+   "date_rcp": "2025-12-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "TOPREC 25 mg, comprimé"
+  },
+  {
+   "medicament_id": "5809cc9d-e003-42c6-b085-81d287364362",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60576901",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60576901/extrait",
+   "date_rcp": "2025-08-01",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MOSCONTIN 60 mg, comprimé enrobé à libération prolongée"
+  },
+  {
+   "medicament_id": "5bfbbdaa-8de0-4f2b-aa68-611519587949",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67140810",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67140810/extrait",
+   "date_rcp": "2026-09-18",
+   "citation": "Ce médicament doit être utilisé avec précaution chez les patients atteints de phénylcétonurie.",
+   "specialite_fr": "CLAMOXYL 250 mg/5 ml, poudre pour suspension buvable"
+  },
+  {
+   "medicament_id": "5c94576e-76cd-4225-9d7a-e350c7251866",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69898864",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69898864/extrait",
+   "date_rcp": "2023-05-03",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MELADININE 10 mg, comprimé"
+  },
+  {
+   "medicament_id": "5d0bcc84-5627-4963-9fd9-5db494370caf",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63692245",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63692245/extrait",
+   "date_rcp": "2026-02-16",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "TILDIEM 60 mg, comprimé"
+  },
+  {
+   "medicament_id": "60a41f2c-2d8d-4e32-8d09-1ef7559dbfb7",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60972480",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60972480/extrait",
+   "date_rcp": "2022-08-16",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament",
+   "specialite_fr": "COVERAM 5 mg/10 mg, comprimé"
+  },
+  {
+   "medicament_id": "64287ab3-bc0c-4f14-a474-38ab454ed71d",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64639548",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64639548/extrait",
+   "date_rcp": "2026-09-01",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MEDROL 16 mg, comprimé"
+  },
+  {
+   "medicament_id": "6488a262-b4cc-4a4f-a444-6d99c113ea59",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "67348996",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67348996/extrait",
+   "date_rcp": "2025-11-24",
+   "citation": "· Chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "NOZINAN 25 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "6488a262-b4cc-4a4f-a444-6d99c113ea59",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67348996",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67348996/extrait",
+   "date_rcp": "2025-11-24",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "NOZINAN 25 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "6488a262-b4cc-4a4f-a444-6d99c113ea59",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67348996",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67348996/extrait",
+   "date_rcp": "2025-11-24",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "NOZINAN 25 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "67ee3b81-d827-48d3-9bc6-97741d3c7007",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65606743",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65606743/extrait",
+   "date_rcp": "2025-02-05",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "LASILIX 40 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "683f05ba-c435-4cae-aa0e-c9ca11be47e3",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67117128",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67117128/extrait",
+   "date_rcp": "2025-10-07",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "TOFRANIL 25 mg, comprimé enrobé"
+  },
+  {
+   "medicament_id": "6aac4d48-a7f5-494c-80b4-f53330b59671",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "66171354",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66171354/extrait",
+   "date_rcp": "2025-01-15",
+   "citation": "• Phénylcétonurie (liée à la présence d’aspartam).",
+   "specialite_fr": "CELESTENE 2 mg, comprimé dispersible sécable"
+  },
+  {
+   "medicament_id": "6aac4d48-a7f5-494c-80b4-f53330b59671",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66171354",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66171354/extrait",
+   "date_rcp": "2025-01-15",
+   "citation": "Cela peut être nocif pour les patients atteints de phénylcétonurie.",
+   "specialite_fr": "CELESTENE 2 mg, comprimé dispersible sécable"
+  },
+  {
+   "medicament_id": "6aac4d48-a7f5-494c-80b4-f53330b59671",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66171354",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66171354/extrait",
+   "date_rcp": "2025-01-15",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CELESTENE 2 mg, comprimé dispersible sécable"
+  },
+  {
+   "medicament_id": "6b6fccde-8b09-4c4d-a208-0c8d435a8abd",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60328432",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60328432/extrait",
+   "date_rcp": "2026-08-26",
+   "citation": "En raison de la présence de lactose, les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "NOLVADEX 20 mg, comprimé enrobé"
+  },
+  {
+   "medicament_id": "6c51c97c-ffe2-47ea-9c2b-125ada98de72",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68887103",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68887103/extrait",
+   "date_rcp": "2023-07-01",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "AMAREL 4 mg, comprimé"
+  },
+  {
+   "medicament_id": "6dd43db8-8766-42dd-bc3f-00551ee2cd45",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60374821",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60374821/extrait",
+   "date_rcp": "2025-09-19",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit en lactase de lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MYTELASE 10 mg, comprimé"
+  },
+  {
+   "medicament_id": "6f434eb0-30cd-46af-99fb-bf3d613d2383",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "62124478",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62124478/extrait",
+   "date_rcp": "2026-07-28",
+   "citation": "• chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "TERALITHE 250 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "6f434eb0-30cd-46af-99fb-bf3d613d2383",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62124478",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62124478/extrait",
+   "date_rcp": "2026-07-28",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "TERALITHE 250 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "73da5545-971a-45e7-92dd-54ee65905b73",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68887103",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68887103/extrait",
+   "date_rcp": "2023-07-01",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "AMAREL 4 mg, comprimé"
+  },
+  {
+   "medicament_id": "74c28d8a-2971-4ad5-a6a7-90088d44454c",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67037301",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67037301/extrait",
+   "date_rcp": "2026-06-25",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "ZOCOR 20 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "74e868ad-1b9b-4898-ac1d-5a16b55b8faf",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "65312567",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65312567/extrait",
+   "date_rcp": "2025-02-28",
+   "citation": "Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "DICYNONE 500 mg, comprimé"
+  },
+  {
+   "medicament_id": "7961e935-cee4-4c4c-b232-0dc325694a60",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69686498",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69686498/extrait",
+   "date_rcp": "2026-02-19",
+   "citation": "Cet apport peut être dangereux pour les personnes souffrant de phénylcétonurie.",
+   "specialite_fr": "CADELIUS 600 mg/1000 UI, comprimé orodispersible"
+  },
+  {
+   "medicament_id": "7961e935-cee4-4c4c-b232-0dc325694a60",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69686498",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69686498/extrait",
+   "date_rcp": "2026-02-19",
+   "citation": "En conséquence, les patients souffrant de troubles héréditaires rares tels qu’une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose / galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CADELIUS 600 mg/1000 UI, comprimé orodispersible"
+  },
+  {
+   "medicament_id": "7961e935-cee4-4c4c-b232-0dc325694a60",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "69686498",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69686498/extrait",
+   "date_rcp": "2026-02-19",
+   "citation": "CADELIUS contient de l’huile de soja partiellement hydrogénée et est contre-indiqué chez les patients présentant une hypersensibilité aux arachides ou au soja.",
+   "specialite_fr": "CADELIUS 600 mg/1000 UI, comprimé orodispersible"
+  },
+  {
+   "medicament_id": "7961e935-cee4-4c4c-b232-0dc325694a60",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69686498",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69686498/extrait",
+   "date_rcp": "2026-02-19",
+   "citation": "Le produit contient de l’huile de soja partiellement hydrogénée et est contre-indiqué chez les patients présentant une hypersensibilité aux arachides ou au soja (voir rubrique 4.3).",
+   "specialite_fr": "CADELIUS 600 mg/1000 UI, comprimé orodispersible"
+  },
+  {
+   "medicament_id": "7972c7d9-c12b-458d-9ecc-2d64007b9bf9",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60212424",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60212424/extrait",
+   "date_rcp": "2024-05-14",
+   "citation": "L’aspartam contient une source de phénylalanine qui peut être dangereuse si le patient est atteint de phénylcétonurie (PCU), une maladie génétique rare caractérisée par l’accumulation de phénylalanine ne pouvant être éliminée correctement.",
+   "specialite_fr": "JOSACINE 1000 mg, comprimé dispersible"
+  },
+  {
+   "medicament_id": "7b04c484-27c3-4be0-a8e0-cf3f891b6a5c",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67541600",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67541600/extrait",
+   "date_rcp": "2021-06-10",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "HYPERIUM 1 mg, comprimé"
+  },
+  {
+   "medicament_id": "7b20f5a0-98e2-4267-935b-eb072b1f83cd",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60972480",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60972480/extrait",
+   "date_rcp": "2022-08-16",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament",
+   "specialite_fr": "COVERAM 5 mg/10 mg, comprimé"
+  },
+  {
+   "medicament_id": "7b78d309-f080-449a-9695-e88e47a128f2",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64820630",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64820630/extrait",
+   "date_rcp": "2025-04-22",
+   "citation": "En raison de la présence de lactose, ce médicament est contre-indiqué en cas de galactosémie congénitale, de syndrome de malabsorption du glucose et du galactose ou de déficit en lactase.",
+   "specialite_fr": "SOTALEX 160 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "7d7cded6-164b-4352-bf69-58513223965a",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61519586",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61519586/extrait",
+   "date_rcp": "2026-02-16",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ATARAX 25 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "7e7c8033-be6d-49da-ae6a-ba97c7656d09",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60576901",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60576901/extrait",
+   "date_rcp": "2025-08-01",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MOSCONTIN 60 mg, comprimé enrobé à libération prolongée"
+  },
+  {
+   "medicament_id": "7ea8bead-e701-4caf-ae64-f61c13a3c38b",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66152197",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66152197/extrait",
+   "date_rcp": "2025-06-02",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "OLMETEC 40 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "7f07cee9-ad4d-4f86-8370-0a6054275d18",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68131878",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68131878/extrait",
+   "date_rcp": "2026-08-12",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "CORVASAL 2 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "89442ab4-c5a2-46e8-a674-c1c67c589cb2",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69346531",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69346531/extrait",
+   "date_rcp": "2026-08-07",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "COLPRONE 5 mg, comprimé"
+  },
+  {
+   "medicament_id": "89b69d49-c3a8-4d6d-8eef-d6f03016e027",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67037301",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67037301/extrait",
+   "date_rcp": "2026-06-25",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "ZOCOR 20 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "8d15335a-b761-43ab-93c2-fe9332c2118f",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63383409",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63383409/extrait",
+   "date_rcp": "2025-02-06",
+   "citation": "Les patientes présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "URISPAS 200 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "8e71bb39-3181-4314-951b-a891b3d1066b",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65217119",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65217119/extrait",
+   "date_rcp": "2026-03-02",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MOBIC 15 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "8f4ca2ee-5e12-42a1-9985-480e4499cf44",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "64000931",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64000931/extrait",
+   "date_rcp": "2026-08-18",
+   "citation": "Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "SECTRAL 400 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "8f4ca2ee-5e12-42a1-9985-480e4499cf44",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64000931",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64000931/extrait",
+   "date_rcp": "2026-08-18",
+   "citation": "Si vous avez une allergie au blé (différente de la maladie cœliaque), vous ne devez pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "SECTRAL 400 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "8f4ca2ee-5e12-42a1-9985-480e4499cf44",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64000931",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64000931/extrait",
+   "date_rcp": "2026-08-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "SECTRAL 400 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "902b6eaf-0c4b-4919-8f53-11c9a27b8741",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61068069",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61068069/extrait",
+   "date_rcp": "2026-02-20",
+   "citation": "Ce médicament doit ainsi être utilisé avec prudence chez les patients atteints de phénylcétonurie.",
+   "specialite_fr": "ZINNAT 125 mg/5 ml ENFANTS ET NOURRISSONS, granulés pour suspension buvable en flacon"
+  },
+  {
+   "medicament_id": "919c038b-c548-4434-85fa-2365a783335d",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68831670",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68831670/extrait",
+   "date_rcp": "2023-06-05",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares).",
+   "specialite_fr": "DIAMICRON 60 mg, comprimé sécable à libération modifiée"
+  },
+  {
+   "medicament_id": "924534ad-bad6-4e86-b867-ecc5f9939af0",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67917629",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67917629/extrait",
+   "date_rcp": "2026-08-04",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "TEMESTA 1 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "926a02f1-95bc-45ed-8584-23d25e3f1e76",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67767535",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67767535/extrait",
+   "date_rcp": "2026-08-17",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "PLAQUENIL 200 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "95bb6892-f9ec-4180-9c88-e6694e4b8df4",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65338028",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65338028/extrait",
+   "date_rcp": "2025-07-21",
+   "citation": "Son utilisation est déconseillée chez les patientes présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "CLOMID 50 mg, comprimé"
+  },
+  {
+   "medicament_id": "96e36940-5762-4237-a626-e07f60184801",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67231270",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67231270/extrait",
+   "date_rcp": "2024-07-15",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "PERIACTINE 4 mg, comprimé"
+  },
+  {
+   "medicament_id": "97846251-a506-4079-87dc-6a7f1dfe387d",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "60304050",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60304050/extrait",
+   "date_rcp": "2024-09-09",
+   "citation": "• Chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "LIORESAL 10 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "97981b11-29f8-4c8e-950d-4ee44b0372d7",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "69562970",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69562970/extrait",
+   "date_rcp": "2026-06-10",
+   "citation": "Les patients ne doivent pas prendre ce médicament s’ils sont allergiques aux arachides ou au soja.",
+   "specialite_fr": "IDEOS 500 mg/400 UI, comprimé à sucer ou à croquer"
+  },
+  {
+   "medicament_id": "98984ada-ff31-4877-94f2-ca26ce7dde99",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67541600",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67541600/extrait",
+   "date_rcp": "2021-06-10",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "HYPERIUM 1 mg, comprimé"
+  },
+  {
+   "medicament_id": "9ab39d64-89f9-4e82-b25a-76332e770839",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "69562970",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69562970/extrait",
+   "date_rcp": "2026-06-10",
+   "citation": "Les patients ne doivent pas prendre ce médicament s’ils sont allergiques aux arachides ou au soja.",
+   "specialite_fr": "IDEOS 500 mg/400 UI, comprimé à sucer ou à croquer"
+  },
+  {
+   "medicament_id": "9cc15460-c1e5-4b5e-99c7-45e4e050744e",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68510337",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68510337/extrait",
+   "date_rcp": "2025-05-27",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ODRIK 2 mg, gélule"
+  },
+  {
+   "medicament_id": "9dafd05b-7981-4ef3-9966-c56cbd609529",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69346531",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69346531/extrait",
+   "date_rcp": "2026-08-07",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "COLPRONE 5 mg, comprimé"
+  },
+  {
+   "medicament_id": "a01c8bc1-3e23-413c-be1d-3a4786932cb3",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67049435",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67049435/extrait",
+   "date_rcp": "2025-03-04",
+   "citation": "Les patients présentant des troubles héréditaires rares d’intolérance au galactose, de déficit total en lactase ou de malabsorption du glucose/galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZOFENIL 30 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "a024f3dd-8d52-4a04-b3bc-7cbdd1653b0a",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69346531",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69346531/extrait",
+   "date_rcp": "2026-08-07",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "COLPRONE 5 mg, comprimé"
+  },
+  {
+   "medicament_id": "a1ceb3c4-53fb-4348-8836-d537b827b986",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62552920",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62552920/extrait",
+   "date_rcp": "2026-08-31",
+   "citation": "Les patients atteints de troubles héréditaires rares tels qu’une intolérance au galactose, un déficit en lactase ou une malabsorption du glucose-galactose, ne doivent pas prendre ce médicament.",
+   "specialite_fr": "LEPONEX 100 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "a2e31887-262f-42df-8bca-86f91c09894d",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67143532",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67143532/extrait",
+   "date_rcp": "2025-01-27",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "TAHOR 10 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "a34e174a-8f82-4cfe-8305-126f92e11b5f",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60683198",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60683198/extrait",
+   "date_rcp": "2025-12-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZOLOFT 50 mg, gélule"
+  },
+  {
+   "medicament_id": "a3639936-a124-46c5-b9d4-4c632b239dd3",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68887103",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68887103/extrait",
+   "date_rcp": "2023-07-01",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "AMAREL 4 mg, comprimé"
+  },
+  {
+   "medicament_id": "a4bfd331-2ae3-4936-9c8a-d8757b3bc36b",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64408662",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64408662/extrait",
+   "date_rcp": "2025-06-05",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "CORDARONE 200 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "a7495764-e5b4-437c-8d74-14d85293f27d",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63179285",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63179285/extrait",
+   "date_rcp": "2024-02-08",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "STILNOX 10 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "a9a1737d-66ad-4a8f-8482-08c22373fab4",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "68818192",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68818192/extrait",
+   "date_rcp": "2025-07-04",
+   "citation": "• Patient présentant une allergie au blé (autre que la maladie coeliaque) (voir rubrique 4.4).",
+   "specialite_fr": "FLAGYL 250 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "a9a1737d-66ad-4a8f-8482-08c22373fab4",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68818192",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68818192/extrait",
+   "date_rcp": "2025-07-04",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "FLAGYL 250 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "ac022ef7-1961-4cae-9178-64b1c3d993e8",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62751438",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62751438/extrait",
+   "date_rcp": "2026-04-08",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "FLUDARA 10 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "ad0f18f6-207d-4598-ac29-9a41b363174a",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69503737",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69503737/extrait",
+   "date_rcp": "2026-03-13",
+   "citation": "Si le patient a une allergie au blé, il ne doit pas prendre ce médicament.",
+   "specialite_fr": "VOGALENE 15 mg, gélule"
+  },
+  {
+   "medicament_id": "ad4cae7c-85db-4e97-9a81-2edd473f31ab",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62949690",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62949690/extrait",
+   "date_rcp": "2026-03-06",
+   "citation": "En raison de la présence de lactose, ce médicament est contre-indiqué en cas de galactosémie congénitale, de syndrome de malabsorption du glucose et du galactose ou de déficit en lactase.",
+   "specialite_fr": "LYSANXIA 10 mg, comprimé"
+  },
+  {
+   "medicament_id": "ad80be1f-13a7-4bf0-ab75-c85ac6b7b384",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63849839",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63849839/extrait",
+   "date_rcp": "2021-11-08",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "COVERSYL 5 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "af0927e2-fc0d-41ab-8f8d-218d9db5c820",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "62013296",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62013296/extrait",
+   "date_rcp": "2025-10-28",
+   "citation": "• Chez les patients présentant une allergie au blé (autre que la maladie cœliaque) ;",
+   "specialite_fr": "FURADANTINE 50 mg, gélule"
+  },
+  {
+   "medicament_id": "af0927e2-fc0d-41ab-8f8d-218d9db5c820",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62013296",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62013296/extrait",
+   "date_rcp": "2025-10-28",
+   "citation": "En cas d’allergie au blé, voir la rubrique contre-indication.",
+   "specialite_fr": "FURADANTINE 50 mg, gélule"
+  },
+  {
+   "medicament_id": "af0927e2-fc0d-41ab-8f8d-218d9db5c820",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62013296",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62013296/extrait",
+   "date_rcp": "2025-10-28",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "FURADANTINE 50 mg, gélule"
+  },
+  {
+   "medicament_id": "afdf0bb1-3a03-4c3a-b36d-ce395914122c",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62650485",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62650485/extrait",
+   "date_rcp": "2022-12-27",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "ARICEPT 10 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "b0cc3eb4-83d4-46d1-b730-1c8db949e89a",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "65130778",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65130778/extrait",
+   "date_rcp": "2020-12-30",
+   "citation": "• Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "NIVAQUINE 100 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "b0cc3eb4-83d4-46d1-b730-1c8db949e89a",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65130778",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65130778/extrait",
+   "date_rcp": "2020-12-30",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "NIVAQUINE 100 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "b9d5698e-6758-4c1d-bf66-f9846d7e136d",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62344129",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62344129/extrait",
+   "date_rcp": "2025-08-21",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "DOGMATIL 50 mg, gélule"
+  },
+  {
+   "medicament_id": "bba389fd-b594-4766-ab61-a065217193e1",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69149683",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69149683/extrait",
+   "date_rcp": "2026-10-09",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "FLODIL L.P. 5 mg, comprimé enrobé à libération prolongée"
+  },
+  {
+   "medicament_id": "bd287dac-b911-479b-816f-eaf48c21c616",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60363967",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60363967/extrait",
+   "date_rcp": "2023-03-24",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "SPIRIVA 18 microgrammes, poudre pour inhalation en gélule"
+  },
+  {
+   "medicament_id": "bd90b852-f386-4340-bb02-e45d62bdba59",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65565944",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65565944/extrait",
+   "date_rcp": "2026-07-06",
+   "citation": "Les patients présentant un syndrome de malabsorption du glucose et du galactose (maladie héréditaire rare) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZENTEL 400 mg, comprimé"
+  },
+  {
+   "medicament_id": "bd90b852-f386-4340-bb02-e45d62bdba59",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65565944",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65565944/extrait",
+   "date_rcp": "2026-07-06",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZENTEL 400 mg, comprimé"
+  },
+  {
+   "medicament_id": "bed37d30-ba9c-465d-a499-eddac215c301",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62344129",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62344129/extrait",
+   "date_rcp": "2025-08-21",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "DOGMATIL 50 mg, gélule"
+  },
+  {
+   "medicament_id": "bf742897-eabf-4ad5-88e4-c3edbd37e0cd",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69346531",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69346531/extrait",
+   "date_rcp": "2026-08-07",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "COLPRONE 5 mg, comprimé"
+  },
+  {
+   "medicament_id": "c22acbb9-21e0-44fd-aaa0-9fe468364b2a",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60328432",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60328432/extrait",
+   "date_rcp": "2026-08-26",
+   "citation": "En raison de la présence de lactose, les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "NOLVADEX 20 mg, comprimé enrobé"
+  },
+  {
+   "medicament_id": "c333d5ad-a9ea-4482-9351-e9c27fb271da",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60374821",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60374821/extrait",
+   "date_rcp": "2025-09-19",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit en lactase de lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MYTELASE 10 mg, comprimé"
+  },
+  {
+   "medicament_id": "c842e299-84ba-43d0-8fc3-6487f332bda1",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68492540",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68492540/extrait",
+   "date_rcp": "2026-01-12",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ALDACTONE 75 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "cae4cf2d-31ea-4ac4-aeb2-a564867288ed",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "65391080",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65391080/extrait",
+   "date_rcp": "2024-07-02",
+   "citation": "• Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "GARDENAL 50 mg, comprimé"
+  },
+  {
+   "medicament_id": "cae4cf2d-31ea-4ac4-aeb2-a564867288ed",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65391080",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65391080/extrait",
+   "date_rcp": "2024-07-02",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "GARDENAL 50 mg, comprimé"
+  },
+  {
+   "medicament_id": "cc1e3059-8b30-4dce-8417-a89b2ffad41c",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69700567",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69700567/extrait",
+   "date_rcp": "2026-02-04",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "HYDREA 500 mg, gélule"
+  },
+  {
+   "medicament_id": "cc82da14-72fb-4c30-a6fe-55bfbc924291",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62607530",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62607530/extrait",
+   "date_rcp": "2026-09-18",
+   "citation": "Ce médicament doit être utilisé avec précaution chez les patients atteints de phénylcétonurie.",
+   "specialite_fr": "CLAMOXYL 500 mg/5 ml, poudre pour suspension buvable"
+  },
+  {
+   "medicament_id": "cdf48ef7-5fc1-42ce-a2b9-9d13859b0ba4",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60683198",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60683198/extrait",
+   "date_rcp": "2025-12-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZOLOFT 50 mg, gélule"
+  },
+  {
+   "medicament_id": "d0203570-cbd1-40a9-90d6-21e4c280f463",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62390849",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62390849/extrait",
+   "date_rcp": "2026-01-30",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "CORTANCYL 20 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "d1143d82-9f3f-4684-865e-a73f8483393b",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "68818192",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68818192/extrait",
+   "date_rcp": "2025-07-04",
+   "citation": "• Patient présentant une allergie au blé (autre que la maladie coeliaque) (voir rubrique 4.4).",
+   "specialite_fr": "FLAGYL 250 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "d1143d82-9f3f-4684-865e-a73f8483393b",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68818192",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68818192/extrait",
+   "date_rcp": "2025-07-04",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "FLAGYL 250 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "d3675a90-e7c1-4d58-ad87-c46aa32562b5",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67214342",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67214342/extrait",
+   "date_rcp": "2024-09-18",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "FELDENE DISPERSIBLE 20 mg, comprimé dispersible sécable"
+  },
+  {
+   "medicament_id": "d3be276d-743f-4bad-9f91-80f4e1cacdf6",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "65312567",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65312567/extrait",
+   "date_rcp": "2025-02-28",
+   "citation": "Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "DICYNONE 500 mg, comprimé"
+  },
+  {
+   "medicament_id": "d3e2afce-cfe3-4661-9f2d-7793ed9739c5",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67949737",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67949737/extrait",
+   "date_rcp": "2024-12-13",
+   "citation": "Les patients présentant des troubles héréditaires rares tels qu’intolérance au galactose, déficit total en lactase ou malabsorption du glucose-galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CASODEX 50 mg, comprimé enrobé"
+  },
+  {
+   "medicament_id": "d508e46a-f5e4-4ebf-b4d4-28556974d8d6",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62751438",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62751438/extrait",
+   "date_rcp": "2026-04-08",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "FLUDARA 10 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "d7b13b37-b8dc-4c5c-ba02-fba2c76cb104",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "68693244",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68693244/extrait",
+   "date_rcp": "2026-01-15",
+   "citation": "Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "DIAMOX 250 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "d8f67149-6a6c-4baa-824e-9a1105c34cbc",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60260497",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60260497/extrait",
+   "date_rcp": "2025-01-17",
+   "citation": "Les patients présentant des problèmes héréditaires rares d’intolérance au galactose, de déficit total en lactase ou de syndrome de malabsorption du glucose ou du galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "RISPERDAL 2 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "dca8ac8a-bb9e-4fac-aadb-8f9d6109ce14",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67858369",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67858369/extrait",
+   "date_rcp": "2026-05-20",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "MYFORTIC 360 mg, comprimé gastro-résistant"
+  },
+  {
+   "medicament_id": "dd99a088-564c-44a6-95f9-62f25c6893da",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66796142",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66796142/extrait",
+   "date_rcp": "2025-11-28",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "LEXOMIL 6 mg, comprimé quadrisécable"
+  },
+  {
+   "medicament_id": "de31007d-4886-4483-9dda-4cab18d7d31f",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "67229344",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67229344/extrait",
+   "date_rcp": "2024-10-16",
+   "citation": "• phénylcétonurie (en raison de la présence d'aspartam).",
+   "specialite_fr": "BREXIN 20 mg, comprimé effervescent"
+  },
+  {
+   "medicament_id": "de31007d-4886-4483-9dda-4cab18d7d31f",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67229344",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67229344/extrait",
+   "date_rcp": "2024-10-16",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "BREXIN 20 mg, comprimé effervescent"
+  },
+  {
+   "medicament_id": "e06c85f7-094c-4b47-a6f6-bdc68a9d2b77",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "61654491",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61654491/extrait",
+   "date_rcp": "2026-06-25",
+   "citation": "• allergie à l’huile d’arachide ou à l’huile de soja car Curacné contient de l’huile de soja ;",
+   "specialite_fr": "CURACNE 40 mg, capsule molle"
+  },
+  {
+   "medicament_id": "e07c59c2-d637-4cc8-a763-99af271758d9",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62751438",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62751438/extrait",
+   "date_rcp": "2026-04-08",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "FLUDARA 10 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "e099e6df-5c8f-404e-80a5-6b0f7b3c46b8",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "67669621",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67669621/extrait",
+   "date_rcp": "2021-01-25",
+   "citation": "Hypersensibilité à l’arachide ou au soja.",
+   "specialite_fr": "HELMINTOX 125 mg/2,5 ml, suspension buvable"
+  },
+  {
+   "medicament_id": "e099e6df-5c8f-404e-80a5-6b0f7b3c46b8",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67669621",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67669621/extrait",
+   "date_rcp": "2021-01-25",
+   "citation": "Les patients allergiques à l’arachide ou au soja ne doivent pas utiliser ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "HELMINTOX 125 mg/2,5 ml, suspension buvable"
+  },
+  {
+   "medicament_id": "e197a675-8612-4aab-b880-b875a13c77c3",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "60290800",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60290800/extrait",
+   "date_rcp": "2024-01-19",
+   "citation": "• Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "VALIUM 10 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "e44932ce-d0ca-4ed0-a5e3-25c21e4f0529",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64866204",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64866204/extrait",
+   "date_rcp": "2025-09-24",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "DUPHASTON 10 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "e5658103-ed39-46d5-b032-d7325a634bca",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62554177",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62554177/extrait",
+   "date_rcp": "2026-05-21",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "ENDOXAN 50 mg, comprimé enrobé"
+  },
+  {
+   "medicament_id": "e8ac85e0-b281-4c9c-b30e-c9f3beea93bd",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "61224073",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61224073/extrait",
+   "date_rcp": "2026-04-10",
+   "citation": "• Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie coeliaque).",
+   "specialite_fr": "EXACYL 500 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "e8ac85e0-b281-4c9c-b30e-c9f3beea93bd",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61224073",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61224073/extrait",
+   "date_rcp": "2026-04-10",
+   "citation": "Ce médicament ne doit pas être pris par les patients ayant une allergie au blé (différente de la maladie cœliaque).",
+   "specialite_fr": "EXACYL 500 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "eac748c3-637c-4520-92d5-4ccfbb3d79a8",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "68818192",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68818192/extrait",
+   "date_rcp": "2025-07-04",
+   "citation": "• Patient présentant une allergie au blé (autre que la maladie coeliaque) (voir rubrique 4.4).",
+   "specialite_fr": "FLAGYL 250 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "eac748c3-637c-4520-92d5-4ccfbb3d79a8",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68818192",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68818192/extrait",
+   "date_rcp": "2025-07-04",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "FLAGYL 250 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "ead237ab-b6c6-4acc-afaf-d37aba25da57",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60981789",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60981789/extrait",
+   "date_rcp": "2025-03-31",
+   "citation": "En raison de la présence de lactose, ce médicament ne doit pas être administré en cas de galactosémie congénitale, de syndrome de malabsorption du glucose et du galactose ou de déficit en lactase de Lapp.",
+   "specialite_fr": "EZETROL 10 mg, comprimé"
+  },
+  {
+   "medicament_id": "eb4a4c21-fa5e-4d70-9975-075652e3fe89",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63476564",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63476564/extrait",
+   "date_rcp": "2024-02-21",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "RELPAX 40 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "ebd42f02-b83e-4fec-8811-e085a6a3f8d8",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62650485",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62650485/extrait",
+   "date_rcp": "2022-12-27",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "ARICEPT 10 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "ebf2309c-35d9-4194-b621-9d03832aa563",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "65606743",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/65606743/extrait",
+   "date_rcp": "2025-02-05",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit en lactase de Lapp ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "LASILIX 40 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "ebf61d77-d159-4b4a-b9fc-57ad9eb252d0",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66150367",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66150367/extrait",
+   "date_rcp": "2025-09-12",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "CELEBREX 200 mg, gélule"
+  },
+  {
+   "medicament_id": "ecc10a7b-2564-4c55-b0e8-0e5dca22fb97",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "61224073",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61224073/extrait",
+   "date_rcp": "2026-04-10",
+   "citation": "• Ce médicament est contre-indiqué chez les patients présentant une allergie au blé (autre que la maladie coeliaque).",
+   "specialite_fr": "EXACYL 500 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "ecc10a7b-2564-4c55-b0e8-0e5dca22fb97",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61224073",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61224073/extrait",
+   "date_rcp": "2026-04-10",
+   "citation": "Ce médicament ne doit pas être pris par les patients ayant une allergie au blé (différente de la maladie cœliaque).",
+   "specialite_fr": "EXACYL 500 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "edde9c4c-58f5-403b-b3dd-ddf4c8fc5157",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "69197614",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/69197614/extrait",
+   "date_rcp": "2025-03-13",
+   "citation": "Son utilisation est déconseillée chez les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares).",
+   "specialite_fr": "COZAAR 50 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "eef25fb3-4f3a-4faf-8189-29f8cf90831e",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "64204250",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/64204250/extrait",
+   "date_rcp": "2025-11-21",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "IMUREL 50 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "f1de6e09-e30f-41ee-b6ae-a6a5c5b470d0",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "61673424",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61673424/extrait",
+   "date_rcp": "2026-03-13",
+   "citation": "• Hypersensibilité à la substance active, au soja, à l'arachide (voir rubrique 4.4) ou à l'un des excipients mentionnés à la rubrique 6.1.",
+   "specialite_fr": "UTROGESTAN 100 mg, capsule molle orale ou vaginale"
+  },
+  {
+   "medicament_id": "f1de6e09-e30f-41ee-b6ae-a6a5c5b470d0",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_soja"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61673424",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61673424/extrait",
+   "date_rcp": "2026-03-13",
+   "citation": "UTROGESTAN 100 mg contient de la lécithine de soja et peut provoquer des réactions d’hypersensibilité (urticaire et choc anaphylactique) chez les patients hypersensibles.",
+   "specialite_fr": "UTROGESTAN 100 mg, capsule molle orale ou vaginale"
+  },
+  {
+   "medicament_id": "f1de6e09-e30f-41ee-b6ae-a6a5c5b470d0",
+   "excipient": "soja",
+   "terrains": [
+    "allergie_arachide",
+    "allergie_soja"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "61673424",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/61673424/extrait",
+   "date_rcp": "2026-03-13",
+   "citation": "Une relation entre l'allergie au soja et l'allergie à l'arachide étant possible, les patients allergiques aux arachides doivent éviter d'utiliser UTROGESTAN 100 mg (voir rubrique 4.3).",
+   "specialite_fr": "UTROGESTAN 100 mg, capsule molle orale ou vaginale"
+  },
+  {
+   "medicament_id": "f1ed44ab-5b50-4192-8e04-3a0787bb0a9f",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68670676",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68670676/extrait",
+   "date_rcp": "2026-05-20",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "ZOVIRAX 200 mg, comprimé"
+  },
+  {
+   "medicament_id": "f20fe8df-29a0-4b0a-81e0-9a8bdef9bb03",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63476564",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63476564/extrait",
+   "date_rcp": "2024-02-21",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "RELPAX 40 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "f477d405-0b0b-4b25-8701-f1324eb84ddb",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60246750",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60246750/extrait",
+   "date_rcp": "2022-08-25",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "DEBRIDAT 100 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "f5277267-651f-4fda-8fef-8a67bc709433",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "62124478",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62124478/extrait",
+   "date_rcp": "2026-07-28",
+   "citation": "• chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "TERALITHE 250 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "f5277267-651f-4fda-8fef-8a67bc709433",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62124478",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62124478/extrait",
+   "date_rcp": "2026-07-28",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament (voir rubrique 4.3).",
+   "specialite_fr": "TERALITHE 250 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "f569a8c1-57d0-4a32-858b-bb39a379f6e1",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "68971188",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/68971188/extrait",
+   "date_rcp": "2026-06-01",
+   "citation": "Les patientes présentant des problèmes héréditaires rares d'intolérance totale au galactose, de déficit en lactase ou de malabsorption du glucose-galactose ne doivent pas prendre ce médicament.",
+   "specialite_fr": "SLINDA 4 mg, comprimé pelliculé"
+  },
+  {
+   "medicament_id": "f6227fc5-873e-4a8d-ab38-d38c773c1d56",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66854318",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66854318/extrait",
+   "date_rcp": "2024-05-23",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament,",
+   "specialite_fr": "PRIMALAN 10 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "f805a472-a6d5-4b0a-951b-5e822e1bcd6f",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "60304050",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60304050/extrait",
+   "date_rcp": "2024-09-09",
+   "citation": "• Chez les patients présentant une allergie au blé (autre que la maladie cœliaque).",
+   "specialite_fr": "LIORESAL 10 mg, comprimé sécable"
+  },
+  {
+   "medicament_id": "f9dc7875-5cdf-44f3-a73f-86c5aff9754f",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "absolue",
+   "rubrique": "4.3",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "• Chez les patients présentant une allergie au blé (autre que la maladie cœliaque),",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "f9dc7875-5cdf-44f3-a73f-86c5aff9754f",
+   "excipient": "gluten",
+   "terrains": [
+    "allergie_ble"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "Les patients avec une allergie au blé (différente de la maladie cœliaque), ne doivent pas prendre ce médicament.",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "f9dc7875-5cdf-44f3-a73f-86c5aff9754f",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "62816804",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/62816804/extrait",
+   "date_rcp": "2025-10-02",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "LARGACTIL 100 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "fa6ea84f-4148-4ea9-993a-c1415a037b7a",
+   "excipient": "aspartam",
+   "terrains": [
+    "phenylcetonurie"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "60212424",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/60212424/extrait",
+   "date_rcp": "2024-05-14",
+   "citation": "L’aspartam contient une source de phénylalanine qui peut être dangereuse si le patient est atteint de phénylcétonurie (PCU), une maladie génétique rare caractérisée par l’accumulation de phénylalanine ne pouvant être éliminée correctement.",
+   "specialite_fr": "JOSACINE 1000 mg, comprimé dispersible"
+  },
+  {
+   "medicament_id": "fa9fe380-cb27-46a4-bedb-a38ba4b9ea1a",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "67702384",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/67702384/extrait",
+   "date_rcp": "2025-04-22",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "KERLONE 20 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "fc2b5e17-325d-43f4-9478-2e0ccb1cc184",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "63849839",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/63849839/extrait",
+   "date_rcp": "2021-11-08",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose et du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "COVERSYL 5 mg, comprimé pelliculé sécable"
+  },
+  {
+   "medicament_id": "fd77afa1-f279-4390-81f9-2e55423d84fa",
+   "excipient": "lactose",
+   "terrains": [
+    "intolerance_lactose"
+   ],
+   "severite": "a_evaluer",
+   "rubrique": "4.4",
+   "cis": "66296411",
+   "url": "https://base-donnees-publique.medicaments.gouv.fr/medicament/66296411/extrait",
+   "date_rcp": "2026-05-11",
+   "citation": "Les patients présentant une intolérance au galactose, un déficit total en lactase ou un syndrome de malabsorption du glucose ou du galactose (maladies héréditaires rares) ne doivent pas prendre ce médicament.",
+   "specialite_fr": "XYZALL 5 mg, comprimé pelliculé"
+  }
+ ]
+}

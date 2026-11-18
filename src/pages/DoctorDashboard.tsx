@@ -104,6 +104,8 @@ import { evaluateRenal, mergeRenalWithExisting, applyInfoLines, reservesLabel, d
 import { useRenalChannel } from '../hooks/useRenal';
 // MOTEUR-3 — voie d'administration : une forme locale ne reçoit que les règles de sa voie (module pur lib/voieEngine)
 import { regleApplicable, ficheFiltree, type FicheVoie } from '../lib/voieEngine';
+// MOTEUR-3 — canal « Excipient à effet notoire » (module pur lib/excipientEngine)
+import { evaluateExcipients, mergeExcipientAlerts, type MedicamentExcipient } from '../lib/excipientEngine';
 import {
   buildConditionMatcher, preparePatient, matchCondition, conditionTitre, incoherenceIrcDfg,
   type CiConceptRow, type PathologieCuree,
@@ -196,7 +198,8 @@ interface InteractionAlert {
   origin?: 'nouveau' | 'mixte' | 'fond';
   // Sprint 4bc — alerte produite par le canal antécédents (src/lib/antecedentEngine.ts).
   // Sprint 6B — 'renal' : canal fonction rénale (src/lib/renalEngine.ts).
-  channel?: 'antecedent' | 'allergie' | 'doublon' | 'renal';
+  // MOTEUR-3 — 'excipient' : canal excipient à effet notoire (src/lib/excipientEngine.ts).
+  channel?: 'antecedent' | 'allergie' | 'doublon' | 'renal' | 'excipient';
   // Sprint 4bc — source de la règle (affichée dans les détails).
   ruleSource?: string;
   // Sprint 4bc — antécédents absorbés par cette CI existante (« Également : antécédent de … »).
@@ -734,6 +737,11 @@ function AlertCard({ alert, defaultOpen = false }: { alert: InteractionAlert; de
         <div className="flex items-start gap-2 mb-1.5 flex-wrap">
           <SeverityBadge s={alert.severite} />
           <span className="text-sm font-semibold text-slate-900 dark:text-[#E2E8F0] leading-tight">{pairLabel}</span>
+          {alert.channel === 'excipient' && (
+            <span className="inline-flex items-center text-[10px] font-semibold uppercase tracking-wide text-[#0A1628] dark:text-slate-200 bg-[#0A1628]/[0.06] dark:bg-white/[0.08] border border-[#0A1628]/15 dark:border-white/15 rounded px-1.5 py-0.5">
+              Excipient à effet notoire
+            </span>
+          )}
           {alert.channel === 'doublon' && (
             <span className="inline-flex items-center text-[10px] font-semibold uppercase tracking-wide text-[#0A1628] dark:text-slate-200 bg-[#0A1628]/[0.06] dark:bg-white/[0.08] border border-[#0A1628]/15 dark:border-white/15 rounded px-1.5 py-0.5">
               Doublon thérapeutique
@@ -4104,6 +4112,17 @@ export function DoctorDashboard() {
           voieById.set(r.id, { voie: r.voie_administration, portee: r.voie_portee, rcpLu: r.voie_rcp_lu === true });
         }
       }
+      // MOTEUR-3 — excipients à effet notoire des fiches analysées (requête filtrée par UUID ; échec = canal muet, signalé en console).
+      let excipientRows: MedicamentExcipient[] = [];
+      if (allDbMedIds.length > 0 && selectedPatient) {
+        const { data: excRows, error: excErr } = await supabase
+          .from('medicament_excipients')
+          .select('medicament_id, excipient, terrains, severite, rubrique, cis, date_rcp, citation, specialite_fr')
+          .in('medicament_id', allDbMedIds);
+        if (cancelled) return;
+        if (excErr) console.error('[OrdoSur] medicament_excipients load error:', excErr);
+        excipientRows = (excRows as MedicamentExcipient[] | null) ?? [];
+      }
 
       // Sprint 4e-A — nom en base de chaque médicament (la RPC nomme ses paires par
       // medicaments.nom) : sert à fusionner un doublon avec l'interaction existante de la même
@@ -4473,6 +4492,36 @@ export function DoctorDashboard() {
             channel: 'doublon',
             ruleSource: d.source,
             also: d.also,
+          });
+        }
+      }
+
+      // ── 6 bis. MOTEUR-3 — Canal « Excipient à effet notoire » (APPEL ADDITIONNEL) ──
+      // Excipient déclaré dans le RCP français de la même spécialité (marque, forme, dosage), comparé aux
+      // pathologies et allergies du patient (même lecture que le moteur : lib/conditionMatcher). Une CI de la
+      // base qui porte déjà ce terrain reçoit une ligne « Également » au lieu d'une seconde carte.
+      if (selectedPatient && excipientRows.length > 0) {
+        const excPatient = preparePatient({
+          pathologies: selectedPatient.pathologies,
+          allergiesMedicaments: selectedPatient.allergies_medicaments,
+          allergiesAlimentaires: selectedPatient.allergies_alimentaires,
+        }, conditionData);
+        const exc = evaluateExcipients(analysisMeds.map(m => ({ id: m.id, nom: m.nom })), excipientRows, excPatient);
+        const mergedExc = mergeExcipientAlerts(alerts, exc);
+        applyMergedLines(alerts, mergedExc.alsoByIndex, 'excipient');
+        for (const ea of mergedExc.standalone) {
+          const key = `exc|${ea.medId}|${ea.excipient}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          alerts.push({
+            type: 'contraindication',
+            severite: ea.severite === 'absolue' ? 'contre_indication' : 'a_evaluer',
+            description: ea.description,
+            involved: [ea.medNom],
+            condition: ea.conditionLabel,
+            origin: originOfMed(ea.medId),
+            channel: 'excipient',
+            ruleSource: ea.source,
           });
         }
       }
@@ -5372,7 +5421,7 @@ export function DoctorDashboard() {
       // Volet 2 — pour les CI, afficher la condition_valeur exacte entre le médicament
       // et la description (contexte médical : "HTA sévère non contrôlée" vs juste "Hypertension").
       const prefix = alert.type === 'contraindication'
-        ? `${alert.channel === 'antecedent' ? 'Antécédent' : alert.channel === 'allergie' ? 'Allergie' : alert.channel === 'renal' ? 'Fonction rénale' : 'Contre-indication patient'} (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
+        ? `${alert.channel === 'antecedent' ? 'Antécédent' : alert.channel === 'allergie' ? 'Allergie' : alert.channel === 'renal' ? 'Fonction rénale' : alert.channel === 'excipient' ? 'Excipient à effet notoire' : 'Contre-indication patient'} (${alert.involved[0]})${alert.condition ? ` — Condition : ${alert.condition}` : ''}`
         : alert.involved.join(' + ');
       reasons.push(`${getSeveriteLabel(alert.severite)} — ${prefix} : ${alert.description}`);
     }
